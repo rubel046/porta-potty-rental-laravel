@@ -37,7 +37,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="font-bold text-gray-800 mb-4">Daily Call Volume</h2>
         <div class="space-y-2 max-h-64 overflow-y-auto">
-            @forelse($dailyData as $day)
+            @forelse($dailyStats as $day)
                 <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg text-sm">
                     <span class="text-gray-600">{{ \Carbon\Carbon::parse($day->date)->format('M j, Y') }}</span>
                     <div class="flex gap-4 text-right">
@@ -63,9 +63,6 @@
 </div>
 
 <div class="mt-6 flex flex-wrap gap-4">
-    <a href="{{ route('admin.reports.revenue', ['period' => $period]) }}" class="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700">Revenue Report →</a>
-    <a href="{{ route('admin.reports.calls', ['period' => $period]) }}" class="bg-purple-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-purple-700">Call Details →</a>
-    <a href="{{ route('admin.reports.cities', ['period' => $period]) }}" class="bg-orange-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-orange-700">City Report →</a>
-    <a href="{{ route('admin.reports.export', ['period' => $period]) }}" class="bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-green-700">Export Excel →</a>
+    <span class="text-gray-500 text-sm">Additional reports coming soon</span>
 </div>
 @endsection

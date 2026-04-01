@@ -276,12 +276,10 @@ class PageController extends Controller
      */
     public function cityPage(string $slug)
     {
-        $servicePage = Cache::remember("page_{$slug}", 1800, function () use ($slug) {
-            return ServicePage::where('slug', $slug)
-                ->where('is_published', true)
-                ->with(['city.state', 'city.phoneNumbers'])
-                ->firstOrFail();
-        });
+        $servicePage = ServicePage::where('slug', $slug)
+            ->where('is_published', true)
+            ->with(['city.state', 'city.phoneNumbers'])
+            ->firstOrFail();
 
         $city = $servicePage->city;
 
@@ -289,14 +287,12 @@ class PageController extends Controller
         $servicePage->incrementViews();
 
         // FAQs
-        $faqs = Cache::remember("faqs_{$city->id}_{$servicePage->service_type}", 3600, function () use ($city, $servicePage) {
-            $cityFaqs = $city->getActiveFaqs($servicePage->service_type);
-            if ($cityFaqs->isEmpty()) {
-                return $city->getActiveFaqs(); // global FAQs
-            }
-
-            return $cityFaqs;
-        });
+        $cityFaqs = $city->getActiveFaqs($servicePage->service_type);
+        if ($cityFaqs->isEmpty()) {
+            $faqs = $city->getActiveFaqs();
+        } else {
+            $faqs = $cityFaqs;
+        }
 
         // Testimonials
         $testimonials = Testimonial::where(function ($q) use ($city) {
@@ -308,16 +304,13 @@ class PageController extends Controller
             ->get();
 
         // Nearby cities with pages
-        $nearbyCityPages = Cache::remember("nearby_{$city->id}", 3600, function () use ($city) {
-            $nearbyNames = $city->getNearbyAreaNames();
-
-            return City::active()
-                ->whereIn('name', $nearbyNames)
-                ->with('state')
-                ->has('servicePages')
-                ->take(8)
-                ->get();
-        });
+        $nearbyNames = $city->getNearbyAreaNames();
+        $nearbyCityPages = City::active()
+            ->whereIn('name', $nearbyNames)
+            ->with('state')
+            ->has('servicePages')
+            ->take(8)
+            ->get();
 
         // Other service types for this city
         $otherServices = ServicePage::where('city_id', $city->id)
@@ -335,10 +328,48 @@ class PageController extends Controller
             ->get();
 
         // Schema markup
-        $schemaMarkup = $servicePage->schema_markup ?? $servicePage->generateSchemaMarkup();
+        $schemaMarkup = [
+            '@context' => 'https://schema.org',
+            '@type' => 'LocalBusiness',
+            'name' => $servicePage->heading,
+            'description' => $servicePage->seo_description,
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => $city->name,
+                'addressRegion' => $city->state->code,
+                'addressCountry' => 'US',
+            ],
+            'telephone' => $servicePage->phone_raw,
+            'priceRange' => '$$',
+            'openingHoursSpecification' => [
+                [
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                    'opens' => '07:00',
+                    'closes' => '20:00',
+                ],
+            ],
+            'areaServed' => [
+                '@type' => 'City',
+                'name' => $city->name,
+            ],
+        ];
 
-        // FAQ Schema
-        $faqSchema = $this->generateFaqSchema($faqs);
+        $faqSchema = null;
+        if ($faqs->isNotEmpty()) {
+            $faqSchema = [
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                'mainEntity' => $faqs->map(fn ($faq) => [
+                    '@type' => 'Question',
+                    'name' => $faq->question,
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $faq->answer,
+                    ],
+                ])->toArray(),
+            ];
+        }
 
         return view('pages.service', compact(
             'servicePage', 'city', 'faqs', 'testimonials',

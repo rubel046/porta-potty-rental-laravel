@@ -3,6 +3,20 @@
 @section('page-title', 'All Calls')
 
 @section('content')
+<div class="mb-4 flex flex-wrap justify-between items-center gap-4">
+    <form method="GET" class="flex gap-2 flex-wrap">
+        <input type="date" name="from" value="{{ request('from') }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">
+        <input type="date" name="to" value="{{ request('to') }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">
+        <select name="status" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">
+            <option value="">All Status</option>
+            <option value="qualified" {{ request('status') == 'qualified' ? 'selected' : '' }}>Qualified</option>
+            <option value="unqualified" {{ request('status') == 'unqualified' ? 'selected' : '' }}>Unqualified</option>
+            <option value="callback" {{ request('status') == 'callback' ? 'selected' : '' }}>Callback</option>
+            <option value="voicemail" {{ request('status') == 'voicemail' ? 'selected' : '' }}>Voicemail</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Filter</button>
+    </form>
+</div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">

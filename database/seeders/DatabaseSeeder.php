@@ -18,11 +18,16 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         $this->call([
-            StateSeeder::class,
-            CitySeeder::class,
+            AdminUserSeeder::class,
             BlogCategorySeeder::class,
+            BlogPostSeeder::class,
             BuyerSeeder::class,
+            CitySeeder::class,
+            FaqSeeder::class,
             ServicePageSeeder::class,  // This generates pages, FAQs, testimonials
+            StateSeeder::class,
+            SiteSettingSeeder::class,
+            TestimonialSeeder::class
         ]);
 
         $this->command->newLine();

@@ -17,12 +17,12 @@
     @endif
     <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
+            "@@context": "https://schema.org",
+            "@@type": "BreadcrumbList",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ route('home') }}"},
-                {"@type": "ListItem", "position": 2, "name": "{{ $city->state->name }}", "item": "{{ route('state.page', $city->state->slug) }}"},
-                {"@type": "ListItem", "position": 3, "name": "{{ $city->name }}", "item": "{{ url($servicePage->slug) }}"}
+                {"@@type": "ListItem", "position": 1, "name": "Home", "item": "{{ route('home') }}"},
+                {"@@type": "ListItem", "position": 2, "name": "{{ $city->state->name }}", "item": "{{ route('state.page', $city->state->slug) }}"},
+                {"@@type": "ListItem", "position": 3, "name": "{{ $city->name }}", "item": "{{ url($servicePage->slug) }}"}
             ]
         }
     </script>

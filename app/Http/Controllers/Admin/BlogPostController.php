@@ -11,11 +11,18 @@ use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = BlogPost::with('category', 'city')
-            ->latest()
-            ->paginate(20);
+        $query = BlogPost::with('category', 'city');
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('is_published')) {
+            $query->where('is_published', $request->is_published);
+        }
+
+        $posts = $query->latest()->paginate(20);
 
         return view('admin.blog-posts.index', compact('posts'));
     }

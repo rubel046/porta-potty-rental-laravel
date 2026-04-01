@@ -9,11 +9,19 @@ use Illuminate\Http\Request;
 
 class BuyerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $buyers = Buyer::withCount('callLogs')
-            ->orderBy('priority')
-            ->paginate(20);
+        $query = Buyer::withCount('callLogs');
+
+        if ($request->filled('search')) {
+            $query->where('company_name', 'like', '%' . $request->search . '%')
+                  ->orWhere('contact_name', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status);
+        }
+
+        $buyers = $query->orderBy('priority')->paginate(20);
 
         return view('admin.buyers.index', compact('buyers'));
     }

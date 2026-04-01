@@ -570,6 +570,128 @@
     </section>
 
     {{-- ============================================ --}}
+    {{-- TRUST STATS COUNTER --}}
+    {{-- ============================================ --}}
+    <section class="py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="text-white">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">25+</div>
+                    <div class="text-emerald-100 text-sm font-medium">Years Experience</div>
+                </div>
+                <div class="text-white">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">50K+</div>
+                    <div class="text-emerald-100 text-sm font-medium">Happy Customers</div>
+                </div>
+                <div class="text-white">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">500+</div>
+                    <div class="text-emerald-100 text-sm font-medium">Cities Served</div>
+                </div>
+                <div class="text-white">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">99%</div>
+                    <div class="text-emerald-100 text-sm font-medium">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- CERTIFICATIONS & GUARANTEES --}}
+    {{-- ============================================ --}}
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-8">
+                {{-- Certifications --}}
+                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                        🏆 Certifications & Compliance
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">✅</div>
+                            <div>
+                                <div class="font-semibold text-slate-800">OSHA Compliant</div>
+                                <div class="text-sm text-slate-500">Meets all safety regulations</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">♿</div>
+                            <div>
+                                <div class="font-semibold text-slate-800">ADA Certified</div>
+                                <div class="text-sm text-slate-500">Wheelchair accessible units</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl">🏢</div>
+                            <div>
+                                <div class="font-semibold text-slate-800">BBB A+ Rated</div>
+                                <div class="text-sm text-slate-500">Better Business Bureau</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">🌿</div>
+                            <div>
+                                <div class="font-semibold text-slate-800">EPA Compliant</div>
+                                <div class="text-sm text-slate-500">Eco-friendly disposal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Service Guarantee --}}
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 text-white">
+                    <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                        💯 Our Service Guarantee
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="text-emerald-400 text-xl">✓</span>
+                            <div>
+                                <div class="font-semibold">Same-Day Delivery</div>
+                                <div class="text-slate-400 text-sm">When you call before 2 PM</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-emerald-400 text-xl">✓</span>
+                            <div>
+                                <div class="font-semibold">No Hidden Fees</div>
+                                <div class="text-slate-400 text-sm">The price we quote is the price you pay</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-emerald-400 text-xl">✓</span>
+                            <div>
+                                <div class="font-semibold">Clean Units Guaranteed</div>
+                                <div class="text-slate-400 text-sm">Every unit sanitized before delivery</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-emerald-400 text-xl">✓</span>
+                            <div>
+                                <div class="font-semibold">24/7 Emergency Service</div>
+                                <div class="text-slate-400 text-sm">We're here when you need us most</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-emerald-400 text-xl">✓</span>
+                            <div>
+                                <div class="font-semibold">Licensed & Insured</div>
+                                <div class="text-slate-400 text-sm">Full liability coverage</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-slate-700">
+                        <a href="tel:{{ phone_raw() }}"
+                           class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all">
+                            📞 Call for Free Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
     {{-- WHY CHOOSE US --}}
     {{-- ============================================ --}}
     <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -810,11 +932,8 @@
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             @foreach(collect($featuredCities)->where('state_id', $state['id']) as $city)
-                                @php
-                                    $cityPage = collect($city['servicePages'] ?? [])->where('service_type', 'general')->where('is_published', true)->first();
-                                @endphp
-                                @if($cityPage)
-                                    <a href="{{ route('city.service', ['city' => $city['slug'], 'service' => 'porta-potty-rental']) }}"
+                                @if(!empty($city['slug']))
+                                    <a href="{{ url($city['slug']) }}"
                                        class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
                                               hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                         {{ $city['name'] }}

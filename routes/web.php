@@ -39,7 +39,7 @@ Route::get('/services', [PageController::class, 'services'])
 // State Page (e.g., /porta-potty-rental-texas)
 Route::get('/porta-potty-rental-{stateSlug}', [PageController::class, 'statePage'])
     ->name('state.page')
-    ->where('stateSlug', '[a-z][a-z\-]+');
+    ->where('stateSlug', 'alabama|arizona|arkansas|colorado|florida|georgia|indiana|kentucky|louisiana|nebraska|north-carolina|ohio|oklahoma|south-carolina|tennessee|texas|virginia');
 
 // Blog
 Route::get('/blog', [BlogController::class, 'index'])
@@ -139,8 +139,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     */
     Route::resource('service-pages', ServicePageController::class)
         ->except(['create', 'store', 'destroy']);
-    // create/store না রাখার কারণ: পেজ city থেকে auto-generate হয়
-    // destroy না রাখার কারণ: ভুলে পেজ ডিলিট হলে SEO ক্ষতি হবে
+    // Note: create/store/destroy excluded intentionally - pages are auto-generated from cities
 
     /*
     |----------------------------------------------------------------------

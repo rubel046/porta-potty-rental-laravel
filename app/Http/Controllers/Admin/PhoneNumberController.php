@@ -10,13 +10,24 @@ use Illuminate\Http\Request;
 
 class PhoneNumberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $numbers = PhoneNumber::with(['city.state', 'buyer'])
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        $query = PhoneNumber::with(['city.state', 'buyer']);
 
-        return view('admin.phone-numbers.index', compact('numbers'));
+        if ($request->filled('search')) {
+            $query->where('number', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('city_id')) {
+            $query->where('city_id', $request->city_id);
+        }
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status);
+        }
+
+        $phoneNumbers = $query->orderByDesc('created_at')->paginate(20);
+        $cities = City::active()->with('state')->orderBy('name')->get();
+
+        return view('admin.phone-numbers.index', compact('phoneNumbers', 'cities'));
     }
 
     public function create()

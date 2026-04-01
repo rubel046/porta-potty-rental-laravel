@@ -12,13 +12,15 @@ class CityController extends Controller
 {
     public function index()
     {
+        $states = State::orderBy('name')->get();
+        
         $cities = City::with('state')
             ->withCount(['servicePages', 'callLogs'])
             ->orderByDesc('priority')
             ->orderBy('name')
             ->paginate(30);
 
-        return view('admin.cities.index', compact('cities'));
+        return view('admin.cities.index', compact('cities', 'states'));
     }
 
     public function create()
@@ -75,6 +77,13 @@ class CityController extends Controller
         $city->load('servicePages', 'phoneNumbers');
 
         return view('admin.cities.edit', compact('city', 'states'));
+    }
+
+    public function show(City $city)
+    {
+        $city->load(['state', 'servicePages', 'phoneNumbers', 'callLogs', 'blogPosts']);
+        
+        return view('admin.cities.show', compact('city'));
     }
 
     public function update(Request $request, City $city)

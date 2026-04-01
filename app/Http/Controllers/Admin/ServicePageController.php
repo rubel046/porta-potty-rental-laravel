@@ -13,17 +13,23 @@ class ServicePageController extends Controller
     {
         $query = ServicePage::with('city.state');
 
+        if ($request->filled('search')) {
+            $query->where('slug', 'like', '%' . $request->search . '%');
+        }
         if ($request->filled('city_id')) {
             $query->where('city_id', $request->city_id);
         }
-        if ($request->filled('type')) {
-            $query->where('service_type', $request->type);
+        if ($request->filled('service_type')) {
+            $query->where('service_type', $request->service_type);
+        }
+        if ($request->filled('published')) {
+            $query->where('is_published', $request->published);
         }
 
-        $pages = $query->orderBy('slug')->paginate(30);
+        $servicePages = $query->orderBy('slug')->paginate(30);
         $cities = City::active()->with('state')->orderBy('name')->get();
 
-        return view('admin.service-pages.index', compact('pages', 'cities'));
+        return view('admin.service-pages.index', compact('servicePages', 'cities'));
     }
 
     public function edit(ServicePage $servicePage)

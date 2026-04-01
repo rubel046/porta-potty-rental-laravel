@@ -24,16 +24,22 @@ class ReportController extends Controller
         $endDate = now();
 
         // Overall stats
+        $revenue = CallLog::whereBetween('created_at', [$startDate, $endDate])->billable()->sum('payout');
+        $cost = CallLog::whereBetween('created_at', [$startDate, $endDate])->sum('cost');
+        
         $stats = [
             'total_calls' => CallLog::whereBetween('created_at', [$startDate, $endDate])->count(),
             'qualified_calls' => CallLog::whereBetween('created_at', [$startDate, $endDate])->qualified()->count(),
             'billable_calls' => CallLog::whereBetween('created_at', [$startDate, $endDate])->billable()->count(),
-            'revenue' => CallLog::whereBetween('created_at', [$startDate, $endDate])->billable()->sum('payout'),
-            'cost' => CallLog::whereBetween('created_at', [$startDate, $endDate])->sum('cost'),
+            'total_revenue' => $revenue,
+            'total_cost' => $cost,
+            'total_profit' => $revenue - $cost,
+            'revenue' => $revenue,
+            'cost' => $cost,
+            'profit' => $revenue - $cost,
             'avg_duration' => CallLog::whereBetween('created_at', [$startDate, $endDate])
                 ->where('duration_seconds', '>', 0)->avg('duration_seconds') ?? 0,
         ];
-        $stats['profit'] = $stats['revenue'] - $stats['cost'];
         $stats['roi'] = $stats['cost'] > 0 ? round((($stats['revenue'] - $stats['cost']) / $stats['cost']) * 100, 1) : 0;
         $stats['qualification_rate'] = $stats['total_calls'] > 0
             ? round(($stats['qualified_calls'] / $stats['total_calls']) * 100, 1) : 0;

@@ -5,6 +5,26 @@
 @section('content')
 <div class="space-y-6">
 
+    {{-- Quick Actions --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="{{ route('admin.cities.create') }}" class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4 hover:from-green-600 hover:to-green-700 transition shadow-lg shadow-green-500/20">
+            <div class="text-2xl mb-2">🏙️</div>
+            <div class="font-bold text-sm">Add City</div>
+        </a>
+        <a href="{{ route('admin.phone-numbers.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-4 hover:from-blue-600 hover:to-blue-700 transition shadow-lg shadow-blue-500/20">
+            <div class="text-2xl mb-2">📞</div>
+            <div class="font-bold text-sm">Add Phone</div>
+        </a>
+        <a href="{{ route('admin.buyers.create') }}" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl p-4 hover:from-purple-600 hover:to-purple-700 transition shadow-lg shadow-purple-500/20">
+            <div class="text-2xl mb-2">🛒</div>
+            <div class="font-bold text-sm">Add Buyer</div>
+        </a>
+        <a href="{{ route('admin.blog-posts.create') }}" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl p-4 hover:from-orange-600 hover:to-orange-700 transition shadow-lg shadow-orange-500/20">
+            <div class="text-2xl mb-2">📝</div>
+            <div class="font-bold text-sm">New Blog Post</div>
+        </a>
+    </div>
+
     {{-- Stats Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">

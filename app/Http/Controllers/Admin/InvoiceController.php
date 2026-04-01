@@ -12,13 +12,24 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::with('buyer')
-            ->latest()
-            ->paginate(20);
+        $query = Invoice::with('buyer');
 
-        return view('admin.invoices.index', compact('invoices'));
+        if ($request->filled('search')) {
+            $query->where('invoice_number', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('buyer_id')) {
+            $query->where('buyer_id', $request->buyer_id);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $invoices = $query->latest()->paginate(20);
+        $buyers = Buyer::active()->orderBy('company_name')->get();
+
+        return view('admin.invoices.index', compact('invoices', 'buyers'));
     }
 
     public function create()

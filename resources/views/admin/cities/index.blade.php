@@ -3,7 +3,7 @@
 @section('page-title', 'Cities')
 
 @section('content')
-<div class="mb-4 flex justify-between items-center">
+<div class="mb-4 flex flex-wrap justify-between items-center gap-4">
     <form method="GET" class="flex gap-2 flex-wrap">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search city..." class="border border-gray-200 rounded-lg px-3 py-2 text-sm">
         <select name="state_id" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">
@@ -21,6 +21,9 @@
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase tracking-wider">
             <tr>
+                <th class="px-6 py-3">
+                    <input type="checkbox" id="select-all" class="rounded border-gray-300">
+                </th>
                 <th class="px-6 py-3">City</th>
                 <th class="px-6 py-3">State</th>
                 <th class="px-6 py-3">Pages</th>
@@ -31,6 +34,9 @@
         <tbody class="divide-y divide-gray-100">
             @forelse($cities as $city)
                 <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-3">
+                        <input type="checkbox" name="city_ids[]" value="{{ $city->id }}" class="city-checkbox rounded border-gray-300">
+                    </td>
                     <td class="px-6 py-3 font-medium">{{ $city->name }}</td>
                     <td class="px-6 py-3 text-gray-500">{{ $city->state?->name ?? '—' }}</td>
                     <td class="px-6 py-3">{{ $city->service_pages_count }}</td>
@@ -48,10 +54,21 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">No cities found</td></tr>
+                <tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">No cities found</td></tr>
             @endforelse
         </tbody>
     </table>
-    <div class="px-6 py-4 border-t border-gray-100">{{ $cities->links() }}</div>
+    <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
+        <div>{{ $cities->links() }}</div>
+        <div class="text-sm text-gray-500">{{ $cities->total() }} cities</div>
+    </div>
 </div>
+
+@push('scripts')
+<script>
+    document.getElementById('select-all')?.addEventListener('change', function() {
+        document.querySelectorAll('.city-checkbox').forEach(cb => cb.checked = this.checked);
+    });
+</script>
+@endpush
 @endsection
