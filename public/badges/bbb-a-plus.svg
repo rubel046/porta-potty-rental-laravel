@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60">
+  <rect width="120" height="60" rx="8" fill="#fef3c7"/>
+  <rect x="2" y="2" width="116" height="56" rx="6" stroke="#fbbf24" stroke-width="2" fill="none"/>
+  <circle cx="60" cy="28" r="18" fill="#fbbf24"/>
+  <text x="60" y="34" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="bold" font-size="16" fill="#fff">A+</text>
+  <path d="M20 50h80" stroke="#f59e0b" stroke-width="1"/>
+  <text x="60" y="57" text-anchor="middle" font-family="system-ui, sans-serif" font-size="7" fill="#92400e">BBB ACCREDITED BUSINESS</text>
+</svg>

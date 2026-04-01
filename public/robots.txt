@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Disallow admin paths
+Disallow: /admin/
+Disallow: /_debugbar/
+Disallow: /telescope/
+
+# Disallow API/webhook endpoints
+Disallow: /api/
+Disallow: /webhook/
+
+Sitemap: https://pottydirect.com/sitemap.xml

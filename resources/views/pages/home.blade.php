@@ -1,0 +1,958 @@
+@extends('layouts.app')
+
+@section('title', 'Portable Restroom Rental | Same Day Delivery | Potty Direct')
+@section('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call (888) 555-0199!')
+@section('canonical', url('/'))
+
+@push('schema')
+@verbatim
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "@id": "{{ url('/') }}#business",
+            "name": "Potty Direct",
+            "alternateName": "Portable Restroom Rental",
+            "description": "Affordable portable restroom rental service across the USA. Same-day delivery available. Clean, sanitized portable toilets for construction sites, outdoor events, weddings, and more.",
+            "url": "{{ url('/') }}",
+            "telephone": "+18885550199",
+            "priceRange": "$$",
+            "image": "{{ url('/') }}/og-image.jpg",
+            "areaServed": {
+                "@type": "Country",
+                "name": "United States"
+            },
+            "openingHoursSpecification": [
+                {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                    "opens": "07:00",
+                    "closes": "20:00"
+                }
+            ],
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Portable Restroom Rentals",
+                "itemListElement": [
+                    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Standard Portable Restroom Rental"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Deluxe Flushable Unit"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "ADA Accessible Unit"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Luxury Restroom Trailer"}}
+                ]
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "reviewCount": "500"
+            }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": "{{ url('/') }}#organization",
+            "name": "Potty Direct",
+            "url": "{{ url('/') }}",
+            "logo": "{{ url('/') }}/logo.png",
+            "sameAs": [
+                "https://www.facebook.com/pottydirect",
+                "https://www.twitter.com/pottydirect"
+            ],
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+18885550199",
+                "contactType": "customer service",
+                "areaServed": "US",
+                "availableLanguage": "English",
+                "hoursAvailable": {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                    "opens": "07:00",
+                    "closes": "20:00"
+                }
+            }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": "{{ url('/') }}#website",
+            "url": "{{ url('/') }}",
+            "name": "Potty Direct - Portable Restroom Rental",
+            "publisher": {"@id": "{{ url('/') }}#organization"},
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('/locations') }}?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "How much does portable restroom rental cost?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Pricing varies by location, quantity, and rental duration. Call us for a personalized quote tailored to your specific needs."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Do you offer same-day portable restroom delivery?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How many portable restrooms do I need for my event?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "For a 4-hour event, plan for 1 unit per 50 guests. For 8 hours, 1 unit per 25 guests. If alcohol is served, add 20% more units. For construction, OSHA requires 1 unit per 20 workers."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What is included in the portable restroom rental price?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Our rental price includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (pumping, cleaning, sanitizing, and restocking toilet paper and hand sanitizer)."
+                    }
+                }
+            ]
+        }
+    </script>
+@endverbatim
+@endpush
+
+@section('content')
+
+    {{-- ============================================ --}}
+    {{-- HERO SECTION --}}
+    {{-- ============================================ --}}
+    @php
+        $heroImages = [
+            'hero-banner-images/11. 20260224_191225_782.webp',
+            'hero-banner-images/11. 20260226_230456_870.webp',
+            'hero-banner-images/14. 20260226_224730_961.webp',
+            'hero-banner-images/16. 20260226_230059_253.webp',
+            'hero-banner-images/18. 20260226_225037_824.webp',
+        ];
+        $randomHero = $heroImages[array_rand($heroImages)];
+        $heroUrl = asset('storage/' . $randomHero);
+    @endphp
+
+    <section class="relative min-h-[600px] md:min-h-[680px] flex items-center overflow-hidden">
+        {{-- Hero Background Image --}}
+        <div class="absolute inset-0">
+            <img src="{{ $heroUrl }}" alt="Portable toilet rental for construction and events"
+                 class="w-full h-full object-cover"
+                 width="1920"
+                 height="1080"
+                 loading="eager">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60"></div>
+        </div>
+
+        {{-- Decorative Elements --}}
+        <div class="absolute top-20 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
+            <div class="max-w-3xl">
+                {{-- Badge --}}
+                <div class="inline-flex items-center gap-2 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-emerald-300 text-sm px-4 py-2 rounded-full mb-6">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                    Same-Day Porta Potty Delivery Available
+                </div>
+
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+                    Rent Portable Toilets<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300">Anywhere in the USA</span>
+                </h1>
+
+                <p class="text-xl md:text-2xl text-slate-300 mb-6 leading-relaxed max-w-2xl">
+                    Affordable <strong class="text-white">porta potty rental</strong> for construction sites,
+                    outdoor events, weddings & festivals. <strong class="text-white">Same-day delivery</strong> available nationwide.
+                </p>
+
+                {{-- CTA Buttons --}}
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+                    <a href="tel:{{ phone_raw() }}"
+                       class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                              text-white text-xl md:text-2xl font-bold
+                              py-4 px-10 rounded-full shadow-2xl shadow-emerald-500/30
+                              transition-all hover:scale-105 hover:shadow-emerald-500/50
+                              flex items-center justify-center gap-3">
+                        <span class="text-2xl">📞</span>
+                        {{ phone_display() }}
+                    </a>
+                    <a href="{{ route('locations') }}"
+                       class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
+                              border border-white/20 text-white text-lg font-semibold
+                              py-4 px-8 rounded-full
+                              transition-all hover:scale-105
+                              flex items-center justify-center gap-2">
+                        📍 Find Your City
+                    </a>
+                </div>
+
+                {{-- Trust Indicators --}}
+                <div class="flex flex-wrap items-center gap-6 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="flex">
+                            <span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span>
+                        </div>
+                        <span class="text-slate-300 font-medium">4.9/5</span>
+                    </div>
+                    <div class="h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                        <span class="text-slate-300 font-medium">Licensed & Insured</span>
+                    </div>
+                    <div class="h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                        <span class="text-slate-300 font-medium">Same-Day Delivery</span>
+                    </div>
+                    <div class="h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                        <span class="text-slate-300 font-medium">No Hidden Fees</span>
+                    </div>
+                </div>
+                
+                {{-- Trust Badges Row --}}
+                <div class="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/10">
+                    <div class="flex items-center gap-2 text-slate-400 text-xs">
+                        <span class="px-2 py-1 bg-white/10 rounded">🏢</span>
+                        <span>BBB A+ Rated</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-400 text-xs">
+                        <span class="px-2 py-1 bg-white/10 rounded">📋</span>
+                        <span>OSHA Compliant</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-400 text-xs">
+                        <span class="px-2 py-1 bg-white/10 rounded">🏗️</span>
+                        <span>25+ Years Experience</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-400 text-xs">
+                        <span class="px-2 py-1 bg-white/10 rounded">🇺🇸</span>
+                        <span>50,000+ Customers</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Wave Divider --}}
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z"
+                      fill="white"/>
+            </svg>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- SERVICE OPTIONS --}}
+    {{-- ============================================ --}}
+    <section id="services" class="py-16 md:py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    Porta Potty Rental Options for Every Need
+                </h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    From basic construction units to luxury restroom trailers —
+                    we have the right <strong>portable toilet rental</strong> solution for every budget and event type.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {{-- Standard --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                            hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300
+                            group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🚻</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Standard Portable Toilet</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Perfect for construction sites & basic outdoor needs
+                    </p>
+                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-splash urinal</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Hand sanitizer</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ventilation system</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
+                    </ul>
+                    <a href="tel:{{ phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
+                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Free Quote</span>
+                    </a>
+                </div>
+
+                {{-- Deluxe --}}
+                <div class="bg-white border-2 border-emerald-400 rounded-2xl p-6 text-center
+                            hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-300
+                            group relative overflow-visible">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500
+                                text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-xl shadow-amber-500/40 z-20">
+                        ⭐ MOST POPULAR
+                    </div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-5xl mb-4 mt-2 group-hover:scale-110 transition-transform duration-300">🚿</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Deluxe Flushable Unit</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Flushing toilet with hand wash station
+                    </p>
+                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Flushing toilet</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Sink with running water</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior mirror</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
+                    </ul>
+                    <a href="tel:{{ phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                              text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Free Quote</span>
+                    </a>
+                </div>
+
+                {{-- ADA --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                            hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300
+                            group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">♿</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">ADA Accessible Unit</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Wheelchair accessible, fully ADA compliant
+                    </p>
+                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Extra-wide door</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior grab bars</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-slip flooring</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Spacious interior</li>
+                    </ul>
+                    <a href="tel:{{ phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
+                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Free Quote</span>
+                    </a>
+                </div>
+
+                {{-- Luxury --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                            hover:border-purple-200 hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300
+                            group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-purple-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">✨</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Luxury Restroom Trailer</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Premium restroom trailers for upscale events
+                    </p>
+                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Climate controlled</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Porcelain fixtures</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Vanity & lighting</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Men's & women's sides</li>
+                    </ul>
+                    <a href="tel:{{ phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
+                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Free Quote</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-2">
+                    View all rental options and pricing →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- EMERGENCY SERVICE BANNER --}}
+    {{-- ============================================ --}}
+    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="animate-pulse">🚨</span>
+                <span class="font-bold">Need Urgent Delivery?</span>
+            </div>
+            <span class="text-red-100">Same-day emergency service available in most areas.</span>
+            <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-2 bg-white text-red-600 font-bold px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                📞 Call Now
+            </a>
+        </div>
+    </div>
+
+    {{-- ============================================ --}}
+    {{-- WHO WE SERVE --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    Portable Toilet Rental For Every Occasion
+                </h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    No matter what you're planning, we have the right
+                    <strong>portable sanitation solution</strong> for your event or job site
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @php
+                    $useCases = [
+                        [
+                            'icon' => '🏗️',
+                            'title' => 'Construction Sites',
+                            'desc' => 'OSHA-compliant portable toilet rental units with weekly servicing. Keep your crew comfortable and your job site compliant with federal regulations.',
+                            'link_text' => 'Construction Rentals →',
+                            'bg' => 'from-amber-50 to-orange-50 border-amber-200',
+                        ],
+                        [
+                            'icon' => '💒',
+                            'title' => 'Weddings & Receptions',
+                            'desc' => 'Elegant deluxe and luxury restroom options that complement your outdoor wedding with style and comfort for your guests.',
+                            'link_text' => 'Wedding Rentals →',
+                            'bg' => 'from-rose-50 to-pink-50 border-rose-200',
+                        ],
+                        [
+                            'icon' => '🎪',
+                            'title' => 'Festivals & Events',
+                            'desc' => 'Multiple unit packages for events of any size. From intimate gatherings to 10,000+ attendee festivals.',
+                            'link_text' => 'Event Rentals →',
+                            'bg' => 'from-violet-50 to-purple-50 border-violet-200',
+                        ],
+                        [
+                            'icon' => '🎉',
+                            'title' => 'Backyard Parties',
+                            'desc' => 'Birthday parties, family reunions, graduation celebrations — keep guests comfortable with clean portable restrooms.',
+                            'link_text' => 'Party Rentals →',
+                            'bg' => 'from-blue-50 to-indigo-50 border-blue-200',
+                        ],
+                        [
+                            'icon' => '🏠',
+                            'title' => 'Home Renovations',
+                            'desc' => 'Bathroom under construction? Keep a portable toilet on-site for workers and family convenience.',
+                            'link_text' => 'Home Rentals →',
+                            'bg' => 'from-teal-50 to-emerald-50 border-teal-200',
+                        ],
+                        [
+                            'icon' => '🏃',
+                            'title' => 'Sports Events',
+                            'desc' => '5K runs, tournaments, tailgating — portable restrooms for athletes and spectators at any sporting event.',
+                            'link_text' => 'Sports Rentals →',
+                            'bg' => 'from-green-50 to-emerald-50 border-green-200',
+                        ],
+                    ];
+                @endphp
+
+                @foreach($useCases as $useCase)
+                    <div class="bg-gradient-to-br {{ $useCase['bg'] }} border rounded-2xl p-6
+                            hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                        <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            {{ $useCase['icon'] }}
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">
+                            {{ $useCase['title'] }}
+                        </h3>
+                        <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                            {{ $useCase['desc'] }}
+                        </p>
+                        <a href="tel:{{ phone_raw() }}"
+                           class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition">
+                            {{ $useCase['link_text'] }}
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- HOW IT WORKS --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    How to Rent a Porta Potty in 3 Simple Steps
+                </h2>
+                <p class="text-lg text-slate-500">
+                    Renting a portable toilet has never been easier — same-day delivery available
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 md:gap-12">
+                {{-- Step 1 --}}
+                <div class="text-center relative">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl
+                                flex items-center justify-center text-3xl font-bold
+                                mx-auto mb-6 shadow-xl shadow-blue-500/20">
+                        1
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Call for a Quote</h3>
+                    <p class="text-slate-500 leading-relaxed">
+                        Tell us how many <strong>portable toilets</strong> you need, what type,
+                        and your location. We'll give you an instant, transparent quote.
+                    </p>
+                    <div class="hidden md:block absolute top-10 -right-6 lg:-right-10 text-slate-300">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Step 2 --}}
+                <div class="text-center relative">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl
+                                flex items-center justify-center text-3xl font-bold
+                                mx-auto mb-6 shadow-xl shadow-emerald-500/20">
+                        2
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">We Deliver</h3>
+                    <p class="text-slate-500 leading-relaxed">
+                        Clean, sanitized portable toilets delivered and set up
+                        at your location. <strong>Same-day delivery</strong> available.
+                    </p>
+                    <div class="hidden md:block absolute top-10 -right-6 lg:-right-10 text-slate-300">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Step 3 --}}
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl
+                                flex items-center justify-center text-3xl font-bold
+                                mx-auto mb-6 shadow-xl shadow-purple-500/20">
+                        3
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">We Maintain & Pick Up</h3>
+                    <p class="text-slate-500 leading-relaxed">
+                        Regular servicing keeps everything fresh. When you're done,
+                        we handle pickup — no hassle for you.
+                    </p>
+                </div>
+            </div>
+
+            {{-- CTA --}}
+            <div class="text-center mt-14">
+                <a href="tel:{{ phone_raw() }}"
+                   class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
+                          text-white font-bold text-lg py-4 px-8 rounded-full
+                          shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
+                    📞 Call Now — Rent a Porta Potty Today
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- WHY CHOOSE US --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    Why Choose Our Porta Potty Rental Service?
+                </h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                    We're not just another rental company — we're your
+                    <strong class="text-white">portable sanitation partner</strong>
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @php
+                    $features = [
+                        ['icon' => '🚚', 'title' => 'Same-Day Porta Potty Delivery', 'desc' => 'Call before 2 PM and get your units delivered today. We understand urgency on job sites.'],
+                        ['icon' => '✨', 'title' => 'Spotlessly Clean Units', 'desc' => 'Every unit is professionally cleaned, sanitized, and inspected before delivery.'],
+                        ['icon' => '💰', 'title' => 'Transparent Pricing', 'desc' => 'No hidden fees, no surprise charges. The price we quote is the price you pay.'],
+                        ['icon' => '🔧', 'title' => 'Weekly Servicing Included', 'desc' => 'Cleaning, pumping, and restocking included with every weekly and monthly rental.'],
+                        ['icon' => '📋', 'title' => 'Licensed & Fully Insured', 'desc' => 'Fully licensed and insured for your complete peace of mind on any project.'],
+                        ['icon' => '🕐', 'title' => 'Flexible Rental Terms', 'desc' => 'Daily, weekly, monthly, or long-term rentals. No long-term contracts required.'],
+                    ];
+                @endphp
+
+                @foreach($features as $feature)
+                    <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6
+                            hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                        <div class="text-3xl mb-4">{{ $feature['icon'] }}</div>
+                        <h3 class="text-lg font-bold mb-2">{{ $feature['title'] }}</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">{{ $feature['desc'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- TESTIMONIALS / REVIEWS --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
+                    <span>⭐</span> Trusted by 50,000+ Customers
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    What Our Customers Say
+                </h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    Don't just take our word for it — hear from real customers who rented porta potties from us
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                @php
+                    $testimonials = [
+                        [
+                            'name' => 'Mike Thompson',
+                            'role' => 'Construction Site Manager',
+                            'location' => 'Houston, TX',
+                            'text' => 'We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable.',
+                            'rating' => 5,
+                            'service' => 'Construction Rental'
+                        ],
+                        [
+                            'name' => 'Sarah Martinez',
+                            'role' => 'Event Coordinator',
+                            'location' => 'Austin, TX',
+                            'text' => 'Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event.',
+                            'rating' => 5,
+                            'service' => 'Wedding Event'
+                        ],
+                        [
+                            'name' => 'David Chen',
+                            'role' => 'General Contractor',
+                            'location' => 'Phoenix, AZ',
+                            'text' => 'Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!',
+                            'rating' => 5,
+                            'service' => 'Commercial Projects'
+                        ]
+                    ];
+                @endphp
+
+                @foreach($testimonials as $testimonial)
+                    <div class="bg-white rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl transition-all">
+                        <div class="flex items-center gap-1 mb-4">
+                            @for($i = 0; $i < 5; $i++)
+                                <span class="text-amber-400 text-lg">★</span>
+                            @endfor
+                        </div>
+                        <p class="text-slate-600 mb-6 leading-relaxed">"{{ $testimonial['text'] }}"</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                {{ substr($testimonial['name'], 0, 1) }}
+                            </div>
+                            <div>
+                                <div class="font-bold text-slate-800">{{ $testimonial['name'] }}</div>
+                                <div class="text-sm text-slate-500">{{ $testimonial['role'] }} · {{ $testimonial['location'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Google Reviews CTA --}}
+            <div class="mt-12 text-center">
+                <div class="inline-flex items-center gap-4 bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+                    <div class="text-4xl">🌐</div>
+                    <div class="text-left">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-red-500 font-bold">Google</span>
+                            <span class="text-amber-400">★★★★★</span>
+                        </div>
+                        <div class="text-sm text-slate-600">See more reviews on Google</div>
+                    </div>
+                    <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank" 
+                       class="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                        Read Reviews →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- PRICING TABLE --}}
+    {{-- ============================================ --}}
+    <section id="pricing" class="py-16 md:py-20 px-4 bg-slate-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    Porta Potty Rental Pricing
+                </h2>
+                <p class="text-lg text-slate-500">
+                    Competitive rates with <strong>no hidden fees</strong> — call for exact pricing
+                </p>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="tel:{{ phone_raw() }}"
+                   class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                          text-white font-bold text-lg py-4 px-8 rounded-full
+                          shadow-xl shadow-emerald-500/25 transition-all hover:scale-105">
+                    📞 Get Your Custom Quote
+                </a>
+                <p class="text-slate-500 text-sm mt-3">Personalized pricing based on your needs</p>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- BLOG / RESOURCES --}}
+    {{-- ============================================ --}}
+    @if(filled($recentPosts) && count($recentPosts) > 0)
+        <section class="py-16 md:py-20 px-4 bg-slate-50">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-14">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                        Porta Potty Rental Guides & Tips
+                    </h2>
+                    <p class="text-lg text-slate-500">
+                        Expert advice to help you plan your <strong>portable toilet rental</strong>
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    @foreach($recentPosts as $post)
+                        <a href="{{ $post->url }}"
+                           class="bg-white rounded-2xl shadow-sm hover:shadow-xl
+                          transition-all duration-300 overflow-hidden group border border-slate-200">
+                            {{-- Image Placeholder --}}
+                            <div class="h-48 bg-gradient-to-br from-blue-100 to-emerald-50
+                                flex items-center justify-center text-6xl
+                                group-hover:scale-105 transition-transform duration-500">
+                                🚽
+                            </div>
+
+                            <div class="p-6">
+                                @if($post->category)
+                                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+                            {{ $post->category->name }}
+                        </span>
+                                @endif
+
+                                <h3 class="font-bold text-slate-800 mt-2 mb-3
+                                   group-hover:text-emerald-600 transition line-clamp-2 text-lg">
+                                    {{ $post->title }}
+                                </h3>
+
+                                <p class="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                                    {{ $post->excerpt }}
+                                </p>
+
+                                <span class="text-sm text-slate-400 flex items-center gap-2">
+                            📖 {{ $post->reading_time_text }}
+                        </span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+
+                <div class="text-center mt-10">
+                    <a href="{{ route('blog.index') }}"
+                       class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700
+                          font-semibold transition text-lg">
+                        View All Articles →
+                    </a>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- ============================================ --}}
+    {{-- CITIES / LOCATIONS --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    Porta Potty Rental Available Across the USA
+                </h2>
+                <p class="text-lg text-slate-500">
+                    Find <strong>portable toilet rental</strong> in your city or state
+                </p>
+            </div>
+
+            {{-- States with Cities --}}
+            @foreach($states as $state)
+                @if($state['cities_count'] > 0)
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                            📍 {{ $state['name'] }}
+                            <span class="text-sm font-normal text-slate-400">
+                            ({{ $state['cities_count'] }} {{ Str::plural('city', $state['cities_count']) }})
+                        </span>
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach(collect($featuredCities)->where('state_id', $state['id']) as $city)
+                                @php
+                                    $cityPage = collect($city['servicePages'] ?? [])->where('service_type', 'general')->where('is_published', true)->first();
+                                @endphp
+                                @if($cityPage)
+                                    <a href="{{ route('city.service', ['city' => $city['slug'], 'service' => 'porta-potty-rental']) }}"
+                                       class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
+                                              hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                                        {{ $city['name'] }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+
+            <div class="text-center mt-10">
+                <a href="{{ route('locations') }}"
+                   class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white
+                          font-semibold py-3 px-6 rounded-xl transition-all">
+                    View All Locations →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- FAQ SECTION --}}
+    {{-- ============================================ --}}
+    <section class="py-16 md:py-20 px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                    Frequently Asked Questions About Porta Potty Rental
+                </h2>
+                <p class="text-slate-500">
+                    Get answers to common questions about our portable toilet rental service
+                </p>
+            </div>
+
+            @php
+                $homeFaqs = [
+                    [
+                        'q' => 'How much does a porta potty rental cost?',
+                        'a' => 'Pricing varies by location, quantity, and duration. Call us for a personalized quote tailored to your specific project needs.',
+                    ],
+                    [
+                        'q' => 'Do you offer same-day porta potty delivery?',
+                        'a' => 'Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance.',
+                    ],
+                    [
+                        'q' => 'How many porta potties do I need for my event?',
+                        'a' => 'A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number.',
+                    ],
+                    [
+                        'q' => 'What is included in the rental?',
+                        'a' => 'Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking). No hidden fees — the price we quote is the price you pay.',
+                    ],
+                    [
+                        'q' => 'How often are porta potties serviced?',
+                        'a' => 'For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing.',
+                    ],
+                    [
+                        'q' => 'Do you provide ADA-accessible portable restrooms?',
+                        'a' => 'Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units.',
+                    ],
+                ];
+            @endphp
+
+            <div class="space-y-3" itemscope itemtype="https://schema.org/FAQPage">
+                @foreach($homeFaqs as $faq)
+                    <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group"
+                             itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                        <summary class="flex justify-between items-center p-5 cursor-pointer
+                                    font-semibold text-slate-800 hover:text-emerald-600 transition
+                                    list-none">
+                            <span itemprop="name">{{ $faq['q'] }}</span>
+                            <span class="text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
+                                     transition-all duration-300 ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">+</span>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 leading-relaxed"
+                             itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                            <p itemprop="text">{{ $faq['a'] }}</p>
+                        </div>
+                    </details>
+                @endforeach
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold">
+                    View more porta potty rental guides →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- FINAL CTA --}}
+    {{-- ============================================ --}}
+    <section class="py-20 md:py-28 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+                    text-white text-center relative overflow-hidden">
+        {{-- Background decoration --}}
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-10 left-10 text-[200px]">🚽</div>
+            <div class="absolute bottom-10 right-10 text-[150px]">🚿</div>
+        </div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+
+        <div class="relative max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-6">
+                Ready to Rent a Porta Potty?
+            </h2>
+            <p class="text-xl text-slate-400 mb-6">
+                Call now for a <strong class="text-white">free, no-obligation quote</strong>.
+                Same-day delivery available.
+            </p>
+            <p class="text-lg text-slate-300 mb-10">
+                Serving construction sites, events, weddings, and more across the USA
+            </p>
+
+            <a href="tel:{{ phone_raw() }}"
+               class="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+                      text-white text-3xl md:text-4xl font-bold
+                      py-5 px-14 rounded-full shadow-2xl
+                      transition-all hover:scale-105
+                      shadow-emerald-500/40 animate-pulse">
+                📞 {{ phone_display() }}
+            </a>
+
+            <div class="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-400">
+                <span>⏰ Mon-Sat 7AM-8PM</span>
+                <span class="text-slate-600">•</span>
+                <span>🚚 Same-Day Delivery</span>
+                <span class="text-slate-600">•</span>
+                <span>💰 Free Quote</span>
+            </div>
+
+            <p class="mt-10 text-slate-500">
+                Or <a href="{{ route('locations') }}"
+                      class="text-emerald-400 hover:text-emerald-300 underline transition">
+                    find your city
+                </a> to see local pricing and availability.
+            </p>
+        </div>
+    </section>
+@endsection
