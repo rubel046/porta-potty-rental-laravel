@@ -1,27 +1,143 @@
-@extends('admin.layout')
-@section('title', 'Edit Service Page')
-@section('page-title', 'Edit Service Page')
+@extends('layouts.admin')
+@section('page_title', "Edit: {$page->city->name} — {$page->service_type_label}")
 
 @section('content')
-<form method="POST" action="{{ route('admin.service-pages.update', $servicePage) }}" class="max-w-3xl space-y-6">
-    @csrf @method('PUT')
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 class="font-bold text-gray-800 border-b pb-2">Page Details</h2>
-        <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">City *</label><select name="city_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">@foreach($cities as $city)<option value="{{ $city->id }}" {{ $servicePage->city_id == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>@endforeach</select></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Service Type *</label><select name="service_type" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"><option value="general" {{ $servicePage->service_type == 'general' ? 'selected' : '' }}>General</option><option value="construction" {{ $servicePage->service_type == 'construction' ? 'selected' : '' }}>Construction</option><option value="wedding" {{ $servicePage->service_type == 'wedding' ? 'selected' : '' }}>Wedding</option><option value="event" {{ $servicePage->service_type == 'event' ? 'selected' : '' }}>Event</option></select></div>
-            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Slug *</label><input type="text" name="slug" value="{{ old('slug', $servicePage->slug) }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono"></div>
-            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">H1 Title *</label><input type="text" name="h1_title" value="{{ old('h1_title', $servicePage->h1_title) }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label><input type="text" name="meta_title" value="{{ old('meta_title', $servicePage->meta_title) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="text" name="phone_number" value="{{ old('phone_number', $servicePage->phone_number) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label><textarea name="meta_description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">{{ old('meta_description', $servicePage->meta_description) }}</textarea></div>
-            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Content (Markdown) *</label><textarea name="content" rows="10" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">{{ old('content', $servicePage->content) }}</textarea></div>
-            <div class="flex items-center gap-2"><input type="checkbox" name="is_published" value="1" {{ $servicePage->is_published ? 'checked' : '' }} class="w-4 h-4"><label class="text-sm">Published</label></div>
+
+    <form method="POST" action="{{ route('admin.service-pages.update', $page) }}"
+          class="max-w-5xl">
+        @csrf
+        @method('PUT')
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            {{-- Main Content --}}
+            <div class="lg:col-span-2 space-y-6">
+                <div class="card p-6">
+                    <div class="mb-4 bg-blue-50 rounded-lg p-3 text-sm">
+                        <span class="font-bold">City:</span> {{ $page->city->name }}, {{ $page->city->state->code }}
+                        <span class="mx-2">|</span>
+                        <span class="font-bold">Type:</span> {{ $page->service_type_label }}
+                        <span class="mx-2">|</span>
+                        <span class="font-bold">URL:</span>
+                        <a href="{{ url($page->slug) }}" target="_blank" class="text-blue-600">
+                            /{{ $page->slug }} ↗
+                        </a>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="form-label">H1 Title *</label>
+                        <input type="text" name="h1_title" class="form-input"
+                               value="{{ old('h1_title', $page->h1_title) }}" required>
+                        @error('h1_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="form-label">Content * (Markdown)</label>
+                        <textarea name="content" rows="30"
+                                  class="form-input font-mono text-sm leading-relaxed"
+                                  required>{{ old('content', $page->content) }}</textarea>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Current: {{ number_format($page->word_count) }} words |
+                            Target: 1,500+ words
+                        </p>
+                        @error('content') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                {{-- SEO --}}
+                <div class="card p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">🔍 SEO Settings</h3>
+
+                    <div class="mb-4">
+                        <label class="form-label">Meta Title * (max 60 chars)</label>
+                        <input type="text" name="meta_title" class="form-input" maxlength="60"
+                               value="{{ old('meta_title', $page->meta_title) }}" required>
+                        <p class="text-xs text-gray-400 mt-1">
+                            {{ strlen($page->meta_title) }}/60 characters
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Meta Description * (max 160 chars)</label>
+                        <textarea name="meta_description" rows="2" class="form-input" maxlength="160"
+                                  required>{{ old('meta_description', $page->meta_description) }}</textarea>
+                        <p class="text-xs text-gray-400 mt-1">
+                            {{ strlen($page->meta_description) }}/160 characters
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Sidebar --}}
+            <div class="space-y-6">
+                {{-- Publish --}}
+                <div class="card p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">📋 Status</h3>
+
+                    <label class="flex items-center gap-2 mb-4">
+                        <input type="hidden" name="is_published" value="0">
+                        <input type="checkbox" name="is_published" value="1"
+                               {{ old('is_published', $page->is_published) ? 'checked' : '' }}
+                               class="rounded border-gray-300">
+                        <span class="text-sm">Published</span>
+                    </label>
+
+                    <button type="submit" class="btn-primary w-full">
+                        💾 Save Changes
+                    </button>
+
+                    <div class="mt-3 text-center">
+                        <a href="{{ route('admin.service-pages.index') }}"
+                           class="text-sm text-gray-500">Cancel</a>
+                    </div>
+                </div>
+
+                {{-- SEO Score --}}
+                <div class="card p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">📊 SEO Score</h3>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold {{ $page->seo_score >= 70 ? 'text-green-600' : ($page->seo_score >= 40 ? 'text-yellow-600' : 'text-red-600') }}">
+                            {{ $page->seo_score }}%
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mt-3">
+                            <div class="h-3 rounded-full transition-all {{ $page->seo_score >= 70 ? 'bg-green-500' : ($page->seo_score >= 40 ? 'bg-yellow-500' : 'bg-red-500') }}"
+                                 style="width: {{ $page->seo_score }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Word Count</span>
+                            <span class="font-medium {{ $page->word_count >= 1500 ? 'text-green-600' : 'text-orange-500' }}">
+                                {{ number_format($page->word_count) }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Views</span>
+                            <span class="font-medium">{{ number_format($page->views) }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Calls Generated</span>
+                            <span class="font-medium">{{ $page->calls_generated }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Published</span>
+                            <span class="font-medium">{{ $page->published_at?->format('M d, Y') ?? 'Not yet' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Phone Number --}}
+                <div class="card p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">📞 Phone</h3>
+                    <p class="text-lg font-mono font-bold text-blue-600">
+                        {{ $page->phone_display }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Assigned from city's phone number
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="flex gap-3">
-        <button type="submit" class="bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700">Save Changes</button>
-        <a href="{{ route('admin.service-pages.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-300">Cancel</a>
-    </div>
-</form>
+    </form>
+
 @endsection

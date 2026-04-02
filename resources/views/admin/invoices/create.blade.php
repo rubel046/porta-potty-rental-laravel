@@ -1,38 +1,55 @@
-@extends('admin.layout')
-@section('title', 'Create Invoice')
-@section('page-title', 'Create Invoice')
+@extends('layouts.admin')
+@section('page_title', 'Create Invoice')
 
 @section('content')
-<form method="POST" action="{{ route('admin.invoices.store') }}" class="max-w-2xl space-y-6">
-    @csrf
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 class="font-bold text-gray-800 border-b pb-2">Invoice Details</h2>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Buyer *</label>
-            <select name="buyer_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-                <option value="">Select Buyer</option>
-                @foreach($buyers as $buyer)
-                    <option value="{{ $buyer->id }}" {{ old('buyer_id') == $buyer->id ? 'selected' : '' }}>{{ $buyer->company_name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Period Start *</label><input type="date" name="period_start" value="{{ old('period_start', now()->startOfMonth()->format('Y-m-d')) }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Period End *</label><input type="date" name="period_end" value="{{ old('period_end', now()->endOfMonth()->format('Y-m-d')) }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label><input type="date" name="due_date" value="{{ old('due_date', now()->addDays(30)->format('Y-m-d')) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Adjustments ($)</label><input type="number" step="0.01" name="adjustments" value="{{ old('adjustments', 0) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-            <textarea name="notes" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">{{ old('notes') }}</textarea>
-        </div>
+
+    <div class="max-w-lg">
+        <form method="POST" action="{{ route('admin.invoices.store') }}" class="card p-6">
+            @csrf
+
+            <div class="mb-6">
+                <label class="form-label">Buyer *</label>
+                <select name="buyer_id" class="form-input" required>
+                    <option value="">Select Buyer</option>
+                    @foreach($buyers as $buyer)
+                        <option value="{{ $buyer->id }}" {{ old('buyer_id') == $buyer->id ? 'selected' : '' }}>
+                            {{ $buyer->company_name }} — ${{ number_format($buyer->payout_per_call, 2) }}/call
+                        </option>
+                    @endforeach
+                </select>
+                @error('buyer_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="form-label">Period Start *</label>
+                    <input type="date" name="period_start" class="form-input"
+                           value="{{ old('period_start', now()->startOfMonth()->format('Y-m-d')) }}" required>
+                    @error('period_start') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label">Period End *</label>
+                    <input type="date" name="period_end" class="form-input"
+                           value="{{ old('period_end', now()->format('Y-m-d')) }}" required>
+                    @error('period_end') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm">
+                <p class="text-blue-800">
+                    💡 The invoice will automatically include all <strong>billable calls</strong>
+                    for the selected buyer within the specified date range.
+                </p>
+            </div>
+
+            <button type="submit" class="btn-primary w-full">
+                💵 Generate Invoice
+            </button>
+
+            <div class="mt-3 text-center">
+                <a href="{{ route('admin.invoices.index') }}" class="text-sm text-gray-500">Cancel</a>
+            </div>
+        </form>
     </div>
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-        <strong>Note:</strong> Invoice will be auto-generated with all billable calls for the selected buyer within the period.
-    </div>
-    <div class="flex gap-3">
-        <button type="submit" class="bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700">Create Invoice</button>
-        <a href="{{ route('admin.invoices.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-300">Cancel</a>
-    </div>
-</form>
+
 @endsection

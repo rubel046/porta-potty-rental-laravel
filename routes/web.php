@@ -39,9 +39,9 @@ Route::get('/services', [PageController::class, 'services'])
 // State Page (e.g., /porta-potty-rental-texas)
 Route::get('/porta-potty-rental-{stateSlug}', [PageController::class, 'statePage'])
     ->name('state.page')
-    ->where('stateSlug', 'alabama|arizona|arkansas|colorado|florida|georgia|indiana|kentucky|louisiana|nebraska|north-carolina|ohio|oklahoma|south-carolina|tennessee|texas|virginia');
+    ->where('stateSlug', 'alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|montana|nebraska|nevada|new-hampshire|new-jersey|new-mexico|new-york|north-carolina|north-dakota|ohio|oklahoma|oregon|pennsylvania|rhode-island|south-carolina|south-dakota|tennessee|texas|utah|vermont|virginia|washington|west-virginia|wisconsin|wyoming');
 
-// Blog
+// Blog (must come before catch-all)
 Route::get('/blog', [BlogController::class, 'index'])
     ->name('blog.index');
 

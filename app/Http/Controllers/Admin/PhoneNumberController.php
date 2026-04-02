@@ -15,7 +15,7 @@ class PhoneNumberController extends Controller
         $query = PhoneNumber::with(['city.state', 'buyer']);
 
         if ($request->filled('search')) {
-            $query->where('number', 'like', '%' . $request->search . '%');
+            $query->where('number', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('city_id')) {
             $query->where('city_id', $request->city_id);

@@ -14,8 +14,8 @@ class BuyerController extends Controller
         $query = Buyer::withCount('callLogs');
 
         if ($request->filled('search')) {
-            $query->where('company_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('contact_name', 'like', '%' . $request->search . '%');
+            $query->where('company_name', 'like', '%'.$request->search.'%')
+                ->orWhere('contact_name', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('status')) {
             $query->where('is_active', $request->status);

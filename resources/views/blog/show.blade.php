@@ -6,14 +6,14 @@
 @push('schema')
     <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
-            "@type": "Article",
+            "@@context": "https://schema.org",
+            "@@type": "Article",
             "headline": "{{ $post->title }}",
             "description": "{{ $post->meta_description ?? $post->excerpt }}",
             "datePublished": "{{ $post->published_at?->toIso8601String() }}",
             "dateModified": "{{ $post->updated_at->toIso8601String() }}",
             "publisher": {
-                "@type": "Organization",
+                "@@type": "Organization",
                 "name": "Porta Potty Rental USA"
             }
         }
@@ -96,10 +96,8 @@
 
         {{-- Content --}}
         <div class="py-12 md:py-16 px-4">
-            <div class="max-w-5xl mx-auto grid md:grid-cols-4 gap-8">
-                {{-- Main Content --}}
-                <div class="md:col-span-3">
-                    {{-- Article Image --}}
+            <div class="max-w-5xl mx-auto">
+                {{-- Article Image --}}
                 <div class="h-64 md:h-80 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
                             rounded-2xl flex items-center justify-center text-8xl mb-10 shadow-inner">
                     🚽
@@ -121,6 +119,17 @@
                             prose-td:p-4 prose-td:border prose-td:border-slate-100
                             prose-img:rounded-xl prose-img:shadow-lg">
                     {!! Str::markdown($post->content) !!}
+                </div>
+
+                {{-- CTA Box --}}
+                <div class="mt-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-3">Need a Quote?</h3>
+                    <p class="text-slate-400 mb-6">Get same-day delivery on porta potty rentals.</p>
+                    <a href="tel:{{ phone_raw() }}"
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-xl
+                              py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
+                        📞 {{ phone_display() }}
+                    </a>
                 </div>
 
                 {{-- Back to Blog --}}

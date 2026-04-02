@@ -9,10 +9,11 @@ class Faq extends Model
 {
     protected $fillable = [
         'city_id',
+        'service_type',
         'question',
         'answer',
-        'service_type',
-        'order',
+        'sort_order',
+        'is_active',
     ];
 
     protected $casts = [

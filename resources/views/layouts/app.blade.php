@@ -34,6 +34,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    {{-- Google Analytics 4 --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -379,8 +388,6 @@
 </div>
 <div class="h-14 md:hidden"></div>
 
-@stack('scripts')
-
 <script>
     // Header scroll effect - shrink on scroll
     const header = document.getElementById('header');
@@ -494,22 +501,22 @@
                 // Simulate finding results
                 setTimeout(() => {
                     searchResults.innerHTML = `
-                        <a href="{{ route('locations') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition border-b border-slate-50">
+                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition border-b border-slate-50">
                             <span class="text-emerald-500">📍</span>
                             <div>
                                 <div class="text-sm font-medium text-slate-700">${query}, TX</div>
-                                <div class="text-xs text-slate-400">Texas • 50+ units available</div>
+                                <div class="text-xs text-slate-400">Texas • View all Texas locations</div>
                             </div>
                         </a>
-                        <a href="{{ route('locations') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition">
+                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition">
                             <span class="text-emerald-500">📍</span>
                             <div>
-                                <div class="text-sm font-medium text-slate-700">${query} area</div>
-                                <div class="text-xs text-slate-400">View all locations</div>
+                                <div class="text-sm font-medium text-slate-700">View all locations matching "${query}"</div>
+                                <div class="text-xs text-slate-400">Browse cities</div>
                             </div>
                         </a>
                     `;
-                }, 500);
+                }, 300);
             }, 300);
         });
 
@@ -523,10 +530,18 @@
         // Handle enter key
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                window.location.href = `{{ route('locations') }}?q=${encodeURIComponent(searchInput.value)}`;
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `{{ route('locations') }}?q=${encodeURIComponent(query)}`;
+                } else {
+                    window.location.href = `{{ route('locations') }}`;
+                }
             }
         });
     }
 </script>
+
+@include('components.phone-tracker')
+@stack('scripts')
 </body>
 </html>

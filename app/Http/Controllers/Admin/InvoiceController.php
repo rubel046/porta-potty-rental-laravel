@@ -17,7 +17,7 @@ class InvoiceController extends Controller
         $query = Invoice::with('buyer');
 
         if ($request->filled('search')) {
-            $query->where('invoice_number', 'like', '%' . $request->search . '%');
+            $query->where('invoice_number', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('buyer_id')) {
             $query->where('buyer_id', $request->buyer_id);

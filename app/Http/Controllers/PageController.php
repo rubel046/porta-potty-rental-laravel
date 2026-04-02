@@ -8,6 +8,7 @@ use App\Models\Faq;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Models\Testimonial;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class PageController extends Controller
@@ -399,16 +400,21 @@ class PageController extends Controller
     /**
      * All Locations Page
      */
-    public function locations()
+    public function locations(Request $request)
     {
+        $search = $request->get('q', '');
+
         $states = State::where('is_active', true)
-            ->with(['cities' => function ($q) {
+            ->with(['cities' => function ($q) use ($search) {
                 $q->active()->has('servicePages')->orderBy('name');
+                if ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                }
             }])
             ->orderBy('name')
             ->get();
 
-        return view('pages.locations', compact('states'));
+        return view('pages.locations', compact('states', 'search'));
     }
 
     /**

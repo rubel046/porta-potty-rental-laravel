@@ -41,6 +41,22 @@
     {{-- Blog Posts --}}
     <section class="py-12 md:py-16 px-4">
         <div class="max-w-5xl mx-auto">
+            {{-- Categories --}}
+            <div class="flex flex-wrap gap-2 mb-8">
+                <a href="{{ route('blog.index') }}"
+                   class="px-4 py-2 rounded-full text-sm font-medium transition-all
+                          {{ !request('category') ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    All Posts
+                </a>
+                @foreach(\App\Models\BlogCategory::whereHas('posts')->get() as $category)
+                    <a href="{{ route('blog.index', ['category' => $category->slug]) }}"
+                       class="px-4 py-2 rounded-full text-sm font-medium transition-all
+                              {{ request('category') === $category->slug ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        {{ $category->name }}
+                    </a>
+                @endforeach
+            </div>
+
             @forelse($posts as $post)
                 <article class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 mb-6
                             hover:shadow-xl hover:border-emerald-200 transition-all duration-300 group">
@@ -101,10 +117,59 @@
                 </div>
             @endforelse
 
-            @if(method_exists($posts, 'links'))
-                <div class="mt-10 flex justify-center">
-                    {{ $posts->links() }}
-                </div>
+            @if(method_exists($posts, 'links') && $posts->hasPages())
+                <nav class="mt-12 flex justify-center items-center gap-2">
+                    {{-- Previous --}}
+                    @if($posts->onFirstPage())
+                        <span class="px-4 py-2 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </span>
+                    @else
+                        <a href="{{ $posts->previousPageUrl() }}" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </a>
+                    @endif
+
+                    {{-- Page Numbers --}}
+                    @foreach($posts->getUrlRange(max(1, $posts->currentPage() - 2), min($posts->lastPage(), $posts->currentPage() + 2)) as $page => $url)
+                        @if($page == $posts->currentPage())
+                            <span class="px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold">
+                                {{ $page }}
+                            </span>
+                        @else
+                            <a href="{{ $url }}" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all">
+                                {{ $page }}
+                            </a>
+                        @endif
+                    @endforeach
+
+                    {{-- Ellipsis if needed --}}
+                    @if($posts->currentPage() < $posts->lastPage() - 2)
+                        <span class="px-2 py-2 text-slate-400">...</span>
+                        <a href="{{ $posts->url($posts->lastPage()) }}" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all">
+                            {{ $posts->lastPage() }}
+                        </a>
+                    @endif
+
+                    {{-- Next --}}
+                    @if($posts->hasMorePages())
+                        <a href="{{ $posts->nextPageUrl() }}" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    @else
+                        <span class="px-4 py-2 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    @endif
+                </nav>
             @endif
         </div>
     </section>

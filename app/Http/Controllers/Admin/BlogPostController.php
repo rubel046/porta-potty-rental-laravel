@@ -16,7 +16,7 @@ class BlogPostController extends Controller
         $query = BlogPost::with('category', 'city');
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('is_published')) {
             $query->where('is_published', $request->is_published);

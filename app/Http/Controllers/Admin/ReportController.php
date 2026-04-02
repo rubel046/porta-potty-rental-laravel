@@ -26,7 +26,7 @@ class ReportController extends Controller
         // Overall stats
         $revenue = CallLog::whereBetween('created_at', [$startDate, $endDate])->billable()->sum('payout');
         $cost = CallLog::whereBetween('created_at', [$startDate, $endDate])->sum('cost');
-        
+
         $stats = [
             'total_calls' => CallLog::whereBetween('created_at', [$startDate, $endDate])->count(),
             'qualified_calls' => CallLog::whereBetween('created_at', [$startDate, $endDate])->qualified()->count(),

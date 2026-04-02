@@ -931,12 +931,21 @@
                         </span>
                         </h3>
                         <div class="flex flex-wrap gap-2">
-                            @foreach(collect($featuredCities)->where('state_id', $state['id']) as $city)
-                                @if(!empty($city['slug']))
-                                    <a href="{{ url($city['slug']) }}"
+                            @php
+                                $stateCities = App\Models\City::where('state_id', $state['id'])
+                                    ->where('is_active', true)
+                                    ->with(['servicePages' => fn($q) => $q->where('service_type', 'general')->where('is_published', true)])
+                                    ->orderByDesc('priority')
+                                    ->orderBy('name')
+                                    ->limit(10)
+                                    ->get();
+                            @endphp
+                            @foreach($stateCities as $city)
+                                @if($city->servicePages->isNotEmpty())
+                                    <a href="{{ url($city->servicePages->first()->slug) }}"
                                        class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
                                               hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
-                                        {{ $city['name'] }}
+                                        {{ $city->name }}
                                     </a>
                                 @endif
                             @endforeach

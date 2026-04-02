@@ -14,7 +14,7 @@ class ServicePageController extends Controller
         $query = ServicePage::with('city.state');
 
         if ($request->filled('search')) {
-            $query->where('slug', 'like', '%' . $request->search . '%');
+            $query->where('slug', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('city_id')) {
             $query->where('city_id', $request->city_id);

@@ -1,63 +1,116 @@
-@extends('admin.layout')
-@section('title', 'Invoice Details')
-@section('page-title', 'Invoice: ' . $invoice->invoice_number)
+@extends('layouts.admin')
+@section('page_title', "Invoice {$invoice->invoice_number}")
 
 @section('content')
-<div class="grid lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div class="flex justify-between items-start mb-6">
+
+    <div class="max-w-4xl">
+        {{-- Invoice Header --}}
+        <div class="card p-6 mb-6">
+            <div class="flex justify-between items-start">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">{{ $invoice->invoice_number }}</h2>
-                    <p class="text-gray-500 text-sm">{{ $invoice->buyer?->company_name }}</p>
+                    <p class="text-gray-500 mt-1">
+                        {{ $invoice->buyer->company_name }}
+                    </p>
                 </div>
                 <div class="text-right">
-                    <p class="text-3xl font-bold text-green-600">${{ number_format($invoice->total_amount, 2) }}</p>
-                    @php $statusColors = ['draft' => 'bg-gray-100 text-gray-500', 'sent' => 'bg-blue-100 text-blue-700', 'paid' => 'bg-green-100 text-green-700', 'overdue' => 'bg-red-100 text-red-700']; @endphp
-                    <span class="px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$invoice->status] ?? 'bg-gray-100' }} capitalize">{{ $invoice->status }}</span>
+                    @php
+                        $statusColors = [
+                            'draft' => 'bg-gray-100 text-gray-600',
+                            'sent' => 'bg-blue-100 text-blue-700',
+                            'paid' => 'bg-green-100 text-green-700',
+                            'overdue' => 'bg-red-100 text-red-700',
+                        ];
+                    @endphp
+                    <span class="{{ $statusColors[$invoice->status] ?? 'bg-gray-100' }} text-sm px-3 py-1 rounded-full font-medium capitalize">
+                        {{ $invoice->status }}
+                    </span>
                 </div>
             </div>
 
-            <dl class="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div><dt class="text-gray-500">Period</dt><dd>{{ $invoice->period_start->format('M j, Y') }} — {{ $invoice->period_end->format('M j, Y') }}</dd></div>
-                <div><dt class="text-gray-500">Due Date</dt><dd>{{ $invoice->due_date?->format('M j, Y') ?? '—' }}</dd></div>
-                <div><dt class="text-gray-500">Total Calls</dt><dd>{{ number_format($invoice->total_calls) }}</dd></div>
-                <div><dt class="text-gray-500">Qualified Calls</dt><dd>{{ number_format($invoice->qualified_calls) }}</dd></div>
-                <div><dt class="text-gray-500">Billable Calls</dt><dd>{{ number_format($invoice->billable_calls) }}</dd></div>
-                <div><dt class="text-gray-500">Subtotal</dt><dd>${{ number_format($invoice->subtotal, 2) }}</dd></div>
-                <div><dt class="text-gray-500">Adjustments</dt><dd>${{ number_format($invoice->adjustments, 2) }}</dd></div>
-            </dl>
-
-            @if($invoice->notes)
-                <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 mb-6">
-                    <strong>Notes:</strong> {{ $invoice->notes }}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-sm">
+                <div>
+                    <span class="text-gray-500 block">Period</span>
+                    <span class="font-medium">
+                        {{ $invoice->period_start->format('M d') }} — {{ $invoice->period_end->format('M d, Y') }}
+                    </span>
                 </div>
-            @endif
+                <div>
+                    <span class="text-gray-500 block">Due Date</span>
+                    <span class="font-medium">{{ $invoice->due_date?->format('M d, Y') ?? '—' }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 block">Billable Calls</span>
+                    <span class="font-medium">{{ $invoice->billable_calls }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 block">Total Amount</span>
+                    <span class="text-2xl font-bold text-green-600">${{ number_format($invoice->total_amount, 2) }}</span>
+                </div>
+            </div>
 
-            <div class="flex gap-2">
+            {{-- Actions --}}
+            <div class="flex gap-3 mt-6 pt-4 border-t">
                 @if($invoice->status === 'draft')
-                    <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">@csrf<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Mark as Sent</button></form>
+                    <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
+                        @csrf
+                        <button class="btn-primary">📧 Mark as Sent</button>
+                    </form>
                 @endif
+
                 @if($invoice->status !== 'paid')
-                    <form method="POST" action="{{ route('admin.invoices.mark-paid', $invoice) }}">@csrf<button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">Mark as Paid</button></form>
+                    <form method="POST" action="{{ route('admin.invoices.mark-paid', $invoice) }}">
+                        @csrf
+                        <button class="btn-success">✅ Mark as Paid</button>
+                    </form>
                 @endif
-                <a href="{{ route('admin.invoices.edit', $invoice) }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300">Edit</a>
+
+                <a href="{{ route('admin.invoices.index') }}" class="btn-secondary">← Back to Invoices</a>
             </div>
+        </div>
+
+        {{-- Line Items --}}
+        <div class="card overflow-hidden">
+            <div class="p-4 border-b bg-gray-50">
+                <h3 class="font-bold text-gray-700">Call Details</h3>
+            </div>
+            <table class="w-full text-sm">
+                <thead>
+                <tr class="text-left text-gray-500 border-b">
+                    <th class="p-3">#</th>
+                    <th class="p-3">Date/Time</th>
+                    <th class="p-3">Caller</th>
+                    <th class="p-3">Duration</th>
+                    <th class="p-3 text-right">Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($invoice->items as $i => $item)
+                    <tr class="border-b border-gray-50">
+                        <td class="p-3 text-gray-400">{{ $i + 1 }}</td>
+                        <td class="p-3">
+                            {{ $item->callLog?->created_at?->format('M d, Y h:i A') ?? '—' }}
+                        </td>
+                        <td class="p-3 font-mono text-xs">
+                            {{ $item->callLog?->caller_number ?? '—' }}
+                        </td>
+                        <td class="p-3">
+                            {{ $item->callLog?->duration_formatted ?? '—' }}
+                        </td>
+                        <td class="p-3 text-right font-bold">${{ number_format($item->amount, 2) }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+                <tfoot>
+                <tr class="bg-gray-50 font-bold">
+                    <td colspan="4" class="p-3 text-right">Total:</td>
+                    <td class="p-3 text-right text-green-600 text-lg">
+                        ${{ number_format($invoice->total_amount, 2) }}
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
 
-    <div class="space-y-6">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 class="font-bold text-gray-800 mb-4">Buyer</h3>
-            @if($invoice->buyer)
-                <dl class="space-y-2 text-sm">
-                    <div><dt class="text-gray-500">Company</dt><dd class="font-medium">{{ $invoice->buyer->company_name }}</dd></div>
-                    <div><dt class="text-gray-500">Contact</dt><dd>{{ $invoice->buyer->contact_name }}</dd></div>
-                    <div><dt class="text-gray-500">Phone</dt><dd>{{ $invoice->buyer->phone }}</dd></div>
-                    <div><dt class="text-gray-500">Email</dt><dd>{{ $invoice->buyer->email ?? '—' }}</dd></div>
-                </dl>
-            @endif
-        </div>
-    </div>
-</div>
 @endsection

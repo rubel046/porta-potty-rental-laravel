@@ -13,7 +13,7 @@ class CityController extends Controller
     public function index()
     {
         $states = State::orderBy('name')->get();
-        
+
         $cities = City::with('state')
             ->withCount(['servicePages', 'callLogs'])
             ->orderByDesc('priority')
@@ -82,7 +82,7 @@ class CityController extends Controller
     public function show(City $city)
     {
         $city->load(['state', 'servicePages', 'phoneNumbers', 'callLogs', 'blogPosts']);
-        
+
         return view('admin.cities.show', compact('city'));
     }
 

@@ -11,18 +11,20 @@ class Testimonial extends Model
         'city_id',
         'customer_name',
         'customer_title',
+        'company',
         'content',
         'rating',
+        'service_type',
         'is_featured',
         'is_active',
-        'order',
+        'sort_order',
     ];
 
     protected $casts = [
         'rating' => 'integer',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
-        'order' => 'integer',
+        'sort_order' => 'integer',
     ];
 
     public function city(): BelongsTo
