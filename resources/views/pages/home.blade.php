@@ -921,38 +921,44 @@
             </div>
 
             {{-- States with Cities --}}
-            @foreach($states as $state)
+            @forelse($states as $state)
                 @if($state['cities_count'] > 0)
-                    <div class="mb-8">
-                        <h3 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
-                            📍 {{ $state['name'] }}
-                            <span class="text-sm font-normal text-slate-400">
-                            ({{ $state['cities_count'] }} {{ Str::plural('city', $state['cities_count']) }})
-                        </span>
-                        </h3>
-                        <div class="flex flex-wrap gap-2">
-                            @php
-                                $stateCities = App\Models\City::where('state_id', $state['id'])
-                                    ->where('is_active', true)
-                                    ->with(['servicePages' => fn($q) => $q->where('service_type', 'general')->where('is_published', true)])
-                                    ->orderByDesc('priority')
-                                    ->orderBy('name')
-                                    ->limit(10)
-                                    ->get();
-                            @endphp
-                            @foreach($stateCities as $city)
-                                @if($city->servicePages->isNotEmpty())
-                                    <a href="{{ url($city->servicePages->first()->slug) }}"
-                                       class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
-                                              hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
-                                        {{ $city->name }}
-                                    </a>
-                                @endif
-                            @endforeach
+                    @php
+                        $stateCities = App\Models\City::where('state_id', $state['id'])
+                            ->where('is_active', true)
+                            ->with(['servicePages' => fn($q) => $q->where('service_type', 'general')->where('is_published', true)])
+                            ->orderByDesc('priority')
+                            ->orderBy('name')
+                            ->limit(10)
+                            ->get();
+                    @endphp
+                    @if($stateCities->count() > 0)
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                📍 {{ $state['name'] }}
+                                <span class="text-sm font-normal text-slate-400">
+                                ({{ $state['cities_count'] }} {{ Str::plural('city', $state['cities_count']) }})
+                            </span>
+                            </h3>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($stateCities as $city)
+                                    @if($city->servicePages->isNotEmpty())
+                                        <a href="{{ url($city->servicePages->first()->slug) }}"
+                                           class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
+                                                  hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                                            {{ $city->name }}
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endif
-            @endforeach
+            @empty
+                <div class="text-center text-slate-500 py-8">
+                    <p>No cities available yet. Please check back soon!</p>
+                </div>
+            @endforelse
 
             <div class="text-center mt-10">
                 <a href="{{ route('locations') }}"

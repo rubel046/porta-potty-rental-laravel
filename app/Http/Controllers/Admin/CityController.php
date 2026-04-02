@@ -10,12 +10,25 @@ use Illuminate\Http\Request;
 
 class CityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $states = State::orderBy('name')->get();
 
-        $cities = City::with('state')
-            ->withCount(['servicePages', 'callLogs'])
+        $query = City::with('state')->withCount(['servicePages', 'callLogs']);
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%'.$request->search.'%');
+        }
+
+        if ($request->filled('state_id')) {
+            $query->where('state_id', $request->state_id);
+        }
+
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active);
+        }
+
+        $cities = $query->orderByDesc('is_active')
             ->orderByDesc('priority')
             ->orderBy('name')
             ->paginate(30);
