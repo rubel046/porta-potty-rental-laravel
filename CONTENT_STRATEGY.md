@@ -268,7 +268,7 @@ Standard Unit: $89-175/week
 **Display format:**
 ```
 📞 (888) 555-0199
-Mon-Sat 7AM-8PM
+24/7
 Tap to call - Free Quote
 ```
 
@@ -314,7 +314,7 @@ Message: [Optional]
 - Address: [Your business address]
 - Phone: (888) 555-0199
 - Website: https://pottydirect.com
-- Hours: Mon-Sat 7AM-8PM
+- Hours: 24/7
 - Service areas: List all cities/states
 
 **Optimize with:**

@@ -39,6 +39,13 @@ class ServicePageController extends Controller
         return view('admin.service-pages.edit', ['page' => $servicePage]);
     }
 
+    public function show(ServicePage $servicePage)
+    {
+        $servicePage->load('city.state');
+
+        return view('admin.service-pages.show', ['servicePage' => $servicePage]);
+    }
+
     public function update(Request $request, ServicePage $servicePage)
     {
         $validated = $request->validate([
@@ -49,7 +56,20 @@ class ServicePageController extends Controller
             'is_published' => 'boolean',
         ]);
 
-        $validated['word_count'] = str_word_count(strip_tags($validated['content']));
+        // Transform phone numbers to clickable tel: links
+        $content = $validated['content'];
+        $phonePattern = '/(\+?1?[\s\-.]?)?\(?[0-9]{3}\)?[\s\-.]?[0-9]{3}[\s\-.]?[0-9]{4}/';
+        $content = preg_replace_callback($phonePattern, function ($matches) {
+            $phone = preg_replace('/[^0-9+]/', '', $matches[0]);
+            if (strlen($phone) === 10) {
+                $phone = '1'.$phone;
+            }
+
+            return '<a href="tel:+'.$phone.'" class="text-blue-600 font-semibold hover:underline">'.$matches[0].'</a>';
+        }, $content);
+        $validated['content'] = $content;
+
+        $validated['word_count'] = str_word_count(strip_tags($content));
 
         $servicePage->update($validated);
         $servicePage->calculateSeoScore();

@@ -2,6 +2,49 @@
 
 @section('title', "Porta Potty Rental in {$state->name} | Cities We Serve")
 @section('meta_description', "Find affordable porta potty rental in {$state->name}. Same-day delivery available in {$cities->total()}+ cities. Construction, events, weddings & more. Call for a free quote!")
+@section('canonical', url()->current())
+
+@push('schema')
+@php
+$url = url('/');
+$phone = phone_raw();
+
+$localBusinessSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "LocalBusiness",
+    "@id" => $url . "#business",
+    "name" => "Potty Direct",
+    "description" => "Porta potty rental in " . $state->name . ". Same-day delivery available.",
+    "url" => $url,
+    "telephone" => $phone,
+    "priceRange" => "$$",
+    "areaServed" => [
+        "@type" => "State",
+        "name" => $state->name
+    ],
+    "openingHoursSpecification" => [
+        [
+            "@type" => "OpeningHoursSpecification",
+            "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens" => "00:00",
+            "closes" => "23:59"
+        ]
+    ]
+];
+
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => [
+        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => route('home')],
+        ["@type" => "ListItem", "position" => 2, "name" => "Locations", "item" => route('locations')],
+        ["@type" => "ListItem", "position" => 3, "name" => $state->name, "item" => url()->current()]
+    ]
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
 
 @section('content')
 

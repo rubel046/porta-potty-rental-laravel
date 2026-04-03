@@ -2,22 +2,41 @@
 
 @section('title', $post->meta_title ?? $post->title)
 @section('meta_description', $post->meta_description ?? $post->excerpt)
+@section('canonical', $post->url)
 
 @push('schema')
-    <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org",
-            "@@type": "Article",
-            "headline": "{{ $post->title }}",
-            "description": "{{ $post->meta_description ?? $post->excerpt }}",
-            "datePublished": "{{ $post->published_at?->toIso8601String() }}",
-            "dateModified": "{{ $post->updated_at->toIso8601String() }}",
-            "publisher": {
-                "@@type": "Organization",
-                "name": "Porta Potty Rental USA"
-            }
+@php
+$url = url('/');
+$phone = phone_raw();
+$imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : $url . '/og-image.jpg';
+@endphp
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ $post->title }}",
+    "description": "{{ $post->meta_description ?? $post->excerpt }}",
+    "image": "{{ $imageUrl }}",
+    "datePublished": "{{ $post->published_at?->toIso8601String() }}",
+    "dateModified": "{{ $post->updated_at->toIso8601String() }}",
+    "author": {
+        "@type": "Organization",
+        "name": "Potty Direct"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Potty Direct",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ $url }}/logo.png"
         }
-    </script>
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ $post->url }}"
+    }
+}
+</script>
 @endpush
 
 @section('content')

@@ -1,11 +1,9 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Porta Potty Rental Locations | All Cities We Serve'); ?>
+<?php $__env->startSection('meta_description', 'Find porta potty rental near you. We serve hundreds of cities across the USA. Same-day delivery available. Browse all locations or call for a free quote.'); ?>
+<?php $__env->startSection('canonical', route('locations')); ?>
 
-@section('title', 'Porta Potty Rental Locations | All Cities We Serve')
-@section('meta_description', 'Find porta potty rental near you. We serve hundreds of cities across the USA. Same-day delivery available. Browse all locations or call for a free quote.')
-@section('canonical', route('locations'))
-
-@push('schema')
-@php
+<?php $__env->startPush('schema'); ?>
+<?php
 $url = url('/');
 $phone = phone_raw();
 
@@ -44,13 +42,13 @@ $websiteSchema = [
         "query-input" => "required name=search_term_string"
     ]
 ];
-@endphp
-<script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-@endpush
+?>
+<script type="application/ld+json"><?php echo json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES); ?></script>
+<script type="application/ld+json"><?php echo json_encode($websiteSchema, JSON_UNESCAPED_SLASHES); ?></script>
+<?php $__env->stopPush(); ?>
 
-@section('content')
-    {{-- Hero --}}
+<?php $__env->startSection('content'); ?>
+    
     <section class="relative py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         <div class="absolute inset-0 opacity-10">
@@ -74,30 +72,30 @@ $websiteSchema = [
         </div>
     </section>
 
-    {{-- States & Cities --}}
+    
     <section class="py-12 md:py-16 px-4">
         <div class="max-w-6xl mx-auto">
-            {{-- Search --}}
+            
             <div class="mb-8">
                 <div class="relative max-w-md mx-auto">
                     <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input type="text" id="citySearch" placeholder="Search for your city..."
-                           value="{{ $search ?? '' }}"
+                           value="<?php echo e($search ?? ''); ?>"
                            class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all">
                 </div>
             </div>
 
-            {{-- Stats --}}
+            
             <div class="flex flex-wrap justify-center gap-6 mb-12 text-sm">
                 <div class="flex items-center gap-2 text-slate-600">
                     <span class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">🏛️</span>
-                    <span><strong class="text-slate-800">{{ $states->count() }}</strong> States</span>
+                    <span><strong class="text-slate-800"><?php echo e($states->count()); ?></strong> States</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
                     <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">🏙️</span>
-                    <span><strong class="text-slate-800">{{ $states->sum(fn($s) => $s->cities->count()) }}</strong> Cities</span>
+                    <span><strong class="text-slate-800"><?php echo e($states->sum(fn($s) => $s->cities->count())); ?></strong> Cities</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
                     <span class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">🚚</span>
@@ -105,63 +103,67 @@ $websiteSchema = [
                 </div>
             </div>
 
-            @foreach($states->sortBy('name') as $state)
-                @if($state->cities->isNotEmpty())
-                    <div class="mb-10 state-group" data-state="{{ strtolower($state->name) }}">
+            <?php $__currentLoopData = $states->sortBy('name'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $state): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if($state->cities->isNotEmpty()): ?>
+                    <div class="mb-10 state-group" data-state="<?php echo e(strtolower($state->name)); ?>">
                         <div class="flex items-center gap-3 mb-5">
-                            <a href="{{ route('state.page', $state->slug) }}"
+                            <a href="<?php echo e(route('state.page', $state->slug)); ?>"
                                class="text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group">
                                 <span class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg">
-                                    {{ substr($state->code, 0, 1) }}
+                                    <?php echo e(substr($state->code, 0, 1)); ?>
+
                                 </span>
-                                {{ $state->name }}
+                                <?php echo e($state->name); ?>
+
                                 <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                                 </svg>
                             </a>
                             <span class="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                                {{ $state->cities->count() }} {{ Str::plural('city', $state->cities->count()) }}
+                                <?php echo e($state->cities->count()); ?> <?php echo e(Str::plural('city', $state->cities->count())); ?>
+
                             </span>
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                            @foreach($state->cities->sortBy('name') as $city)
-                                @php $cityPage = $city->getServicePage('general'); @endphp
-                                @if($cityPage)
-                                    <a href="{{ url($cityPage->slug) }}"
+                            <?php $__currentLoopData = $state->cities->sortBy('name'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php $cityPage = $city->getServicePage('general'); ?>
+                                <?php if($cityPage): ?>
+                                    <a href="<?php echo e(url($cityPage->slug)); ?>"
                                        class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
                                      hover:text-emerald-700 px-4 py-3 rounded-xl
                                      text-sm font-medium text-slate-700
                                      transition-all shadow-sm hover:shadow-md flex flex-col group city-item"
-                                       data-city="{{ strtolower($city->name) }}">
+                                       data-city="<?php echo e(strtolower($city->name)); ?>">
                                         <span class="flex items-center gap-2">
                                             <span class="w-6 h-6 bg-slate-100 group-hover:bg-emerald-100 rounded-full flex items-center justify-center text-xs">
                                                 📍
                                             </span>
-                                            <span>{{ $city->name }}</span>
+                                            <span><?php echo e($city->name); ?></span>
                                         </span>
-                                        @if($city->population)
-                                            <span class="text-xs text-slate-400 mt-1 pl-8">{{ number_format($city->population) }} pop</span>
-                                        @endif
+                                        <?php if($city->population): ?>
+                                            <span class="text-xs text-slate-400 mt-1 pl-8"><?php echo e(number_format($city->population)); ?> pop</span>
+                                        <?php endif; ?>
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <div class="bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-sm text-slate-400 flex flex-col">
                                         <span class="flex items-center gap-2">
                                             <span class="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs">📍</span>
-                                            {{ $city->name }}
+                                            <?php echo e($city->name); ?>
+
                                         </span>
-                                        @if($city->population)
-                                            <span class="text-xs mt-1 pl-8">{{ number_format($city->population) }} pop</span>
-                                        @endif
+                                        <?php if($city->population): ?>
+                                            <span class="text-xs mt-1 pl-8"><?php echo e(number_format($city->population)); ?> pop</span>
+                                        <?php endif; ?>
                                     </div>
-                                @endif
-                            @endforeach
+                                <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
-                @endif
-            @endforeach
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            {{-- No Results Message --}}
+            
             <div id="noResults" class="hidden text-center py-12">
                 <div class="text-5xl mb-4">🔍</div>
                 <p class="text-slate-500 text-lg">No cities found matching your search.</p>
@@ -210,7 +212,7 @@ $websiteSchema = [
         });
     </script>
 
-    {{-- CTA --}}
+    
     <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
         <div class="absolute inset-0 opacity-5">
             <div class="absolute top-10 left-10 text-[200px]">🚽</div>
@@ -222,14 +224,17 @@ $websiteSchema = [
             <p class="text-xl text-slate-400 mb-8">
                 We're expanding! Call us — we may still serve your area.
             </p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:<?php echo e(phone_raw()); ?>"
                class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-white text-2xl md:text-3xl font-bold
                       py-4 px-12 rounded-full shadow-2xl shadow-emerald-500/30
                       transition-all hover:scale-105 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 <?php echo e(phone_display()); ?>
+
             </a>
             <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • Free Quote</p>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/hasanulrubel/Playground/PPC/laravel porta potty/porta-potty-app/resources/views/pages/locations.blade.php ENDPATH**/ ?>

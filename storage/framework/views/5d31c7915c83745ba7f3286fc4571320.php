@@ -3,46 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
-    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.phone_display().'!')">
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <title><?php echo $__env->yieldContent('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets'); ?></title>
+    <meta name="description" content="<?php echo $__env->yieldContent('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.phone_display().'!'); ?>">
+    <link rel="canonical" href="<?php echo $__env->yieldContent('canonical', url()->current()); ?>">
 
-    {{-- Custom Open Graph Image (can be overridden per page) --}}
-    @section('og_image')
-    <meta property="og:image" content="{{ url('/og-image.jpg') }}">
+    
+    <?php $__env->startSection('og_image'); ?>
+    <meta property="og:image" content="<?php echo e(url('/og-image.jpg')); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Potty Direct - Portable Restroom Rental">
-    <meta name="twitter:image" content="{{ url('/og-image.jpg') }}">
+    <meta name="twitter:image" content="<?php echo e(url('/og-image.jpg')); ?>">
     <meta name="twitter:image:alt" content="Potty Direct - Portable Restroom Rental">
-    @show
+    <?php echo $__env->yieldSection(); ?>
 
-    {{-- Schema.org JSON-LD --}}
-    @stack('schema')
+    
+    <?php echo $__env->yieldPushContent('schema'); ?>
 
-    {{-- Open Graph / Social --}}
+    
     <meta property="og:type" content="website">
-    <meta property="og:url" content="@yield('canonical', url()->current())">
-    <meta property="og:title" content="@yield('title')">
-    <meta property="og:description" content="@yield('meta_description')">
+    <meta property="og:url" content="<?php echo $__env->yieldContent('canonical', url()->current()); ?>">
+    <meta property="og:title" content="<?php echo $__env->yieldContent('title'); ?>">
+    <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description'); ?>">
     <meta property="og:site_name" content="Potty Direct">
     <meta property="og:locale" content="en_US">
 
-    {{-- Twitter Card --}}
+    
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title')">
-    <meta name="twitter:description" content="@yield('meta_description')">
+    <meta name="twitter:title" content="<?php echo $__env->yieldContent('title'); ?>">
+    <meta name="twitter:description" content="<?php echo $__env->yieldContent('meta_description'); ?>">
     <meta name="twitter:site" content="@pottydirect">
 
-    {{-- Hreflang for International SEO --}}
-    <link rel="alternate" hreflang="en" href="@yield('canonical', url()->current())">
-    <link rel="alternate" hreflang="en-US" href="@yield('canonical', url()->current())">
-    <link rel="alternate" hreflang="x-default" href="@yield('canonical', url()->current())">
+    
+    <link rel="alternate" hreflang="en" href="<?php echo $__env->yieldContent('canonical', url()->current()); ?>">
+    <link rel="alternate" hreflang="en-US" href="<?php echo $__env->yieldContent('canonical', url()->current()); ?>">
+    <link rel="alternate" hreflang="x-default" href="<?php echo $__env->yieldContent('canonical', url()->current()); ?>">
 
-    {{-- Pagination SEO (for paginated pages) --}}
-    @yield('pagination_headers')
+    
+    <?php echo $__env->yieldContent('pagination_headers'); ?>
 
-    {{-- Additional SEO --}}
+    
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="author" content="Potty Direct">
     <meta name="geo.region" content="US">
@@ -51,17 +51,17 @@
     <meta name="rating" content="general">
     <meta name="theme-color" content="#10b981">
 
-    {{-- Favicon --}}
+    
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚽</text></svg>">
 
-    {{-- Preconnect for performance --}}
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//www.google-analytics.com">
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
 
-    {{-- Google Analytics 4 --}}
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -70,30 +70,31 @@
         gtag('config', 'G-XXXXXXXXXX');
     </script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-{{-- Announcement Banner --}}
+
 <div id="announcement-banner" class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2 px-4">
     <div class="max-w-7xl mx-auto flex items-center justify-center gap-2 text-sm md:text-base">
         <span class="hidden sm:inline animate-pulse">🔥</span>
         <span class="font-medium">Same-Day Delivery Available Nationwide</span>
         <span class="hidden sm:inline">•</span>
         <span class="hidden sm:inline text-emerald-100">Call for availability in your area</span>
-        <a href="tel:{{ phone_raw() }}" class="ml-2 bg-white/20 hover:bg-white/30 px-3 py-0.5 rounded-full font-semibold transition text-sm">
-            {{ phone_display() }}
+        <a href="tel:<?php echo e(phone_raw()); ?>" class="ml-2 bg-white/20 hover:bg-white/30 px-3 py-0.5 rounded-full font-semibold transition text-sm">
+            <?php echo e(phone_display()); ?>
+
         </a>
     </div>
 </div>
 
-{{-- Header --}}
+
 <header id="header" class="sticky top-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16 lg:h-18">
-            {{-- Logo --}}
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
+            
+            <a href="<?php echo e(route('home')); ?>" class="flex items-center gap-3 group flex-shrink-0">
                 <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
                     🚽
                 </div>
@@ -103,9 +104,9 @@
                 </div>
             </a>
 
-                {{-- Desktop Nav --}}
+                
             <nav class="hidden lg:flex items-center gap-1">
-                {{-- Services Dropdown --}}
+                
                 <div class="relative group">
                     <button class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all flex items-center gap-1">
                         Services
@@ -115,49 +116,49 @@
                     </button>
                     <div class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                         <div class="bg-white rounded-xl shadow-xl shadow-slate-200/50 border border-slate-100 py-2 w-56">
-                            <a href="{{ route('services') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-emerald-600 font-medium hover:bg-emerald-50 transition border-b border-slate-100">
+                            <a href="<?php echo e(route('services')); ?>" class="flex items-center gap-3 px-4 py-2.5 text-sm text-emerald-600 font-medium hover:bg-emerald-50 transition border-b border-slate-100">
                                 <span class="text-lg">📋</span>
                                 <div>
                                     <div class="font-medium">View All Services</div>
                                     <div class="text-xs text-slate-400">Complete service listing</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#standard" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#standard" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">🚻</span>
                                 <div>
                                     <div class="font-medium">Standard Units</div>
                                     <div class="text-xs text-slate-400">Basic portable toilets</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#deluxe" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#deluxe" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">🚿</span>
                                 <div>
                                     <div class="font-medium">Deluxe Flushable</div>
                                     <div class="text-xs text-slate-400">With hand wash station</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#ada" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#ada" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">♿</span>
                                 <div>
                                     <div class="font-medium">ADA Accessible</div>
                                     <div class="text-xs text-slate-400">Wheelchair friendly</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#luxury" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#luxury" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">✨</span>
                                 <div>
                                     <div class="font-medium">Luxury Trailers</div>
                                     <div class="text-xs text-slate-400">Premium restroom trailers</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#shower" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#shower" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">🚿</span>
                                 <div>
                                     <div class="font-medium">Portable Showers</div>
                                     <div class="text-xs text-slate-400">Hot & cold water units</div>
                                 </div>
                             </a>
-                            <a href="{{ route('services') }}#construction" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                            <a href="<?php echo e(route('services')); ?>#construction" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <span class="text-lg">🏗️</span>
                                 <div>
                                     <div class="font-medium">Construction Packages</div>
@@ -168,28 +169,28 @@
                     </div>
                 </div>
 
-                {{-- Locations --}}
-                <a href="{{ route('locations') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                
+                <a href="<?php echo e(route('locations')); ?>" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                     Locations
                 </a>
 
-                {{-- Pricing --}}
-                <a href="{{ route('pricing') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                
+                <a href="<?php echo e(route('pricing')); ?>" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                     Pricing
                 </a>
 
-                {{-- Blog --}}
-                <a href="{{ route('blog.index') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                
+                <a href="<?php echo e(route('blog.index')); ?>" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                     Blog
                 </a>
 
-                {{-- About --}}
-                <a href="{{ route('about') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                
+                <a href="<?php echo e(route('about')); ?>" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                     About
                 </a>
             </nav>
 
-            {{-- Search Bar --}}
+            
             <div class="hidden md:flex items-center flex-1 max-w-xs mx-6">
                 <div class="relative w-full">
                     <input type="text" id="header-search" placeholder="Search city or zip..."
@@ -197,7 +198,7 @@
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    {{-- Search Results Dropdown --}}
+                    
                     <div id="search-results" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 py-2 max-h-80 overflow-y-auto hidden z-50">
                         <div class="px-4 py-3 text-sm text-slate-500 text-center">
                             Type a city name or zip code to search...
@@ -206,15 +207,15 @@
                 </div>
             </div>
 
-            {{-- CTA --}}
+            
             <div class="flex items-center gap-2">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:<?php echo e(phone_raw()); ?>"
                    class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-bold py-2.5 px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
                     <span>📞</span>
-                    <span class="hidden lg:inline">{{ phone_display() }}</span>
+                    <span class="hidden lg:inline"><?php echo e(phone_display()); ?></span>
                 </a>
 
-                {{-- Mobile Menu Toggle --}}
+                
                 <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition" aria-label="Menu">
                     <svg id="menu-icon" class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -227,10 +228,10 @@
         </div>
     </div>
 
-    {{-- Mobile Full-Screen Menu --}}
+    
     <div id="mobile-menu" class="hidden lg:hidden fixed inset-0 top-0 bg-white z-40 overflow-y-auto">
         <div class="pt-20 px-6 pb-8">
-            {{-- Mobile Search --}}
+            
             <div class="mb-8">
                 <div class="relative">
                     <input type="text" placeholder="Search city or zip..." id="mobile-search"
@@ -241,81 +242,82 @@
                 </div>
             </div>
 
-            {{-- Mobile Nav Links --}}
+            
             <nav class="space-y-1 mb-8">
-                <a href="{{ route('home') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('home')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">🏠</span> Home
                 </a>
-                <a href="{{ route('services') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('services')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">🚽</span> Services
                 </a>
-                <a href="{{ route('pricing') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('pricing')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">💰</span> Pricing
                 </a>
-                <a href="{{ route('locations') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('locations')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">📍</span> All Locations
                 </a>
-                <a href="{{ route('blog.index') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('blog.index')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">📝</span> Blog
                 </a>
-                <a href="{{ route('about') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                <a href="<?php echo e(route('about')); ?>" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">ℹ️</span> About Us
                 </a>
             </nav>
 
-            {{-- Services Section --}}
+            
             <div class="mb-8">
                 <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 px-4">Services</h3>
                 <div class="grid grid-cols-2 gap-3">
-                    <a href="{{ route('services') }}" class="flex flex-col items-center gap-2 p-4 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition text-center">
+                    <a href="<?php echo e(route('services')); ?>" class="flex flex-col items-center gap-2 p-4 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition text-center">
                         <span class="text-3xl">📋</span>
                         <span class="text-sm font-medium text-emerald-700">All Services</span>
                     </a>
-                    <a href="{{ route('locations') }}?type=standard" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
+                    <a href="<?php echo e(route('locations')); ?>?type=standard" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
                         <span class="text-3xl">🚻</span>
                         <span class="text-sm font-medium text-slate-700">Standard</span>
                     </a>
-                    <a href="{{ route('locations') }}?type=deluxe" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
+                    <a href="<?php echo e(route('locations')); ?>?type=deluxe" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
                         <span class="text-3xl">🚿</span>
                         <span class="text-sm font-medium text-slate-700">Deluxe</span>
                     </a>
-                    <a href="{{ route('locations') }}?type=luxury" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
+                    <a href="<?php echo e(route('locations')); ?>?type=luxury" class="flex flex-col items-center gap-2 p-4 bg-slate-50 hover:bg-emerald-50 rounded-xl transition text-center">
                         <span class="text-3xl">✨</span>
                         <span class="text-sm font-medium text-slate-700">Luxury</span>
                     </a>
                 </div>
             </div>
 
-            {{-- Mobile CTA --}}
+            
             <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white text-center">
                 <h3 class="text-lg font-bold mb-2">Ready to Rent?</h3>
                 <p class="text-emerald-100 text-sm mb-4">Call for instant pricing and same-day delivery</p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:<?php echo e(phone_raw()); ?>"
                    class="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-bold text-lg py-3 px-8 rounded-full hover:scale-105 transition shadow-lg">
-                    📞 {{ phone_display() }}
+                    📞 <?php echo e(phone_display()); ?>
+
                 </a>
             </div>
 
-            {{-- Bottom Nav --}}
+            
             <div class="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-slate-100 text-sm text-slate-400">
-                <a href="{{ route('privacy') }}" class="hover:text-slate-600 transition">Privacy</a>
-                <a href="{{ route('terms') }}" class="hover:text-slate-600 transition">Terms</a>
+                <a href="<?php echo e(route('privacy')); ?>" class="hover:text-slate-600 transition">Privacy</a>
+                <a href="<?php echo e(route('terms')); ?>" class="hover:text-slate-600 transition">Terms</a>
             </div>
         </div>
     </div>
 </header>
 
-{{-- Page Content --}}
+
 <main class="pt-0">
-    @yield('content')
+    <?php echo $__env->yieldContent('content'); ?>
 </main>
 
-{{-- Footer --}}
+
 <footer class="bg-slate-900 text-slate-300 pt-16 pb-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{-- Top Grid --}}
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-700/60">
-            {{-- Brand --}}
+            
             <div class="lg:col-span-1">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg">🚽</div>
@@ -340,77 +342,77 @@
                 </div>
             </div>
 
-            {{-- Services --}}
+            
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Services</h4>
                 <ul class="space-y-3">
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Standard Porta Potties</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Deluxe Flushable Units</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">ADA Accessible Units</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Luxury Restroom Trailers</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Hand Wash Stations</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">Standard Porta Potties</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">Deluxe Flushable Units</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">ADA Accessible Units</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">Luxury Restroom Trailers</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">Hand Wash Stations</a></li>
                 </ul>
             </div>
 
-            {{-- Company --}}
+            
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Company</h4>
                 <ul class="space-y-3">
-                    <li><a href="{{ route('about') }}" class="text-sm text-slate-400 hover:text-white transition">About Us</a></li>
-                    <li><a href="{{ route('blog.index') }}" class="text-sm text-slate-400 hover:text-white transition">Blog & Resources</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">All Locations</a></li>
-                    <li><a href="{{ route('privacy') }}" class="text-sm text-slate-400 hover:text-white transition">Privacy Policy</a></li>
-                    <li><a href="{{ route('terms') }}" class="text-sm text-slate-400 hover:text-white transition">Terms of Service</a></li>
+                    <li><a href="<?php echo e(route('about')); ?>" class="text-sm text-slate-400 hover:text-white transition">About Us</a></li>
+                    <li><a href="<?php echo e(route('blog.index')); ?>" class="text-sm text-slate-400 hover:text-white transition">Blog & Resources</a></li>
+                    <li><a href="<?php echo e(route('locations')); ?>" class="text-sm text-slate-400 hover:text-white transition">All Locations</a></li>
+                    <li><a href="<?php echo e(route('privacy')); ?>" class="text-sm text-slate-400 hover:text-white transition">Privacy Policy</a></li>
+                    <li><a href="<?php echo e(route('terms')); ?>" class="text-sm text-slate-400 hover:text-white transition">Terms of Service</a></li>
                 </ul>
             </div>
 
-            {{-- Contact --}}
+            
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Contact</h4>
                 <div class="space-y-4">
-                    <a href="tel:{{ phone_raw() }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
+                    <a href="tel:<?php echo e(phone_raw()); ?>" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
                         <div class="w-9 h-9 bg-slate-800 group-hover:bg-emerald-600/20 rounded-lg flex items-center justify-center transition">
                             <span>📞</span>
                         </div>
                         <div>
-                            <div class="text-white font-semibold">{{ phone_display() }}</div>
+                            <div class="text-white font-semibold"><?php echo e(phone_display()); ?></div>
                             <div class="text-xs text-slate-500">Tap to call</div>
                         </div>
                     </a>
                     <div class="flex items-center gap-3 text-sm text-slate-400">
                         <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">⏰</div>
                         <div>
-                            <div class="text-white">{{ config('contact.hours') }}</div>
+                            <div class="text-white"><?php echo e(config('contact.hours')); ?></div>
                             <div class="text-xs text-slate-500">Eastern Time</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-slate-400">
                         <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">📧</div>
-                        <div>{{ config('contact.email') }}</div>
+                        <div><?php echo e(config('contact.email')); ?></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Bottom Bar --}}
+        
         <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm text-slate-500">
-                &copy; {{ date('Y') }} Potty Direct. All rights reserved.
+                &copy; <?php echo e(date('Y')); ?> Potty Direct. All rights reserved.
             </p>
             <div class="flex items-center gap-6 text-sm text-slate-500">
                 <a href="/sitemap.xml" class="hover:text-white transition">Sitemap</a>
                 <span class="text-slate-700">|</span>
-                <a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy</a>
+                <a href="<?php echo e(route('privacy')); ?>" class="hover:text-white transition">Privacy</a>
                 <span class="text-slate-700">|</span>
-                <a href="{{ route('terms') }}" class="hover:text-white transition">Terms</a>
+                <a href="<?php echo e(route('terms')); ?>" class="hover:text-white transition">Terms</a>
             </div>
         </div>
     </div>
 </footer>
 
-{{-- Mobile Sticky CTA --}}
+
 <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-emerald-600 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
-    <a href="tel:{{ phone_raw() }}"
+    <a href="tel:<?php echo e(phone_raw()); ?>"
        class="flex items-center justify-center gap-2 text-white font-bold text-base py-4">
         <span class="text-lg">📞</span>
         <span>Call Now — Free Quote</span>
@@ -531,14 +533,14 @@
                 // Simulate finding results
                 setTimeout(() => {
                     searchResults.innerHTML = `
-                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition border-b border-slate-50">
+                        <a href="<?php echo e(route('locations')); ?>?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition border-b border-slate-50">
                             <span class="text-emerald-500">📍</span>
                             <div>
                                 <div class="text-sm font-medium text-slate-700">${query}, TX</div>
                                 <div class="text-xs text-slate-400">Texas • View all Texas locations</div>
                             </div>
                         </a>
-                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition">
+                        <a href="<?php echo e(route('locations')); ?>?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition">
                             <span class="text-emerald-500">📍</span>
                             <div>
                                 <div class="text-sm font-medium text-slate-700">View all locations matching "${query}"</div>
@@ -562,17 +564,18 @@
             if (e.key === 'Enter') {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.href = `{{ route('locations') }}?q=${encodeURIComponent(query)}`;
+                    window.location.href = `<?php echo e(route('locations')); ?>?q=${encodeURIComponent(query)}`;
                 } else {
-                    window.location.href = `{{ route('locations') }}`;
+                    window.location.href = `<?php echo e(route('locations')); ?>`;
                 }
             }
         });
     }
 </script>
 
-@include('components.phone-tracker')
-@include('components.exit-intent-popup', ['title' => 'Get a Free Quote Today!', 'message' => 'Call now and mention this popup for %DISCOUNT% off your first rental!', 'discount' => '10'])
-@stack('scripts')
+<?php echo $__env->make('components.phone-tracker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('components.exit-intent-popup', ['title' => 'Get a Free Quote Today!', 'message' => 'Call now and mention this popup for %DISCOUNT% off your first rental!', 'discount' => '10'], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH /Users/hasanulrubel/Playground/PPC/laravel porta potty/porta-potty-app/resources/views/layouts/app.blade.php ENDPATH**/ ?>

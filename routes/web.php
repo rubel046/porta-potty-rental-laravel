@@ -153,13 +153,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     | Service Pages Management
     |----------------------------------------------------------------------
     */
+    // Bulk delete service pages (must be before resource routes)
+    Route::delete('/service-pages/bulk-destroy', [ServicePageController::class, 'bulkDestroy'])
+        ->name('service-pages.bulk-destroy');
+
     Route::resource('service-pages', ServicePageController::class)
         ->except(['create', 'store']);
     // Note: create/store excluded intentionally - pages are auto-generated from cities
-
-    // Bulk delete service pages
-    Route::delete('/service-pages/bulk-destroy', [ServicePageController::class, 'bulkDestroy'])
-        ->name('service-pages.bulk-destroy');
 
     /*
     |----------------------------------------------------------------------

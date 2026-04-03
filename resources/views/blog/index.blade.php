@@ -2,6 +2,28 @@
 
 @section('title', 'Porta Potty Rental Blog | Guides, Tips & Pricing Info')
 @section('meta_description', 'Expert guides on porta potty rental pricing, event planning, construction site requirements, and more. Everything you need to know about portable toilet rentals.')
+@section('canonical', route('blog.index'))
+@section('pagination_headers')
+@if(isset($paginationHeaders) && $paginationHeaders)
+{!! $paginationHeaders !!}
+@endif
+@endsection
+
+@push('schema')
+@php
+$url = url('/');
+$phone = phone_raw();
+@endphp
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "headline": "Porta Potty Rental Blog | Guides, Tips & Pricing Info",
+    "description": "Expert guides on porta potty rental pricing, event planning, construction site requirements, and more.",
+    "url": "{{ $url }}/blog"
+}
+</script>
+@endpush
 
 @section('content')
 

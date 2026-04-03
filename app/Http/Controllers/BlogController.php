@@ -22,7 +22,15 @@ class BlogController extends Controller
             ->paginate(10)
             ->appends($request->query());
 
-        return view('blog.index', compact('posts'));
+        $paginationHeaders = '';
+        if ($posts->currentPage() > 1) {
+            $paginationHeaders .= '<link rel="prev" href="'.$posts->previousPageUrl().'">'."\n";
+        }
+        if ($posts->hasMorePages()) {
+            $paginationHeaders .= '<link rel="next" href="'.$posts->nextPageUrl().'">'."\n";
+        }
+
+        return view('blog.index', compact('posts', 'paginationHeaders'));
     }
 
     public function show(string $slug)

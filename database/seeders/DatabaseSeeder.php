@@ -20,9 +20,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             StateSeeder::class,
+            AllUSCitiesSeeder::class,
             //            CitySeeder::class,
             BlogCategorySeeder::class,
-            BlogPostSeeder::class,
+            //            BlogPostSeeder::class,
             BuyerSeeder::class,
             // FaqSeeder::class,
             // ServicePageSeeder::class,

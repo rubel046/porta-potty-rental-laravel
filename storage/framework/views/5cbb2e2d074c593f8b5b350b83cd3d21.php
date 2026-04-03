@@ -1,10 +1,9 @@
-@extends('layouts.app')
-@section('title', 'Privacy Policy | Porta Potty Rental USA')
-@section('meta_description', 'Privacy Policy for Porta Potty Rental USA. Learn how we collect, use, and protect your information.')
-@section('canonical', route('privacy'))
+<?php $__env->startSection('title', 'Privacy Policy | Porta Potty Rental USA'); ?>
+<?php $__env->startSection('meta_description', 'Privacy Policy for Porta Potty Rental USA. Learn how we collect, use, and protect your information.'); ?>
+<?php $__env->startSection('canonical', route('privacy')); ?>
 
-@push('schema')
-@php
+<?php $__env->startPush('schema'); ?>
+<?php
 $url = url('/');
 $phone = phone_raw();
 
@@ -23,13 +22,13 @@ $organizationSchema = [
         "availableLanguage" => "English"
     ]
 ];
-@endphp
-<script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-@endpush
+?>
+<script type="application/ld+json"><?php echo json_encode($organizationSchema, JSON_UNESCAPED_SLASHES); ?></script>
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-    {{-- Hero --}}
+    
     <section class="relative py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         <div class="absolute inset-0 opacity-10">
@@ -45,12 +44,12 @@ $organizationSchema = [
         </div>
     </section>
 
-    {{-- Content --}}
+    
     <section class="py-12 md:py-16 px-4">
         <div class="max-w-3xl mx-auto">
-            <p class="text-sm text-slate-500 mb-8">Last updated: {{ date('F d, Y') }}</p>
+            <p class="text-sm text-slate-500 mb-8">Last updated: <?php echo e(date('F d, Y')); ?></p>
 
-            {{-- Information We Collect --}}
+            
             <div class="mb-10">
                 <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                     <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 text-sm">1</span>
@@ -79,7 +78,7 @@ $organizationSchema = [
                 </ul>
             </div>
 
-            {{-- How We Use Your Information --}}
+            
             <div class="mb-10">
                 <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                     <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 text-sm">2</span>
@@ -109,7 +108,7 @@ $organizationSchema = [
                 </div>
             </div>
 
-            {{-- Call Recording --}}
+            
             <div class="mb-10">
                 <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                     <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 text-sm">3</span>
@@ -120,7 +119,7 @@ $organizationSchema = [
                 </p>
             </div>
 
-            {{-- Cookies --}}
+            
             <div class="mb-10">
                 <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                     <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 text-sm">4</span>
@@ -131,7 +130,7 @@ $organizationSchema = [
                 </p>
             </div>
 
-            {{-- Data Security --}}
+            
             <div class="mb-10">
                 <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                     <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 text-sm">5</span>
@@ -142,19 +141,22 @@ $organizationSchema = [
                 </p>
             </div>
 
-            {{-- Contact --}}
+            
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 md:p-10 text-white">
                 <h2 class="text-2xl font-bold mb-3">Contact Us</h2>
                 <p class="text-slate-300 mb-6">
                     If you have questions about this privacy policy, please call us.
                 </p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:<?php echo e(phone_raw()); ?>"
                    class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                           text-white font-bold text-xl py-3 px-8 rounded-full
                           transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
-                    📞 {{ phone_display() }}
+                    📞 <?php echo e(phone_display()); ?>
+
                 </a>
             </div>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/hasanulrubel/Playground/PPC/laravel porta potty/porta-potty-app/resources/views/pages/privacy.blade.php ENDPATH**/ ?>

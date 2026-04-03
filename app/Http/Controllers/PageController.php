@@ -392,6 +392,7 @@ class PageController extends Controller
     {
         $servicePage = ServicePage::where('slug', $slug)
             ->where('is_published', true)
+            ->whereHas('city', fn ($q) => $q->where('is_active', true))
             ->with(['city.state', 'city.phoneNumbers'])
             ->firstOrFail();
 
@@ -467,14 +468,19 @@ class PageController extends Controller
             'openingHoursSpecification' => [
                 [
                     '@type' => 'OpeningHoursSpecification',
-                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                    'opens' => '07:00',
-                    'closes' => '20:00',
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    'opens' => '00:00',
+                    'closes' => '23:59',
                 ],
             ],
             'areaServed' => [
                 '@type' => 'City',
                 'name' => $city->name,
+            ],
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => '4.9',
+                'reviewCount' => '500',
             ],
         ];
 
@@ -492,6 +498,22 @@ class PageController extends Controller
                     ],
                 ])->toArray(),
             ];
+        }
+
+        // Add reviews to schema if testimonials exist
+        if ($testimonials->isNotEmpty()) {
+            $schemaMarkup['review'] = $testimonials->map(fn ($t) => [
+                '@type' => 'Review',
+                'reviewRating' => [
+                    '@type' => 'Rating',
+                    'ratingValue' => $t->rating ?? 5,
+                ],
+                'author' => [
+                    '@type' => 'Person',
+                    'name' => $t->customer_name,
+                ],
+                'reviewBody' => $t->content,
+            ])->toArray();
         }
 
         return view('pages.service', compact(

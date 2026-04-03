@@ -32,15 +32,47 @@
 
                     <div class="mb-6">
                         <label class="form-label">Content * (Markdown)</label>
-                        <textarea name="content" rows="30"
+                        <textarea name="content" id="content-editor" rows="30"
                                   class="form-input font-mono text-sm leading-relaxed"
                                   required>{{ old('content', $page->content) }}</textarea>
-                        <p class="text-xs text-gray-400 mt-1">
-                            Current: {{ number_format($page->word_count) }} words |
-                            Target: 1,500+ words
-                        </p>
+                        <div class="flex items-center justify-between mt-1">
+                            <p class="text-xs text-gray-400">
+                                Target: 1,500+ words
+                            </p>
+                            <p class="text-xs font-medium" id="word-count-display">
+                                <span id="word-count">{{ number_format($page->word_count) }}</span> words
+                            </p>
+                        </div>
                         @error('content') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    @push('scripts')
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const textarea = document.getElementById('content-editor');
+                            const wordCountEl = document.getElementById('word-count');
+                            const wordCountDisplay = document.getElementById('word-count-display');
+
+                            function countWords(str) {
+                                if (!str || str.trim() === '') return 0;
+                                return str.trim().split(/\s+/).length;
+                            }
+
+                            function updateWordCount() {
+                                const count = countWords(textarea.value);
+                                wordCountEl.textContent = count.toLocaleString();
+                                wordCountDisplay.className = count >= 1500 
+                                    ? 'text-xs font-medium text-green-600' 
+                                    : (count >= 1000 
+                                        ? 'text-xs font-medium text-yellow-600' 
+                                        : 'text-xs font-medium text-red-500');
+                            }
+
+                            textarea.addEventListener('input', updateWordCount);
+                            updateWordCount();
+                        });
+                    </script>
+                    @endpush
                 </div>
 
                 {{-- SEO --}}

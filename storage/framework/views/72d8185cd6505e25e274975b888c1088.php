@@ -1,11 +1,9 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Porta Potty Rental Pricing | Competitive Rates | Potty Direct'); ?>
+<?php $__env->startSection('meta_description', 'Porta potty rental pricing information. Get competitive rates on standard, deluxe, ADA, and luxury portable toilet rentals. Call for a personalized quote — no hidden fees!'); ?>
+<?php $__env->startSection('canonical', route('pricing')); ?>
 
-@section('title', 'Porta Potty Rental Pricing | Competitive Rates | Potty Direct')
-@section('meta_description', 'Porta potty rental pricing information. Get competitive rates on standard, deluxe, ADA, and luxury portable toilet rentals. Call for a personalized quote — no hidden fees!')
-@section('canonical', route('pricing'))
-
-@push('schema')
-@php
+<?php $__env->startPush('schema'); ?>
+<?php
 $url = url('/');
 $phone = phone_raw();
 $localBusinessSchema = [
@@ -60,14 +58,14 @@ $faqSchema = [
         ]
     ]
 ];
-@endphp
-<script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-@endpush
+?>
+<script type="application/ld+json"><?php echo json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES); ?></script>
+<script type="application/ld+json"><?php echo json_encode($faqSchema, JSON_UNESCAPED_SLASHES); ?></script>
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- Trust Banner --}}
+
 <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3">
     <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
         <div class="flex items-center gap-2">
@@ -83,7 +81,7 @@ $faqSchema = [
     </div>
 </div>
 
-{{-- Hero --}}
+
 <section class="relative py-16 md:py-20 overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
     <div class="absolute inset-0 opacity-10">
@@ -108,7 +106,7 @@ $faqSchema = [
     </div>
 </section>
 
-{{-- Intro --}}
+
 <section class="py-12 px-4">
     <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">How Our Pricing Works</h2>
@@ -119,12 +117,12 @@ $faqSchema = [
         </p>
         <p class="text-slate-600 leading-relaxed">
             Every rental includes <strong>delivery, setup, weekly servicing, and pickup</strong>. 
-            Call us at <a href="tel:{{ phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ phone_display() }}</a> for a free, personalized quote.
+            Call us at <a href="tel:<?php echo e(phone_raw()); ?>" class="text-emerald-600 font-semibold hover:underline"><?php echo e(phone_display()); ?></a> for a free, personalized quote.
         </p>
     </div>
 </section>
 
-{{-- Pricing Options --}}
+
 <section class="py-12 md:py-16 px-4 bg-slate-50">
     <div class="max-w-6xl mx-auto">
         <div class="text-center mb-12">
@@ -133,40 +131,42 @@ $faqSchema = [
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($pricingInfo as $info)
+            <?php $__currentLoopData = $pricingInfo; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $info): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
-                    <div class="text-4xl mb-4">{{ $info['icon'] }}</div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $info['title'] }}</h3>
-                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">{{ $info['description'] }}</p>
+                    <div class="text-4xl mb-4"><?php echo e($info['icon']); ?></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2"><?php echo e($info['title']); ?></h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed"><?php echo e($info['description']); ?></p>
                     
                     <div class="mb-4">
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Best For</span>
-                        <p class="text-sm text-slate-600">{{ $info['best_for'] }}</p>
+                        <p class="text-sm text-slate-600"><?php echo e($info['best_for']); ?></p>
                     </div>
 
                     <div class="mb-6">
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Includes</span>
                         <ul class="mt-2 space-y-1">
-                            @foreach($info['includes'] as $include)
+                            <?php $__currentLoopData = $info['includes']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $include): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <li class="flex items-center gap-2 text-sm text-slate-600">
-                                    <span class="text-emerald-500">✓</span> {{ $include }}
+                                    <span class="text-emerald-500">✓</span> <?php echo e($include); ?>
+
                                 </li>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
                     </div>
 
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:<?php echo e(phone_raw()); ?>"
                        class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
-                        📞 {{ $info['cta'] }}
+                        📞 <?php echo e($info['cta']); ?>
+
                     </a>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
 
-{{-- Pricing Factors --}}
+
 <section class="py-12 md:py-16 px-4">
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-10">
@@ -175,17 +175,17 @@ $faqSchema = [
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
-            @foreach($factors as $factor)
+            <?php $__currentLoopData = $factors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $factor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md transition-all">
-                    <h3 class="font-bold text-slate-800 mb-2">{{ $factor['title'] }}</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">{{ $factor['description'] }}</p>
+                    <h3 class="font-bold text-slate-800 mb-2"><?php echo e($factor['title']); ?></h3>
+                    <p class="text-slate-600 text-sm leading-relaxed"><?php echo e($factor['description']); ?></p>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
 
-{{-- Why Choose Us --}}
+
 <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
     <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-3xl font-bold text-white mb-4">Why Our Pricing Stands Out</h2>
@@ -215,7 +215,7 @@ $faqSchema = [
     </div>
 </section>
 
-{{-- FAQ --}}
+
 <section class="py-12 md:py-16 px-4">
     <div class="max-w-3xl mx-auto">
         <div class="text-center mb-10">
@@ -223,7 +223,7 @@ $faqSchema = [
             <p class="text-slate-600">Get answers to common pricing questions</p>
         </div>
 
-        @php
+        <?php
             $pricingFaqs = [
                 [
                     'q' => 'How is porta potty rental pricing calculated?',
@@ -246,25 +246,25 @@ $faqSchema = [
                     'a' => 'Yes, delivery and setup are included in our rental pricing. We offer same-day delivery in most areas when you call before 2 PM. Delivery distance may affect pricing for very remote locations.',
                 ],
             ];
-        @endphp
+        ?>
 
         <div class="space-y-3">
-            @foreach($pricingFaqs as $faq)
+            <?php $__currentLoopData = $pricingFaqs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $faq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
                     <summary class="flex justify-between items-center p-5 cursor-pointer font-semibold text-slate-800 hover:text-emerald-600 transition list-none">
-                        <span>{{ $faq['q'] }}</span>
+                        <span><?php echo e($faq['q']); ?></span>
                         <span class="text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500 transition-all duration-300 ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">+</span>
                     </summary>
                     <div class="px-5 pb-5 text-slate-600 leading-relaxed">
-                        <p>{{ $faq['a'] }}</p>
+                        <p><?php echo e($faq['a']); ?></p>
                     </div>
                 </details>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
 
-{{-- CTA --}}
+
 <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
     <div class="absolute inset-0 opacity-5">
         <div class="absolute top-10 left-10 text-[200px]">📞</div>
@@ -280,28 +280,30 @@ $faqSchema = [
         <p class="text-slate-300 mb-8">
             Serving construction sites, events, weddings, and more across the USA
         </p>
-        <a href="tel:{{ phone_raw() }}"
+        <a href="tel:<?php echo e(phone_raw()); ?>"
            class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                   text-white text-3xl md:text-4xl font-bold py-5 px-14
                   rounded-full shadow-2xl shadow-emerald-500/40
                   transition-all hover:scale-105 animate-pulse">
-            📞 {{ phone_display() }}
+            📞 <?php echo e(phone_display()); ?>
+
         </a>
         <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • No Obligation • No Hidden Fees</p>
     </div>
 </section>
 
-{{-- Navigation to other pages --}}
+
 <section class="py-8 px-4 bg-slate-50">
     <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-4 text-sm">
-        <a href="{{ route('home') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">← Back to Home</a>
+        <a href="<?php echo e(route('home')); ?>" class="text-emerald-600 hover:text-emerald-700 font-medium">← Back to Home</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
+        <a href="<?php echo e(route('services')); ?>" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+        <a href="<?php echo e(route('locations')); ?>" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
+        <a href="<?php echo e(route('blog.index')); ?>" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
     </div>
 </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/hasanulrubel/Playground/PPC/laravel porta potty/porta-potty-app/resources/views/pages/pricing.blade.php ENDPATH**/ ?>
