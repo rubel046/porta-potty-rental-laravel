@@ -6,28 +6,136 @@ use App\Models\City;
 
 class ContentGeneratorService
 {
+    protected ?AnthropicService $anthropic = null;
+
+    protected ?OpenAIService $openai = null;
+
+    protected ?GeminiService $gemini = null;
+
+    protected string $provider;
+
+    public function __construct()
+    {
+        $this->provider = config('services.ai.provider', env('AI_PROVIDER', 'anthropic'));
+
+        if ($this->provider === 'openai' && app()->bound(OpenAIService::class)) {
+            $this->openai = app(OpenAIService::class);
+        } elseif ($this->provider === 'gemini' && app()->bound(GeminiService::class)) {
+            $this->gemini = app(GeminiService::class);
+        } elseif ($this->provider === 'anthropic' && app()->bound(AnthropicService::class)) {
+            $this->anthropic = app(AnthropicService::class);
+        }
+    }
+
     /**
      * শহরের জন্য সম্পূর্ণ সার্ভিস পেজ কন্টেন্ট জেনারেট করুন
      */
     public function generateServicePageContent(City $city, string $serviceType = 'general'): array
     {
-        $state = $city->state;
-        $cityName = $city->name;
-        $stateCode = $state->code;
-        $stateName = $state->name;
-        $nearbyAreas = $city->getNearbyAreaNames();
-        $nearbyText = implode(', ', array_slice($nearbyAreas, 0, 8));
+        if ($this->provider === 'openai' && $this->openai && $this->openai->isConfigured()) {
+            return $this->generateFromAI($city, $serviceType, 'openai');
+        }
+
+        if ($this->provider === 'gemini' && $this->gemini && $this->gemini->isConfigured()) {
+            return $this->generateFromAI($city, $serviceType, 'gemini');
+        }
+
+        if ($this->provider === 'anthropic' && $this->anthropic && $this->anthropic->isConfigured()) {
+            return $this->generateFromAI($city, $serviceType, 'anthropic');
+        }
 
         return match ($serviceType) {
-            'general' => $this->generalContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'construction' => $this->constructionContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'wedding' => $this->weddingContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'event' => $this->eventContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'luxury' => $this->luxuryContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'party' => $this->partyContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'emergency' => $this->emergencyContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            'residential' => $this->residentialContent($city, $cityName, $stateCode, $stateName, $nearbyText),
-            default => $this->generalContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'general' => $this->generalContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'construction' => $this->constructionContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'wedding' => $this->weddingContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'event' => $this->eventContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'luxury' => $this->luxuryContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'party' => $this->partyContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'emergency' => $this->emergencyContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'residential' => $this->residentialContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            default => $this->generalContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+        };
+    }
+
+    protected function generateFromAI(City $city, string $serviceType, string $provider = 'anthropic'): array
+    {
+        $state = $city->state;
+        $serviceLabels = [
+            'general' => 'General Porta Potty Rental',
+            'construction' => 'Construction Site Porta Potty',
+            'wedding' => 'Wedding Event Porta Potty',
+            'event' => 'Event Porta Potty Rental',
+            'luxury' => 'Luxury Restroom Trailer',
+            'party' => 'Party Porta Potty Rental',
+            'emergency' => 'Emergency Portable Toilet',
+            'residential' => 'Residential Porta Potty',
+        ];
+        $serviceLabel = $serviceLabels[$serviceType] ?? 'General Porta Potty Rental';
+        $nearbyAreas = implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8));
+        $population = $city->population ? number_format($city->population) : 'N/A';
+        $serviceLink = '/services#'.$serviceType;
+
+        $prompt = <<<PROMPT
+Generate SEO-optimized content for a porta potty rental service page.
+
+City: {$city->name}, {$state->code}
+State: {$state->name}
+Nearby Areas: {$nearbyAreas}
+Population: {$population}
+
+Service Type: {$serviceLabel}
+
+Generate a JSON response with exactly this structure:
+{
+  "slug": "porta-potty-rental-{$city->slug}",
+  "h1_title": "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct",
+  "meta_title": "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct",
+  "meta_description": "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery, competitive pricing. Call for free quote!",
+  "content": "Comprehensive markdown content with headings, bullet points, at least 1500 words"
+}
+
+Requirements:
+- Content must be at least 1500 words
+- Include H2 and H3 headings
+- Include pricing info, service features
+- Include local keywords: {$city->name}, {$state->name}, {$state->code}
+- Include CTAs like Call now, Get a quote
+- Internal links to {$serviceLink}
+- Professional SEO-optimized copy
+- No placeholder text
+
+Respond ONLY with valid JSON.
+PROMPT;
+
+        $result = match ($provider) {
+            'openai' => $this->openai->generateJson($prompt, 8192),
+            'gemini' => $this->gemini->generateJson($prompt, 8192),
+            default => $this->anthropic->generateJson($prompt, 8192),
+        };
+
+        if (! $result) {
+            return $this->generateServicePageContent($city, $serviceType);
+        }
+
+        $content = $result['content'] ?? '';
+
+        return [
+            'slug' => $result['slug'] ?? "porta-potty-rental-{$city->slug}",
+            'service_type' => $serviceType,
+            'h1_title' => $result['h1_title'] ?? '',
+            'meta_title' => $result['meta_title'] ?? '',
+            'meta_description' => $result['meta_description'] ?? '',
+            'content' => $content,
+            'word_count' => str_word_count(strip_tags($content)),
+        ];
+    }
+
+    public function getAiService(): AnthropicService|OpenAIService|GeminiService|null
+    {
+        return match ($this->provider) {
+            'openai' => $this->openai,
+            'gemini' => $this->gemini,
+            default => $this->anthropic,
         };
     }
 

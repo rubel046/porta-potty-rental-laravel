@@ -150,12 +150,12 @@ class CityController extends Controller
             $city->servicePages()->updateOrCreate(
                 ['slug' => $data['slug']],
                 [
-                    'service_type' => $data['service_type'],
-                    'h1_title' => $data['h1_title'],
-                    'meta_title' => $data['meta_title'],
-                    'meta_description' => $data['meta_description'],
-                    'content' => $data['content'],
-                    'word_count' => $data['word_count'],
+                    'service_type' => $data['service_type'] ?? $type,
+                    'h1_title' => $data['h1_title'] ?? null,
+                    'meta_title' => $data['meta_title'] ?? null,
+                    'meta_description' => $data['meta_description'] ?? null,
+                    'content' => $data['content'] ?? '',
+                    'word_count' => $data['word_count'] ?? 0,
                     'is_published' => true,
                     'published_at' => now(),
                 ]
