@@ -37,6 +37,66 @@ class PhoneNumberController extends Controller
         return view('admin.phone-numbers.create', compact('cities'));
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'number' => 'required|string|unique:phone_numbers,number',
+            'friendly_name' => 'nullable|string|max:255',
+            'city_id' => 'nullable',
+            'is_active' => 'boolean',
+        ]);
+
+        $number = preg_replace('/[^0-9]/', '', $request->number);
+        $areaCode = strlen($number) >= 10 ? substr($number, 0, 3) : null;
+
+        PhoneNumber::create([
+            'number' => $request->number,
+            'friendly_name' => $request->filled('friendly_name') ? $request->friendly_name : $request->number,
+            'area_code' => $areaCode,
+            'city_id' => $request->city_id ?: null,
+            'is_active' => $request->boolean('is_active', true),
+            'provider' => 'manual',
+        ]);
+
+        return redirect()->route('admin.phone-numbers.index')
+            ->with('success', 'Phone number added successfully!');
+    }
+
+    public function show(PhoneNumber $phoneNumber)
+    {
+        $phoneNumber->load(['city.state', 'buyer', 'callLogs']);
+
+        return view('admin.phone-numbers.show', compact('phoneNumber'));
+    }
+
+    public function edit(PhoneNumber $phoneNumber)
+    {
+        $cities = City::active()->with('state')->orderBy('name')->get();
+
+        return view('admin.phone-numbers.edit', compact('phoneNumber', 'cities'));
+    }
+
+    public function update(Request $request, PhoneNumber $phoneNumber)
+    {
+        $request->validate([
+            'number' => 'required|string|unique:phone_numbers,number,'.$phoneNumber->id,
+            'friendly_name' => 'nullable|string|max:255',
+            'city_id' => 'nullable',
+            'is_active' => 'boolean',
+        ]);
+
+        $phoneNumber->update([
+            'number' => $phoneNumber->number,
+            'friendly_name' => $request->filled('friendly_name') ? $request->friendly_name : $phoneNumber->number,
+            'area_code' => $phoneNumber->area_code,
+            'city_id' => $request->city_id ?: null,
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return redirect()->route('admin.phone-numbers.index')
+            ->with('success', 'Phone number updated successfully!');
+    }
+
     public function purchase(Request $request, SignalWireService $signalWire)
     {
         $request->validate([
@@ -65,5 +125,13 @@ class PhoneNumberController extends Controller
 
         return redirect()->route('admin.phone-numbers.index')
             ->with('success', "Number {$phoneNumber->friendly_name} purchased!");
+    }
+
+    public function destroy(PhoneNumber $phoneNumber)
+    {
+        $phoneNumber->delete();
+
+        return redirect()->route('admin.phone-numbers.index')
+            ->with('success', 'Phone number deleted successfully!');
     }
 }

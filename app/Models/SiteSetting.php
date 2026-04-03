@@ -13,9 +13,11 @@ class SiteSetting extends Model
     {
         return Cache::remember("setting_{$key}", 3600, function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
-            if (!$setting) return $default;
+            if (! $setting) {
+                return $default;
+            }
 
-            return match($setting->type) {
+            return match ($setting->type) {
                 'boolean' => (bool) $setting->value,
                 'integer' => (int) $setting->value,
                 'json' => json_decode($setting->value, true),

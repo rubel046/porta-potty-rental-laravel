@@ -141,14 +141,14 @@
                     </div>
                 </div>
 
-                {{-- Quote Link --}}
-                <a href="tel:{{ phone_raw() }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
-                    Get Quote
-                </a>
-
                 {{-- Locations --}}
                 <a href="{{ route('locations') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                     Locations
+                </a>
+
+                {{-- Pricing --}}
+                <a href="{{ route('pricing') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                    Pricing
                 </a>
 
                 {{-- Blog --}}
@@ -221,6 +221,9 @@
                 </a>
                 <a href="{{ route('services') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">🚽</span> Services
+                </a>
+                <a href="{{ route('pricing') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                    <span class="text-2xl">💰</span> Pricing
                 </a>
                 <a href="{{ route('locations') }}" class="flex items-center gap-4 px-4 py-4 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                     <span class="text-2xl">📍</span> All Locations
@@ -542,6 +545,7 @@
 </script>
 
 @include('components.phone-tracker')
+@include('components.exit-intent-popup', ['title' => 'Get a Free Quote Today!', 'message' => 'Call now and mention this popup for %DISCOUNT% off your first rental!', 'discount' => '10'])
 @stack('scripts')
 </body>
 </html>

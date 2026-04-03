@@ -10,5 +10,11 @@ Disallow: /telescope/
 # Disallow API/webhook endpoints
 Disallow: /api/
 Disallow: /webhook/
+Disallow: /login
+Disallow: /register
+Disallow: /password/reset
 
+# Sitemaps
 Sitemap: https://pottydirect.com/sitemap.xml
+Sitemap: https://pottydirect.com/sitemap-cities.xml
+Sitemap: https://pottydirect.com/sitemap-blog.xml

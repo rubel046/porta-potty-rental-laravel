@@ -12,4 +12,3 @@ Artisan::command('inspire', function () {
 Schedule::command('report:calls --period=today')
     ->dailyAt('23:55')
     ->timezone('Asia/Dhaka');
-

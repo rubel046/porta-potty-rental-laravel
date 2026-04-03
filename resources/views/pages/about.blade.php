@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'About Us | Porta Potty Rental USA')
-@section('meta_description', 'Learn about Porta Potty Rental USA — your trusted partner for affordable, clean portable toilet rentals across the United States.')
+@section('title', 'About Potty Direct | Leading Porta Potty Rental Company in the USA')
+@section('meta_description', 'Learn about Potty Direct — your trusted partner for affordable, clean portable toilet rentals across the United States. Same-day delivery, competitive pricing, and 25+ years of experience serving construction sites, events, and weddings.')
 
 @section('content')
 
@@ -106,6 +106,19 @@
                           py-4 px-10 rounded-full hover:scale-105 transition-all shadow-xl">
                     📞 {{ phone_display() }}
                 </a>
+            </div>
+
+            {{-- Quick Links --}}
+            <div class="mt-10 pt-8 border-t border-slate-200">
+                <div class="flex flex-wrap justify-center gap-6 text-sm">
+                    <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
+                    <span class="text-slate-300">|</span>
+                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View Pricing</a>
+                    <span class="text-slate-300">|</span>
+                    <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+                    <span class="text-slate-300">|</span>
+                    <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
+                </div>
             </div>
         </div>
     </section>

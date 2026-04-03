@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Portable Restroom Rental | Same Day Delivery | Potty Direct')
-@section('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call (888) 555-0199!')
+@section('title', 'Portable Restroom Rental | Same-Day Delivery Across the USA | Potty Direct')
+@section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call (888) 555-0199!')
 @section('canonical', url('/'))
 
 @push('schema')
@@ -173,13 +173,13 @@
                 </div>
 
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
-                    Rent Portable Toilets<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300">Anywhere in the USA</span>
+                    Rent Porta Potties<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300">Anywhere in the USA — Same-Day Delivery</span>
                 </h1>
 
                 <p class="text-xl md:text-2xl text-slate-300 mb-6 leading-relaxed max-w-2xl">
-                    Affordable <strong class="text-white">porta potty rental</strong> for construction sites,
-                    outdoor events, weddings & festivals. <strong class="text-white">Same-day delivery</strong> available nationwide.
+                    Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor event, or wedding? 
+                    We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50 states. Call now for same-day delivery!
                 </p>
 
                 {{-- CTA Buttons --}}
@@ -382,8 +382,35 @@
 
             <div class="text-center mt-8">
                 <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-2">
-                    View all rental options and pricing →
+                    View All Services →
                 </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- Quick Links --}}
+    <section class="py-10 px-4 bg-slate-50 border-y border-slate-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-wrap justify-center gap-8 text-center">
+                <a href="{{ route('services') }}" class="flex flex-col items-center gap-2 group">
+                    <span class="text-3xl">🚽</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">Our Services</span>
+                </a>
+                <a href="{{ route('pricing') }}" class="flex flex-col items-center gap-2 group">
+                    <span class="text-3xl">💰</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">View Pricing</span>
+                </a>
+                <a href="{{ route('locations') }}" class="flex flex-col items-center gap-2 group">
+                    <span class="text-3xl">📍</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">All Locations</span>
+                </a>
+                <a href="{{ route('blog.index') }}" class="flex flex-col items-center gap-2 group">
+                    <span class="text-3xl">📝</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">Blog</span>
+                </a>
+            </div>
+        </div>
+    </section>
             </div>
         </div>
     </section>

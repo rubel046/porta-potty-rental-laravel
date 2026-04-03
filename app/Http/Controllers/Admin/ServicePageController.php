@@ -57,4 +57,27 @@ class ServicePageController extends Controller
         return redirect()->route('admin.service-pages.index')
             ->with('success', 'Service page updated!');
     }
+
+    public function destroy(ServicePage $servicePage)
+    {
+        $cityName = $servicePage->city->name;
+        $type = $servicePage->service_type;
+        $servicePage->delete();
+
+        return redirect()->back()
+            ->with('success', "Deleted {$type} page for {$cityName}!");
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $pageIds = $request->input('page_ids', []);
+
+        if (empty($pageIds)) {
+            return redirect()->back()->with('error', 'No pages selected');
+        }
+
+        $count = ServicePage::whereIn('id', $pageIds)->delete();
+
+        return redirect()->back()->with('success', "Deleted {$count} pages!");
+    }
 }

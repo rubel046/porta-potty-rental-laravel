@@ -53,14 +53,16 @@ style="display: none;">
         
         {{-- Close button --}}
         <button @click="dismissed = true" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition z-10">
-            <x-icon name="x" class="w-5 h-5 text-slate-500" />
+            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
         </button>
         
         {{-- Content --}}
         <div class="p-8 text-center">
             {{-- Icon --}}
             <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30">
-                <x-icon name="phone" class="w-10 h-10 text-white" />
+                <span class="text-4xl">📞</span>
             </div>
             
             {{-- Title --}}
@@ -77,16 +79,13 @@ style="display: none;">
             <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
                 <ul class="text-sm text-emerald-800 space-y-2 text-left">
                     <li class="flex items-center gap-2">
-                        <x-icon name="check" class="w-4 h-4 text-emerald-600" />
-                        Same-day delivery available
+                        <span class="text-emerald-600">✓</span> Same-day delivery available
                     </li>
                     <li class="flex items-center gap-2">
-                        <x-icon name="check" class="w-4 h-4 text-emerald-600" />
-                        Free delivery & pickup
+                        <span class="text-emerald-600">✓</span> Free delivery & pickup
                     </li>
                     <li class="flex items-center gap-2">
-                        <x-icon name="check" class="w-4 h-4 text-emerald-600" />
-                        No hidden fees, transparent pricing
+                        <span class="text-emerald-600">✓</span> No hidden fees, transparent pricing
                     </li>
                 </ul>
             </div>
@@ -96,8 +95,7 @@ style="display: none;">
                class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                       text-white text-xl font-bold py-4 rounded-xl
                       shadow-lg shadow-emerald-500/30 transition-all hover:scale-[1.02] mb-4">
-                <x-icon name="phone" class="w-5 h-5 inline mr-2" />
-                {{ phone_display() }}
+                📞 {{ phone_display() }}
             </a>
             
             {{-- Dismiss link --}}

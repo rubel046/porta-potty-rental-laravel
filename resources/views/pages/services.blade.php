@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Porta Potty Rental Services | All Types | Nationwide Delivery')
-@section('meta_description', 'Porta potty rental services nationwide. Standard, Deluxe flushable, ADA accessible, Luxury restroom trailers, portable showers & more. Same-day delivery available. Call for a free quote!')
+@section('title', 'Porta Potty Rental Services | Standard, Deluxe & Luxury Units | Potty Direct')
+@section('meta_description', 'Porta potty rental services nationwide. Standard, Deluxe flushable, ADA accessible, Luxury restroom trailers, portable showers & more. Same-day delivery available across the USA. Call for a free quote!')
 
 @push('schema')
 @verbatim
@@ -31,7 +31,38 @@
                     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "VIP Event Restroom"}},
                     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Construction Site Package"}}
                 ]
-            }
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "reviewCount": "500"
+            },
+            "review": [
+                {
+                    "@type": "Review",
+                    "reviewRating": {
+                        "@type": "Rating",
+                        "ratingValue": "5"
+                    },
+                    "author": {
+                        "@type": "Person",
+                        "name": "Mike Thompson"
+                    },
+                    "reviewBody": "We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice."
+                },
+                {
+                    "@type": "Review",
+                    "reviewRating": {
+                        "@type": "Rating",
+                        "ratingValue": "5"
+                    },
+                    "author": {
+                        "@type": "Person",
+                        "name": "Sarah Martinez"
+                    },
+                    "reviewBody": "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless!"
+                }
+            ]
         }
     </script>
     <script type="application/ld+json">
@@ -431,6 +462,19 @@
                 📞 {{ phone_display() }}
             </a>
             <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • No Obligation Quote</p>
+        </div>
+    </section>
+
+    {{-- Quick Links --}}
+    <section class="py-8 px-4 bg-slate-50">
+        <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm">
+            <a href="{{ route('home') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">← Back to Home</a>
+            <span class="text-slate-300">|</span>
+            <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View Pricing</a>
+            <span class="text-slate-300">|</span>
+            <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+            <span class="text-slate-300">|</span>
+            <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
         </div>
     </section>
 @endsection

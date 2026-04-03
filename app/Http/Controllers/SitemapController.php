@@ -16,6 +16,8 @@ class SitemapController extends Controller
         $sitemap = Sitemap::create();
 
         $sitemap->add(url('/'));
+        $sitemap->add(url('/services'));
+        $sitemap->add(url('/pricing'));
         $sitemap->add(url('/locations'));
         $sitemap->add(url('/about'));
         $sitemap->add(url('/privacy-policy'));

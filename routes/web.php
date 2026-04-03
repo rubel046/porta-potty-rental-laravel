@@ -36,6 +36,10 @@ Route::get('/locations', [PageController::class, 'locations'])
 Route::get('/services', [PageController::class, 'services'])
     ->name('services');
 
+// Pricing Page
+Route::get('/pricing', [PageController::class, 'pricing'])
+    ->name('pricing');
+
 // State Page (e.g., /porta-potty-rental-texas)
 Route::get('/porta-potty-rental-{stateSlug}', [PageController::class, 'statePage'])
     ->name('state.page')
@@ -132,14 +136,30 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/cities/{city}/generate-pages', [CityController::class, 'generatePages'])
         ->name('cities.generate-pages');
 
+    // Delete all service pages, FAQs, and testimonials for a city
+    Route::delete('/cities/{city}/delete-pages', [CityController::class, 'deletePages'])
+        ->name('cities.delete-pages');
+
+    // Import JSON content for a city
+    Route::post('/cities/{city}/import-json', [CityController::class, 'importJson'])
+        ->name('cities.import-json');
+
+    // Get sample JSON format for a city
+    Route::get('/cities/{city}/sample-json', [CityController::class, 'getSampleJson'])
+        ->name('cities.sample-json');
+
     /*
     |----------------------------------------------------------------------
     | Service Pages Management
     |----------------------------------------------------------------------
     */
     Route::resource('service-pages', ServicePageController::class)
-        ->except(['create', 'store', 'destroy']);
-    // Note: create/store/destroy excluded intentionally - pages are auto-generated from cities
+        ->except(['create', 'store']);
+    // Note: create/store excluded intentionally - pages are auto-generated from cities
+
+    // Bulk delete service pages
+    Route::delete('/service-pages/bulk-destroy', [ServicePageController::class, 'bulkDestroy'])
+        ->name('service-pages.bulk-destroy');
 
     /*
     |----------------------------------------------------------------------
@@ -160,8 +180,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     | Phone Numbers Management
     |----------------------------------------------------------------------
     */
-    Route::resource('phone-numbers', PhoneNumberController::class)
-        ->only(['index', 'create', 'destroy']);
+    Route::resource('phone-numbers', PhoneNumberController::class);
 
     // SignalWire থেকে নম্বর কেনা
     Route::post('/phone-numbers/purchase', [PhoneNumberController::class, 'purchase'])

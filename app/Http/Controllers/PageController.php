@@ -274,6 +274,118 @@ class PageController extends Controller
     }
 
     /**
+     * Pricing Page - No specific prices shown
+     */
+    public function pricing()
+    {
+        $pricingInfo = [
+            [
+                'icon' => '🚻',
+                'title' => 'Standard Porta Potty',
+                'description' => 'Basic, functional units perfect for construction sites and work areas. OSHA compliant and budget-friendly.',
+                'best_for' => 'Construction Sites, Work Zones, Outdoor Projects',
+                'includes' => [
+                    'Weekly servicing and cleaning',
+                    'Delivery and setup',
+                    'OSHA compliant',
+                    'Hand sanitizer included',
+                ],
+                'cta' => 'Get Quote for Standard Units',
+            ],
+            [
+                'icon' => '🚿',
+                'title' => 'Deluxe Flushable Unit',
+                'description' => 'Premium units with flushing toilet and hand sink. Ideal for events where guests expect more comfort.',
+                'best_for' => 'Weddings, Private Events, Corporate Functions',
+                'includes' => [
+                    'Flushing toilet',
+                    'Hand sink with running water',
+                    'Interior mirror and lighting',
+                    'Weekly servicing included',
+                ],
+                'cta' => 'Get Quote for Deluxe Units',
+            ],
+            [
+                'icon' => '♿',
+                'title' => 'ADA Accessible Unit',
+                'description' => 'Wheelchair-accessible units that meet all federal accessibility requirements.',
+                'best_for' => 'Public Events, ADA Compliance, Venues',
+                'includes' => [
+                    'Extra-wide door for wheelchair access',
+                    'Interior grab bars',
+                    'Non-slip flooring',
+                    'Spacious interior',
+                ],
+                'cta' => 'Get Quote for ADA Units',
+            ],
+            [
+                'icon' => '✨',
+                'title' => 'Luxury Restroom Trailer',
+                'description' => 'High-end trailers with climate control, porcelain fixtures, and elegant interiors.',
+                'best_for' => 'VIP Events, Weddings, Film Productions',
+                'includes' => [
+                    'Climate controlled (A/C & heat)',
+                    'Porcelain flush toilets',
+                    'Vanity with mirror',
+                    'Men\'s and women\'s sides',
+                ],
+                'cta' => 'Get Quote for Luxury Trailers',
+            ],
+            [
+                'icon' => '🚿',
+                'title' => 'Portable Shower Unit',
+                'description' => 'Private shower stalls for construction sites, events, and remote locations.',
+                'best_for' => 'Construction Sites, Camping, Events',
+                'includes' => [
+                    'Hot and cold water',
+                    'Privacy curtains',
+                    'Drainage system',
+                    'Changing area',
+                ],
+                'cta' => 'Get Quote for Shower Units',
+            ],
+            [
+                'icon' => '🛢️',
+                'title' => 'Holding Tank',
+                'description' => 'Large capacity tanks for remote job sites without sewage access.',
+                'best_for' => 'Remote Sites, Mining, Oil Fields',
+                'includes' => [
+                    '500-1000 gallon capacity',
+                    'Remote location ready',
+                    'Regular pumping service',
+                    'Weather resistant',
+                ],
+                'cta' => 'Get Quote for Holding Tanks',
+            ],
+        ];
+
+        $factors = [
+            [
+                'title' => 'Number of Units',
+                'description' => 'The more units you rent, the better value you get. We offer volume discounts for large orders.',
+            ],
+            [
+                'title' => 'Rental Duration',
+                'description' => 'Daily, weekly, and monthly rentals available. Long-term rentals come with significant savings.',
+            ],
+            [
+                'title' => 'Unit Type',
+                'description' => 'Standard, deluxe, ADA, and luxury units have different pricing based on features and amenities.',
+            ],
+            [
+                'title' => 'Location',
+                'description' => 'Delivery distance and local regulations can affect pricing. Call us for location-specific quotes.',
+            ],
+            [
+                'title' => 'Servicing Frequency',
+                'description' => 'Weekly servicing is included. Extra servicing or event-only rentals may have different pricing.',
+            ],
+        ];
+
+        return view('pages.pricing', compact('pricingInfo', 'factors'));
+    }
+
+    /**
      * City Service Page (SEO এর মূল পেজ)
      */
     public function cityPage(string $slug)
@@ -296,14 +408,23 @@ class PageController extends Controller
             $faqs = $cityFaqs;
         }
 
-        // Testimonials
-        $testimonials = Testimonial::where(function ($q) use ($city) {
-            $q->where('city_id', $city->id)->orWhereNull('city_id');
-        })
+        // Testimonials - filter by service type
+        $testimonials = Testimonial::where('city_id', $city->id)
+            ->where('service_type', $servicePage->service_type)
             ->where('is_active', true)
             ->inRandomOrder()
             ->take(4)
             ->get();
+
+        // Fallback to general testimonials if none found for service type
+        if ($testimonials->isEmpty()) {
+            $testimonials = Testimonial::where('city_id', $city->id)
+                ->where('service_type', 'general')
+                ->where('is_active', true)
+                ->inRandomOrder()
+                ->take(4)
+                ->get();
+        }
 
         // Nearby cities with pages
         $nearbyNames = $city->getNearbyAreaNames();
