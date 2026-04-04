@@ -15,7 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-
         // CSRF token exempt for webhooks and API
         $middleware->validateCsrfTokens(except: [
             'webhook/*',
@@ -26,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             TrackTrafficSource::class,
         ]);
+
+        // Add this line to trust Cloudflare proxies
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
