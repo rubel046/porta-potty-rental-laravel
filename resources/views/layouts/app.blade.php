@@ -92,7 +92,7 @@
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-14 sm:h-16 lg:h-18">
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0 my-1">
                 <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
                     🚽
                 </div>
@@ -102,7 +102,24 @@
                 </div>
             </a>
 
-                {{-- Desktop Nav --}}
+            {{-- Mobile Search Box (visible center on small screens) --}}
+            <div class="flex-1 mx-2 md:hidden flex items-center">
+                <div class="relative flex-1">
+                    <input type="text" id="mobile-header-search" placeholder="Search city or zip..."
+                           class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm transition outline-none focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100">
+                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                {{-- Mobile Search Results Dropdown --}}
+                <div id="mobile-search-results" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 py-2 max-h-80 overflow-y-auto hidden z-[100] w-[90%] max-w-md">
+                    <div class="px-4 py-3 text-sm text-slate-500 text-center">
+                        Type a city name or zip code to search...
+                    </div>
+                </div>
+            </div>
+
+            {{-- Desktop Nav --}}
             <nav class="hidden lg:flex items-center gap-1">
                 {{-- Services Dropdown --}}
                 <div class="relative group">
@@ -188,7 +205,7 @@
                 </a>
             </nav>
 
-            {{-- Search Bar --}}
+            {{-- Desktop Search Bar --}}
             <div class="hidden md:flex items-center flex-1 max-w-xs mx-4 lg:mx-6">
                 <div class="relative w-full">
                     <input type="text" id="header-search" placeholder="Search city or zip..."
@@ -214,7 +231,7 @@
                 </a>
 
                 {{-- Mobile Menu Toggle --}}
-                <button id="mobile-menu-btn" type="button" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition flex items-center justify-center" aria-label="Menu">
+                <button id="mobile-menu-btn" type="button" class="lg:hidden p-2 h-auto min-h-[2.5rem] rounded-lg hover:bg-slate-100 transition flex items-center justify-center" aria-label="Menu">
                     <span id="menu-icon" class="flex items-center justify-center">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -525,6 +542,74 @@
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `{{ route('locations') }}?q=${encodeURIComponent(query)}`;
+                } else {
+                    window.location.href = `{{ route('locations') }}`;
+                }
+            }
+        });
+    }
+
+    // Mobile Header Search functionality (uses separate mobile-search-results dropdown)
+    const mobileHeaderSearchInput = document.getElementById('mobile-header-search');
+    const mobileSearchResults = document.getElementById('mobile-search-results');
+    
+    if (mobileHeaderSearchInput && mobileSearchResults) {
+        let searchTimeout;
+
+        mobileHeaderSearchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+
+            if (query.length < 2) {
+                mobileSearchResults.classList.add('hidden');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                mobileSearchResults.innerHTML = `
+                    <div class="px-4 py-3 text-sm text-slate-500 flex items-center gap-2">
+                        <svg class="animate-spin w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Searching for "${query}"...
+                    </div>
+                `;
+                mobileSearchResults.classList.remove('hidden');
+
+                setTimeout(() => {
+                    mobileSearchResults.innerHTML = `
+                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition border-b border-slate-50">
+                            <span class="text-emerald-500">📍</span>
+                            <div>
+                                <div class="text-sm font-medium text-slate-700">${query}, TX</div>
+                                <div class="text-xs text-slate-400">Texas • View all Texas locations</div>
+                            </div>
+                        </a>
+                        <a href="{{ route('locations') }}?q=${query}" class="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition">
+                            <span class="text-emerald-500">📍</span>
+                            <div>
+                                <div class="text-sm font-medium text-slate-700">View all locations matching "${query}"</div>
+                                <div class="text-xs text-slate-400">Browse cities</div>
+                            </div>
+                        </a>
+                    `;
+                }, 300);
+            }, 300);
+        });
+
+        // Hide results on click outside
+        document.addEventListener('click', (e) => {
+            if (!mobileHeaderSearchInput.contains(e.target) && !mobileSearchResults.contains(e.target)) {
+                mobileSearchResults.classList.add('hidden');
+            }
+        });
+
+        // Handle enter key
+        mobileHeaderSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const query = mobileHeaderSearchInput.value.trim();
                 if (query) {
                     window.location.href = `{{ route('locations') }}?q=${encodeURIComponent(query)}`;
                 } else {
