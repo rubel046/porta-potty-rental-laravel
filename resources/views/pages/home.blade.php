@@ -104,7 +104,7 @@ $faqSchema = [
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
 
-    <section class="relative min-h-[600px] md:min-h-[680px] flex items-center overflow-hidden">
+    <section class="relative min-h-[500px] sm:min-h-[560px] md:min-h-[680px] flex items-center overflow-hidden">
         {{-- Hero Background Image --}}
         <div class="absolute inset-0">
             <img src="{{ $heroUrl }}" alt="Portable toilet rental for construction and events"
@@ -116,90 +116,92 @@ $faqSchema = [
         </div>
 
         {{-- Decorative Elements --}}
-        <div class="absolute top-20 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-20 left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-16 sm:top-20 right-4 sm:right-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-emerald-500/10 rounded-full blur-3xl desktop-only"></div>
+        <div class="absolute bottom-16 sm:bottom-20 left-4 sm:left-10 w-24 sm:w-32 md:w-48 h-24 sm:h-32 md:h-48 bg-blue-500/10 rounded-full blur-3xl desktop-only"></div>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
-            <div class="max-w-3xl">
+        <div class="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-28 w-full">
+            <div class="max-w-2xl md:max-w-3xl">
                 {{-- Badge --}}
-                <div class="inline-flex items-center gap-2 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-emerald-300 text-sm px-4 py-2 rounded-full mb-6">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-emerald-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
                     <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                    Same-Day Porta Potty Delivery Available
+                    <span class="hidden sm:inline">Same-Day</span> Delivery Available
                 </div>
 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-4 sm:mb-6 leading-tight">
                     Rent Porta Potties<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300">Anywhere in the USA — Same-Day Delivery</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+                        Anywhere in the USA — Same-Day Delivery
+                    </span>
                 </h1>
 
-                <p class="text-xl md:text-2xl text-slate-300 mb-6 leading-relaxed max-w-2xl">
+                <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-4 sm:mb-6 leading-relaxed max-w-xl">
                     Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor event, or wedding? 
-                    We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50 states. Call now for same-day delivery!
+                    We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50 states!
                 </p>
 
                 {{-- CTA Buttons --}}
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <a href="tel:{{ phone_raw() }}"
                        class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-white text-xl md:text-2xl font-bold
-                              py-4 px-10 rounded-full shadow-2xl shadow-emerald-500/30
+                              text-lg sm:text-xl md:text-2xl font-bold
+                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
                               transition-all hover:scale-105 hover:shadow-emerald-500/50
-                              flex items-center justify-center gap-3">
-                        <span class="text-2xl">📞</span>
+                              flex items-center justify-center gap-2 sm:gap-3 hero-cta-btn">
+                        <span class="text-xl sm:text-2xl">📞</span>
                         {{ phone_display() }}
                     </a>
                     <a href="{{ route('locations') }}"
                        class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
-                              border border-white/20 text-white text-lg font-semibold
-                              py-4 px-8 rounded-full
+                              border border-white/20 text-white text-base sm:text-lg font-semibold
+                              py-3 sm:py-4 px-6 sm:px-8 rounded-full
                               transition-all hover:scale-105
                               flex items-center justify-center gap-2">
                         📍 Find Your City
                     </a>
                 </div>
 
-                {{-- Trust Indicators --}}
-                <div class="flex flex-wrap items-center gap-6 text-sm">
-                    <div class="flex items-center gap-2">
+                {{-- Trust Indicators - Wraps better on mobile --}}
+                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 text-xs sm:text-sm trust-indicators">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
                         <div class="flex">
                             <span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span>
                         </div>
                         <span class="text-slate-300 font-medium">4.9/5</span>
                     </div>
-                    <div class="h-4 w-px bg-white/20"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                    <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="inline-flex items-center justify-center w-4 sm:w-5 h-4 sm:h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
                         <span class="text-slate-300 font-medium">Licensed & Insured</span>
                     </div>
-                    <div class="h-4 w-px bg-white/20"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
-                        <span class="text-slate-300 font-medium">Same-Day Delivery</span>
+                    <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="inline-flex items-center justify-center w-4 sm:w-5 h-4 sm:h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                        <span class="text-slate-300 font-medium">Same-Day</span>
                     </div>
-                    <div class="h-4 w-px bg-white/20"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-5 h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
+                    <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="inline-flex items-center justify-center w-4 sm:w-5 h-4 sm:h-5 bg-emerald-500 rounded-full text-white text-xs font-bold">✓</span>
                         <span class="text-slate-300 font-medium">No Hidden Fees</span>
                     </div>
                 </div>
                 
-                {{-- Trust Badges Row --}}
-                <div class="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/10">
-                    <div class="flex items-center gap-2 text-slate-400 text-xs">
-                        <span class="px-2 py-1 bg-white/10 rounded">🏢</span>
-                        <span>BBB A+ Rated</span>
+                {{-- Trust Badges Row - Simplified on mobile --}}
+                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10 text-xs text-slate-400">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">🏢</span>
+                        <span class="hidden sm:inline">BBB A+</span>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-xs">
-                        <span class="px-2 py-1 bg-white/10 rounded">📋</span>
-                        <span>OSHA Compliant</span>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">📋</span>
+                        <span class="hidden sm:inline">OSHA</span>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-xs">
-                        <span class="px-2 py-1 bg-white/10 rounded">🏗️</span>
-                        <span>25+ Years Experience</span>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">🏗️</span>
+                        <span class="hidden sm:inline">25+ Yrs</span>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-xs">
-                        <span class="px-2 py-1 bg-white/10 rounded">🇺🇸</span>
-                        <span>50,000+ Customers</span>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">🇺🇸</span>
+                        <span class="hidden sm:inline">50K+</span>
                     </div>
                 </div>
             </div>
@@ -217,30 +219,30 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- SERVICE OPTIONS --}}
     {{-- ============================================ --}}
-    <section id="services" class="py-16 md:py-20 px-4">
+    <section id="services" class="py-12 md:py-16 lg:py-20 px-3 sm:px-4">
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+            <div class="text-center mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     Porta Potty Rental Options for Every Need
                 </h2>
-                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500 max-w-2xl mx-auto">
                     From basic construction units to luxury restroom trailers —
                     we have the right <strong>portable toilet rental</strong> solution for every budget and event type.
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {{-- Standard --}}
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
                             hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300
                             group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🚻</div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Standard Portable Toilet</h3>
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">🚻</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Standard Portable Toilet</h3>
                     <p class="text-slate-500 text-sm mb-4">
                         Perfect for construction sites & basic outdoor needs
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-splash urinal</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Hand sanitizer</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ventilation system</li>
@@ -248,7 +250,7 @@ $faqSchema = [
                     </ul>
                     <a href="tel:{{ phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
-                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
+                              font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
                         <span>Get Free Quote</span>
@@ -256,20 +258,20 @@ $faqSchema = [
                 </div>
 
                 {{-- Deluxe --}}
-                <div class="bg-white border-2 border-emerald-400 rounded-2xl p-6 text-center
+                <div class="bg-white border-2 border-emerald-400 rounded-2xl p-4 sm:p-6 text-center
                             hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-300
                             group relative overflow-visible">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500
-                                text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-xl shadow-amber-500/40 z-20">
+                    <div class="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500
+                                text-white text-xs sm:text-sm font-extrabold px-3 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-xl shadow-amber-500/40 z-20">
                         ⭐ MOST POPULAR
                     </div>
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-5xl mb-4 mt-2 group-hover:scale-110 transition-transform duration-300">🚿</div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Deluxe Flushable Unit</h3>
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 mt-1 sm:mt-2 group-hover:scale-110 transition-transform duration-300">🚿</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Deluxe Flushable Unit</h3>
                     <p class="text-slate-500 text-sm mb-4">
                         Flushing toilet with hand wash station
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Flushing toilet</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Sink with running water</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior mirror</li>
@@ -277,7 +279,7 @@ $faqSchema = [
                     </ul>
                     <a href="tel:{{ phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
+                              text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
                         <span>Get Free Quote</span>
@@ -285,16 +287,16 @@ $faqSchema = [
                 </div>
 
                 {{-- ADA --}}
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
                             hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300
                             group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">♿</div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">ADA Accessible Unit</h3>
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">♿</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">ADA Accessible Unit</h3>
                     <p class="text-slate-500 text-sm mb-4">
                         Wheelchair accessible, fully ADA compliant
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Extra-wide door</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior grab bars</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-slip flooring</li>
@@ -302,7 +304,7 @@ $faqSchema = [
                     </ul>
                     <a href="tel:{{ phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
-                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
+                              font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
                         <span>Get Free Quote</span>
@@ -310,16 +312,16 @@ $faqSchema = [
                 </div>
 
                 {{-- Luxury --}}
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
                             hover:border-purple-200 hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300
                             group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-purple-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">✨</div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Luxury Restroom Trailer</h3>
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-purple-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">✨</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Luxury Restroom Trailer</h3>
                     <p class="text-slate-500 text-sm mb-4">
                         Premium restroom trailers for upscale events
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-6 text-left">
+                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Climate controlled</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Porcelain fixtures</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Vanity & lighting</li>
@@ -327,7 +329,7 @@ $faqSchema = [
                     </ul>
                     <a href="tel:{{ phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
-                              font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
+                              font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
                         <span>Get Free Quote</span>
@@ -335,7 +337,7 @@ $faqSchema = [
                 </div>
             </div>
 
-            <div class="text-center mt-8">
+            <div class="text-center mt-6 sm:mt-8">
                 <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-2">
                     View All Services →
                 </a>
@@ -344,28 +346,25 @@ $faqSchema = [
     </section>
 
     {{-- Quick Links --}}
-    <section class="py-10 px-4 bg-slate-50 border-y border-slate-200">
+    <section class="py-8 sm:py-10 px-3 sm:px-4 bg-slate-50 border-y border-slate-200">
         <div class="max-w-6xl mx-auto">
-            <div class="flex flex-wrap justify-center gap-8 text-center">
+            <div class="flex flex-wrap justify-center gap-6 sm:gap-8 text-center">
                 <a href="{{ route('services') }}" class="flex flex-col items-center gap-2 group">
-                    <span class="text-3xl">🚽</span>
-                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">Our Services</span>
+                    <span class="text-2xl sm:text-3xl">🚽</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">Our Services</span>
                 </a>
                 <a href="{{ route('pricing') }}" class="flex flex-col items-center gap-2 group">
-                    <span class="text-3xl">💰</span>
-                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">View Pricing</span>
+                    <span class="text-2xl sm:text-3xl">💰</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">View Pricing</span>
                 </a>
                 <a href="{{ route('locations') }}" class="flex flex-col items-center gap-2 group">
-                    <span class="text-3xl">📍</span>
-                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">All Locations</span>
+                    <span class="text-2xl sm:text-3xl">📍</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">All Locations</span>
                 </a>
                 <a href="{{ route('blog.index') }}" class="flex flex-col items-center gap-2 group">
-                    <span class="text-3xl">📝</span>
-                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition">Blog</span>
+                    <span class="text-2xl sm:text-3xl">📝</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">Blog</span>
                 </a>
-            </div>
-        </div>
-    </section>
             </div>
         </div>
     </section>
@@ -373,14 +372,14 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- EMERGENCY SERVICE BANNER --}}
     {{-- ============================================ --}}
-    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-3">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
-            <div class="flex items-center gap-2">
-                <span class="animate-pulse">🚨</span>
+    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 sm:py-3 px-3 sm:px-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center sm:text-left text-xs sm:text-sm">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <span class="animate-pulse text-lg">🚨</span>
                 <span class="font-bold">Need Urgent Delivery?</span>
             </div>
-            <span class="text-red-100">Same-day emergency service available in most areas.</span>
-            <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-2 bg-white text-red-600 font-bold px-4 py-2 rounded-lg hover:bg-red-50 transition">
+            <span class="text-red-100 hidden sm:inline">Same-day emergency service available in most areas.</span>
+            <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
                 📞 Call Now
             </a>
         </div>
@@ -389,19 +388,19 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- WHO WE SERVE --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4 bg-slate-50">
+    <section class="py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+            <div class="text-center mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     Portable Toilet Rental For Every Occasion
                 </h2>
-                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500 max-w-2xl mx-auto">
                     No matter what you're planning, we have the right
                     <strong>portable sanitation solution</strong> for your event or job site
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 @php
                     $useCases = [
                         [
@@ -450,12 +449,12 @@ $faqSchema = [
                 @endphp
 
                 @foreach($useCases as $useCase)
-                    <div class="bg-gradient-to-br {{ $useCase['bg'] }} border rounded-2xl p-6
+                    <div class="bg-gradient-to-br {{ $useCase['bg'] }} border rounded-xl sm:rounded-2xl p-4 sm:p-6
                             hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                        <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
                             {{ $useCase['icon'] }}
                         </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">
                             {{ $useCase['title'] }}
                         </h3>
                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
@@ -463,7 +462,7 @@ $faqSchema = [
                         </p>
                         <a href="tel:{{ phone_raw() }}"
                            class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition">
-                            {{ $useCase['link_text'] }}
+                             {{ $useCase['link_text'] }}
                         </a>
                     </div>
                 @endforeach
@@ -474,32 +473,32 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- HOW IT WORKS --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4">
+    <section class="py-12 md:py-16 lg:py-20 px-3 sm:px-4">
         <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+            <div class="text-center mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     How to Rent a Porta Potty in 3 Simple Steps
                 </h2>
-                <p class="text-lg text-slate-500">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500">
                     Renting a portable toilet has never been easier — same-day delivery available
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8 md:gap-12">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-10 md:gap-12">
                 {{-- Step 1 --}}
                 <div class="text-center relative">
-                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl
-                                flex items-center justify-center text-3xl font-bold
-                                mx-auto mb-6 shadow-xl shadow-blue-500/20">
+                    <div class="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl sm:rounded-2xl
+                                flex items-center justify-center text-2xl sm:text-3xl font-bold
+                                mx-auto mb-4 sm:mb-6 shadow-xl shadow-blue-500/20">
                         1
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">Call for a Quote</h3>
-                    <p class="text-slate-500 leading-relaxed">
-                        Tell us how many <strong>portable toilets</strong> you need, what type,
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 sm:mb-3">Call for a Quote</h3>
+                    <p class="text-slate-500 text-sm sm:text-base leading-relaxed">
+                        Tell us how many <strong>porta potties</strong> you need, what type,
                         and your location. We'll give you an instant, transparent quote.
                     </p>
-                    <div class="hidden md:block absolute top-10 -right-6 lg:-right-10 text-slate-300">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="hidden sm:block absolute top-8 -right-4 md:-right-6 lg:-right-10 text-slate-300">
+                        <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </div>
@@ -507,18 +506,18 @@ $faqSchema = [
 
                 {{-- Step 2 --}}
                 <div class="text-center relative">
-                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl
-                                flex items-center justify-center text-3xl font-bold
-                                mx-auto mb-6 shadow-xl shadow-emerald-500/20">
+                    <div class="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-xl sm:rounded-2xl
+                                flex items-center justify-center text-2xl sm:text-3xl font-bold
+                                mx-auto mb-4 sm:mb-6 shadow-xl shadow-emerald-500/20">
                         2
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">We Deliver</h3>
-                    <p class="text-slate-500 leading-relaxed">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 sm:mb-3">We Deliver</h3>
+                    <p class="text-slate-500 text-sm sm:text-base leading-relaxed">
                         Clean, sanitized portable toilets delivered and set up
                         at your location. <strong>Same-day delivery</strong> available.
                     </p>
-                    <div class="hidden md:block absolute top-10 -right-6 lg:-right-10 text-slate-300">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="hidden sm:block absolute top-8 -right-4 md:-right-6 lg:-right-10 text-slate-300">
+                        <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </div>
@@ -526,13 +525,13 @@ $faqSchema = [
 
                 {{-- Step 3 --}}
                 <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl
-                                flex items-center justify-center text-3xl font-bold
-                                mx-auto mb-6 shadow-xl shadow-purple-500/20">
+                    <div class="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl sm:rounded-2xl
+                                flex items-center justify-center text-2xl sm:text-3xl font-bold
+                                mx-auto mb-4 sm:mb-6 shadow-xl shadow-purple-500/20">
                         3
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">We Maintain & Pick Up</h3>
-                    <p class="text-slate-500 leading-relaxed">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 sm:mb-3">We Maintain & Pick Up</h3>
+                    <p class="text-slate-500 text-sm sm:text-base leading-relaxed">
                         Regular servicing keeps everything fresh. When you're done,
                         we handle pickup — no hassle for you.
                     </p>
@@ -540,10 +539,10 @@ $faqSchema = [
             </div>
 
             {{-- CTA --}}
-            <div class="text-center mt-14">
+            <div class="text-center mt-10 md:mt-14">
                 <a href="tel:{{ phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
-                          text-white font-bold text-lg py-4 px-8 rounded-full
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
+                          text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full
                           shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
                     📞 Call Now — Rent a Porta Potty Today
                 </a>
@@ -554,24 +553,24 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- TRUST STATS COUNTER --}}
     {{-- ============================================ --}}
-    <section class="py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
         <div class="max-w-5xl mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
                 <div class="text-white">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">25+</div>
-                    <div class="text-emerald-100 text-sm font-medium">Years Experience</div>
+                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">25+</div>
+                    <div class="text-emerald-100 text-xs sm:text-sm font-medium">Years</div>
                 </div>
                 <div class="text-white">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">50K+</div>
-                    <div class="text-emerald-100 text-sm font-medium">Happy Customers</div>
+                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">50K+</div>
+                    <div class="text-emerald-100 text-xs sm:text-sm font-medium">Customers</div>
                 </div>
                 <div class="text-white">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">500+</div>
-                    <div class="text-emerald-100 text-sm font-medium">Cities Served</div>
+                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">500+</div>
+                    <div class="text-emerald-100 text-xs sm:text-sm font-medium">Cities</div>
                 </div>
                 <div class="text-white">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">99%</div>
-                    <div class="text-emerald-100 text-sm font-medium">Satisfaction Rate</div>
+                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">99%</div>
+                    <div class="text-emerald-100 text-xs sm:text-sm font-medium">Satisfaction</div>
                 </div>
             </div>
         </div>
@@ -580,91 +579,91 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- CERTIFICATIONS & GUARANTEES --}}
     {{-- ============================================ --}}
-    <section class="py-16 px-4 bg-white">
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-white">
         <div class="max-w-5xl mx-auto">
-            <div class="grid md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 {{-- Certifications --}}
-                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                        🏆 Certifications & Compliance
+                <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-slate-200">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                        🏆 Certifications
                     </h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">✅</div>
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">✅</div>
                             <div>
-                                <div class="font-semibold text-slate-800">OSHA Compliant</div>
-                                <div class="text-sm text-slate-500">Meets all safety regulations</div>
+                                <div class="font-semibold text-slate-800 text-sm sm:text-base">OSHA Compliant</div>
+                                <div class="text-xs sm:text-sm text-slate-500">Safety regulations</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">♿</div>
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">♿</div>
                             <div>
-                                <div class="font-semibold text-slate-800">ADA Certified</div>
-                                <div class="text-sm text-slate-500">Wheelchair accessible units</div>
+                                <div class="font-semibold text-slate-800 text-sm sm:text-base">ADA Certified</div>
+                                <div class="text-xs sm:text-sm text-slate-500">Wheelchair accessible</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl">🏢</div>
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">🏢</div>
                             <div>
-                                <div class="font-semibold text-slate-800">BBB A+ Rated</div>
-                                <div class="text-sm text-slate-500">Better Business Bureau</div>
+                                <div class="font-semibold text-slate-800 text-sm sm:text-base">BBB A+ Rated</div>
+                                <div class="text-xs sm:text-sm text-slate-500">Better Business Bureau</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">🌿</div>
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">🌿</div>
                             <div>
-                                <div class="font-semibold text-slate-800">EPA Compliant</div>
-                                <div class="text-sm text-slate-500">Eco-friendly disposal</div>
+                                <div class="font-semibold text-slate-800 text-sm sm:text-base">EPA Compliant</div>
+                                <div class="text-xs sm:text-sm text-slate-500">Eco-friendly disposal</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {{-- Service Guarantee --}}
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 text-white">
-                    <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
-                        💯 Our Service Guarantee
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 text-white">
+                    <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                        💯 Our Guarantee
                     </h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <span class="text-emerald-400 text-xl">✓</span>
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="text-emerald-400 text-lg sm:text-xl">✓</span>
                             <div>
-                                <div class="font-semibold">Same-Day Delivery</div>
-                                <div class="text-slate-400 text-sm">When you call before 2 PM</div>
+                                <div class="font-semibold text-sm sm:text-base">Same-Day Delivery</div>
+                                <div class="text-slate-400 text-xs sm:text-sm">Call before 2 PM</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <span class="text-emerald-400 text-xl">✓</span>
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="text-emerald-400 text-lg sm:text-xl">✓</span>
                             <div>
-                                <div class="font-semibold">No Hidden Fees</div>
-                                <div class="text-slate-400 text-sm">The price we quote is the price you pay</div>
+                                <div class="font-semibold text-sm sm:text-base">No Hidden Fees</div>
+                                <div class="text-slate-400 text-xs sm:text-sm">Price we quote is the price</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <span class="text-emerald-400 text-xl">✓</span>
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="text-emerald-400 text-lg sm:text-xl">✓</span>
                             <div>
-                                <div class="font-semibold">Clean Units Guaranteed</div>
-                                <div class="text-slate-400 text-sm">Every unit sanitized before delivery</div>
+                                <div class="font-semibold text-sm sm:text-base">Clean Units Guaranteed</div>
+                                <div class="text-slate-400 text-xs sm:text-sm">Sanitized before delivery</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <span class="text-emerald-400 text-xl">✓</span>
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="text-emerald-400 text-lg sm:text-xl">✓</span>
                             <div>
-                                <div class="font-semibold">24/7 Emergency Service</div>
-                                <div class="text-slate-400 text-sm">We're here when you need us most</div>
+                                <div class="font-semibold text-sm sm:text-base">24/7 Emergency</div>
+                                <div class="text-slate-400 text-xs sm:text-sm">We're here when you need us</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <span class="text-emerald-400 text-xl">✓</span>
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="text-emerald-400 text-lg sm:text-xl">✓</span>
                             <div>
-                                <div class="font-semibold">Licensed & Insured</div>
-                                <div class="text-slate-400 text-sm">Full liability coverage</div>
+                                <div class="font-semibold text-sm sm:text-base">Licensed & Insured</div>
+                                <div class="text-slate-400 text-xs sm:text-sm">Full liability coverage</div>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-8 pt-6 border-t border-slate-700">
+                    <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700">
                         <a href="tel:{{ phone_raw() }}"
-                           class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all">
+                           class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                             📞 Call for Free Quote
                         </a>
                     </div>
@@ -676,19 +675,19 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- WHY CHOOSE US --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
                     Why Choose Our Porta Potty Rental Service?
                 </h2>
-                <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                <p class="text-sm sm:text-base md:text-lg text-slate-400 max-w-2xl mx-auto">
                     We're not just another rental company — we're your
                     <strong class="text-white">portable sanitation partner</strong>
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 @php
                     $features = [
                         ['icon' => '🚚', 'title' => 'Same-Day Porta Potty Delivery', 'desc' => 'Call before 2 PM and get your units delivered today. We understand urgency on job sites.'],
@@ -701,10 +700,10 @@ $faqSchema = [
                 @endphp
 
                 @foreach($features as $feature)
-                    <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6
+                    <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6
                             hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                        <div class="text-3xl mb-4">{{ $feature['icon'] }}</div>
-                        <h3 class="text-lg font-bold mb-2">{{ $feature['title'] }}</h3>
+                        <div class="text-2xl sm:text-3xl mb-3 sm:mb-4">{{ $feature['icon'] }}</div>
+                        <h3 class="text-base sm:text-lg font-bold mb-2">{{ $feature['title'] }}</h3>
                         <p class="text-slate-400 text-sm leading-relaxed">{{ $feature['desc'] }}</p>
                     </div>
                 @endforeach
@@ -715,21 +714,21 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- TESTIMONIALS / REVIEWS --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4 bg-slate-50">
+    <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-14">
-                <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
-                    <span>⭐</span> Trusted by 50,000+ Customers
+            <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+                    <span>⭐</span> <span class="hidden sm:inline">Trusted by</span> 50,000+ Customers
                 </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     What Our Customers Say
                 </h2>
-                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500 max-w-2xl mx-auto">
                     Don't just take our word for it — hear from real customers who rented porta potties from us
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 @php
                     $testimonials = [
                         [
@@ -760,20 +759,20 @@ $faqSchema = [
                 @endphp
 
                 @foreach($testimonials as $testimonial)
-                    <div class="bg-white rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl transition-all">
-                        <div class="flex items-center gap-1 mb-4">
+                    <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl transition-all">
+                        <div class="flex items-center gap-1 mb-3 sm:mb-4">
                             @for($i = 0; $i < 5; $i++)
                                 <span class="text-amber-400 text-lg">★</span>
                             @endfor
                         </div>
-                        <p class="text-slate-600 mb-6 leading-relaxed">"{{ $testimonial['text'] }}"</p>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">"{{ $testimonial['text'] }}"</p>
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                                 {{ substr($testimonial['name'], 0, 1) }}
                             </div>
                             <div>
-                                <div class="font-bold text-slate-800">{{ $testimonial['name'] }}</div>
-                                <div class="text-sm text-slate-500">{{ $testimonial['role'] }} · {{ $testimonial['location'] }}</div>
+                                <div class="font-bold text-slate-800 text-sm sm:text-base">{{ $testimonial['name'] }}</div>
+                                <div class="text-xs sm:text-sm text-slate-500">{{ $testimonial['role'] }} · {{ $testimonial['location'] }}</div>
                             </div>
                         </div>
                     </div>
@@ -781,18 +780,18 @@ $faqSchema = [
             </div>
 
             {{-- Google Reviews CTA --}}
-            <div class="mt-12 text-center">
-                <div class="inline-flex items-center gap-4 bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
-                    <div class="text-4xl">🌐</div>
-                    <div class="text-left">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-red-500 font-bold">Google</span>
-                            <span class="text-amber-400">★★★★★</span>
+            <div class="mt-8 sm:mt-10 md:mt-12 text-center">
+                <div class="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200">
+                    <div class="text-3xl sm:text-4xl">🌐</div>
+                    <div class="text-center sm:text-left">
+                        <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                            <span class="text-red-500 font-bold text-sm sm:text-base">Google</span>
+                            <span class="text-amber-400 text-sm sm:text-base">★★★★★</span>
                         </div>
-                        <div class="text-sm text-slate-600">See more reviews on Google</div>
+                        <div class="text-xs sm:text-sm text-slate-600">See more reviews on Google</div>
                     </div>
                     <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank" 
-                       class="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                       class="mt-3 sm:mt-0 ml-0 sm:ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all text-sm">
                         Read Reviews →
                     </a>
                 </div>
@@ -803,21 +802,21 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- PRICING TABLE --}}
     {{-- ============================================ --}}
-    <section id="pricing" class="py-16 md:py-20 px-4 bg-slate-50">
+    <section id="pricing" class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
         <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+            <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     Porta Potty Rental Pricing
                 </h2>
-                <p class="text-lg text-slate-500">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500">
                     Competitive rates with <strong>no hidden fees</strong> — call for exact pricing
                 </p>
             </div>
 
-            <div class="text-center mt-8">
+            <div class="text-center mt-8 sm:mt-10">
                 <a href="tel:{{ phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                          text-white font-bold text-lg py-4 px-8 rounded-full
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                          text-white font-bold text-base sm:text-lg py-3 sm:py-4 px-6 sm:px-8 rounded-full
                           shadow-xl shadow-emerald-500/25 transition-all hover:scale-105">
                     📞 Get Your Custom Quote
                 </a>
@@ -830,30 +829,30 @@ $faqSchema = [
     {{-- BLOG / RESOURCES --}}
     {{-- ============================================ --}}
     @if(filled($recentPosts) && count($recentPosts) > 0)
-        <section class="py-16 md:py-20 px-4 bg-slate-50">
+        <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
             <div class="max-w-5xl mx-auto">
-                <div class="text-center mb-14">
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+                <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                         Porta Potty Rental Guides & Tips
                     </h2>
-                    <p class="text-lg text-slate-500">
+                    <p class="text-sm sm:text-base md:text-lg text-slate-500">
                         Expert advice to help you plan your <strong>portable toilet rental</strong>
                     </p>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                     @foreach($recentPosts as $post)
                         <a href="{{ $post->url }}"
-                           class="bg-white rounded-2xl shadow-sm hover:shadow-xl
+                           class="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-xl
                           transition-all duration-300 overflow-hidden group border border-slate-200">
                             {{-- Image Placeholder --}}
-                            <div class="h-48 bg-gradient-to-br from-blue-100 to-emerald-50
-                                flex items-center justify-center text-6xl
+                            <div class="h-36 sm:h-48 bg-gradient-to-br from-blue-100 to-emerald-50
+                                flex items-center justify-center text-5xl sm:text-6xl
                                 group-hover:scale-105 transition-transform duration-500">
                                 🚽
                             </div>
 
-                            <div class="p-6">
+                            <div class="p-4 sm:p-6">
                                 @if($post->category)
                                     <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
                             {{ $post->category->name }}
@@ -861,15 +860,15 @@ $faqSchema = [
                                 @endif
 
                                 <h3 class="font-bold text-slate-800 mt-2 mb-3
-                                   group-hover:text-emerald-600 transition line-clamp-2 text-lg">
+                                   group-hover:text-emerald-600 transition line-clamp-2 text-sm sm:text-lg">
                                     {{ $post->title }}
                                 </h3>
 
-                                <p class="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                                <p class="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed">
                                     {{ $post->excerpt }}
                                 </p>
 
-                                <span class="text-sm text-slate-400 flex items-center gap-2">
+                                <span class="text-xs text-slate-400 flex items-center gap-1.5 sm:gap-2">
                             📖 {{ $post->reading_time_text }}
                         </span>
                             </div>
@@ -877,10 +876,10 @@ $faqSchema = [
                     @endforeach
                 </div>
 
-                <div class="text-center mt-10">
+                <div class="text-center mt-8 sm:mt-10">
                     <a href="{{ route('blog.index') }}"
                        class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700
-                          font-semibold transition text-lg">
+                          font-semibold transition text-sm sm:text-base">
                         View All Articles →
                     </a>
                 </div>
@@ -891,13 +890,13 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- CITIES / LOCATIONS --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4">
+    <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4">
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-                    Porta Potty Rental Available Across the USA
+            <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+                    Porta Potty Rental Across the USA
                 </h2>
-                <p class="text-lg text-slate-500">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500">
                     Find <strong>portable toilet rental</strong> in your city or state
                 </p>
             </div>
@@ -915,10 +914,10 @@ $faqSchema = [
                             ->get();
                     @endphp
                     @if($stateCities->count() > 0)
-                        <div class="mb-8">
-                            <h3 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <div class="mb-6 sm:mb-8">
+                            <h3 class="text-lg sm:text-xl font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
                                 📍 {{ $state['name'] }}
-                                <span class="text-sm font-normal text-slate-400">
+                                <span class="text-xs sm:text-sm font-normal text-slate-400">
                                 ({{ $state['cities_count'] }} {{ Str::plural('city', $state['cities_count']) }})
                             </span>
                             </h3>
@@ -926,7 +925,7 @@ $faqSchema = [
                                 @foreach($stateCities as $city)
                                     @if($city->servicePages->isNotEmpty())
                                         <a href="{{ url($city->servicePages->first()->slug) }}"
-                                           class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600
+                                           class="px-3 sm:px-4 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-600
                                                   hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                             {{ $city->name }}
                                         </a>
@@ -942,10 +941,10 @@ $faqSchema = [
                 </div>
             @endforelse
 
-            <div class="text-center mt-10">
+            <div class="text-center mt-8 sm:mt-10">
                 <a href="{{ route('locations') }}"
                    class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white
-                          font-semibold py-3 px-6 rounded-xl transition-all">
+                          font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                     View All Locations →
                 </a>
             </div>
@@ -955,13 +954,13 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- FAQ SECTION --}}
     {{-- ============================================ --}}
-    <section class="py-16 md:py-20 px-4">
+    <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4">
         <div class="max-w-3xl mx-auto">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-                    Frequently Asked Questions About Porta Potty Rental
+            <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+                    Frequently Asked Questions
                 </h2>
-                <p class="text-slate-500">
+                <p class="text-sm sm:text-base md:text-lg text-slate-500">
                     Get answers to common questions about our portable toilet rental service
                 </p>
             </div>
@@ -1038,22 +1037,22 @@ $faqSchema = [
             <div class="space-y-3">
                 @foreach($homeFaqs as $faq)
                     <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
-                        <summary class="flex justify-between items-center p-5 cursor-pointer
+                        <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
                                     font-semibold text-slate-800 hover:text-emerald-600 transition
-                                    list-none">
+                                    list-none text-sm sm:text-base">
                             <span>{{ $faq['q'] }}</span>
-                            <span class="text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
-                                     transition-all duration-300 ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">+</span>
+                            <span class="text-xl sm:text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
+                                     transition-all duration-300 ml-2 sm:ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">+</span>
                         </summary>
-                        <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                        <div class="px-4 sm:px-5 pb-4 sm:pb-5 text-slate-600 leading-relaxed text-sm sm:text-base">
                             <p>{!! $faq['a'] !!}</p>
                         </div>
                     </details>
                 @endforeach
             </div>
 
-            <div class="text-center mt-8">
-                <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold">
+            <div class="text-center mt-6 sm:mt-8">
+                <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base">
                     View more porta potty rental guides →
                 </a>
             </div>
@@ -1063,49 +1062,49 @@ $faqSchema = [
     {{-- ============================================ --}}
     {{-- FINAL CTA --}}
     {{-- ============================================ --}}
-    <section class="py-20 md:py-28 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+    <section class="py-12 sm:py-16 md:py-20 lg:py-28 px-3 sm:px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
                     text-white text-center relative overflow-hidden">
-        {{-- Background decoration --}}
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 left-10 text-[200px]">🚽</div>
-            <div class="absolute bottom-10 right-10 text-[150px]">🚿</div>
+        {{-- Background decoration - hidden on mobile --}}
+        <div class="absolute inset-0 opacity-5 desktop-only">
+            <div class="absolute top-10 left-10 text-[150px] sm:text-[200px]">🚽</div>
+            <div class="absolute bottom-10 right-10 text-[100px] sm:text-[150px]">🚿</div>
         </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-emerald-500/10 rounded-full blur-3xl"></div>
 
         <div class="relative max-w-3xl mx-auto">
-            <h2 class="text-3xl md:text-5xl font-extrabold mb-6">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-6">
                 Ready to Rent a Porta Potty?
             </h2>
-            <p class="text-xl text-slate-400 mb-6">
+            <p class="text-base sm:text-lg md:text-xl text-slate-400 mb-4 sm:mb-6">
                 Call now for a <strong class="text-white">free, no-obligation quote</strong>.
                 Same-day delivery available.
             </p>
-            <p class="text-lg text-slate-300 mb-10">
+            <p class="text-sm sm:text-base md:text-lg text-slate-300 mb-6 sm:mb-8 md:mb-10">
                 Serving construction sites, events, weddings, and more across the USA
             </p>
 
             <a href="tel:{{ phone_raw() }}"
                class="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
-                      text-white text-3xl md:text-4xl font-bold
-                      py-5 px-14 rounded-full shadow-2xl
+                      text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold
+                      py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-14 rounded-full shadow-2xl
                       transition-all hover:scale-105
                       shadow-emerald-500/40 animate-pulse">
                 📞 {{ phone_display() }}
             </a>
 
-            <div class="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-400">
+            <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-xs sm:text-sm text-slate-400">
                 <span>⏰ Mon-Sat 7AM-8PM</span>
-                <span class="text-slate-600">•</span>
-                <span>🚚 Same-Day Delivery</span>
-                <span class="text-slate-600">•</span>
+                <span class="text-slate-600 hidden xsm:block">•</span>
+                <span>🚚 Same-Day</span>
+                <span class="text-slate-600 hidden xsm:block">•</span>
                 <span>💰 Free Quote</span>
             </div>
 
-            <p class="mt-10 text-slate-500">
+            <p class="mt-8 sm:mt-10 text-slate-500 text-sm sm:text-base">
                 Or <a href="{{ route('locations') }}"
                       class="text-emerald-400 hover:text-emerald-300 underline transition">
                     find your city
-                </a> to see local pricing and availability.
+                </a> to see local pricing.
             </p>
         </div>
     </section>

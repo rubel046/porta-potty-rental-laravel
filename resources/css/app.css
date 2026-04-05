@@ -20,10 +20,10 @@
         --color-dark: #0f172a;
         --color-dark-light: #1e293b;
         
-        --text-hero: clamp(2.5rem, 5vw + 1rem, 4rem);
-        --text-display: clamp(2rem, 4vw, 3rem);
-        --text-title: clamp(1.5rem, 3vw, 2rem);
-        --text-heading: clamp(1.25rem, 2.5vw, 1.5rem);
+        --text-hero: clamp(2rem, 6vw, 4rem);
+        --text-display: clamp(1.75rem, 5vw, 3rem);
+        --text-title: clamp(1.5rem, 4vw, 2rem);
+        --text-heading: clamp(1.25rem, 3vw, 1.5rem);
         
         --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
@@ -476,4 +476,120 @@
     .no-print {
         display: none !important;
     }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE ENHANCEMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+    /* Better touch targets */
+    a, button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Improved tap highlight */
+    a, button {
+        -webkit-tap-highlight-color: rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Prevent horizontal scroll */
+    html, body {
+        overflow-x: hidden;
+    }
+    
+    /* Better text legibility on mobile */
+    body {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    /* Service cards stack better */
+    .service-card {
+        padding: 1.25rem;
+    }
+    
+    /* Hero section adjustments */
+    .hero-cta-btn {
+        font-size: 1.125rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Grid columns stack on mobile */
+    .grid-cols-1-sm {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Hide decorative elements on mobile for performance */
+    .desktop-only {
+        display: none;
+    }
+    
+    /* Better form inputs on mobile */
+    .form-input, .form-select {
+        font-size: 16px; /* Prevents iOS zoom */
+        padding: 0.875rem 1rem;
+    }
+    
+    /* Section padding adjustments */
+    section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Trust indicators wrap better */
+    .trust-indicators {
+        gap: 0.75rem !important;
+    }
+    
+    .trust-indicators > div {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (min-width: 641px) {
+    .mobile-only {
+        display: none;
+    }
+}
+
+/* Smooth scrolling for anchor links */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Touch-friendly hover states */
+@media (hover: none) {
+    .btn-primary:active,
+    .btn-secondary:active,
+    .btn-outline:active {
+        transform: scale(0.98);
+    }
+    
+    .card-hover:active {
+        transform: scale(0.99);
+    }
+}
+
+/* Better backface visibility for animations */
+.transform-3d {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+/* Prevent content shift during load */
+.content-stable {
+    contain: content;
+}
+
+/* Safe area for notched phones */
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-top {
+    padding-top: env(safe-area-inset-top);
 }

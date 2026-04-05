@@ -55,67 +55,37 @@ class ContentGeneratorService
             'residential' => 'Residential Porta Potty',
         ];
         $serviceLabel = $serviceLabels[$serviceType] ?? 'General Porta Potty Rental';
-        $nearbyAreas = implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8));
-        $population = $city->population ? number_format($city->population) : 'N/A';
-        $serviceLink = '/services#'.$serviceType;
 
         $prompt = <<<PROMPT
-For {$serviceLabel} in {$city->name}, {$state->code}:
+Generate SEO content for {$serviceLabel} in {$city->name}, {$state->code}.
 
-Return ONLY this exact format (replace CONTENT with markdown):
-[METADATA]
-{"slug":"{$serviceType}-porta-potty-rental-{$city->slug}","h1_title":"{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct","meta_title":"{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct","meta_description":"{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!"}
-[/METADATA]
-[CONTENT]
-Write 150 words of SEO content in markdown. Start with ## heading. Include bullet points, {$city->name}, {$state->code}, pricing, CTA.
-[/CONTENT]
+Return a valid JSON object with this exact structure:
+{
+    "content": "Write 100-150 words of SEO content in markdown format. Start with ## heading. Include bullet points, {$city->name}, {$state->code}, pricing info, and a CTA."
+}
+
+IMPORTANT: Return ONLY valid JSON, no additional text or markdown code blocks.
 PROMPT;
 
-        $rawResponse = $this->aiService->generateContent($prompt);
+        $systemPrompt = 'You are an SEO content writer. Always return valid JSON. The JSON must have a "content" field containing markdown text.';
 
-        if (! $rawResponse) {
-            throw new \RuntimeException("AI generation failed for {$city->name} ({$serviceType}) - All API keys exhausted or unavailable");
+        $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+
+        if (! $jsonResponse || ! isset($jsonResponse['content'])) {
+            throw new \RuntimeException("AI JSON generation failed for {$city->name} ({$serviceType})");
         }
 
-        $result = [
+        $content = $jsonResponse['content'];
+
+        $images = $this->getImagesForContent($city, $serviceType);
+        $contentWithImages = $this->embedImagesInContent($content, $images, $serviceType, $city->name);
+
+        return [
             'slug' => "{$serviceType}-porta-potty-rental-{$city->slug}",
+            'service_type' => $serviceType,
             'h1_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct",
             'meta_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct",
             'meta_description' => "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!",
-            'content' => '',
-        ];
-
-        if (preg_match('/\[CONTENT\]\s*(.*?)\s*\[\/CONTENT\]/is', $rawResponse, $matches)) {
-            $result['content'] = trim($matches[1]);
-        }
-
-        if (preg_match('/\[METADATA\]\s*(\{.*?\})\s*\[\/METADATA\]/is', $rawResponse, $matches)) {
-            $metadata = json_decode($matches[1], true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($metadata)) {
-                $result = array_merge($result, $metadata);
-            }
-        }
-
-        if (empty($result['content'])) {
-            Log::warning('AI content parse failed, using fallback', [
-                'city' => $city->name,
-                'service_type' => $serviceType,
-            ]);
-
-            return $this->getFallbackContent($city, $serviceType);
-        }
-
-        $content = $result['content'];
-
-        $images = $this->getImagesForContent($city, $serviceType);
-        $contentWithImages = $this->embedImagesInContent($content, $images);
-
-        return [
-            'slug' => $result['slug'] ?? "porta-potty-rental-{$city->slug}",
-            'service_type' => $serviceType,
-            'h1_title' => $result['h1_title'] ?? '',
-            'meta_title' => $result['meta_title'] ?? '',
-            'meta_description' => $result['meta_description'] ?? '',
             'content' => $contentWithImages,
             'images' => $images,
             'word_count' => str_word_count(strip_tags($content)),
@@ -139,19 +109,65 @@ PROMPT;
         }
     }
 
-    protected function embedImagesInContent(string $content, array $images): string
+    protected function embedImagesInContent(string $content, array $images, string $serviceType = 'general', ?string $cityName = null): string
     {
         if (empty($images)) {
             return $content;
         }
 
+        $altTexts = [
+            'general' => [
+                'Portable toilet rental service',
+                'Porta potty units delivered',
+                'Clean portable restrooms',
+            ],
+            'construction' => [
+                'Construction site porta potty',
+                'Job site portable toilet',
+                'OSHA compliant restroom',
+            ],
+            'wedding' => [
+                'Elegant wedding restroom',
+                'Luxury wedding portable toilet',
+                'Outdoor wedding amenities',
+            ],
+            'event' => [
+                'Event portable restroom',
+                'Festival porta potty rental',
+                'Outdoor event sanitation',
+            ],
+            'luxury' => [
+                'Luxury restroom trailer',
+                'Premium portable restroom',
+                'Upscale event facilities',
+            ],
+            'party' => [
+                'Party porta potty rental',
+                'Backyard event restroom',
+                'Outdoor party facilities',
+            ],
+            'emergency' => [
+                'Emergency portable toilet',
+                'Urgent restroom solution',
+                'Quick deployment restroom',
+            ],
+            'residential' => [
+                'Home project porta potty',
+                'Residential job site restroom',
+                'DIY project facilities',
+            ],
+        ];
+
+        $texts = $altTexts[$serviceType] ?? $altTexts['general'];
+        $location = $cityName ? " in {$cityName}" : '';
+
         $imageSection = "\n\n## Our Work\n\n";
         $imageSection .= "See our porta potty units in action:\n\n";
 
-        foreach ($images as $image) {
-            $altText = ucfirst(str_replace(['-', '_', '.'], ' ', pathinfo($image['filename'], PATHINFO_FILENAME)));
+        foreach ($images as $index => $image) {
+            $altText = ($texts[$index] ?? 'Porta potty rental').$location;
             $encodedUrl = str_replace(' ', '%20', $image['url']);
-            $imageSection .= "![{$altText}]({$encodedUrl})\n";
+            $imageSection .= "<img src=\"{$encodedUrl}\" alt=\"{$altText}\" width=\"800\" height=\"600\" loading=\"lazy\" />\n";
         }
 
         $imageSection .= "\n---\n";
@@ -191,7 +207,7 @@ PROMPT;
         };
 
         $images = $this->getImagesForContent($city, $serviceType);
-        $result['content'] = $this->embedImagesInContent($result['content'], $images);
+        $result['content'] = $this->embedImagesInContent($result['content'], $images, $serviceType, $cityName);
         $result['images'] = $images;
 
         return $result;

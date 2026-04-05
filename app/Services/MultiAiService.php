@@ -8,13 +8,35 @@ use Illuminate\Support\Facades\Log;
 
 class MultiAiService
 {
-    protected const COOLDOWN_MINUTES = 1;
-
-    protected const MAX_RETRIES = 3;
-
-    protected const COOLDOWN_ON_RATE_LIMIT_ONLY = true;
+    protected const DEFAULT_COOLDOWN_MINUTES = 5;
 
     public function generateContent(string $prompt, ?string $systemPrompt = null): ?string
+    {
+        return $this->generateContentWithOptions($prompt, $systemPrompt, false);
+    }
+
+    public function generateJsonContent(string $prompt, ?string $systemPrompt = null): ?array
+    {
+        $result = $this->generateContentWithOptions($prompt, $systemPrompt, true);
+
+        if ($result === null) {
+            return null;
+        }
+
+        $decoded = json_decode($result, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::warning('MultiAiService: Failed to parse JSON response', [
+                'error' => json_last_error_msg(),
+                'response' => substr($result, 0, 500),
+            ]);
+
+            return null;
+        }
+
+        return $decoded;
+    }
+
+    public function generateContentWithOptions(string $prompt, ?string $systemPrompt = null, bool $jsonMode = false): ?string
     {
         $keys = AiApiKey::active()->orderedByPriority()->get();
 
@@ -30,7 +52,6 @@ class MultiAiService
             if ($apiKey->isDailyLimitReached()) {
                 Log::info("MultiAiService: Skipping API key {$apiKey->id} - daily limit reached", [
                     'tokens_used' => $apiKey->tokens_used_today,
-                    'requests_used' => $apiKey->requests_today,
                     'model' => $apiKey->model,
                 ]);
 
@@ -49,10 +70,11 @@ class MultiAiService
             Log::info("MultiAiService: Trying API key {$apiKey->id}", [
                 'model' => $apiKey->model,
                 'provider' => $apiKey->provider,
+                'json_mode' => $jsonMode,
             ]);
 
             try {
-                $result = $this->callProvider($apiKey, $prompt, $systemPrompt);
+                $result = $this->callProvider($apiKey, $prompt, $systemPrompt, $jsonMode);
 
                 if ($result !== null) {
                     Log::info("MultiAiService: Success with API key {$apiKey->id}");
@@ -68,11 +90,9 @@ class MultiAiService
                 ]);
 
                 if ($this->isRateLimitError($e)) {
-                    $apiKey->recordFailure();
-                    $apiKey->putInCooldown(self::COOLDOWN_MINUTES);
-                    Log::info("MultiAiService: API key {$apiKey->id} put in cooldown for ".self::COOLDOWN_MINUTES.' minute(s)');
+                    $this->handleRateLimitError($apiKey, $e);
                 } elseif ($this->isDailyLimitError($e)) {
-                    Log::info("MultiAiService: API key {$apiKey->id} hit daily limit error from API");
+                    $this->handleDailyLimitError($apiKey, $e);
                 }
             }
         }
@@ -82,15 +102,76 @@ class MultiAiService
         return null;
     }
 
-    protected function callProvider(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null): ?string
+    protected function handleRateLimitError(AiApiKey $apiKey, \Exception $e): void
+    {
+        $message = $e->getMessage();
+
+        preg_match('/Used (\d+)/', $message, $usedMatch);
+        preg_match('/Limit (\d+)/', $message, $limitMatch);
+
+        $retrySeconds = $this->extractRetrySeconds($message);
+        $cooldownMinutes = max(self::DEFAULT_COOLDOWN_MINUTES, (int) ceil($retrySeconds / 60));
+
+        $updates = [
+            'failure_count' => $apiKey->failure_count + 1,
+            'last_used_at' => now(),
+        ];
+
+        if (! empty($usedMatch[1])) {
+            $updates['tokens_used_today'] = (int) $usedMatch[1];
+        }
+
+        if (! empty($limitMatch[1])) {
+            $updates['tokens_reset_at'] = now()->addDay()->startOfDay();
+        }
+
+        $apiKey->update($updates);
+        $apiKey->putInCooldown($cooldownMinutes);
+
+        Log::info("MultiAiService: API key {$apiKey->id} rate limited - tokens synced, cooldown for {$cooldownMinutes} min (API said {$retrySeconds}s)");
+    }
+
+    protected function extractRetrySeconds(string $message): int
+    {
+        if (preg_match('/try again in (\d+m)?(\d+\.?\d*)s/', $message, $matches)) {
+            $minutes = isset($matches[1]) ? (int) rtrim($matches[1], 'm') : 0;
+            $seconds = (float) $matches[2];
+
+            return ($minutes * 60) + $seconds;
+        }
+
+        return self::DEFAULT_COOLDOWN_MINUTES * 60;
+    }
+
+    protected function handleDailyLimitError(AiApiKey $apiKey, \Exception $e): void
+    {
+        $message = $e->getMessage();
+
+        preg_match('/Used (\d+)/', $message, $usedMatch);
+
+        $updates = [
+            'failure_count' => $apiKey->failure_count + 1,
+            'last_used_at' => now(),
+        ];
+
+        if (! empty($usedMatch[1])) {
+            $updates['tokens_used_today'] = (int) $usedMatch[1];
+        }
+
+        $apiKey->update($updates);
+
+        Log::info("MultiAiService: API key {$apiKey->id} hit daily limit - tokens synced");
+    }
+
+    protected function callProvider(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, bool $jsonMode = false): ?string
     {
         $tokensUsed = 0;
 
         $result = match ($apiKey->provider) {
-            AiApiKey::PROVIDER_GROQ => $this->callGroq($apiKey, $prompt, $systemPrompt, $tokensUsed),
-            AiApiKey::PROVIDER_CLAUDE => $this->callClaude($apiKey, $prompt, $systemPrompt, $tokensUsed),
-            AiApiKey::PROVIDER_GEMINI => $this->callGemini($apiKey, $prompt, $systemPrompt, $tokensUsed),
-            AiApiKey::PROVIDER_OPENAI => $this->callOpenAi($apiKey, $prompt, $systemPrompt, $tokensUsed),
+            AiApiKey::PROVIDER_GROQ => $this->callGroq($apiKey, $prompt, $systemPrompt, $tokensUsed, $jsonMode),
+            AiApiKey::PROVIDER_CLAUDE => $this->callClaude($apiKey, $prompt, $systemPrompt, $tokensUsed, $jsonMode),
+            AiApiKey::PROVIDER_GEMINI => $this->callGemini($apiKey, $prompt, $systemPrompt, $tokensUsed, $jsonMode),
+            AiApiKey::PROVIDER_OPENAI => $this->callOpenAi($apiKey, $prompt, $systemPrompt, $tokensUsed, $jsonMode),
             default => null,
         };
 
@@ -103,22 +184,28 @@ class MultiAiService
         return $result;
     }
 
-    protected function callGroq(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0): ?string
+    protected function callGroq(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0, bool $jsonMode = false): ?string
     {
         $systemPrompt = $systemPrompt ?? 'You are a helpful assistant.';
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.$apiKey->api_key,
-            'Content-Type' => 'application/json',
-        ])->timeout(120)->post('https://api.groq.com/openai/v1/chat/completions', [
+        $body = [
             'model' => $apiKey->model,
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $prompt],
             ],
             'temperature' => 0.7,
-            'max_tokens' => 4096,
-        ]);
+            'max_tokens' => 8192,
+        ];
+
+        if ($jsonMode) {
+            $body['response_format'] = ['type' => 'json_object'];
+        }
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.$apiKey->api_key,
+            'Content-Type' => 'application/json',
+        ])->timeout(120)->post('https://api.groq.com/openai/v1/chat/completions', $body);
 
         if ($response->successful()) {
             $data = $response->json();
@@ -131,22 +218,28 @@ class MultiAiService
         throw new \Exception($response->json()['error']['message'] ?? 'Groq API error', $response->status());
     }
 
-    protected function callClaude(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0): ?string
+    protected function callClaude(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0, bool $jsonMode = false): ?string
     {
         $systemPrompt = $systemPrompt ?? 'You are a helpful assistant.';
 
-        $response = Http::withHeaders([
-            'x-api-key' => $apiKey->api_key,
-            'anthropic-version' => '2023-06-01',
-            'Content-Type' => 'application/json',
-        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+        $body = [
             'model' => $apiKey->model,
             'system' => $systemPrompt,
             'messages' => [
                 ['role' => 'user', 'content' => $prompt],
             ],
             'max_tokens' => 4096,
-        ]);
+        ];
+
+        if ($jsonMode) {
+            $body['response_format'] = ['type' => 'json_object'];
+        }
+
+        $response = Http::withHeaders([
+            'x-api-key' => $apiKey->api_key,
+            'anthropic-version' => '2023-06-01',
+            'Content-Type' => 'application/json',
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', $body);
 
         if ($response->successful()) {
             $data = $response->json();
@@ -159,22 +252,27 @@ class MultiAiService
         throw new \Exception($response->json()['error']['message'] ?? 'Claude API error', $response->status());
     }
 
-    protected function callGemini(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0): ?string
+    protected function callGemini(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0, bool $jsonMode = false): ?string
     {
+        $contents = [
+            'contents' => [
+                ['parts' => [['text' => $prompt]]],
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 4096,
+            ],
+        ];
+
+        if ($jsonMode) {
+            $contents['generationConfig']['responseMimeType'] = 'application/json';
+        }
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$apiKey->model}:generateContent?key={$apiKey->api_key}";
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->timeout(120)->post(
-            "https://generativelanguage.googleapis.com/v1beta/models/{$apiKey->model}:generateContent?key={$apiKey->api_key}",
-            [
-                'contents' => [
-                    ['parts' => [['text' => $prompt]]],
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'maxOutputTokens' => 4096,
-                ],
-            ]
-        );
+        ])->timeout(120)->post($url, $contents);
 
         if ($response->successful()) {
             $data = $response->json();
@@ -187,14 +285,11 @@ class MultiAiService
         throw new \Exception($response->json()['error']['message'] ?? 'Gemini API error', $response->status());
     }
 
-    protected function callOpenAi(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0): ?string
+    protected function callOpenAi(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, int &$tokensUsed = 0, bool $jsonMode = false): ?string
     {
         $systemPrompt = $systemPrompt ?? 'You are a helpful assistant.';
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.$apiKey->api_key,
-            'Content-Type' => 'application/json',
-        ])->timeout(120)->post('https://api.openai.com/v1/chat/completions', [
+        $body = [
             'model' => $apiKey->model,
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
@@ -202,7 +297,16 @@ class MultiAiService
             ],
             'temperature' => 0.7,
             'max_tokens' => 4096,
-        ]);
+        ];
+
+        if ($jsonMode) {
+            $body['response_format'] = ['type' => 'json_object'];
+        }
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.$apiKey->api_key,
+            'Content-Type' => 'application/json',
+        ])->timeout(120)->post('https://api.openai.com/v1/chat/completions', $body);
 
         if ($response->successful()) {
             $data = $response->json();
@@ -231,7 +335,8 @@ class MultiAiService
 
         return str_contains($message, 'daily')
             || str_contains($message, 'exceeded')
-            || str_contains($message, 'limit reached');
+            || str_contains($message, 'limit reached')
+            || str_contains($message, 'tokens per day');
     }
 
     public function getStatus(): array

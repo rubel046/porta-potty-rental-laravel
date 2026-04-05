@@ -39,7 +39,7 @@ $breadcrumbSchema = [
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
 
-    <section class="relative min-h-[500px] md:min-h-[580px] flex items-center overflow-hidden">
+    <section class="relative min-h-[450px] sm:min-h-[500px] md:min-h-[580px] flex items-center overflow-hidden">
         {{-- Hero Background Image --}}
         <div class="absolute inset-0">
             <img src="{{ $heroUrl }}" alt="Porta potty rental in {{ $city->name }}"
@@ -48,42 +48,42 @@ $breadcrumbSchema = [
         </div>
 
         {{-- Decorative --}}
-        <div class="absolute top-20 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-16 sm:top-20 right-4 sm:right-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-emerald-500/10 rounded-full blur-3xl desktop-only"></div>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 w-full">
-            <div class="max-w-3xl">
+        <div class="relative max-w-7xl mx-auto px-3 sm:px-6 py-12 sm:py-16 md:py-28 w-full">
+            <div class="max-w-2xl md:max-w-3xl">
                 {{-- Breadcrumb --}}
-                <nav class="flex items-center gap-2 text-sm text-slate-300 mb-6">
+                <nav class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-300 mb-4 sm:mb-6">
                     <a href="{{ route('home') }}" class="hover:text-white transition">Home</a>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                     <a href="{{ route('state.page', $city->state->slug) }}" class="hover:text-white transition">
                         {{ $city->state->name }}
                     </a>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                     <span class="text-white">{{ $city->name }}</span>
                 </nav>
 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 leading-tight">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-4 sm:mb-5 leading-tight">
                     {{ $servicePage->h1_title }}
                 </h1>
 
-                <p class="text-xl text-slate-300 mb-8 max-w-2xl">
+                <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-5 sm:mb-8 max-w-xl">
                     Clean, affordable portable toilets delivered to your
                     {{ $city->name }} location. Same-day delivery available.
                 </p>
 
                 {{-- CTA --}}
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <a href="tel:{{ $servicePage->phone_raw }}"
                        class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-white text-2xl md:text-3xl font-bold
-                              py-4 px-10 rounded-full shadow-2xl shadow-emerald-500/30
-                              transition-all hover:scale-105 flex items-center justify-center gap-3">
-                        <span class="text-2xl">📞</span>
+                              text-lg sm:text-xl md:text-2xl md:text-3xl font-bold
+                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
+                              transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3">
+                        <span class="text-xl sm:text-2xl">📞</span>
                         {{ $servicePage->phone_display }}
                     </a>
                     <a href="{{ route('locations') }}"
@@ -92,15 +92,15 @@ $breadcrumbSchema = [
                     </a>
                 </div>
 
-                {{-- Trust Badges --}}
-                <div class="flex flex-wrap items-center gap-5 text-sm text-slate-300">
-                    <span class="flex items-center gap-1.5"><span class="text-yellow-400">⭐⭐⭐⭐⭐</span> 500+ Reviews</span>
-                    <span class="text-slate-600">•</span>
-                    <span class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> Licensed & Insured</span>
-                    <span class="text-slate-600">•</span>
-                    <span class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> Same-Day Delivery</span>
-                    <span class="text-slate-600">•</span>
-                    <span class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> No Hidden Fees</span>
+                {{-- Trust Badges - Simplified on mobile --}}
+                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-300">
+                    <span class="flex items-center gap-1"><span class="text-yellow-400 text-sm">⭐⭐⭐⭐⭐</span> <span class="hidden sm:inline">500+</span> Reviews</span>
+                    <span class="text-slate-600 hidden xsm:block">•</span>
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">Licensed & Insured</span><span class="sm:hidden">Licensed</span></span>
+                    <span class="text-slate-600 hidden xsm:block">•</span>
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">Same-Day Delivery</span><span class="sm:hidden">Same-Day</span></span>
+                    <span class="text-slate-600 hidden xsm:block">•</span>
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">No Hidden Fees</span><span class="sm:hidden">No Fees</span></span>
                 </div>
             </div>
         </div>
@@ -114,41 +114,41 @@ $breadcrumbSchema = [
     </section>
 
     {{-- Main Content --}}
-    <article class="py-12 md:py-16 px-4">
+    <article class="py-10 sm:py-12 md:py-16 px-3 sm:px-4">
         <div class="max-w-4xl mx-auto">
             {{-- Rendered Markdown/Content --}}
             <div class="prose prose-lg max-w-none
                         prose-headings:text-slate-800 prose-headings:font-bold
-                        prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-3
-                        prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-                        prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-5
+                        prose-h2:text-xl sm:text-2xl prose-h2:mt-10 sm:prose-h2:mt-12 prose-h2:mb-4 sm:prose-h2:mb-5 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-2 sm:prose-h2:pb-3
+                        prose-h3:text-lg sm:text-xl prose-h3:mt-6 sm:prose-h3:mt-8 prose-h3:mb-2 sm:prose-h3:mb-3
+                        prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4 sm:prose-p:mb-5
                         prose-li:text-slate-600 prose-li:leading-relaxed
-                        prose-li:mb-2
+                        prose-li:mb-1 sm:prose-li:mb-2
                         prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline
                         prose-strong:text-slate-800 prose-strong:font-semibold
                         prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-50 prose-blockquote:rounded-r-xl
                         prose-table:text-sm
-                        prose-th:bg-slate-100 prose-th:p-3 prose-th:font-semibold
-                        prose-td:p-4 prose-td:border prose-td:border-slate-100
-                        prose-img:rounded-xl prose-img:shadow-lg">
+                        prose-th:bg-slate-100 prose-th:p-2 sm:prose-th:p-3 prose-th:font-semibold
+                        prose-td:p-3 sm:prose-td:p-4 prose-td:border prose-td:border-slate-100
+                        prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto">
                 {!! Str::markdown($servicePage->content) !!}
             </div>
 
             {{-- Mid-Content CTA --}}
-            <div class="my-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 md:p-10 text-center">
-                <h3 class="text-2xl font-bold text-white mb-3">
+            <div class="my-10 sm:my-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-center">
+                <h3 class="text-xl sm:text-2xl font-bold text-white mb-3">
                     Ready to Get a Quote?
                 </h3>
-                <p class="text-slate-400 mb-6">
+                <p class="text-slate-400 mb-5 sm:mb-6">
                     Call now for instant pricing on porta potty rental in {{ $city->name }}
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
-                   class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
-                          text-white font-bold text-xl py-4 px-10 rounded-full
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+                          text-white font-bold text-base sm:text-xl py-3 sm:py-4 px-6 sm:px-10 rounded-full
                           transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
                     📞 {{ $servicePage->phone_display }}
                 </a>
-                <p class="text-sm text-slate-400 mt-4">
+                <p class="text-xs sm:text-sm text-slate-400 mt-3 sm:mt-4">
                     Mon-Sat 7AM-8PM • Same-Day Delivery Available
                 </p>
             </div>
@@ -157,22 +157,22 @@ $breadcrumbSchema = [
 
     {{-- Testimonials --}}
     @if($testimonials->isNotEmpty())
-        <section class="py-12 md:py-16 px-4 bg-slate-50">
+        <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-50">
             <div class="max-w-5xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-10">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
                     What {{ $city->name }} Customers Say
                 </h2>
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     @foreach($testimonials as $testimonial)
-                        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all">
-                            <div class="text-yellow-400 mb-4">
+                        <div class="bg-white border border-slate-200 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-lg transition-all">
+                            <div class="text-yellow-400 mb-3 sm:mb-4 text-sm sm:text-base">
                                 @for($i = 0; $i < $testimonial->rating; $i++)⭐@endfor
                             </div>
-                            <p class="text-slate-700 mb-4 italic leading-relaxed">
+                            <p class="text-slate-700 mb-4 italic leading-relaxed text-sm sm:text-base">
                                 "{{ $testimonial->content }}"
                             </p>
-                            <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
-                                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            <div class="flex items-center gap-3 pt-3 sm:pt-4 border-t border-slate-100">
+                                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xs sm:text-sm">
                                     {{ substr($testimonial->customer_name, 0, 1) }}
                                 </div>
                                 <div>
@@ -191,28 +191,28 @@ $breadcrumbSchema = [
 
     {{-- FAQs --}}
     @if($faqs->isNotEmpty())
-        <section id="faq" class="py-12 md:py-16 px-4">
+        <section id="faq" class="py-10 sm:py-12 md:py-16 px-3 sm:px-4">
             <div class="max-w-3xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-10">
-                    Frequently Asked Questions — {{ $city->name }}, {{ $city->state->code }}
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
+                    FAQs — {{ $city->name }}, {{ $city->state->code }}
                 </h2>
                 <div class="space-y-3">
                     @foreach($faqs as $faq)
                         <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
-                            <summary class="flex justify-between items-center p-5 cursor-pointer
-                                    font-semibold text-slate-800 hover:text-emerald-600 transition list-none">
+                            <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
+                                    font-semibold text-slate-800 hover:text-emerald-600 transition list-none text-sm sm:text-base">
                                 <span>{{ $faq->question }}</span>
-                                <span class="text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
-                                     transition-all duration-300 ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">+</span>
+                                <span class="text-xl sm:text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
+                                     transition-all duration-300 ml-2 sm:ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">+</span>
                             </summary>
-                            <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                            <div class="px-4 sm:px-5 pb-4 sm:pb-5 text-slate-600 leading-relaxed text-sm sm:text-base">
                                 {{ $faq->answer }}
                             </div>
                         </details>
                     @endforeach
                 </div>
-                <div class="mt-8 text-center">
-                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">
+                <div class="mt-6 sm:mt-8 text-center">
+                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition text-sm sm:text-base">
                         View our full pricing guide →
                     </a>
                 </div>
@@ -222,20 +222,20 @@ $breadcrumbSchema = [
 
     {{-- Other Services in This City --}}
     @if($otherServices->isNotEmpty())
-        <section class="py-12 md:py-16 px-4 bg-slate-50">
+        <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-50">
             <div class="max-w-5xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-10">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
                     Other Services in {{ $city->name }}
                 </h2>
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     @foreach($otherServices as $service)
                         <a href="{{ url($service->slug) }}"
-                           class="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300
+                           class="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300
                           transition-all text-center group border border-slate-200">
-                            <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">
+                            <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition text-sm sm:text-base">
                                 {{ $service->service_type_label }}
                             </h3>
-                            <p class="text-sm text-slate-400 mt-1">in {{ $city->name }}</p>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-1">in {{ $city->name }}</p>
                         </a>
                     @endforeach
                 </div>
@@ -245,19 +245,19 @@ $breadcrumbSchema = [
 
     {{-- Nearby Cities --}}
     @if($nearbyCityPages->isNotEmpty())
-        <section class="py-12 md:py-16 px-4">
+        <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4">
             <div class="max-w-5xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-10">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
                     Porta Potty Rental Near {{ $city->name }}
                 </h2>
-                <div class="flex flex-wrap justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     @foreach($nearbyCityPages as $nearbyCity)
                         @php $nearbyPage = $nearbyCity->getServicePage('general'); @endphp
                         @if($nearbyPage)
                             <a href="{{ url($nearbyPage->slug) }}"
                                class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
-                              px-5 py-3 rounded-xl text-sm font-medium text-slate-700
-                              hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-2">
+                              px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700
+                              hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2">
                                 📍 {{ $nearbyCity->name }}, {{ $nearbyCity->state->code }}
                             </a>
                         @endif
