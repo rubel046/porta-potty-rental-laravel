@@ -2,13 +2,15 @@
 
 // routes/web.php
 
-use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\AiApiKeyController;
 // Public Controllers
+use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\InvoiceController;
 // Admin Controllers
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\Admin\PhoneNumberController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ServicePageController;
@@ -136,6 +138,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/cities/{city}/generate-pages', [CityController::class, 'generatePages'])
         ->name('cities.generate-pages');
 
+    // Check content generation progress
+    Route::get('/cities/{city}/generation-progress', [CityController::class, 'generationProgress'])
+        ->name('cities.generation-progress');
+
     // Delete all service pages, FAQs, and testimonials for a city
     Route::delete('/cities/{city}/delete-pages', [CityController::class, 'deletePages'])
         ->name('cities.delete-pages');
@@ -156,6 +162,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     // Bulk delete service pages (must be before resource routes)
     Route::delete('/service-pages/bulk-destroy', [ServicePageController::class, 'bulkDestroy'])
         ->name('service-pages.bulk-destroy');
+
+    // Quick view API
+    Route::get('/service-pages/{servicePage}/quick-view', [ServicePageController::class, 'quickView'])
+        ->name('service-pages.quick-view');
 
     Route::resource('service-pages', ServicePageController::class)
         ->except(['create', 'store']);
@@ -208,6 +218,19 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     */
     Route::get('/reports', [ReportController::class, 'index'])
         ->name('reports');
+
+    /*
+    |----------------------------------------------------------------------
+    | AI API Keys
+    |----------------------------------------------------------------------
+    */
+    Route::resource('api-keys', AiApiKeyController::class);
+    Route::post('/api-keys/{apiKey}/toggle', [AiApiKeyController::class, 'toggle'])
+        ->name('api-keys.toggle');
+    Route::post('/api-keys/{apiKey}/reset', [AiApiKeyController::class, 'reset'])
+        ->name('api-keys.reset');
+    Route::post('/api-keys/reset-all', [AiApiKeyController::class, 'resetAll'])
+        ->name('api-keys.reset-all');
 });
 
 /*
@@ -239,6 +262,18 @@ require __DIR__.'/auth.php';
 | আগে চেক হবে, ম্যাচ না হলে এখানে আসবে।
 |
 */
+
+/*
+|----------------------------------------------------------------------
+| System Logs (must be before catch-all)
+|----------------------------------------------------------------------
+*/
+Route::prefix('logs')->name('admin.logs.')->group(function () {
+    Route::get('/', [LogViewerController::class, 'index'])->name('index');
+    Route::get('/show', [LogViewerController::class, 'show'])->name('show');
+    Route::post('/clear', [LogViewerController::class, 'clear'])->name('clear');
+    Route::post('/download', [LogViewerController::class, 'download'])->name('download');
+});
 
 Route::get('/{slug}', [PageController::class, 'cityPage'])
     ->name('service.page')

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateCityContentJob;
 use App\Models\City;
 use App\Models\State;
-use App\Services\ContentGeneratorService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CityController extends Controller
 {
@@ -97,7 +98,25 @@ class CityController extends Controller
     {
         $city->load(['state', 'servicePages', 'phoneNumbers', 'callLogs', 'blogPosts']);
 
-        return view('admin.cities.show', compact('city'));
+        $cacheKey = "city_content_generation_{$city->id}";
+        $generationStatus = Cache::get("{$cacheKey}_status", 'idle');
+        $generationProgress = Cache::get("{$cacheKey}_progress", 0);
+        $currentType = Cache::get("{$cacheKey}_current_type");
+        $generationErrors = Cache::get("{$cacheKey}_errors", []);
+        $startedAt = Cache::get("{$cacheKey}_started_at");
+
+        if ($generationStatus === 'completed' || $generationStatus === 'failed') {
+            Cache::forget("{$cacheKey}_status");
+            Cache::forget("{$cacheKey}_progress");
+            Cache::forget("{$cacheKey}_current_type");
+            Cache::forget("{$cacheKey}_errors");
+            Cache::forget("{$cacheKey}_started_at");
+            $generationStatus = 'idle';
+            $generationProgress = 0;
+            $generationErrors = [];
+        }
+
+        return view('admin.cities.show', compact('city', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt'));
     }
 
     public function update(Request $request, City $city)
@@ -141,61 +160,32 @@ class CityController extends Controller
 
     public function generatePages(City $city)
     {
-        $generator = new ContentGeneratorService;
-        $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
+        $cacheKey = "city_content_generation_{$city->id}";
 
-        foreach ($types as $type) {
-            $data = $generator->generateServicePageContent($city, $type);
-
-            $city->servicePages()->updateOrCreate(
-                ['slug' => $data['slug']],
-                [
-                    'service_type' => $data['service_type'] ?? $type,
-                    'h1_title' => $data['h1_title'] ?? null,
-                    'meta_title' => $data['meta_title'] ?? null,
-                    'meta_description' => $data['meta_description'] ?? null,
-                    'content' => $data['content'] ?? '',
-                    'word_count' => $data['word_count'] ?? 0,
-                    'is_published' => true,
-                    'published_at' => now(),
-                ]
-            );
+        if (Cache::get("{$cacheKey}_status") === 'processing') {
+            return redirect()->back()->with('info', 'Content generation is already in progress!');
         }
 
-        // Generate FAQs for each service type
-        foreach ($types as $type) {
-            $faqs = $generator->generateFaqs($city, $type);
-            foreach ($faqs as $i => $faq) {
-                $city->faqs()->updateOrCreate(
-                    [
-                        'question' => $faq['question'],
-                        'service_type' => $type,
-                    ],
-                    array_merge($faq, [
-                        'service_type' => $type,
-                        'sort_order' => $i,
-                        'is_active' => true,
-                    ])
-                );
-            }
-        }
+        Cache::put("{$cacheKey}_status", 'processing', now()->addMinutes(30));
+        Cache::put("{$cacheKey}_progress", 0, now()->addMinutes(30));
+        Cache::put("{$cacheKey}_current_type", null, now()->addMinutes(30));
+        Cache::put("{$cacheKey}_started_at", now()->toIso8601String(), now()->addMinutes(60));
 
-        // Generate testimonials for each service type
-        foreach ($types as $type) {
-            $testimonials = $generator->generateTestimonials($city, $type);
-            foreach ($testimonials as $t) {
-                $city->testimonials()->updateOrCreate(
-                    [
-                        'customer_name' => $t['customer_name'],
-                        'service_type' => $type,
-                    ],
-                    array_merge($t, ['service_type' => $type])
-                );
-            }
-        }
+        GenerateCityContentJob::dispatch($city);
 
-        return redirect()->back()
-            ->with('success', 'Generated 8 pages, '.(8 * 5).' FAQs & '.(8 * 3)." testimonials for {$city->name}!");
+        return redirect()->back()->with('success', 'Content generation started in background! Refresh the page to see progress.');
+    }
+
+    public function generationProgress(City $city)
+    {
+        $cacheKey = "city_content_generation_{$city->id}";
+
+        return response()->json([
+            'status' => Cache::get("{$cacheKey}_status", 'idle'),
+            'progress' => Cache::get("{$cacheKey}_progress", 0),
+            'current_type' => Cache::get("{$cacheKey}_current_type"),
+            'started_at' => Cache::get("{$cacheKey}_started_at"),
+        ]);
     }
 
     public function deletePages(City $city)

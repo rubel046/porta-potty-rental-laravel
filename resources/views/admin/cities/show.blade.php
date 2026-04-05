@@ -54,6 +54,56 @@
             </div>
         </div>
 
+        {{-- Generation Status --}}
+        @if($generationStatus === 'processing')
+            <div class="bg-white rounded-xl shadow-sm border border-indigo-200 p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-indigo-700">
+                        Generating content...
+                        @if($currentType)
+                            <span class="text-indigo-500">({{ ucfirst($currentType) }})</span>
+                        @endif
+                    </span>
+                    <span class="text-sm text-indigo-600 font-bold" id="progress-percent-top">{{ $generationProgress }}%</span>
+                </div>
+                <div class="w-full bg-indigo-100 rounded-full h-3">
+                    <div class="bg-purple-600 h-3 rounded-full transition-all duration-300" style="width: {{ $generationProgress }}%"></div>
+                </div>
+                @if($startedAt)
+                    <p class="text-xs text-indigo-400 mt-2">Started: {{ \Carbon\Carbon::parse($startedAt)->diffForHumans() }}</p>
+                @endif
+            </div>
+        @elseif($generationStatus === 'completed')
+            <div class="bg-white rounded-xl shadow-sm border border-green-200 p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-green-700">Content generation completed!</p>
+                        <p class="text-xs text-green-600">{{ $city->servicePages->count() }} pages, FAQs & testimonials ready</p>
+                    </div>
+                </div>
+                @if(!empty($generationErrors))
+                    <div class="mt-3 p-2 bg-yellow-50 rounded border border-yellow-100">
+                        <p class="text-xs text-yellow-700">Some pages had issues: {{ implode(', ', $generationErrors) }}</p>
+                    </div>
+                @endif
+            </div>
+        @elseif($generationStatus === 'failed')
+            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-red-700">Content generation failed</p>
+                        <p class="text-xs text-red-500">Check logs or try again</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-gray-800">Service Pages</h2>
@@ -63,17 +113,18 @@
                             Delete Selected
                         </button>
                     @endif
-                    <form method="POST" action="{{ route('admin.cities.generate-pages', $city) }}">
+                    <form method="POST" action="{{ route('admin.cities.generate-pages', $city) }}" id="generate-form">
                         @csrf
-                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">Generate Content</button>
+                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700" id="generate-btn">Generate Content</button>
                     </form>
                 </div>
             </div>
+
             <form id="bulk-delete-form" method="POST" action="{{ route('admin.service-pages.bulk-destroy') }}">
                 @csrf
                 <input type="hidden" name="_method" value="DELETE">
                 <table class="w-full text-sm">
-                    <thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="pb-2 w-8"><input type="checkbox" id="select-all"></th><th class="pb-2">Type</th><th class="pb-2">Slug</th><th class="pb-2">Views</th><th class="pb-2">Calls</th></tr></thead>
+                    <thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="pb-2 w-8"><input type="checkbox" id="select-all"></th><th class="pb-2">Type</th><th class="pb-2">Slug</th><th class="pb-2">Views</th><th class="pb-2">Calls</th><th class="pb-2 w-24">Actions</th></tr></thead>
                     <tbody class="divide-y divide-gray-50">
                         @forelse($city->servicePages as $page)
                             <tr>
@@ -84,9 +135,19 @@
                                 <td class="py-2 text-xs font-mono">{{ Str::limit($page->slug, 30) }}</td>
                                 <td class="py-2">{{ number_format($page->views) }}</td>
                                 <td class="py-2">{{ number_format($page->calls_generated) }}</td>
+                                <td class="py-2">
+                                    <div class="flex gap-1">
+                                        <a href="{{ url($page->slug) }}" target="_blank" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded transition" title="View Public Page">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        </a>
+                                        <a href="{{ route('admin.service-pages.edit', $page) }}" class="p-1.5 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded transition" title="Edit">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="py-4 text-center text-gray-400">No pages generated yet</td></tr>
+                            <tr><td colspan="6" class="py-4 text-center text-gray-400">No pages generated yet</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -241,5 +302,63 @@
         btn.disabled = checked.length === 0;
         btn.textContent = checked.length > 0 ? 'Delete Selected (' + checked.length + ')' : 'Delete Selected';
     }
+
+    // Handle generation form submission
+    document.getElementById('generate-form')?.addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to generate content? This will create 8 service pages, FAQs, and testimonials.\n\nExisting pages will be updated if they have the same slug.')) {
+            e.preventDefault();
+            return;
+        }
+        
+        const btn = document.getElementById('generate-btn');
+        btn.disabled = true;
+        btn.textContent = 'Starting...';
+        
+        document.getElementById('generation-progress').classList.remove('hidden');
+        
+        checkGenerationProgress();
+    });
+
+    function checkGenerationProgress() {
+        fetch('{{ route('admin.cities.generation-progress', $city) }}')
+            .then(res => res.json())
+            .then(data => {
+                const progressBar = document.getElementById('progress-bar');
+                const progressPercent = document.getElementById('progress-percent');
+                const statusText = document.querySelector('#generation-progress .text-indigo-700');
+                
+                progressBar.style.width = data.progress + '%';
+                progressPercent.textContent = data.progress + '%';
+                
+                if (data.current_type && statusText) {
+                    const typeName = data.current_type.charAt(0).toUpperCase() + data.current_type.slice(1);
+                    statusText.innerHTML = 'Generating content... <span class="text-indigo-500">(' + typeName + ')</span>';
+                }
+                
+                if (data.status === 'processing') {
+                    setTimeout(checkGenerationProgress, 2000);
+                } else if (data.status === 'completed') {
+                    progressPercent.textContent = 'Completed!';
+                    progressBar.classList.remove('bg-purple-600');
+                    progressBar.classList.add('bg-green-600');
+                    if (statusText) statusText.textContent = 'Generation complete!';
+                    const infoText = document.querySelector('#generation-progress .text-indigo-500, #generation-progress .text-indigo-500 ~ p');
+                    if (infoText) infoText.textContent = 'Refresh the page to see the new content.';
+                    setTimeout(() => location.reload(), 2000);
+                } else if (data.status === 'failed') {
+                    progressPercent.textContent = 'Failed';
+                    document.querySelector('#generation-progress').classList.remove('bg-indigo-50');
+                    document.querySelector('#generation-progress').classList.add('bg-red-50', 'border-red-100');
+                }
+            })
+            .catch(() => {
+                setTimeout(checkGenerationProgress, 5000);
+            });
+    }
 </script>
+@if($generationStatus === 'processing')
+<script>
+    setTimeout(() => location.reload(), 5000);
+</script>
+@endif
 @endsection

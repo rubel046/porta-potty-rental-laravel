@@ -3,45 +3,29 @@
 namespace App\Services;
 
 use App\Models\City;
+use Illuminate\Support\Facades\Log;
 
 class ContentGeneratorService
 {
-    protected ?AnthropicService $anthropic = null;
+    protected ?MultiAiService $aiService = null;
 
-    protected ?OpenAIService $openai = null;
-
-    protected ?GeminiService $gemini = null;
-
-    protected string $provider;
+    protected ?ImageService $imageService = null;
 
     public function __construct()
     {
-        $this->provider = config('services.ai.provider', env('AI_PROVIDER', 'anthropic'));
+        if (app()->bound(MultiAiService::class)) {
+            $this->aiService = app(MultiAiService::class);
+        }
 
-        if ($this->provider === 'openai' && app()->bound(OpenAIService::class)) {
-            $this->openai = app(OpenAIService::class);
-        } elseif ($this->provider === 'gemini' && app()->bound(GeminiService::class)) {
-            $this->gemini = app(GeminiService::class);
-        } elseif ($this->provider === 'anthropic' && app()->bound(AnthropicService::class)) {
-            $this->anthropic = app(AnthropicService::class);
+        if (app()->bound(ImageService::class)) {
+            $this->imageService = app(ImageService::class);
         }
     }
 
-    /**
-     * শহরের জন্য সম্পূর্ণ সার্ভিস পেজ কন্টেন্ট জেনারেট করুন
-     */
     public function generateServicePageContent(City $city, string $serviceType = 'general'): array
     {
-        if ($this->provider === 'openai' && $this->openai && $this->openai->isConfigured()) {
-            return $this->generateFromAI($city, $serviceType, 'openai');
-        }
-
-        if ($this->provider === 'gemini' && $this->gemini && $this->gemini->isConfigured()) {
-            return $this->generateFromAI($city, $serviceType, 'gemini');
-        }
-
-        if ($this->provider === 'anthropic' && $this->anthropic && $this->anthropic->isConfigured()) {
-            return $this->generateFromAI($city, $serviceType, 'anthropic');
+        if ($this->aiService) {
+            return $this->generateFromAI($city, $serviceType);
         }
 
         return match ($serviceType) {
@@ -57,7 +41,7 @@ class ContentGeneratorService
         };
     }
 
-    protected function generateFromAI(City $city, string $serviceType, string $provider = 'anthropic'): array
+    protected function generateFromAI(City $city, string $serviceType): array
     {
         $state = $city->state;
         $serviceLabels = [
@@ -76,48 +60,55 @@ class ContentGeneratorService
         $serviceLink = '/services#'.$serviceType;
 
         $prompt = <<<PROMPT
-Generate SEO-optimized content for a porta potty rental service page.
+For {$serviceLabel} in {$city->name}, {$state->code}:
 
-City: {$city->name}, {$state->code}
-State: {$state->name}
-Nearby Areas: {$nearbyAreas}
-Population: {$population}
-
-Service Type: {$serviceLabel}
-
-Generate a JSON response with exactly this structure:
-{
-  "slug": "porta-potty-rental-{$city->slug}",
-  "h1_title": "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct",
-  "meta_title": "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct",
-  "meta_description": "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery, competitive pricing. Call for free quote!",
-  "content": "Comprehensive markdown content with headings, bullet points, at least 1500 words"
-}
-
-Requirements:
-- Content must be at least 1500 words
-- Include H2 and H3 headings
-- Include pricing info, service features
-- Include local keywords: {$city->name}, {$state->name}, {$state->code}
-- Include CTAs like Call now, Get a quote
-- Internal links to {$serviceLink}
-- Professional SEO-optimized copy
-- No placeholder text
-
-Respond ONLY with valid JSON.
+Return ONLY this exact format (replace CONTENT with markdown):
+[METADATA]
+{"slug":"{$serviceType}-porta-potty-rental-{$city->slug}","h1_title":"{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct","meta_title":"{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct","meta_description":"{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!"}
+[/METADATA]
+[CONTENT]
+Write 150 words of SEO content in markdown. Start with ## heading. Include bullet points, {$city->name}, {$state->code}, pricing, CTA.
+[/CONTENT]
 PROMPT;
 
-        $result = match ($provider) {
-            'openai' => $this->openai->generateJson($prompt, 8192),
-            'gemini' => $this->gemini->generateJson($prompt, 8192),
-            default => $this->anthropic->generateJson($prompt, 8192),
-        };
+        $rawResponse = $this->aiService->generateContent($prompt);
 
-        if (! $result) {
-            return $this->generateServicePageContent($city, $serviceType);
+        if (! $rawResponse) {
+            throw new \RuntimeException("AI generation failed for {$city->name} ({$serviceType}) - All API keys exhausted or unavailable");
         }
 
-        $content = $result['content'] ?? '';
+        $result = [
+            'slug' => "{$serviceType}-porta-potty-rental-{$city->slug}",
+            'h1_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct",
+            'meta_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct",
+            'meta_description' => "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!",
+            'content' => '',
+        ];
+
+        if (preg_match('/\[CONTENT\]\s*(.*?)\s*\[\/CONTENT\]/is', $rawResponse, $matches)) {
+            $result['content'] = trim($matches[1]);
+        }
+
+        if (preg_match('/\[METADATA\]\s*(\{.*?\})\s*\[\/METADATA\]/is', $rawResponse, $matches)) {
+            $metadata = json_decode($matches[1], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($metadata)) {
+                $result = array_merge($result, $metadata);
+            }
+        }
+
+        if (empty($result['content'])) {
+            Log::warning('AI content parse failed, using fallback', [
+                'city' => $city->name,
+                'service_type' => $serviceType,
+            ]);
+
+            return $this->getFallbackContent($city, $serviceType);
+        }
+
+        $content = $result['content'];
+
+        $images = $this->getImagesForContent($city, $serviceType);
+        $contentWithImages = $this->embedImagesInContent($content, $images);
 
         return [
             'slug' => $result['slug'] ?? "porta-potty-rental-{$city->slug}",
@@ -125,18 +116,85 @@ PROMPT;
             'h1_title' => $result['h1_title'] ?? '',
             'meta_title' => $result['meta_title'] ?? '',
             'meta_description' => $result['meta_description'] ?? '',
-            'content' => $content,
+            'content' => $contentWithImages,
+            'images' => $images,
             'word_count' => str_word_count(strip_tags($content)),
         ];
     }
 
-    public function getAiService(): AnthropicService|OpenAIService|GeminiService|null
+    protected function getImagesForContent(City $city, string $serviceType): array
     {
-        return match ($this->provider) {
-            'openai' => $this->openai,
-            'gemini' => $this->gemini,
-            default => $this->anthropic,
+        if (! $this->imageService) {
+            return [];
+        }
+
+        try {
+            $images = $this->imageService->getRandomImagesForContent(3);
+
+            return $images;
+        } catch (\Exception $e) {
+            Log::warning("Failed to get images for content: {$e->getMessage()}");
+
+            return [];
+        }
+    }
+
+    protected function embedImagesInContent(string $content, array $images): string
+    {
+        if (empty($images)) {
+            return $content;
+        }
+
+        $imageSection = "\n\n## Our Work\n\n";
+        $imageSection .= "See our porta potty units in action:\n\n";
+
+        foreach ($images as $image) {
+            $altText = ucfirst(str_replace(['-', '_', '.'], ' ', pathinfo($image['filename'], PATHINFO_FILENAME)));
+            $encodedUrl = str_replace(' ', '%20', $image['url']);
+            $imageSection .= "![{$altText}]({$encodedUrl})\n";
+        }
+
+        $imageSection .= "\n---\n";
+
+        if (str_contains(strtolower($content), '## why choose')) {
+            $parts = preg_split('/(## why choose)/i', $content, 2);
+            if (count($parts) === 3) {
+                return $parts[1].$parts[2].$imageSection;
+            }
+        }
+
+        return $content.$imageSection;
+    }
+
+    public function getAiService(): ?MultiAiService
+    {
+        return $this->aiService;
+    }
+
+    protected function getFallbackContent(City $city, string $serviceType): array
+    {
+        $cityName = $city->name;
+        $stateCode = $city->state->code;
+        $stateName = $city->state->name;
+        $nearbyText = implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8));
+
+        $result = match ($serviceType) {
+            'general' => $this->generalContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'construction' => $this->constructionContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'wedding' => $this->weddingContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'event' => $this->eventContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'luxury' => $this->luxuryContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'party' => $this->partyContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'emergency' => $this->emergencyContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            'residential' => $this->residentialContent($city, $cityName, $stateCode, $stateName, $nearbyText),
+            default => $this->generalContent($city, $cityName, $stateCode, $stateName, $nearbyText),
         };
+
+        $images = $this->getImagesForContent($city, $serviceType);
+        $result['content'] = $this->embedImagesInContent($result['content'], $images);
+        $result['images'] = $images;
+
+        return $result;
     }
 
     protected function generalContent(City $city, string $cityName, string $stateCode, string $stateName, string $nearbyText): array

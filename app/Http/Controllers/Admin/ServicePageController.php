@@ -46,6 +46,19 @@ class ServicePageController extends Controller
         return view('admin.service-pages.show', ['servicePage' => $servicePage]);
     }
 
+    public function quickView(ServicePage $servicePage)
+    {
+        return response()->json([
+            'h1_title' => $servicePage->h1_title,
+            'meta_title' => $servicePage->meta_title,
+            'meta_description' => $servicePage->meta_description,
+            'content' => $servicePage->content,
+            'word_count' => $servicePage->word_count,
+            'slug' => $servicePage->slug,
+            'service_type' => $servicePage->service_type,
+        ]);
+    }
+
     public function update(Request $request, ServicePage $servicePage)
     {
         $validated = $request->validate([
