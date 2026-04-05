@@ -344,11 +344,12 @@
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Services</h4>
                 <ul class="space-y-3">
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Standard Porta Potties</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Deluxe Flushable Units</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">ADA Accessible Units</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Luxury Restroom Trailers</a></li>
-                    <li><a href="{{ route('locations') }}" class="text-sm text-slate-400 hover:text-white transition">Hand Wash Stations</a></li>
+                    <li><a href="{{ route('services') }}#standard" class="text-sm text-slate-400 hover:text-white transition">Standard Porta Potties</a></li>
+                    <li><a href="{{ route('services') }}#deluxe" class="text-sm text-slate-400 hover:text-white transition">Deluxe Flushable Units</a></li>
+                    <li><a href="{{ route('services') }}#ada" class="text-sm text-slate-400 hover:text-white transition">ADA Accessible Units</a></li>
+                    <li><a href="{{ route('services') }}#luxury" class="text-sm text-slate-400 hover:text-white transition">Luxury Restroom Trailers</a></li>
+                    <li><a href="{{ route('services') }}#handwash" class="text-sm text-slate-400 hover:text-white transition">Hand Wash Stations</a></li>
+                    <li><a href="{{ route('pricing') }}" class="text-sm text-slate-400 hover:text-white transition">Pricing Guide</a></li>
                 </ul>
             </div>
 

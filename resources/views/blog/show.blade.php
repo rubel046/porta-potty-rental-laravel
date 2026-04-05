@@ -151,6 +151,28 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                     </a>
                 </div>
 
+                {{-- Related Services --}}
+                <div class="mt-12 grid sm:grid-cols-3 gap-4">
+                    <a href="{{ route('services') }}"
+                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                        <div class="text-3xl mb-2">🚽</div>
+                        <h4 class="font-bold text-slate-800">Our Services</h4>
+                        <p class="text-sm text-slate-600 mt-1">Standard, Deluxe, ADA & more</p>
+                    </a>
+                    <a href="{{ route('locations') }}"
+                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                        <div class="text-3xl mb-2">📍</div>
+                        <h4 class="font-bold text-slate-800">Find Locations</h4>
+                        <p class="text-sm text-slate-600 mt-1">Browse cities we serve</p>
+                    </a>
+                    <a href="{{ route('pricing') }}"
+                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                        <div class="text-3xl mb-2">💰</div>
+                        <h4 class="font-bold text-slate-800">View Pricing</h4>
+                        <p class="text-sm text-slate-600 mt-1">Transparent rates</p>
+                    </a>
+                </div>
+
                 {{-- Back to Blog --}}
                 <div class="mt-10 text-center">
                     <a href="{{ route('blog.index') }}"

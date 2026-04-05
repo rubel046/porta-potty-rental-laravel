@@ -191,7 +191,7 @@ $breadcrumbSchema = [
 
     {{-- FAQs --}}
     @if($faqs->isNotEmpty())
-        <section class="py-12 md:py-16 px-4">
+        <section id="faq" class="py-12 md:py-16 px-4">
             <div class="max-w-3xl mx-auto">
                 <h2 class="text-2xl md:text-3xl font-bold text-center mb-10">
                     Frequently Asked Questions — {{ $city->name }}, {{ $city->state->code }}
@@ -210,6 +210,11 @@ $breadcrumbSchema = [
                             </div>
                         </details>
                     @endforeach
+                </div>
+                <div class="mt-8 text-center">
+                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">
+                        View our full pricing guide →
+                    </a>
                 </div>
             </div>
         </section>

@@ -121,6 +121,47 @@ $breadcrumbSchema = [
         </div>
     </section>
 
+    {{-- Quick Links --}}
+    <section class="py-12 md:py-16 px-4 bg-slate-50">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
+                Explore Our Services
+            </h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="{{ route('services') }}#standard"
+                   class="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all text-center group border border-slate-200">
+                    <div class="text-4xl mb-3">🚽</div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">Standard Units</h3>
+                    <p class="text-sm text-slate-500 mt-1">Construction & Events</p>
+                </a>
+                <a href="{{ route('services') }}#deluxe"
+                   class="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all text-center group border border-slate-200">
+                    <div class="text-4xl mb-3">🚿</div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">Deluxe Flushable</h3>
+                    <p class="text-sm text-slate-500 mt-1">Weddings & Parties</p>
+                </a>
+                <a href="{{ route('services') }}#ada"
+                   class="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all text-center group border border-slate-200">
+                    <div class="text-4xl mb-3">♿</div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">ADA Accessible</h3>
+                    <p class="text-sm text-slate-500 mt-1">Compliance Ready</p>
+                </a>
+                <a href="{{ route('pricing') }}"
+                   class="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all text-center group border border-slate-200">
+                    <div class="text-4xl mb-3">💰</div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">View Pricing</h3>
+                    <p class="text-sm text-slate-500 mt-1">Transparent Rates</p>
+                </a>
+            </div>
+            <div class="mt-8 text-center">
+                <a href="{{ route('locations') }}"
+                   class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold transition">
+                    Browse all cities in {{ $state->name }} →
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- CTA --}}
     <section class="py-16 md:py-20 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-center">
         <div class="max-w-3xl mx-auto">

@@ -62,10 +62,22 @@ $faqSchema = [
     "@context" => "https://schema.org",
     "@type" => "FAQPage",
     "mainEntity" => [
-        ["@type" => "Question", "name" => "How much does portable restroom rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, and rental duration. Call us for a personalized quote tailored to your specific needs."]],
-        ["@type" => "Question", "name" => "Do you offer same-day portable restroom delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability."]],
-        ["@type" => "Question", "name" => "How many portable restrooms do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For a 4-hour event, plan for 1 unit per 50 guests. For 8 hours, 1 unit per 25 guests. If alcohol is served, add 20% more units. For construction, OSHA requires 1 unit per 20 workers."]],
-        ["@type" => "Question", "name" => "What is included in the portable restroom rental price?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental price includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (pumping, cleaning, sanitizing, and restocking toilet paper and hand sanitizer)."]]
+        ["@type" => "Question", "name" => "How much does a porta potty rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. Call us for a personalized quote."]],
+        ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
+        ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
+        ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
+        ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we'll help you determine the right number."]],
+        ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
+        ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
+        ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
+        ["@type" => "Question", "name" => "How often are porta potties serviced?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing."]],
+        ["@type" => "Question", "name" => "Do you provide ADA-accessible portable restrooms?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units."]],
+        ["@type" => "Question", "name" => "What areas do you service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We service cities and counties across the state. Enter your zip code or city on our locations page to see if we service your area, or call us for quick confirmation."]],
+        ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
+        ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
+        ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
+        ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we'll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
+        ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We'll provide a full breakdown before you commit."]]
     ]
 ];
 @endphp
@@ -958,11 +970,19 @@ $faqSchema = [
                 $homeFaqs = [
                     [
                         'q' => 'How much does a porta potty rental cost?',
-                        'a' => 'Pricing varies by location, quantity, and duration. Call us for a personalized quote tailored to your specific project needs.',
+                        'a' => 'Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">View our full pricing guide</a> or call us for a personalized quote.',
                     ],
                     [
                         'q' => 'Do you offer same-day porta potty delivery?',
                         'a' => 'Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance.',
+                    ],
+                    [
+                        'q' => 'What types of porta potty units do you offer?',
+                        'a' => 'We offer <a href="' . route('services') . '#standard" class="text-emerald-600 hover:underline">standard portable toilets</a>, <a href="' . route('services') . '#deluxe" class="text-emerald-600 hover:underline">deluxe flushable units</a> with handwashing stations, <a href="' . route('services') . '#ada" class="text-emerald-600 hover:underline">ADA-compliant accessible units</a>, <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a>, and high-rise units for multi-story construction.',
+                    ],
+                    [
+                        'q' => 'Do you offer restroom trailers for events?',
+                        'a' => 'Yes! Our <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a> feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings.',
                     ],
                     [
                         'q' => 'How many porta potties do I need for my event?',
@@ -970,7 +990,15 @@ $faqSchema = [
                     ],
                     [
                         'q' => 'What is included in the rental?',
-                        'a' => 'Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking). No hidden fees — the price we quote is the price you pay.',
+                        'a' => 'Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">No hidden fees</a> — the price we quote is the price you pay.',
+                    ],
+                    [
+                        'q' => 'Do units include hand sanitizer?',
+                        'a' => 'Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone <a href="' . route('services') . '#handwash" class="text-emerald-600 hover:underline">hand wash stations</a> for any event or job site.',
+                    ],
+                    [
+                        'q' => 'How far in advance should I book?',
+                        'a' => 'For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. <a href="' . route('locations') . '" class="text-emerald-600 hover:underline">Check availability</a> in your area.',
                     ],
                     [
                         'q' => 'How often are porta potties serviced?',
@@ -978,25 +1006,47 @@ $faqSchema = [
                     ],
                     [
                         'q' => 'Do you provide ADA-accessible portable restrooms?',
-                        'a' => 'Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units.',
+                        'a' => 'Yes, we offer <a href="' . route('services') . '#ada" class="text-emerald-600 hover:underline">fully ADA-compliant portable restrooms</a> with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors.',
+                    ],
+                    [
+                        'q' => 'What areas do you service?',
+                        'a' => 'We service cities and counties across the state. <a href="' . route('locations') . '" class="text-emerald-600 hover:underline">Enter your zip code or city</a> to see if we service your area, or call us for quick confirmation.',
+                    ],
+                    [
+                        'q' => 'Do portable toilets need water or electricity?',
+                        'a' => 'No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only.',
+                    ],
+                    [
+                        'q' => 'How do you dispose of waste responsibly?',
+                        'a' => 'All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible.',
+                    ],
+                    [
+                        'q' => 'Do you offer single-day rentals?',
+                        'a' => 'Yes, we offer single-day rentals for events and short-term needs. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">Pricing is based on the number of units</a> and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included.',
+                    ],
+                    [
+                        'q' => 'What if a unit needs servicing during my rental?',
+                        'a' => 'Simply call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations.',
+                    ],
+                    [
+                        'q' => 'Is there a deposit or hidden fees?',
+                        'a' => 'We believe in transparent pricing. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">Quotes include delivery, setup, servicing, and pickup</a> — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit.',
                     ],
                 ];
             @endphp
 
-            <div class="space-y-3" itemscope itemtype="https://schema.org/FAQPage">
+            <div class="space-y-3">
                 @foreach($homeFaqs as $faq)
-                    <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group"
-                             itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
                         <summary class="flex justify-between items-center p-5 cursor-pointer
                                     font-semibold text-slate-800 hover:text-emerald-600 transition
                                     list-none">
-                            <span itemprop="name">{{ $faq['q'] }}</span>
+                            <span>{{ $faq['q'] }}</span>
                             <span class="text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
                                      transition-all duration-300 ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">+</span>
                         </summary>
-                        <div class="px-5 pb-5 text-slate-600 leading-relaxed"
-                             itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text">{{ $faq['a'] }}</p>
+                        <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                            <p>{!! $faq['a'] !!}</p>
                         </div>
                     </details>
                 @endforeach
