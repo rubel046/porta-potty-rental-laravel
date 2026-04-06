@@ -57,17 +57,90 @@ class ContentGeneratorService
         $serviceLabel = $serviceLabels[$serviceType] ?? 'General Porta Potty Rental';
 
         $prompt = <<<PROMPT
-Generate SEO content for {$serviceLabel} in {$city->name}, {$state->code}.
+Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites like porta potty rentals).
 
-Return a valid JSON object with this exact structure:
+Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {$serviceLabel} in {$city->name}, {$state->code}.
+
+Task: Return a VALID JSON object with EXACTLY this structure:
 {
-    "content": "Write 100-150 words of SEO content in markdown format. Start with ## heading. Include bullet points, {$city->name}, {$state->code}, pricing info, and a CTA."
+    "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + city",
+    "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
+    "meta_description": "Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA",
+    "content": "Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA."
 }
 
-IMPORTANT: Return ONLY valid JSON, no additional text or markdown code blocks.
+Step-by-step requirements:
+
+1) Keyword Optimization:
+- Use primary keyword: {$serviceLabel} {$city->name}
+- Add 3–5 secondary keywords (portable toilet rental, event restroom rental, construction toilets, cheap rental, etc.)
+- Include long-tail keywords (same-day delivery, emergency rental, near me, etc.)
+- Include geo modifiers naturally: “near me”, “in {$city->name}”, “local {$city->name}”
+- Maintain natural keyword density (1–2%)
+- Avoid keyword stuffing
+
+2) Local SEO Optimization:
+- Mention {$city->name} and {$state->code} naturally 10–20 times
+- Include geo phrases: “near me”, “local {$city->name}”, “serving {$city->name} and nearby areas”
+- Add local intent phrases (same-day delivery, fast service in {$city->name})
+- Make content feel locally relevant (not generic)
+
+3) Content Structure (MANDATORY inside "content"):
+- Start with ## heading (city + service keyword)
+- Introduction (local + benefit-driven)
+- H2: Why Choose Us (trust signals)
+- H2: Our Services (with H3 for each type: standard, deluxe, ADA, luxury)
+- H2: Use Cases (construction, events, weddings, emergency, residential)
+- H2: Serving {$city->name} & Nearby Areas
+- H2: Call to Action section
+- H2: FAQs (8–15 questions for SEO boost)
+
+4) Conversion Optimization:
+- Include phone CTA at least 3–5 times: “Call Now +1 (833) 652-9344”
+- Add urgency: same-day delivery, fast setup, limited availability
+- Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
+- Focus on benefits over features
+
+5) Pricing Rule (IMPORTANT):
+- DO NOT include any specific price numbers
+- Use soft pricing language:
+  - “affordable pricing”
+  - “competitive rates”
+  - “budget-friendly options”
+  - “custom quotes available”
+
+6) Writing Style:
+- 100% human-like (no robotic tone)
+- Conversational, persuasive, easy to read (Grade 6–8)
+- Avoid repeating patterns across outputs
+- Make each section feel natural and helpful
+
+7) SEO Constraints:
+- h1_title must be different from meta_title
+- meta_title ≤60 characters
+- meta_description ≤160 characters
+- Use power words (fast, affordable, reliable, same-day)
+
+8) Strict Output Rules:
+- Return ONLY valid JSON
+- Do NOT add explanations or markdown outside JSON
+- Do NOT add extra fields
+- Ensure all fields are filled
+- Ensure JSON is properly formatted
+
+Self-check before output:
+- Content is 2000+ words
+- No pricing numbers used
+- Keywords included naturally
+- Strong CTAs present
+- City/state clearly present
+- Content is unique and conversion-focused
+- JSON is valid and clean
+
+Take a deep breath and work on this problem step-by-step.
 PROMPT;
 
-        $systemPrompt = 'You are an SEO content writer. Always return valid JSON. The JSON must have a "content" field containing markdown text.';
+        $systemPrompt = 'You are an SEO content writer. Always return valid JSON with h1_title, meta_title, meta_description, and content fields. Be creative and unique - never repeat the same patterns.';
 
         $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
 
@@ -75,6 +148,9 @@ PROMPT;
             throw new \RuntimeException("AI JSON generation failed for {$city->name} ({$serviceType})");
         }
 
+        $h1Title = $jsonResponse['h1_title'] ?? "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct";
+        $metaTitle = $jsonResponse['meta_title'] ?? "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct";
+        $metaDescription = $jsonResponse['meta_description'] ?? "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!";
         $content = $jsonResponse['content'];
 
         $images = $this->getImagesForContent($city, $serviceType);
@@ -83,9 +159,9 @@ PROMPT;
         return [
             'slug' => "{$serviceType}-porta-potty-rental-{$city->slug}",
             'service_type' => $serviceType,
-            'h1_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Potty Direct",
-            'meta_title' => "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct",
-            'meta_description' => "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!",
+            'h1_title' => $h1Title,
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDescription,
             'content' => $contentWithImages,
             'images' => $images,
             'word_count' => str_word_count(strip_tags($content)),

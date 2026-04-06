@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', $servicePage->seo_title)
-@section('meta_description', $servicePage->seo_description)
+@section('title', $servicePage->meta_title)
+@section('meta_description', $servicePage->meta_description)
 @section('canonical', url($servicePage->slug))
 @section('phone_display', $servicePage->phone_display)
 @section('phone_raw', $servicePage->phone_raw)
