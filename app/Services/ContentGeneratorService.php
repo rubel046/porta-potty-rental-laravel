@@ -55,6 +55,7 @@ class ContentGeneratorService
             'residential' => 'Residential Porta Potty',
         ];
         $serviceLabel = $serviceLabels[$serviceType] ?? 'General Porta Potty Rental';
+        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
 
         $prompt = <<<PROMPT
 Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites like porta potty rentals).
@@ -75,13 +76,13 @@ Step-by-step requirements:
 - Use primary keyword: {$serviceLabel} {$city->name}
 - Add 3–5 secondary keywords (portable toilet rental, event restroom rental, construction toilets, cheap rental, etc.)
 - Include long-tail keywords (same-day delivery, emergency rental, near me, etc.)
-- Include geo modifiers naturally: “near me”, “in {$city->name}”, “local {$city->name}”
+- Include geo modifiers naturally: "near me", "in {$city->name}", "local {$city->name}"
 - Maintain natural keyword density (1–2%)
 - Avoid keyword stuffing
 
 2) Local SEO Optimization:
 - Mention {$city->name} and {$state->code} naturally 10–20 times
-- Include geo phrases: “near me”, “local {$city->name}”, “serving {$city->name} and nearby areas”
+- Include geo phrases: "near me", "local {$city->name}", "serving {$city->name} and nearby areas"
 - Add local intent phrases (same-day delivery, fast service in {$city->name})
 - Make content feel locally relevant (not generic)
 
@@ -96,7 +97,7 @@ Step-by-step requirements:
 - H2: FAQs (8–15 questions for SEO boost)
 
 4) Conversion Optimization:
-- Include phone CTA at least 3–5 times: “Call Now +1 (833) 652-9344”
+- Include phone CTA at least 3–5 times: "Call Now {$phoneDisplay}"
 - Add urgency: same-day delivery, fast setup, limited availability
 - Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
 - Focus on benefits over features
@@ -104,10 +105,10 @@ Step-by-step requirements:
 5) Pricing Rule (IMPORTANT):
 - DO NOT include any specific price numbers
 - Use soft pricing language:
-  - “affordable pricing”
-  - “competitive rates”
-  - “budget-friendly options”
-  - “custom quotes available”
+  - "affordable pricing"
+  - "competitive rates"
+  - "budget-friendly options"
+  - "custom quotes available"
 
 6) Writing Style:
 - 100% human-like (no robotic tone)
