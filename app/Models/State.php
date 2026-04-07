@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -9,10 +10,14 @@ class State extends Model
 {
     protected $fillable = [
         'name', 'code', 'slug', 'timezone', 'is_active',
+        'h1_title', 'meta_title', 'meta_description',
+        'content', 'images', 'word_count', 'seo_score',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'images' => 'array',
+        'seo_score' => 'float',
     ];
 
     public function cities(): HasMany
@@ -25,7 +30,7 @@ class State extends Model
         return $this->hasMany(City::class)->where('is_active', true);
     }
 
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -33,5 +38,27 @@ class State extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return url("/porta-potty-rental-{$this->slug}");
+    }
+
+    public function getSeoTitleAttribute(): string
+    {
+        return $this->meta_title
+            ?? "Porta Potty Rental in {$this->name} | Same-Day Delivery | Potty Direct";
+    }
+
+    public function getSeoDescriptionAttribute(): string
+    {
+        return $this->meta_description
+            ?? "Find affordable porta potty rental in {$this->name}. Same-day delivery available in {$this->cities()->count()} cities. Construction, events, weddings & more. Call for a free quote!";
+    }
+
+    public function hasContent(): bool
+    {
+        return ! empty($this->content);
     }
 }

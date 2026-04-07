@@ -169,7 +169,7 @@ $breadcrumbSchema = [
                                 @for($i = 0; $i < $testimonial->rating; $i++)⭐@endfor
                             </div>
                             <p class="text-slate-700 mb-4 italic leading-relaxed text-sm sm:text-base">
-                                "{{ $testimonial->content }}"
+                                {!! $testimonial->content !!}
                             </p>
                             <div class="flex items-center gap-3 pt-3 sm:pt-4 border-t border-slate-100">
                                 <div class="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xs sm:text-sm">
@@ -206,7 +206,7 @@ $breadcrumbSchema = [
                                      transition-all duration-300 ml-2 sm:ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">+</span>
                             </summary>
                             <div class="px-4 sm:px-5 pb-4 sm:pb-5 text-slate-600 leading-relaxed text-sm sm:text-base">
-                                {{ $faq->answer }}
+                                {!! $faq->answer !!}
                             </div>
                         </details>
                     @endforeach

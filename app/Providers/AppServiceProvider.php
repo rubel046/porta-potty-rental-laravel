@@ -2,7 +2,12 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\SitemapController;
+use App\Models\BlogCategory;
+use App\Models\BlogPost;
 use App\Models\CallLog;
+use App\Models\ServicePage;
+use App\Models\State;
 use App\Services\AnthropicService;
 use App\Services\GeminiService;
 use App\Services\GroqService;
@@ -45,6 +50,27 @@ class AppServiceProvider extends ServiceProvider
                 'todayCalls' => $todayCalls,
                 'todayRevenue' => $todayRevenue,
             ]);
+        });
+
+        $this->registerSitemapObservers();
+    }
+
+    protected function registerSitemapObservers(): void
+    {
+        ServicePage::observe(function () {
+            SitemapController::invalidateCache();
+        });
+
+        BlogPost::observe(function () {
+            SitemapController::invalidateCache();
+        });
+
+        BlogCategory::observe(function () {
+            SitemapController::invalidateCache();
+        });
+
+        State::observe(function () {
+            SitemapController::invalidateCache();
         });
     }
 }

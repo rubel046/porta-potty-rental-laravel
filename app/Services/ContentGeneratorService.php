@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\City;
+use App\Models\State;
 use Illuminate\Support\Facades\Log;
 
 class ContentGeneratorService
@@ -37,6 +38,7 @@ class ContentGeneratorService
             'party' => $this->partyContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
             'emergency' => $this->emergencyContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
             'residential' => $this->residentialContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
+            'portable' => $this->generalContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
             default => $this->generalContent($city, $city->name, $city->state->code, $city->state->name, implode(', ', array_slice($city->getNearbyAreaNames(), 0, 8))),
         };
     }
@@ -53,12 +55,12 @@ class ContentGeneratorService
             'party' => 'Party Porta Potty Rental',
             'emergency' => 'Emergency Portable Toilet',
             'residential' => 'Residential Porta Potty',
+            'portable' => 'Portable Toilet Rental',
         ];
         $serviceLabel = $serviceLabels[$serviceType] ?? 'General Porta Potty Rental';
-        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
 
         $prompt = <<<PROMPT
-Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites like porta potty rentals).
+Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for porta potty rentals).
 
 Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {$serviceLabel} in {$city->name}, {$state->code}.
 
@@ -67,7 +69,9 @@ Task: Return a VALID JSON object with EXACTLY this structure:
     "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + city",
     "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
     "meta_description": "Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA",
-    "content": "Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA."
+    "content": "Write 2000-2500 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content.",
+    "faqs": [{"question": "...", "answer": "..."}, ...],
+    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
 
 Step-by-step requirements:
@@ -94,15 +98,35 @@ Step-by-step requirements:
 - H2: Use Cases (construction, events, weddings, emergency, residential)
 - H2: Serving {$city->name} & Nearby Areas
 - H2: Call to Action section
-- H2: FAQs (8–15 questions for SEO boost)
+- INTERNAL LINKING: Naturally link to other service pages using markdown links like [construction porta potties](/construction-porta-potty-rental-{$city->slug}) or [luxury restroom trailers](/luxury-porta-potty-rental-{$city->slug}) when mentioning related services
 
-4) Conversion Optimization:
-- Include phone CTA at least 3–5 times: "Call Now {$phoneDisplay}"
+4) FAQs (required - 8-15 questions):
+- Generate unique FAQ questions specific to this service type in {$city->name}, {$state->code}
+- Questions should cover: pricing, delivery, duration, types of units, booking process, etc.
+- Answers should be concise, helpful, and include local context when relevant
+- When mentioning other services in answers, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:showers}}
+
+5) Testimonials (required - 2-4 testimonials):
+- Generate realistic customer testimonials for this service type in {$city->name}, {$state->code}
+- Include: customer_name (realistic first name or initials), content (1-2 sentences about experience), rating (4-5 stars)
+- Vary the scenarios: construction supervisor, wedding planner, event organizer, homeowner, etc.
+- When mentioning other services in testimonials, use placeholders: {{SERVICE_LINK:service-type}}
+
+6) Conversion Optimization:
+- Include phone CTA at least 3–5 times using the placeholder: {{PHONE_LINK}}
 - Add urgency: same-day delivery, fast setup, limited availability
 - Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
 - Focus on benefits over features
 
-5) Pricing Rule (IMPORTANT):
+7) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
+- When including phone number in content, FAQs, or testimonials, use EXACTLY this placeholder: {{PHONE_LINK}}
+- DO NOT use any other phone number format
+- Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
+- Example WRONG: "Call us at (888) 555-0199 for a quote"
+- Example WRONG: "Call us at <a href="tel:...">...</a> for a quote"
+- FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
+
+8) Pricing Rule (IMPORTANT):
 - DO NOT include any specific price numbers
 - Use soft pricing language:
   - "affordable pricing"
@@ -110,19 +134,20 @@ Step-by-step requirements:
   - "budget-friendly options"
   - "custom quotes available"
 
-6) Writing Style:
+9) Writing Style:
 - 100% human-like (no robotic tone)
 - Conversational, persuasive, easy to read (Grade 6–8)
 - Avoid repeating patterns across outputs
 - Make each section feel natural and helpful
+- Include 3-5 internal links to other service types naturally throughout content
 
-7) SEO Constraints:
+10) SEO Constraints:
 - h1_title must be different from meta_title
 - meta_title ≤60 characters
 - meta_description ≤160 characters
 - Use power words (fast, affordable, reliable, same-day)
 
-8) Strict Output Rules:
+11) Strict Output Rules:
 - Return ONLY valid JSON
 - Do NOT add explanations or markdown outside JSON
 - Do NOT add extra fields
@@ -136,12 +161,18 @@ Self-check before output:
 - Strong CTAs present
 - City/state clearly present
 - Content is unique and conversion-focused
-- JSON is valid and clean
+- 8-15 FAQs included
+- 2-4 Testimonials included
+- 3-5 internal links included
+- ALL phone numbers use ONLY the placeholder: {{PHONE_LINK}}
+- ALL service links use ONLY placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
+
+IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY {{PHONE_LINK}} and service links use ONLY {{SERVICE_LINK:service-type}}
 
 Take a deep breath and work on this problem step-by-step.
 PROMPT;
 
-        $systemPrompt = 'You are an SEO content writer. Always return valid JSON with h1_title, meta_title, meta_description, and content fields. Be creative and unique - never repeat the same patterns.';
+        $systemPrompt = 'You are an SEO content writer. Phone numbers: ONLY use {{PHONE_LINK}}. Service links: ONLY use {{SERVICE_LINK:service-type}}. Never output actual phone numbers or URLs. Always return valid JSON.';
 
         $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
 
@@ -153,9 +184,13 @@ PROMPT;
         $metaTitle = $jsonResponse['meta_title'] ?? "{$serviceLabel} in {$city->name}, {$state->code} | Fast Delivery | Potty Direct";
         $metaDescription = $jsonResponse['meta_description'] ?? "{$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery. Call for quote!";
         $content = $jsonResponse['content'];
+        $faqs = $jsonResponse['faqs'] ?? [];
+        $testimonials = $jsonResponse['testimonials'] ?? [];
 
         $images = $this->getImagesForContent($city, $serviceType);
         $contentWithImages = $this->embedImagesInContent($content, $images, $serviceType, $city->name);
+        $contentCleaned = $this->applyLinkConversions($contentWithImages);
+        $contentWithServiceLinks = $this->ensureServiceLinks($contentCleaned, $city);
 
         return [
             'slug' => "{$serviceType}-porta-potty-rental-{$city->slug}",
@@ -163,9 +198,18 @@ PROMPT;
             'h1_title' => $h1Title,
             'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'content' => $contentWithImages,
+            'content' => $contentWithServiceLinks,
             'images' => $images,
             'word_count' => str_word_count(strip_tags($content)),
+            'faqs' => array_map(fn ($faq) => [
+                'question' => $faq['question'],
+                'answer' => $this->ensureServiceLinks($this->applyLinkConversions($faq['answer']), $city),
+            ], $faqs),
+            'testimonials' => array_map(fn ($t) => [
+                'customer_name' => $t['customer_name'],
+                'content' => $this->ensureServiceLinks($this->applyLinkConversions($t['content']), $city),
+                'rating' => $t['rating'] ?? 5,
+            ], $testimonials),
         ];
     }
 
@@ -1283,6 +1327,7 @@ CONTENT;
             'party' => $partyTestimonials,
             'emergency' => $emergencyTestimonials,
             'residential' => $residentialTestimonials,
+            'portable' => $generalTestimonials,
         ];
 
         $testimonials = $testimonialsByType[$serviceType] ?? $generalTestimonials;
@@ -1306,12 +1351,355 @@ CONTENT;
     public function generateAllPagesForCity(City $city): array
     {
         $pages = [];
-        $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
+        $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'portable'];
 
         foreach ($types as $type) {
             $pages[$type] = $this->generateServicePageContent($city, $type);
         }
 
         return $pages;
+    }
+
+    protected function convertPhoneToTel(string $content): string
+    {
+        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
+        $phoneRaw = config('contact.phone.raw', '+18885550199');
+
+        $content = $this->replaceAllPhoneNumbers($content, $phoneDisplay, $phoneRaw);
+
+        return $content;
+    }
+
+    protected function replaceAllPhoneNumbers(string $content, string $phoneDisplay, string $phoneRaw): string
+    {
+        $styledLink = "<a href=\"tel:{$phoneRaw}\" class=\"text-blue-600 font-semibold hover:underline\">{$phoneDisplay}</a>";
+        $styledLinkPlain = $phoneDisplay;
+
+        $content = str_replace('{{PHONE_LINK}}', $styledLink, $content);
+
+        $content = preg_replace('/\{\{PHONE_LINK\}\}/i', '', $content);
+
+        $patterns = [
+            '/(<a[^>]*href=["\']?)tel:([0-9+]+)(["\'][^>]*>)(.*?)(<\/a>)/i' => fn ($m) => $m[1].'tel:'.$phoneRaw.$m[3].$this->replacePhoneInText($m[4]).$m[5],
+            '/<a[^>]*href=["\']?tel:[^"\']+["\']?[^>]*>(.*?)<\/a>/i' => fn ($m) => $styledLink,
+            '/Call\s+Now\s+'.preg_quote($phoneDisplay, '/').'/i' => "Call Now {$styledLink}",
+            '/Call\s+Us\s+at\s+'.preg_quote($phoneDisplay, '/').'/i' => "Call Us at {$styledLink}",
+            '/Call\s+'.preg_quote($phoneDisplay, '/').'/i' => "Call {$styledLink}",
+            '/\b'.preg_quote($phoneDisplay, '/').'\b/i' => $styledLink,
+            '/\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/' => fn ($m) => $styledLink,
+            '/\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b/' => fn ($m) => $styledLink,
+            '/\+\d{1,3}[-.\s]?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/' => fn ($m) => $styledLink,
+            '/\b\d{10,11}\b/' => fn ($m) => (strlen($m[0]) >= 10 && strlen($m[0]) <= 12) ? $styledLink : $m[0],
+            '/Phone:\s*'.preg_quote($phoneDisplay, '/').'/i' => "Phone: {$styledLink}",
+            '/Tel:\s*'.preg_quote($phoneDisplay, '/').'/i' => "Tel: {$styledLink}",
+            '/Tel:\s*'.preg_quote($phoneRaw, '/').'/i' => "Tel: {$styledLink}",
+            '/Call\s+at\s+\d{3}[-.\s]\d{3}[-.\s]\d{4}/i' => fn ($m) => "Call at {$styledLink}",
+            '/Call\s+\d{3}[-.\s]\d{3}[-.\s]\d{4}/i' => fn ($m) => "Call {$styledLink}",
+        ];
+
+        foreach ($patterns as $pattern => $replacement) {
+            if (is_callable($replacement)) {
+                $content = preg_replace_callback($pattern, $replacement, $content);
+            } else {
+                $content = preg_replace($pattern, $replacement, $content);
+            }
+        }
+
+        return $content;
+    }
+
+    protected function replacePhoneInText(string $text): string
+    {
+        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
+
+        return preg_replace('/\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/', $phoneDisplay, $text);
+    }
+
+    protected function convertServiceNamesToLinks(string $content): string
+    {
+        $services = [
+            'standard' => '/services#standard',
+            'deluxe' => '/services#deluxe',
+            'ada' => '/services#ada',
+            'accessible' => '/services#ada',
+            'luxury' => '/services#luxury',
+            'premium' => '/services#luxury',
+            'restroom trailer' => '/services#luxury',
+            'portable shower' => '/services#showers',
+        ];
+
+        foreach ($services as $name => $anchor) {
+            $content = preg_replace(
+                '/\b('.preg_quote($name, '/').'s?)\b/iu',
+                "<a href=\"{$anchor}\">$1</a>",
+                $content
+            );
+        }
+
+        return $content;
+    }
+
+    protected function applyLinkConversions(string $text): string
+    {
+        $text = $this->cleanGenericPlaceholders($text);
+
+        return $this->ensureCorrectPhoneLinks($text);
+    }
+
+    protected function ensureCorrectPhoneLinks(string $content): string
+    {
+        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
+        $phoneRaw = config('contact.phone.raw', '+18885550199');
+        $styledLink = "<a href=\"tel:{$phoneRaw}\" class=\"text-blue-600 font-semibold hover:underline\">{$phoneDisplay}</a>";
+
+        return str_replace('{{PHONE_LINK}}', $styledLink, $content);
+    }
+
+    public function ensureServiceLinks(string $content, ?City $city = null): string
+    {
+        $serviceLabels = [
+            'construction' => 'construction porta potties',
+            'wedding' => 'wedding porta potties',
+            'event' => 'event restroom rentals',
+            'luxury' => 'luxury restroom trailers',
+            'party' => 'party porta potties',
+            'emergency' => 'emergency portable toilets',
+            'residential' => 'residential porta potties',
+            'standard' => 'standard porta potties',
+            'deluxe' => 'deluxe portable restrooms',
+            'ada' => 'ADA accessible units',
+            'shower' => 'portable shower rentals',
+        ];
+
+        $patterns = [
+            'construction' => ['/\bconstruction\b/i', '/\bconstruction porta pott(y|ies)\b/i', '/\bconstruction toilets?\b/i'],
+            'wedding' => ['/\bwedding\b/i', '/\bwedding porta pott(y|ies)\b/i'],
+            'event' => ['/\bevent\b/i', '/\bevent restroom/i', '/\bevent rentals?\b/i'],
+            'luxury' => ['/\bluxury\b/i', '/\bluxury restroom/i', '/\bluxury trailer/i'],
+            'party' => ['/\bparty\b/i', '/\bparty porta pott(y|ies)\b/i'],
+            'emergency' => ['/\bemergency\b/i', '/\bemergency rental/i'],
+            'residential' => ['/\bresidential\b/i', '/\bresidential porta pott(y|ies)\b/i'],
+            'standard' => ['/\bstandard\b/i', '/\bstandard porta pott(y|ies)\b/i'],
+            'deluxe' => ['/\bdeluxe\b/i', '/\bdeluxe portable/i'],
+            'ada' => ['/\bADA?\b/i', '/\baccessible\b/i', '/\bhandicap\b/i'],
+            'shower' => ['/\bshower/i', '/\bportable shower/i'],
+        ];
+
+        $content = $this->convertMarkdownLinksToStyledLinks($content);
+
+        foreach ($serviceLabels as $serviceType => $label) {
+            $link = "<a href=\"/services#{$serviceType}\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$label}</a>";
+            $content = str_replace("{{SERVICE_LINK:{$serviceType}}}", $link, $content);
+
+            if (isset($patterns[$serviceType])) {
+                foreach ($patterns[$serviceType] as $pattern) {
+                    $content = preg_replace($pattern, $link, $content, 1);
+                }
+            }
+        }
+
+        return $content;
+    }
+
+    protected function convertMarkdownLinksToStyledLinks(string $content): string
+    {
+        $serviceTypes = ['construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower'];
+
+        $content = preg_replace_callback(
+            '/\[([^\]]+)\]\(\/[^)]*-porta-potty-rental-[^\)]+\)/i',
+            function ($matches) use ($serviceTypes) {
+                $linkText = $matches[1];
+                $linkUrl = $matches[2];
+
+                foreach ($serviceTypes as $serviceType) {
+                    if (preg_match("/\b{$serviceType}\b/i", $linkText) || strpos($linkUrl, "/{$serviceType}-porta-potty-rental") !== false) {
+                        return "<a href=\"/services#{$serviceType}\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$linkText}</a>";
+                    }
+                }
+
+                return "<a href=\"/services\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$linkText}</a>";
+            },
+            $content
+        );
+
+        return $content;
+    }
+
+    protected function cleanGenericPlaceholders(string $content): string
+    {
+        $companyName = config('app.name', 'Potty Direct');
+        $website = config('contact.website', 'pottydirect.com');
+
+        $content = preg_replace(
+            '/\[Your Company Name\]/i',
+            $companyName,
+            $content
+        );
+
+        $content = preg_replace(
+            '/\[Your Website\]/i',
+            $website,
+            $content
+        );
+
+        $content = preg_replace(
+            '/\[City\]/i',
+            '',
+            $content
+        );
+
+        return $content;
+    }
+
+    public function generateStatePageContent(State $state): array
+    {
+        if ($this->aiService) {
+            return $this->generateStateFromAI($state);
+        }
+
+        return $this->getStateFallbackContent($state);
+    }
+
+    protected function generateStateFromAI(State $state): array
+    {
+        $stateName = $state->name;
+        $stateCode = $state->code;
+        $cityCount = $state->activeCities()->count();
+        $topCities = $state->activeCities()->limit(10)->pluck('name')->toArray();
+        $nearbyAreas = implode(', ', array_slice($topCities, 0, 8));
+
+        $prompt = <<<PROMPT
+Act like a senior SEO strategist and content writer with 40+ years of experience creating high-converting local SEO content for porta potty rental businesses in the USA.
+
+Generate SEO-optimized content for a STATE LANDING PAGE for porta potty rental in {$stateName} ({$stateCode}).
+
+Task: Return a VALID JSON object with EXACTLY this structure:
+{
+    "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + state",
+    "meta_title": "SEO title tag (50-60 chars) - include keyword, state + CTA/benefit",
+    "meta_description": "Meta description (120-160 chars) - compelling, includes service, state, urgency + CTA",
+    "content": "Write 1500-2000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, and strong CTA. DO NOT include FAQs in content.",
+    "faqs": [{"question": "...", "answer": "..."}, ...]
+}
+
+Requirements:
+1) Primary keyword: porta potty rental {$stateName}
+2) Include {$cityCount} cities we serve naturally
+3) Mention top cities: {$nearbyAreas}
+4) Include local intent phrases (same-day delivery, fast service, local experts)
+5) Strong CTAs: "Call Now {{PHONE_LINK}}" at least 3 times
+6) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
+   - When including phone number in content or FAQs, use ONLY this placeholder: {{PHONE_LINK}}
+   - Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
+   - Example WRONG: "Call us at (888) 555-0199 for a quote"
+   - Example WRONG: "Call us at <a href="tel:...">...</a> for a quote"
+   - FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
+7) Content structure:
+   - ## heading with state + service keyword
+   - Introduction (local + benefit-driven)
+   - H2: Why Choose Us (trust signals)
+   - H2: Our Services
+   - H2: Serving {$stateName} & Nearby Areas (mention cities)
+   - H2: Call to Action
+8) Pricing Rule: NO specific price numbers - use soft language only
+9) Return ONLY valid JSON, no explanations
+
+Self-check:
+- Content is 1500+ words
+- No pricing numbers used
+- State/cities mentioned naturally
+- Strong CTAs present
+- ALL phone numbers use ONLY: {{PHONE_LINK}}
+
+IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY the placeholder {{PHONE_LINK}}
+
+Take a deep breath and work on this.
+PROMPT;
+
+        $systemPrompt = 'You are an SEO content writer. For ALL phone numbers, ONLY use this placeholder: {{PHONE_LINK}} - never output actual phone numbers or HTML links. Always return valid JSON.';
+
+        $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+
+        if (! $jsonResponse || ! isset($jsonResponse['content'])) {
+            throw new \RuntimeException("AI JSON generation failed for state {$stateName}");
+        }
+
+        $content = $this->cleanGenericPlaceholders($jsonResponse['content'] ?? '');
+        $contentCleaned = $this->applyLinkConversions($content);
+
+        return [
+            'h1_title' => $jsonResponse['h1_title'] ?? "Porta Potty Rental in {$stateName}, {$stateCode}",
+            'meta_title' => $jsonResponse['meta_title'] ?? "Porta Potty Rental {$stateName} {$stateCode} | Fast Delivery",
+            'meta_description' => $jsonResponse['meta_description'] ?? "Porta potty rental in {$stateName}. Same-day delivery. Call for quote!",
+            'content' => $contentCleaned,
+            'word_count' => str_word_count(strip_tags($content)),
+            'faqs' => array_map(fn ($faq) => [
+                'question' => $faq['question'],
+                'answer' => $this->applyLinkConversions($faq['answer']),
+            ], $jsonResponse['faqs'] ?? []),
+        ];
+    }
+
+    protected function getStateFallbackContent(State $state): array
+    {
+        $stateName = $state->name;
+        $stateCode = $state->code;
+        $cityCount = $state->activeCities()->count();
+        $topCities = $state->activeCities()->limit(10)->pluck('name')->toArray();
+        $nearbyAreas = implode(', ', array_slice($topCities, 0, 8));
+        $firstCity = $topCities[0] ?? 'your area';
+        $phoneNumber = phone_display();
+
+        $content = <<<CONTENT
+## Porta Potty Rental in {$stateName}, {$stateCode}
+
+Looking for **porta potty rental in {$stateName}**? You've come to the right place. We provide clean, well-maintained portable toilet rentals for construction sites, outdoor events, weddings, parties, and more throughout {$stateName}.
+
+With porta potty rental services available in {$cityCount} cities across {$stateName}, we're your local experts for all portable sanitation needs. Whether you're managing a construction project in {$firstCity}, planning an outdoor wedding, or organizing a community event, we've got you covered.
+
+## Why Choose Our Porta Potty Rental Service in {$stateName}?
+
+✅ **Same-Day Delivery Available** — Call before 2 PM for same-day service across {$stateName}
+✅ **Clean, Sanitized Units** — Every portable toilet is professionally cleaned before delivery
+✅ **Competitive Pricing** — Affordable rates with no hidden fees
+✅ **Weekly Servicing Included** — Regular cleaning and maintenance at no extra charge
+✅ **Licensed & Insured** — Full coverage for your peace of mind
+✅ **Wide Selection** — Standard, deluxe, ADA, and luxury options
+
+## Porta Potty Rental Services in {$stateName}
+
+We offer a comprehensive range of portable restroom solutions:
+
+### Standard Porta Potty Units
+Our standard portable toilets are perfect for construction sites and basic outdoor events across {$stateName}.
+
+### Deluxe Flushable Portable Restrooms
+For events where you want to provide a more comfortable experience, our deluxe units are the perfect choice.
+
+### ADA-Compliant Accessible Units
+We provide fully ADA-compliant portable restrooms to ensure accessibility for all guests.
+
+### Luxury Restroom Trailers
+For upscale events in {$stateName}, our luxury restroom trailers provide a premium experience.
+
+## Serving {$stateName} & Nearby Areas
+
+We proudly serve {$stateName} and all surrounding communities, including {$nearbyAreas}, and more. No matter where you are in {$stateName}, we can deliver portable toilets to your location.
+
+## Need a Porta Potty in {$stateName}?
+
+Don't wait — **call us now** for a free, no-obligation quote. Our friendly team is ready to help you find the perfect portable sanitation solution.
+
+Call Now {$phoneNumber}
+CONTENT;
+
+        return [
+            'h1_title' => "Porta Potty Rental in {$stateName}, {$stateCode}",
+            'meta_title' => "Porta Potty Rental {$stateName} {$stateCode} | Same-Day Delivery",
+            'meta_description' => "Need a porta potty rental in {$stateName}? Same-day delivery available. Clean portable toilets for construction, events & weddings. Call now for a free quote!",
+            'content' => $this->convertPhoneToTel($content),
+            'word_count' => str_word_count($content),
+            'faqs' => [],
+        ];
     }
 }

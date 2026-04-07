@@ -26,7 +26,7 @@ class GenerateCityContentJob implements ShouldQueue
 
     public function __construct(
         public City $city,
-        public array $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential']
+        public array $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'portable']
     ) {}
 
     public function handle(ContentGeneratorService $generator): void
@@ -39,8 +39,6 @@ class GenerateCityContentJob implements ShouldQueue
             $progress = round((($index + 1) / $total) * 100);
             Cache::put("{$cacheKey}_progress", $progress, now()->addMinutes(30));
             Cache::put("{$cacheKey}_current_type", $type, now()->addMinutes(30));
-
-            Log::info("Generating content for {$type}", ['city' => $this->city->name]);
 
             $typeSuccess = false;
             $typeRetries = 0;
@@ -64,24 +62,25 @@ class GenerateCityContentJob implements ShouldQueue
                         ]
                     );
 
-                    $faqs = $generator->generateFaqs($this->city, $type);
-                    foreach ($faqs as $i => $faq) {
-                        $this->city->faqs()->updateOrCreate(
-                            ['question' => $faq['question'], 'service_type' => $type],
-                            array_merge($faq, ['service_type' => $type, 'sort_order' => $i, 'is_active' => true])
-                        );
+                    if (! empty($data['faqs'])) {
+                        foreach ($data['faqs'] as $i => $faq) {
+                            $this->city->faqs()->updateOrCreate(
+                                ['question' => $faq['question'], 'service_type' => $type],
+                                array_merge($faq, ['service_type' => $type, 'sort_order' => $i, 'is_active' => true])
+                            );
+                        }
                     }
 
-                    $testimonials = $generator->generateTestimonials($this->city, $type);
-                    foreach ($testimonials as $t) {
-                        $this->city->testimonials()->updateOrCreate(
-                            ['customer_name' => $t['customer_name'], 'service_type' => $type],
-                            array_merge($t, ['service_type' => $type])
-                        );
+                    if (! empty($data['testimonials'])) {
+                        foreach ($data['testimonials'] as $t) {
+                            $this->city->testimonials()->updateOrCreate(
+                                ['customer_name' => $t['customer_name'], 'service_type' => $type],
+                                array_merge($t, ['service_type' => $type, 'is_active' => true])
+                            );
+                        }
                     }
 
                     $typeSuccess = true;
-                    Log::info("Completed {$type} ({$progress}%)", ['city' => $this->city->name]);
                 } catch (\Throwable $e) {
                     $typeRetries++;
 

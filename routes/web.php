@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\Admin\PhoneNumberController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ServicePageController;
+use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SignalWireWebhookController;
@@ -55,10 +56,15 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])
     ->name('blog.show')
     ->where('slug', '[a-z0-9\-]+');
 
-// Sitemap
-Route::get('/sitemap.xml', [SitemapController::class, 'index'])
+// Sitemap Index (references sub-sitemaps)
+Route::get('/sitemap.xml', [SitemapController::class, 'indexSitemaps'])
     ->name('sitemap');
 
+// Full sitemap (all URLs in one file)
+Route::get('/sitemap-full.xml', [SitemapController::class, 'index'])
+    ->name('sitemap.full');
+
+// Sub-sitemaps
 Route::get('/sitemap-cities.xml', [SitemapController::class, 'cities'])
     ->name('sitemap.cities');
 
@@ -153,6 +159,22 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     // Get sample JSON format for a city
     Route::get('/cities/{city}/sample-json', [CityController::class, 'getSampleJson'])
         ->name('cities.sample-json');
+
+    /*
+    |----------------------------------------------------------------------
+    | States Management
+    |----------------------------------------------------------------------
+    */
+    Route::resource('states', StateController::class)
+        ->only(['index', 'edit', 'update']);
+
+    // Generate content for a state
+    Route::post('/states/{state}/generate-content', [StateController::class, 'generateContent'])
+        ->name('states.generate-content');
+
+    // Check content generation progress
+    Route::get('/states/{state}/generation-progress', [StateController::class, 'generationProgress'])
+        ->name('states.generation-progress');
 
     /*
     |----------------------------------------------------------------------

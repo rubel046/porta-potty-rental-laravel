@@ -50,35 +50,17 @@ class MultiAiService
             $apiKey->refresh();
 
             if ($apiKey->isDailyLimitReached()) {
-                Log::info("MultiAiService: Skipping API key {$apiKey->id} - daily limit reached", [
-                    'tokens_used' => $apiKey->tokens_used_today,
-                    'model' => $apiKey->model,
-                ]);
-
                 continue;
             }
 
             if ($apiKey->isMinuteLimitReached()) {
-                Log::info("MultiAiService: Skipping API key {$apiKey->id} - minute limit reached", [
-                    'requests_this_minute' => $apiKey->requests_this_minute,
-                    'model' => $apiKey->model,
-                ]);
-
                 continue;
             }
-
-            Log::info("MultiAiService: Trying API key {$apiKey->id}", [
-                'model' => $apiKey->model,
-                'provider' => $apiKey->provider,
-                'json_mode' => $jsonMode,
-            ]);
 
             try {
                 $result = $this->callProvider($apiKey, $prompt, $systemPrompt, $jsonMode);
 
                 if ($result !== null) {
-                    Log::info("MultiAiService: Success with API key {$apiKey->id}");
-
                     return $result;
                 }
             } catch (\Exception $e) {
@@ -128,7 +110,7 @@ class MultiAiService
         $apiKey->update($updates);
         $apiKey->putInCooldown($cooldownMinutes);
 
-        Log::info("MultiAiService: API key {$apiKey->id} rate limited - tokens synced, cooldown for {$cooldownMinutes} min (API said {$retrySeconds}s)");
+        Log::warning("MultiAiService: API key {$apiKey->id} rate limited - tokens synced, cooldown for {$cooldownMinutes} min (API said {$retrySeconds}s)");
     }
 
     protected function extractRetrySeconds(string $message): int
@@ -160,7 +142,7 @@ class MultiAiService
 
         $apiKey->update($updates);
 
-        Log::info("MultiAiService: API key {$apiKey->id} hit daily limit - tokens synced");
+        Log::warning("MultiAiService: API key {$apiKey->id} hit daily limit - tokens synced");
     }
 
     protected function callProvider(AiApiKey $apiKey, string $prompt, ?string $systemPrompt = null, bool $jsonMode = false): ?string
