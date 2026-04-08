@@ -29,8 +29,8 @@ class PageController extends Controller
 
         $states = Cache::remember('active_states', 3600, function () {
             return State::where('is_active', true)
+                ->whereHas('cities', fn ($q) => $q->where('is_active', true))
                 ->withCount(['cities' => fn ($q) => $q->where('is_active', true)])
-                ->having('cities_count', '>', 0)
                 ->orderBy('name')
                 ->take(8)
                 ->get()

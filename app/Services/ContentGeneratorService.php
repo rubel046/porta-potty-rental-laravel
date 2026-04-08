@@ -98,19 +98,19 @@ Step-by-step requirements:
 - H2: Use Cases (construction, events, weddings, emergency, residential)
 - H2: Serving {$city->name} & Nearby Areas
 - H2: Call to Action section
-- INTERNAL LINKING: Naturally link to other service pages using markdown links like [construction porta potties](/construction-porta-potty-rental-{$city->slug}) or [luxury restroom trailers](/luxury-porta-potty-rental-{$city->slug}) when mentioning related services
+- INTERNAL LINKING: Naturally link to other service pages using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:standard}}, {{SERVICE_LINK:deluxe}}, {{SERVICE_LINK:ada}}, {{SERVICE_LINK:shower}}
 
 4) FAQs (required - 8-15 questions):
 - Generate unique FAQ questions specific to this service type in {$city->name}, {$state->code}
 - Questions should cover: pricing, delivery, duration, types of units, booking process, etc.
 - Answers should be concise, helpful, and include local context when relevant
-- When mentioning other services in answers, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:showers}}
+- When mentioning other services in answers, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:standard}}, {{SERVICE_LINK:deluxe}}, {{SERVICE_LINK:ada}}, {{SERVICE_LINK:shower}}
 
 5) Testimonials (required - 2-4 testimonials):
 - Generate realistic customer testimonials for this service type in {$city->name}, {$state->code}
 - Include: customer_name (realistic first name or initials), content (1-2 sentences about experience), rating (4-5 stars)
 - Vary the scenarios: construction supervisor, wedding planner, event organizer, homeowner, etc.
-- When mentioning other services in testimonials, use placeholders: {{SERVICE_LINK:service-type}}
+- When mentioning other services in testimonials, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, etc.
 
 6) Conversion Optimization:
 - Include phone CTA at least 3–5 times using the placeholder: {{PHONE_LINK}}
@@ -1418,20 +1418,76 @@ CONTENT;
     protected function convertServiceNamesToLinks(string $content): string
     {
         $services = [
-            'standard' => '/services#standard',
-            'deluxe' => '/services#deluxe',
-            'ada' => '/services#ada',
-            'accessible' => '/services#ada',
-            'luxury' => '/services#luxury',
-            'premium' => '/services#luxury',
-            'restroom trailer' => '/services#luxury',
-            'portable shower' => '/services#showers',
+            'construction' => [
+                'pattern' => '/\b(construction(?: porta pott(?:y|ies)| toilets?)?)\b/iu',
+                'anchor' => '/services#construction',
+                'label' => 'construction porta potties',
+            ],
+            'wedding' => [
+                'pattern' => '/\b(wedding(?: porta pott(?:y|ies)| restrooms?)?)\b/iu',
+                'anchor' => '/services#wedding',
+                'label' => 'wedding porta potties',
+            ],
+            'event' => [
+                'pattern' => '/\b(event(?: porta pott(?:y|ies)| restrooms?)?)\b/iu',
+                'anchor' => '/services#event',
+                'label' => 'event restroom rentals',
+            ],
+            'luxury' => [
+                'pattern' => '/\b(luxury(?: porta pott(?:y|ies)| restroom(?:s| trailers?)?)?)\b/iu',
+                'anchor' => '/services#luxury',
+                'label' => 'luxury restroom trailers',
+            ],
+            'party' => [
+                'pattern' => '/\b(party(?: porta pott(?:y|ies))?)\b/iu',
+                'anchor' => '/services#party',
+                'label' => 'party porta potties',
+            ],
+            'emergency' => [
+                'pattern' => '/\b(emergency(?: porta pott(?:y|ies)| rentals?)?)\b/iu',
+                'anchor' => '/services#emergency',
+                'label' => 'emergency portable toilets',
+            ],
+            'residential' => [
+                'pattern' => '/\b(residential(?: porta pott(?:y|ies))?)\b/iu',
+                'anchor' => '/services#residential',
+                'label' => 'residential porta potties',
+            ],
+            'standard' => [
+                'pattern' => '/\b(standard(?: porta pott(?:y|ies))?)\b/iu',
+                'anchor' => '/services#standard',
+                'label' => 'standard porta potties',
+            ],
+            'deluxe' => [
+                'pattern' => '/\b(deluxe(?: porta pott(?:y|ies)|(?: portable)? restrooms?)?)\b/iu',
+                'anchor' => '/services#deluxe',
+                'label' => 'deluxe portable restrooms',
+            ],
+            'ada' => [
+                'pattern' => '/\b(ADA(?:(?:-compliant| accessible)| porta pott(?:y|ies))?)\b/iu',
+                'anchor' => '/services#ada',
+                'label' => 'ADA accessible units',
+            ],
+            'shower' => [
+                'pattern' => '/\b(portable showers?|shower rentals?)\b/iu',
+                'anchor' => '/services#shower',
+                'label' => 'portable shower rentals',
+            ],
+            'handicap' => [
+                'pattern' => '/\b(handicap(?: porta pott(?:y|ies))?)\b/iu',
+                'anchor' => '/services#ada',
+                'label' => 'ADA accessible units',
+            ],
         ];
 
-        foreach ($services as $name => $anchor) {
-            $content = preg_replace(
-                '/\b('.preg_quote($name, '/').'s?)\b/iu',
-                "<a href=\"{$anchor}\">$1</a>",
+        foreach ($services as $service) {
+            $content = preg_replace_callback(
+                $service['pattern'],
+                function ($matches) use ($service) {
+                    $matchedText = trim($matches[1] ?? $matches[0]);
+
+                    return "<a href=\"{$service['anchor']}\" class=\"text-blue-600 font-semibold hover:underline\">{$matchedText}</a>";
+                },
                 $content
             );
         }
@@ -1471,56 +1527,54 @@ CONTENT;
             'shower' => 'portable shower rentals',
         ];
 
-        $patterns = [
-            'construction' => ['/\bconstruction\b/i', '/\bconstruction porta pott(y|ies)\b/i', '/\bconstruction toilets?\b/i'],
-            'wedding' => ['/\bwedding\b/i', '/\bwedding porta pott(y|ies)\b/i'],
-            'event' => ['/\bevent\b/i', '/\bevent restroom/i', '/\bevent rentals?\b/i'],
-            'luxury' => ['/\bluxury\b/i', '/\bluxury restroom/i', '/\bluxury trailer/i'],
-            'party' => ['/\bparty\b/i', '/\bparty porta pott(y|ies)\b/i'],
-            'emergency' => ['/\bemergency\b/i', '/\bemergency rental/i'],
-            'residential' => ['/\bresidential\b/i', '/\bresidential porta pott(y|ies)\b/i'],
-            'standard' => ['/\bstandard\b/i', '/\bstandard porta pott(y|ies)\b/i'],
-            'deluxe' => ['/\bdeluxe\b/i', '/\bdeluxe portable/i'],
-            'ada' => ['/\bADA?\b/i', '/\baccessible\b/i', '/\bhandicap\b/i'],
-            'shower' => ['/\bshower/i', '/\bportable shower/i'],
-        ];
-
         $content = $this->convertMarkdownLinksToStyledLinks($content);
 
         foreach ($serviceLabels as $serviceType => $label) {
-            $link = "<a href=\"/services#{$serviceType}\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$label}</a>";
+            $link = "<a href=\"/services#{$serviceType}\" class=\"text-blue-600 font-semibold hover:underline\">{$label}</a>";
             $content = str_replace("{{SERVICE_LINK:{$serviceType}}}", $link, $content);
-
-            if (isset($patterns[$serviceType])) {
-                foreach ($patterns[$serviceType] as $pattern) {
-                    $content = preg_replace($pattern, $link, $content, 1);
-                }
-            }
         }
+
+        $content = $this->removeDuplicateServiceText($content);
 
         return $content;
     }
 
     protected function convertMarkdownLinksToStyledLinks(string $content): string
     {
-        $serviceTypes = ['construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower'];
-
         $content = preg_replace_callback(
-            '/\[([^\]]+)\]\(\/[^)]*-porta-potty-rental-[^\)]+\)/i',
-            function ($matches) use ($serviceTypes) {
-                $linkText = $matches[1];
-                $linkUrl = $matches[2];
+            '/\[([^\]]+)\]\(([^)]+)\)/i',
+            function ($matches) {
+                $linkText = trim($matches[1]);
+                $linkUrl = trim($matches[2]);
 
-                foreach ($serviceTypes as $serviceType) {
-                    if (preg_match("/\b{$serviceType}\b/i", $linkText) || strpos($linkUrl, "/{$serviceType}-porta-potty-rental") !== false) {
-                        return "<a href=\"/services#{$serviceType}\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$linkText}</a>";
-                    }
-                }
-
-                return "<a href=\"/services\" class=\"text-blue-600 font-semibold hover:underline underline-offset-2 transition-colors\">{$linkText}</a>";
+                return "<a href=\"{$linkUrl}\" class=\"text-blue-600 font-semibold hover:underline\">{$linkText}</a>";
             },
             $content
         );
+
+        return $content;
+    }
+
+    protected function removeDuplicateServiceText(string $content): string
+    {
+        $servicePhrases = [
+            'construction porta potties',
+            'wedding porta potties',
+            'event restroom rentals',
+            'luxury restroom trailers',
+            'party porta potties',
+            'emergency portable toilets',
+            'residential porta potties',
+            'standard porta potties',
+            'deluxe portable restrooms',
+            'ADA accessible units',
+            'portable shower rentals',
+        ];
+
+        foreach ($servicePhrases as $phrase) {
+            $pattern = '/('.preg_quote($phrase, '/').')\s*<a[^>]*>'.preg_quote($phrase, '/').'<\/a>/i';
+            $content = preg_replace($pattern, '<a href="/services#'.strtolower(str_replace(' ', '-', $phrase)).'" class="text-blue-600 font-semibold hover:underline">'.$phrase.'</a>', $content);
+        }
 
         return $content;
     }
@@ -1532,18 +1586,30 @@ CONTENT;
 
         $content = preg_replace(
             '/\[Your Company Name\]/i',
-            $companyName,
+            '',
+            $content
+        );
+
+        $content = preg_replace(
+            '/\[Company Name\]/i',
+            '',
             $content
         );
 
         $content = preg_replace(
             '/\[Your Website\]/i',
-            $website,
+            '',
             $content
         );
 
         $content = preg_replace(
             '/\[City\]/i',
+            '',
+            $content
+        );
+
+        $content = preg_replace(
+            '/\[Contact Info\]/i',
             '',
             $content
         );
@@ -1578,45 +1644,52 @@ Task: Return a VALID JSON object with EXACTLY this structure:
     "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + state",
     "meta_title": "SEO title tag (50-60 chars) - include keyword, state + CTA/benefit",
     "meta_description": "Meta description (120-160 chars) - compelling, includes service, state, urgency + CTA",
-    "content": "Write 1500-2000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, and strong CTA. DO NOT include FAQs in content.",
+    "content": "Write 1500-2500 words of HIGH-CONVERTING SEO content in markdown format. MUST be at least 1000 words. Start with ## heading. Include detailed paragraphs (not just bullets), local keywords, and strong CTA. DO NOT include FAQs in content.",
     "faqs": [{"question": "...", "answer": "..."}, ...]
 }
 
 Requirements:
 1) Primary keyword: porta potty rental {$stateName}
-2) Include {$cityCount} cities we serve naturally
+2) Include {$cityCount} cities we serve naturally (mention 10-15 cities)
 3) Mention top cities: {$nearbyAreas}
 4) Include local intent phrases (same-day delivery, fast service, local experts)
-5) Strong CTAs: "Call Now {{PHONE_LINK}}" at least 3 times
-6) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
+5) Strong CTAs: "Call Now {{PHONE_LINK}}" at least 5 times
+6) CRITICAL - Content must be DETAILED and COMPREHENSIVE:
+   - Each section should have 3-5 detailed paragraphs (not just bullet points)
+   - Include specific use cases (construction sites, outdoor weddings, festivals, etc.)
+   - Include service type details (standard, deluxe, ADA, luxury units)
+   - Include benefits and features in detail
+   - Include delivery, setup, and servicing information
+7) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
    - When including phone number in content or FAQs, use ONLY this placeholder: {{PHONE_LINK}}
    - Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
    - Example WRONG: "Call us at (888) 555-0199 for a quote"
-   - Example WRONG: "Call us at <a href="tel:...">...</a> for a quote"
    - FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
-7) Content structure:
+8) Content structure (MUST follow with detailed paragraphs):
    - ## heading with state + service keyword
-   - Introduction (local + benefit-driven)
-   - H2: Why Choose Us (trust signals)
-   - H2: Our Services
-   - H2: Serving {$stateName} & Nearby Areas (mention cities)
-   - H2: Call to Action
-8) Pricing Rule: NO specific price numbers - use soft language only
-9) Return ONLY valid JSON, no explanations
+   - Introduction paragraph (local + benefit-driven, 2-3 paragraphs)
+   - H2: Why Choose Us (trust signals, 3-4 paragraphs)
+   - H2: Our Services (detailed service descriptions, 4-5 paragraphs)
+   - H2: Serving {$stateName} & Nearby Areas (mention cities, 2-3 paragraphs)
+   - H2: Types of Events & Projects We Serve (construction, weddings, events, 3-4 paragraphs)
+   - H2: Call to Action (strong closing, 1-2 paragraphs)
+9) Pricing Rule: NO specific price numbers - use soft language only
+10) Return ONLY valid JSON, no explanations
 
-Self-check:
-- Content is 1500+ words
+Self-check (MUST PASS ALL):
+- Content is at least 1000 words (prefer 1500-2000)
+- Content has detailed paragraphs in each section
 - No pricing numbers used
-- State/cities mentioned naturally
-- Strong CTAs present
+- State/cities mentioned naturally throughout
+- Strong CTAs present (at least 5 phone CTAs)
 - ALL phone numbers use ONLY: {{PHONE_LINK}}
 
-IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY the placeholder {{PHONE_LINK}}
+IMPORTANT FINAL CHECK: Verify content is at least 1000 words with detailed paragraphs. Verify every single phone number uses ONLY the placeholder {{PHONE_LINK}}
 
 Take a deep breath and work on this.
 PROMPT;
 
-        $systemPrompt = 'You are an SEO content writer. For ALL phone numbers, ONLY use this placeholder: {{PHONE_LINK}} - never output actual phone numbers or HTML links. Always return valid JSON.';
+        $systemPrompt = 'You are an SEO content writer. For ALL phone numbers, ONLY use this placeholder: {{PHONE_LINK}} - never output actual phone numbers or HTML links. Always return valid JSON. CRITICAL: Content must be at least 1000 words.';
 
         $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
 
@@ -1624,7 +1697,23 @@ PROMPT;
             throw new \RuntimeException("AI JSON generation failed for state {$stateName}");
         }
 
-        $content = $this->cleanGenericPlaceholders($jsonResponse['content'] ?? '');
+        $rawContent = $jsonResponse['content'] ?? '';
+        $wordCount = str_word_count(strip_tags($rawContent));
+
+        if ($wordCount < 1000) {
+            Log::warning("State content too short for {$stateName}: {$wordCount} words, regenerating...");
+            $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+            if ($jsonResponse && isset($jsonResponse['content'])) {
+                $rawContent = $jsonResponse['content'];
+                $wordCount = str_word_count(strip_tags($rawContent));
+            }
+        }
+
+        if ($wordCount < 800) {
+            Log::error("State content still too short for {$stateName}: {$wordCount} words");
+        }
+
+        $content = $this->cleanGenericPlaceholders($rawContent);
         $contentCleaned = $this->applyLinkConversions($content);
 
         return [
@@ -1632,7 +1721,7 @@ PROMPT;
             'meta_title' => $jsonResponse['meta_title'] ?? "Porta Potty Rental {$stateName} {$stateCode} | Fast Delivery",
             'meta_description' => $jsonResponse['meta_description'] ?? "Porta potty rental in {$stateName}. Same-day delivery. Call for quote!",
             'content' => $contentCleaned,
-            'word_count' => str_word_count(strip_tags($content)),
+            'word_count' => $wordCount,
             'faqs' => array_map(fn ($faq) => [
                 'question' => $faq['question'],
                 'answer' => $this->applyLinkConversions($faq['answer']),

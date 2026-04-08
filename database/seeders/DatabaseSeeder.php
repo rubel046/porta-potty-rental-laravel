@@ -21,14 +21,9 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             StateSeeder::class,
             AllUSCitiesSeeder::class,
-            //            CitySeeder::class,
             BlogCategorySeeder::class,
-            //            BlogPostSeeder::class,
             BuyerSeeder::class,
-            // FaqSeeder::class,
-            // ServicePageSeeder::class,
             SiteSettingSeeder::class,
-            // TestimonialSeeder::class,
         ]);
 
         $this->command->newLine();
