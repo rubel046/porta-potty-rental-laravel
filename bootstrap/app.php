@@ -2,6 +2,7 @@
 
 // bootstrap/app.php
 
+use App\Http\Middleware\DomainMiddleware;
 use App\Http\Middleware\TrackTrafficSource;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,18 +16,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // CSRF token exempt for webhooks and API
         $middleware->validateCsrfTokens(except: [
             'webhook/*',
             'api/*',
         ]);
 
-        // Add traffic source tracking to all web requests
         $middleware->web(append: [
+            DomainMiddleware::class,
             TrackTrafficSource::class,
         ]);
 
-        // Add this line to trust Cloudflare proxies
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {

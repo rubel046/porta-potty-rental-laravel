@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CallLog extends Model
 {
     protected $fillable = [
-        'call_sid', 'caller_number', 'called_number', 'forwarded_to',
+        'domain_id', 'call_sid', 'caller_number', 'called_number', 'forwarded_to',
         'phone_number_id', 'city_id', 'buyer_id', 'service_page_id',
         'duration_seconds', 'ring_duration', 'status',
         'is_qualified', 'is_duplicate', 'is_billable', 'ivr_passed',

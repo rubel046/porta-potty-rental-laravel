@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class BlogPost extends Model
 {
     protected $fillable = [
-        'blog_category_id', 'city_id', 'title', 'slug', 'excerpt',
+        'domain_id', 'blog_category_id', 'city_id', 'title', 'slug', 'excerpt',
         'content', 'content_html', 'featured_image',
         'meta_title', 'meta_description', 'focus_keyword',
         'secondary_keywords', 'schema_markup',

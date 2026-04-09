@@ -233,6 +233,51 @@
                     <h1 class="text-lg md:text-xl font-bold text-gray-800 truncate">@yield('page-title', 'Dashboard')</h1>
                 </div>
                 <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" 
+                            @if($currentDomain)
+                            style="background-color: {{ $currentDomain->primary_color }}10; border-color: {{ $currentDomain->primary_color }}30; color: {{ $currentDomain->primary_color }};"
+                            @endif
+                            class="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-sm font-medium transition">
+                            <div class="w-3 h-3 rounded-full @if($currentDomain) ring-2 ring-offset-1" style="background-color: {{ $currentDomain->primary_color }}; ring-color: {{ $currentDomain->primary_color }}20; @endif"></div>
+                            <span class="hidden sm:inline">{{ $currentDomain->name ?? 'Select Domain' }}</span>
+                            <span class="sm:hidden">{{ $currentDomain->name ?? 'Domain' }}</span>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50" style="display: none;">
+                            <div class="px-4 py-2 border-b border-gray-100">
+                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Switch Domain</div>
+                            </div>
+                            @php
+                                $domains = \App\Models\Domain::all();
+                            @endphp
+                            @foreach($domains as $domain)
+                                <form method="POST" action="{{ route('admin.domains.switch', $domain) }}">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition {{ $currentDomain && $currentDomain->id === $domain->id ? 'bg-gray-50' : 'text-gray-700' }}">
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold" style="background-color: {{ $domain->primary_color }};">
+                                            {{ strtoupper(substr($domain->name, 0, 2)) }}
+                                        </div>
+                                        <div class="flex-1 text-left">
+                                            <div class="font-medium text-sm">{{ $domain->name }}</div>
+                                            <div class="text-xs text-gray-400">{{ $domain->domain }}</div>
+                                        </div>
+                                        @if($currentDomain && $currentDomain->id === $domain->id)
+                                            <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background-color: {{ $domain->primary_color }};">
+                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        @endif
+                                    </button>
+                                </form>
+                            @endforeach
+                            <div class="border-t border-gray-100 mt-2 pt-2">
+                                <a href="{{ route('admin.domains.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    Manage All Domains
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="hidden lg:flex items-center gap-4 px-4 py-2 bg-gray-50 rounded-lg">
                         <div class="text-center">
                             <div class="text-lg font-bold text-green-600">{{ $todayCalls ?? 0 }}</div>

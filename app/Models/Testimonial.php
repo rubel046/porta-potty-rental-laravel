@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Testimonial extends Model
 {
     protected $fillable = [
-        'city_id',
+        'domain_id', 'city_id',
         'customer_name',
         'customer_title',
         'company',

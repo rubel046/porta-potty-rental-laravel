@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Buyer extends Model
 {
     protected $fillable = [
-        'company_name', 'contact_name', 'phone', 'backup_phone',
+        'domain_id', 'company_name', 'contact_name', 'phone', 'backup_phone',
         'email', 'payout_per_call', 'daily_call_cap', 'monthly_call_cap',
         'concurrent_call_limit', 'serving_states', 'serving_cities',
         'business_hours', 'timezone', 'ring_timeout', 'priority',

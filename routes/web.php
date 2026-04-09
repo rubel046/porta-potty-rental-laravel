@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DomainController;
 // Admin Controllers
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\LogViewerController;
@@ -124,6 +125,15 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     */
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    /*
+    |----------------------------------------------------------------------
+    | Domains Management
+    |----------------------------------------------------------------------
+    */
+    Route::resource('domains', DomainController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('/domains/{domain}/switch', [DomainController::class, 'switch'])
+        ->name('domains.switch');
 
     /*
     |----------------------------------------------------------------------

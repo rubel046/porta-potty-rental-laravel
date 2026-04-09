@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class BlogCategory extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'description', 'icon', 'sort_order', 'is_active',
+        'domain_id', 'name', 'slug', 'description', 'icon', 'sort_order', 'is_active',
     ];
 
     protected $casts = [

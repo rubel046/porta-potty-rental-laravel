@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PhoneNumber extends Model
 {
     protected $fillable = [
-        'number', 'friendly_name', 'area_code', 'city_id', 'buyer_id',
+        'domain_id', 'number', 'friendly_name', 'area_code', 'city_id', 'buyer_id',
         'provider', 'provider_sid', 'monthly_cost', 'status',
         'total_calls', 'is_active',
     ];

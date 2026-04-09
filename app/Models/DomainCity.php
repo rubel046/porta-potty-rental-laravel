@@ -5,20 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Faq extends Model
+class DomainCity extends Model
 {
+    protected $table = 'domain_cities';
+
     protected $fillable = [
-        'domain_id', 'city_id',
-        'service_type',
-        'question',
-        'answer',
-        'sort_order',
-        'is_active',
+        'domain_id',
+        'city_id',
+        'status',
     ];
 
     protected $casts = [
-        'order' => 'integer',
+        'status' => 'boolean',
     ];
+
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
+    }
 
     public function city(): BelongsTo
     {

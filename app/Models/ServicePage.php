@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ServicePage extends Model
 {
     protected $fillable = [
-        'city_id', 'service_type', 'slug', 'h1_title',
+        'domain_id', 'city_id', 'service_type', 'slug', 'h1_title',
         'meta_title', 'meta_description', 'content', 'content_html',
         'phone_number', 'canonical_url', 'schema_markup',
         'word_count', 'views', 'calls_generated', 'seo_score',
