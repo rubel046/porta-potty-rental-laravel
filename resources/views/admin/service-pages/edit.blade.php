@@ -1,5 +1,6 @@
-@extends('layouts.admin')
-@section('page_title', "Edit: {$page->city->name} — {$page->service_type_label}")
+@extends('admin.layout')
+@section('title', 'Edit Service Page')
+@section('page-title', "Edit: {$page->city->name} — {$page->service_type_label}")
 
 @section('content')
 

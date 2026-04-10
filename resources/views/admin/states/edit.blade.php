@@ -1,37 +1,8 @@
-@extends('layouts.admin')
-@section('page_title', "Edit: {$state->name} — State Landing Page")
+@extends('admin.layout')
+@section('title', 'Edit State')
+@section('page-title', "Edit: {$state->name}")
 
 @section('content')
-<div class="flex-1 p-6">
-    {{-- Header --}}
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <div class="flex items-center gap-3 mb-1">
-                    <a href="{{ route('admin.states.index') }}" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                    </a>
-                    <span class="text-gray-400">/</span>
-                    <a href="{{ route('admin.states.index') }}" class="text-gray-500 hover:text-gray-700 text-sm">States</a>
-                    <span class="text-gray-400">/</span>
-                    <span class="text-gray-900 font-semibold">{{ $state->name }}</span>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900">Edit State Landing Page</h1>
-                <p class="text-sm text-gray-500 mt-1">Manage SEO content and AI generation for {{ $state->name }}, {{ $state->code }}</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ url('/porta-potty-rental-' . $state->slug) }}" target="_blank"
-                   class="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                    </svg>
-                    View Page
-                </a>
-            </div>
-        </div>
-    </div>
 
     <form method="POST" action="{{ route('admin.states.update', $state) }}" class="max-w-6xl">
         @csrf
@@ -40,6 +11,15 @@
         <div class="grid lg:grid-cols-3 gap-6">
             {{-- Main Content --}}
             <div class="lg:col-span-2 space-y-6">
+                <div class="mb-4 bg-blue-50 rounded-lg p-3 text-sm">
+                    <span class="font-bold">State:</span> {{ $state->name }}, {{ $state->code }}
+                    <span class="mx-2">|</span>
+                    <span class="font-bold">URL:</span>
+                    <a href="{{ url('/porta-potty-rental-' . $state->slug) }}" target="_blank" class="text-blue-600">
+                        /porta-potty-rental-{{ $state->slug }} ↗
+                    </a>
+                </div>
+
                 {{-- Content Card --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
@@ -119,6 +99,19 @@
 
             {{-- Sidebar --}}
             <div class="space-y-6">
+                {{-- Save Card --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6">
+                        <button type="submit" class="w-full bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 flex items-center justify-center gap-2">
+                            💾 Save Changes
+                        </button>
+                        <div class="mt-3 text-center">
+                            <a href="{{ route('admin.states.index') }}" class="text-sm text-gray-500 hover:text-gray-700">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- AI Generation Card --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" 
@@ -264,7 +257,6 @@
             </div>
         </div>
     </form>
-</div>
 
 @push('scripts')
 <script>

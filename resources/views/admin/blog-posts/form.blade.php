@@ -1,5 +1,6 @@
-@extends('layouts.admin')
-@section('page_title', isset($post) ? "Edit: {$post->title}" : 'New Blog Post')
+@extends('admin.layout')
+@section('title', isset($post) ? "Edit: {$post->title}" : 'New Blog Post')
+@section('page-title', isset($post) ? "Edit: {$post->title}" : 'New Blog Post')
 
 @section('content')
 

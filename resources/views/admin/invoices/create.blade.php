@@ -1,5 +1,6 @@
-@extends('layouts.admin')
-@section('page_title', 'Create Invoice')
+@extends('admin.layout')
+@section('title', 'Create Invoice')
+@section('page-title', 'Create Invoice')
 
 @section('content')
 

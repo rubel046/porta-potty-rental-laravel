@@ -1,5 +1,6 @@
-@extends('layouts.admin')
-@section('page_title', "Invoice {$invoice->invoice_number}")
+@extends('admin.layout')
+@section('title', "Invoice {$invoice->invoice_number}")
+@section('page-title', "Invoice {$invoice->invoice_number}")
 
 @section('content')
 

@@ -1,5 +1,6 @@
-@extends('layouts.admin')
-@section('page_title', isset($buyer) ? "Edit: {$buyer->company_name}" : 'Add Buyer')
+@extends('admin.layout')
+@section('title', isset($buyer) ? "Edit: {$buyer->company_name}" : 'Add Buyer')
+@section('page-title', isset($buyer) ? "Edit: {$buyer->company_name}" : 'Add Buyer')
 
 @section('content')
 
