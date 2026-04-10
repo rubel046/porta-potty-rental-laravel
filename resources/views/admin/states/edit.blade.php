@@ -119,33 +119,6 @@
 
             {{-- Sidebar --}}
             <div class="space-y-6">
-                {{-- Save Card --}}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                        <h2 class="font-semibold text-gray-900 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Publish
-                        </h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="hidden" name="is_active" value="0">
-                            <input type="checkbox" name="is_active" value="1"
-                                   {{ old('is_active', $state->is_active) ? 'checked' : '' }}
-                                   class="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500">
-                            <span class="text-sm text-gray-700">Active</span>
-                        </label>
-                        
-                        <button type="submit" class="w-full bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Save Changes
-                        </button>
-                    </div>
-                </div>
 
                 {{-- AI Generation Card --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" 
@@ -281,8 +254,8 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-500">Status</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $state->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                    {{ $state->is_active ? 'Active' : 'Inactive' }}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ ($domain && isset($state->domain_status) && $state->domain_status) || (!isset($state->domain_status) && $state->is_active) ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ ($domain && isset($state->domain_status) && $state->domain_status) || (!isset($state->domain_status) && $state->is_active) ? 'Active' : 'Inactive' }}
                                 </span>
                             </div>
                         </div>

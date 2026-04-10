@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
 use App\Models\City;
+use App\Models\Domain;
 use App\Models\Faq;
 use App\Models\ServicePage;
 use App\Models\State;
@@ -390,11 +391,23 @@ class PageController extends Controller
      */
     public function cityPage(string $slug)
     {
-        $servicePage = ServicePage::where('slug', $slug)
+        $domain = Domain::current();
+
+        $query = ServicePage::where('slug', $slug)
             ->where('is_published', true)
-            ->whereHas('city', fn ($q) => $q->where('is_active', true))
-            ->with(['city.state', 'city.phoneNumbers'])
-            ->firstOrFail();
+            ->with(['city.state', 'city.phoneNumbers']);
+
+        if ($domain) {
+            $query->whereHas('city', function ($q) use ($domain) {
+                $q->whereHas('domainCities', function ($dq) use ($domain) {
+                    $dq->where('domain_id', $domain->id)->where('status', true);
+                });
+            });
+        } else {
+            $query->whereHas('city', fn ($q) => $q->where('is_active', true));
+        }
+
+        $servicePage = $query->firstOrFail();
 
         $city = $servicePage->city;
 

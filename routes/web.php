@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DomainController;
+use App\Http\Controllers\Admin\GlobalCityController;
+use App\Http\Controllers\Admin\GlobalStateController;
 // Admin Controllers
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\LogViewerController;
@@ -134,6 +136,32 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('domains', DomainController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::post('/domains/{domain}/switch', [DomainController::class, 'switch'])
         ->name('domains.switch');
+    Route::post('/domains/{domain}/sync', [DomainController::class, 'sync'])
+        ->name('domains.sync');
+
+    /*
+    |----------------------------------------------------------------------
+    | Global States Management (Master Data)
+    |----------------------------------------------------------------------
+    */
+    Route::resource('global/states', GlobalStateController::class)->names('global.states');
+    Route::post('/global/states/{state}/generate-content', [GlobalStateController::class, 'generateContent'])
+        ->name('global.states.generate-content');
+    Route::get('/global/states/{state}/generation-progress', [GlobalStateController::class, 'generationProgress'])
+        ->name('global.states.generation-progress');
+
+    /*
+    |----------------------------------------------------------------------
+    | Global Cities Management (Master Data)
+    |----------------------------------------------------------------------
+    */
+    Route::resource('global/cities', GlobalCityController::class)->names('global.cities');
+    Route::post('/global/cities/{city}/generate-content', [GlobalCityController::class, 'generatePages'])
+        ->name('global.cities.generate-content');
+    Route::get('/global/cities/{city}/generation-progress', [GlobalCityController::class, 'generationProgress'])
+        ->name('global.cities.generation-progress');
+    Route::delete('/global/cities/{city}/pages', [GlobalCityController::class, 'deletePages'])
+        ->name('global.cities.delete-pages');
 
     /*
     |----------------------------------------------------------------------
@@ -149,6 +177,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     |----------------------------------------------------------------------
     */
     Route::resource('cities', CityController::class);
+
+    // Toggle city status for current domain
+    Route::post('/cities/{city}/toggle-status', [CityController::class, 'toggleStatus'])
+        ->name('cities.toggle-status');
 
     // Auto-generate service pages for a city
     Route::post('/cities/{city}/generate-pages', [CityController::class, 'generatePages'])
@@ -177,6 +209,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     */
     Route::resource('states', StateController::class)
         ->only(['index', 'edit', 'update']);
+
+    // Toggle state status for current domain
+    Route::post('/states/{state}/toggle-status', [StateController::class, 'toggleStatus'])
+        ->name('states.toggle-status');
 
     // Generate content for a state
     Route::post('/states/{state}/generate-content', [StateController::class, 'generateContent'])

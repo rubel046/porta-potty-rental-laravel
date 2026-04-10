@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Domain;
 use App\Models\DomainCity;
+use App\Models\DomainState;
+use App\Models\State;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +16,7 @@ class DomainController extends Controller
 {
     public function index(): View
     {
-        $domains = Domain::withCount('domainCities')->get();
+        $domains = Domain::withCount(['domainCities', 'domainStates'])->get();
 
         return view('admin.domains.index', compact('domains'));
     }
@@ -30,17 +32,7 @@ class DomainController extends Controller
 
         $domain = Domain::create($validated);
 
-        City::chunk(1000, function ($cities) use ($domain) {
-            $records = $cities->map(fn ($city) => [
-                'domain_id' => $domain->id,
-                'city_id' => $city->id,
-                'status' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ])->toArray();
-
-            DomainCity::insert($records);
-        });
+        $this->syncDomainRelations($domain);
 
         return redirect()
             ->route('admin.domains.index')
@@ -66,6 +58,7 @@ class DomainController extends Controller
     public function destroy(Domain $domain): RedirectResponse
     {
         DomainCity::where('domain_id', $domain->id)->delete();
+        DomainState::where('domain_id', $domain->id)->delete();
 
         $domain->delete();
 
@@ -81,5 +74,52 @@ class DomainController extends Controller
         return redirect()
             ->back()
             ->with('success', "Switched to {$domain->name}");
+    }
+
+    public function sync(Domain $domain): RedirectResponse
+    {
+        $this->syncDomainRelations($domain);
+
+        return redirect()
+            ->route('admin.domains.index')
+            ->with('success', "Synced cities and states for {$domain->name}");
+    }
+
+    private function syncDomainRelations(Domain $domain): void
+    {
+        $states = State::all();
+        $existingStateIds = DomainState::where('domain_id', $domain->id)->pluck('state_id')->toArray();
+
+        foreach ($states as $state) {
+            if (! in_array($state->id, $existingStateIds)) {
+                DomainState::create([
+                    'domain_id' => $domain->id,
+                    'state_id' => $state->id,
+                    'status' => false,
+                ]);
+            }
+        }
+
+        $cities = City::all();
+        $existingCityIds = DomainCity::where('domain_id', $domain->id)->pluck('city_id')->toArray();
+
+        City::chunk(500, function ($citiesChunk) use ($domain, &$existingCityIds) {
+            $records = [];
+            foreach ($citiesChunk as $city) {
+                if (! in_array($city->id, $existingCityIds)) {
+                    $records[] = [
+                        'domain_id' => $domain->id,
+                        'city_id' => $city->id,
+                        'status' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                    $existingCityIds[] = $city->id;
+                }
+            }
+            if (! empty($records)) {
+                DomainCity::insert($records);
+            }
+        });
     }
 }

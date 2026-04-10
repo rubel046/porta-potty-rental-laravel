@@ -15,7 +15,6 @@ return new class extends Migration
             $domain = Domain::create([
                 'name' => 'Potty Direct',
                 'domain' => 'pottydirect.com',
-                'display_name' => 'Potty Direct',
                 'primary_color' => '#22C55E',
                 'is_active' => true,
             ]);

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\GenerateCityContentJob;
 use App\Models\City;
+use App\Models\Domain;
+use App\Models\DomainCity;
+use App\Models\DomainState;
 use App\Models\State;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,6 +17,42 @@ class CityController extends Controller
 {
     public function index(Request $request)
     {
+        $domain = Domain::current();
+
+        if ($domain) {
+            $stateIds = DomainState::where('domain_id', $domain->id)->pluck('state_id');
+            $states = State::whereIn('id', $stateIds)->orderBy('name')->get();
+
+            $cityIds = DomainCity::where('domain_id', $domain->id)->pluck('city_id');
+
+            $query = City::select('cities.*')
+                ->join('domain_cities', 'cities.id', '=', 'domain_cities.city_id')
+                ->where('domain_cities.domain_id', $domain->id)
+                ->with('state')
+                ->withCount(['servicePages', 'callLogs']);
+
+            if ($request->filled('search')) {
+                $query->where('cities.name', 'like', '%'.$request->search.'%');
+            }
+
+            if ($request->filled('state_id')) {
+                $query->where('cities.state_id', $request->state_id);
+            }
+
+            $cities = $query->orderByDesc('domain_cities.status')
+                ->orderBy('cities.name')
+                ->paginate(30);
+
+            $cities->each(function ($city) use ($domain) {
+                $domainCity = DomainCity::where('domain_id', $domain->id)
+                    ->where('city_id', $city->id)
+                    ->first();
+                $city->domain_status = $domainCity?->status ?? false;
+            });
+
+            return view('admin.cities.index', compact('cities', 'states', 'domain'));
+        }
+
         $states = State::orderBy('name')->get();
 
         $query = City::with('state')->withCount(['servicePages', 'callLogs']);
@@ -35,12 +74,18 @@ class CityController extends Controller
             ->orderBy('name')
             ->paginate(30);
 
-        return view('admin.cities.index', compact('cities', 'states'));
+        return view('admin.cities.index', compact('cities', 'states', 'domain'));
     }
 
     public function create()
     {
-        $states = State::orderBy('name')->get();
+        $domain = Domain::current();
+
+        $stateIds = $domain
+            ? DomainState::where('domain_id', $domain->id)->pluck('state_id')
+            : State::pluck('id');
+
+        $states = State::whereIn('id', $stateIds)->orderBy('name')->get();
 
         return view('admin.cities.create', compact('states'));
     }
@@ -73,6 +118,22 @@ class CityController extends Controller
         }
 
         $city = City::create($validated);
+
+        // Sync to domain_cities for all domains
+        $domains = Domain::where('is_active', true)->get();
+        foreach ($domains as $domain) {
+            DomainCity::create([
+                'domain_id' => $domain->id,
+                'city_id' => $city->id,
+                'status' => false,
+            ]);
+
+            // Also ensure domain_states exists for the state's domain
+            DomainState::firstOrCreate(
+                ['domain_id' => $domain->id, 'state_id' => $city->state_id],
+                ['status' => false]
+            );
+        }
 
         // Auto-generate pages if requested
         if ($request->has('generate_pages')) {
@@ -156,6 +217,33 @@ class CityController extends Controller
 
         return redirect()->route('admin.cities.index')
             ->with('success', "City '{$name}' deleted!");
+    }
+
+    public function toggleStatus(City $city)
+    {
+        $domain = Domain::current();
+
+        if (! $domain) {
+            return redirect()->back()->with('error', 'No domain selected');
+        }
+
+        $domainCity = DomainCity::where('domain_id', $domain->id)
+            ->where('city_id', $city->id)
+            ->first();
+
+        if ($domainCity) {
+            $domainCity->update(['status' => ! $domainCity->status]);
+            $statusText = $domainCity->status ? 'activated' : 'deactivated';
+        } else {
+            DomainCity::create([
+                'domain_id' => $domain->id,
+                'city_id' => $city->id,
+                'status' => true,
+            ]);
+            $statusText = 'activated';
+        }
+
+        return redirect()->back()->with('success', "City '{$city->name}' {$statusText}!");
     }
 
     public function generatePages(City $city)

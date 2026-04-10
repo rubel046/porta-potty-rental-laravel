@@ -49,18 +49,40 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            @if($state->is_active)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Active
-                                </span>
+                            @if($domain && isset($state->domain_status))
+                                @if($state->domain_status)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Inactive
+                                    </span>
+                                @endif
                             @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                    Inactive
-                                </span>
+                                @if($state->is_active)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Inactive
+                                    </span>
+                                @endif
                             @endif
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
+                                <form method="POST" action="{{ route('admin.states.toggle-status', $state) }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="p-1.5 rounded-lg transition {{ ($domain && isset($state->domain_status) && $state->domain_status) || (!isset($state->domain_status) && $state->is_active) ? 'text-gray-400 hover:text-yellow-600 hover:bg-yellow-50' : 'text-gray-400 hover:text-green-600 hover:bg-green-50' }}" title="{{ ($domain && isset($state->domain_status) && $state->domain_status) || (!isset($state->domain_status) && $state->is_active) ? 'Deactivate' : 'Activate' }}">
+                                        @if(($domain && isset($state->domain_status) && $state->domain_status) || (!isset($state->domain_status) && $state->is_active))
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                        @else
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        @endif
+                                    </button>
+                                </form>
                                 <a href="{{ route('admin.states.edit', $state) }}" 
                                    class="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition" 
                                    title="Edit">

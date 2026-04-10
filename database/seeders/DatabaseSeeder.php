@@ -20,7 +20,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             StateSeeder::class,
+            DomainSeeder::class,
+            DomainStateSeeder::class,
             AllUSCitiesSeeder::class,
+            DomainCitySeeder::class,
             BlogCategorySeeder::class,
             BuyerSeeder::class,
             SiteSettingSeeder::class,

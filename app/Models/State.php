@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class State extends Model
@@ -20,6 +22,11 @@ class State extends Model
         'seo_score' => 'float',
     ];
 
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
+    }
+
     public function cities(): HasMany
     {
         return $this->hasMany(City::class);
@@ -28,6 +35,23 @@ class State extends Model
     public function activeCities(): HasMany
     {
         return $this->hasMany(City::class)->where('is_active', true);
+    }
+
+    public function domains(): BelongsToMany
+    {
+        return $this->belongsToMany(Domain::class, 'domain_states')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
+
+    public function activeDomains(): BelongsToMany
+    {
+        return $this->domains()->wherePivot('status', true);
+    }
+
+    public function domainStates(): HasMany
+    {
+        return $this->hasMany(DomainState::class);
     }
 
     public function scopeActive(Builder $query): Builder

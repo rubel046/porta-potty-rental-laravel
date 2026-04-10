@@ -77,6 +77,16 @@ class Domain extends Model
         return $this->hasMany(State::class);
     }
 
+    public function domainStates(): HasMany
+    {
+        return $this->hasMany(DomainState::class);
+    }
+
+    public function activeDomainStates(): HasMany
+    {
+        return $this->hasMany(DomainState::class)->where('status', true);
+    }
+
     public static function current(): ?self
     {
         return session('current_domain_id')

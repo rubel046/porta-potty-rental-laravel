@@ -43,6 +43,11 @@
                         <span class="text-sm font-medium text-gray-600">{{ number_format($domain->domain_cities_count) }} cities</span>
                     </div>
 
+                    <div class="flex items-center gap-2 mb-4 text-sm text-gray-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        <span>{{ number_format($domain->domain_states_count) }} states</span>
+                    </div>
+
                     <div class="flex items-center gap-2 mb-4">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $domain->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                             <span class="w-1.5 h-1.5 rounded-full mr-1.5 {{ $domain->is_active ? 'bg-green-500' : 'bg-gray-500' }}"></span>
@@ -58,6 +63,12 @@
                                 style="background-color: {{ $domain->primary_color }}; color: white;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                                 {{ $currentDomain && $currentDomain->id === $domain->id ? 'Current Site' : 'Switch To' }}
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.domains.sync', $domain) }}" onsubmit="return confirm('Sync new cities and states for {{ $domain->name }}?')">
+                            @csrf
+                            <button type="submit" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Sync new cities & states">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                             </button>
                         </form>
                         <button @click="editDomain({{ $domain->id }})" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition" title="Edit" data-domain-id="{{ $domain->id }}" data-name="{{ htmlspecialchars($domain->name, ENT_QUOTES) }}" data-domain="{{ htmlspecialchars($domain->domain, ENT_QUOTES) }}" data-color="{{ $domain->primary_color }}" data-active="{{ $domain->is_active ? '1' : '0' }}">

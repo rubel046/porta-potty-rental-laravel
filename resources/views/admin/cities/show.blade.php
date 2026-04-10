@@ -166,15 +166,10 @@
             <dl class="grid grid-cols-2 gap-3 text-sm">
                 <div><dt class="text-gray-500">City</dt><dd class="font-medium">{{ $city->name }}</dd></div>
                 <div><dt class="text-gray-500">State</dt><dd class="font-medium">{{ $city->state?->name }}</dd></div>
-                <div><dt class="text-gray-500">Population</dt><dd>{{ $city->population ? number_format($city->population) : '—' }}</dd></div>
-                <div><dt class="text-gray-500">Area Codes</dt><dd>{{ $city->area_codes ?? '—' }}</dd></div>
                 <div><dt class="text-gray-500">Status</dt>
                     <dd>@if($city->is_active)<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>@else<span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inactive</span>@endif</dd>
                 </div>
             </dl>
-            <div class="mt-4 flex gap-2">
-                <a href="{{ route('admin.cities.edit', $city) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Edit</a>
-            </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

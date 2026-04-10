@@ -8,10 +8,12 @@
         <h2 class="text-lg font-semibold text-gray-800">All Cities</h2>
         <p class="text-sm text-gray-500">Manage your city listings and service pages</p>
     </div>
-    <a href="{{ route('admin.cities.create') }}" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-sm">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Add City
-    </a>
+    @if(!$domain)
+        <a href="{{ route('admin.cities.create') }}" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Add City
+        </a>
+    @endif
 </div>
 
 {{-- Filters --}}
@@ -126,33 +128,47 @@
                             <span class="text-gray-900">{{ $city->service_pages_count ?? 0 }}</span>
                         </td>
                         <td class="px-6 py-4">
-                            @if($city->is_active)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                    Active
-                                </span>
+                            @if($domain && isset($city->domain_status))
+                                @if($city->domain_status)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                                        Inactive
+                                    </span>
+                                @endif
                             @else
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-                                    Inactive
-                                </span>
+                                @if($city->is_active)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                                        Inactive
+                                    </span>
+                                @endif
                             @endif
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.cities.show', $city) }}" class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="View">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                </a>
-                                <a href="{{ route('admin.cities.edit', $city) }}" class="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </a>
-                                <form method="POST" action="{{ route('admin.cities.destroy', $city) }}" onsubmit="return confirm('Are you sure you want to delete this city?')" class="inline">
+                                <form method="POST" action="{{ route('admin.cities.toggle-status', $city) }}" class="inline">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <button type="submit" class="p-1.5 rounded-lg transition {{ ($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active) ? 'text-gray-400 hover:text-yellow-600 hover:bg-yellow-50' : 'text-gray-400 hover:text-green-600 hover:bg-green-50' }}" title="{{ ($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active) ? 'Deactivate' : 'Activate' }}">
+                                        @if(($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active))
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                        @else
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        @endif
                                     </button>
                                 </form>
+                                <a href="{{ route('admin.cities.show', $city) }}" class="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </a>
                             </div>
                         </td>
                     </tr>
