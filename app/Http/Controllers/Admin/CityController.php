@@ -259,7 +259,7 @@ class CityController extends Controller
         Cache::put("{$cacheKey}_current_type", null, now()->addMinutes(30));
         Cache::put("{$cacheKey}_started_at", now()->toIso8601String(), now()->addMinutes(60));
 
-        GenerateCityContentJob::dispatch($city);
+        GenerateCityContentJob::dispatch($city, Domain::current());
 
         return redirect()->back()->with('success', 'Content generation started in background! Refresh the page to see progress.');
     }

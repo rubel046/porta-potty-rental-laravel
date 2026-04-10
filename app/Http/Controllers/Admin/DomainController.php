@@ -26,9 +26,17 @@ class DomainController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255|unique:domains,domain',
+            'business_name' => 'nullable|string|max:255',
+            'primary_keyword' => 'nullable|string|max:255',
+            'primary_service' => 'nullable|string|max:255',
+            'tagline' => 'nullable|string|max:255',
+            'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
             'is_active' => 'boolean',
         ]);
+
+        $validated['secondary_keywords'] = $this->parseCsvField($request->input('secondary_keywords_text'));
+        $validated['service_types'] = $this->parseCsvField($request->input('service_types_text'));
 
         $domain = Domain::create($validated);
 
@@ -44,9 +52,17 @@ class DomainController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255|unique:domains,domain,'.$domain->id,
+            'business_name' => 'nullable|string|max:255',
+            'primary_keyword' => 'nullable|string|max:255',
+            'primary_service' => 'nullable|string|max:255',
+            'tagline' => 'nullable|string|max:255',
+            'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
             'is_active' => 'boolean',
         ]);
+
+        $validated['secondary_keywords'] = $this->parseCsvField($request->input('secondary_keywords_text'));
+        $validated['service_types'] = $this->parseCsvField($request->input('service_types_text'));
 
         $domain->update($validated);
 
@@ -121,5 +137,17 @@ class DomainController extends Controller
                 DomainCity::insert($records);
             }
         });
+    }
+
+    private function parseCsvField(?string $value): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        return array_filter(
+            array_map('trim', explode(',', $value)),
+            fn ($item) => $item !== ''
+        );
     }
 }

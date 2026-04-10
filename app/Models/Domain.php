@@ -11,6 +11,13 @@ class Domain extends Model
     protected $fillable = [
         'name',
         'domain',
+        'business_name',
+        'primary_keyword',
+        'secondary_keywords',
+        'primary_service',
+        'service_types',
+        'tagline',
+        'cta_phone',
         'logo_url',
         'primary_color',
         'is_active',
@@ -18,7 +25,14 @@ class Domain extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'service_types' => 'array',
+        'secondary_keywords' => 'array',
     ];
+
+    public function servicePages(): HasMany
+    {
+        return $this->hasMany(ServicePage::class);
+    }
 
     public function cities(): BelongsToMany
     {
@@ -85,6 +99,45 @@ class Domain extends Model
     public function activeDomainStates(): HasMany
     {
         return $this->hasMany(DomainState::class)->where('status', true);
+    }
+
+    public function getServiceTypes(): array
+    {
+        return $this->service_types ?? [];
+    }
+
+    public function getSecondaryKeywords(): array
+    {
+        return $this->secondary_keywords ?? [];
+    }
+
+    public function getSecondaryKeywordsFormatted(): string
+    {
+        $keywords = $this->getSecondaryKeywords();
+
+        return empty($keywords) ? '' : implode(', ', $keywords);
+    }
+
+    public function getServiceTypeLabel(string $type): string
+    {
+        $labels = [
+            'general' => "General {$this->primary_service} Rental",
+            'construction' => "Construction Site {$this->primary_service}",
+            'wedding' => "Wedding Event {$this->primary_service}",
+            'event' => "Event {$this->primary_service} Rental",
+            'luxury' => "Luxury {$this->primary_service} Trailer",
+            'party' => "Party {$this->primary_service} Rental",
+            'emergency' => "Emergency {$this->primary_service}",
+            'residential' => "Residential {$this->primary_service}",
+            'portable' => "Portable {$this->primary_service} Rental",
+        ];
+
+        return $labels[$type] ?? "{$type} {$this->primary_service}";
+    }
+
+    public function getServiceSlugPrefix(): string
+    {
+        return str_replace(' ', '-', $this->primary_service);
     }
 
     public static function current(): ?self

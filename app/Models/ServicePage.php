@@ -59,9 +59,23 @@ class ServicePage extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
+    }
+
     public function callLogs(): HasMany
     {
         return $this->hasMany(CallLog::class);
+    }
+
+    public function getServiceTypeLabelAttribute(): string
+    {
+        if ($this->domain && $this->domain->primary_service) {
+            return $this->domain->getServiceTypeLabel($this->service_type);
+        }
+
+        return self::SERVICE_TYPES[$this->service_type] ?? ucfirst($this->service_type);
     }
 
     // Scopes
@@ -92,11 +106,6 @@ class ServicePage extends Model
         }
 
         return $this->city->active_phone_raw ?? phone_raw();
-    }
-
-    public function getServiceTypeLabelAttribute(): string
-    {
-        return self::SERVICE_TYPES[$this->service_type] ?? $this->service_type;
     }
 
     public function getSeoTitleAttribute(): string

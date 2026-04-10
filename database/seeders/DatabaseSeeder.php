@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             StateSeeder::class,
             DomainSeeder::class,
+            DomainConfigSeeder::class,
             DomainStateSeeder::class,
             AllUSCitiesSeeder::class,
             DomainCitySeeder::class,

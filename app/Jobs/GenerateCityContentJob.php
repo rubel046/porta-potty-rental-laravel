@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\City;
+use App\Models\Domain;
 use App\Services\ContentGeneratorService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,8 +27,16 @@ class GenerateCityContentJob implements ShouldQueue
 
     public function __construct(
         public City $city,
-        public array $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'portable']
-    ) {}
+        public ?Domain $domain = null,
+        public array $types = []
+    ) {
+        if (empty($this->types) && $this->domain) {
+            $this->types = $this->domain->getServiceTypes();
+        }
+        if (empty($this->types)) {
+            $this->types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'portable'];
+        }
+    }
 
     public function handle(ContentGeneratorService $generator): void
     {
@@ -47,9 +56,12 @@ class GenerateCityContentJob implements ShouldQueue
                 try {
                     $data = $generator->generateServicePageContent($this->city, $type);
 
+                    $domainId = $this->domain?->id;
+
                     $this->city->servicePages()->updateOrCreate(
-                        ['slug' => $data['slug']],
+                        ['slug' => $data['slug'], 'domain_id' => $domainId],
                         [
+                            'domain_id' => $domainId,
                             'service_type' => $data['service_type'] ?? $type,
                             'h1_title' => $data['h1_title'] ?? '',
                             'meta_title' => $data['meta_title'] ?? '',

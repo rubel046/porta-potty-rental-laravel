@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::table('cities', function (Blueprint $table) {
             $table->dropForeign(['domain_id']);
+            $table->dropIndex('cities_domain_id_index');
             $table->dropColumn('domain_id');
         });
     }
