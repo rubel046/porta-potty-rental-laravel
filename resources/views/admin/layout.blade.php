@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin') — Porta Potty Rental</title>
+    <title>@yield('title', 'Admin') — {{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
     <style>
@@ -42,9 +42,9 @@
                x-cloak>
             <div style="flex-shrink: 0; padding: 1rem; border-bottom: 1px solid rgba(51, 65, 85, 0.5); display: flex; align-items: center; justify-content: space-between;">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-xl shadow-lg">🚽</div>
+                    <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $currentDomain->primary_color ?? '#22C55E' }}">🚽</div>
                     <div>
-                        <div class="font-bold text-sm leading-tight">Porta Potty</div>
+                        <div class="font-bold text-sm leading-tight">{{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</div>
                         <div class="text-xs text-slate-400">Admin Panel</div>
                     </div>
                 </a>
@@ -156,9 +156,9 @@
     <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
         <div class="p-4 border-b border-slate-700/50">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-xl shadow-lg">🚽</div>
+                <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $currentDomain->primary_color ?? '#22C55E' }}">🚽</div>
                 <div>
-                    <div class="font-bold text-sm leading-tight">Porta Potty</div>
+                    <div class="font-bold text-sm leading-tight">{{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</div>
                     <div class="text-xs text-slate-400">Admin Panel</div>
                 </div>
             </a>

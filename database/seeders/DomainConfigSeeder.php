@@ -39,6 +39,7 @@ class DomainConfigSeeder extends Seeder
                 'primary_service' => 'porta potty',
                 'service_types' => $portaPottyServiceTypes,
                 'tagline' => 'Your Trusted Portable Restroom Rental Experts',
+                'cta_phone' => '+18336529344',
                 'primary_color' => '#22C55E',
                 'is_active' => true,
             ]

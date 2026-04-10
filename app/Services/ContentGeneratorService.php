@@ -43,15 +43,23 @@ class ContentGeneratorService
             : "General {$city->name} Service";
 
         $primaryKeyword = $domain?->primary_keyword ?? $city->name.' service';
-        $secondaryKeywords = $domain?->getSecondaryKeywordsFormatted() ?? 'portable toilet rental, event restroom rental, construction toilets, cheap rental';
+        $secondaryKeywords = $domain?->getSecondaryKeywordsFormatted();
         $businessName = $domain?->business_name ?? 'Our Company';
+        $serviceTypesList = $domain?->getServiceTypes() ?? ['standard', 'deluxe', 'ada', 'luxury'];
+        $serviceTypesText = implode(', ', array_map(fn ($t) => ucfirst($t), $serviceTypesList));
+
+        $nearbyCitiesList = $this->getNearbyCities($city);
+        $nearbyCitiesText = implode(', ', $nearbyCitiesList);
 
         $prompt = <<<PROMPT
-Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {$primaryKeyword}).
+Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {$primaryKeyword}). You understand Google's E-E-A-T requirements and always prioritize Experience, Expertise, Authoritativeness, and Trustworthiness.
 
 Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {$businessName} in {$city->name}, {$state->code}.
 
-Task: Return a VALID JSON object with EXACTLY this structure:
+TASK: Return a VALID JSON object with EXACTLY this structure:
+
+DO NOT include FAQs in the main content - they will be generated separately.
+DO NOT include testimonials in the main content - they will be generated separately.
 {
     "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + city",
     "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
@@ -78,34 +86,52 @@ Step-by-step requirements:
 - Make content feel locally relevant (not generic)
 
 3) Content Structure (MANDATORY inside "content"):
-- Start with ## heading (city + service keyword)
-- Introduction (local + benefit-driven)
-- H2: Why Choose Us (trust signals)
-- H2: Our Services (with H3 for each type: standard, deluxe, ADA, luxury)
-- H2: Use Cases (construction, events, weddings, emergency, residential)
-- H2: Serving {$city->name} & Nearby Areas
+- Start with ## heading (include {$city->name} + primary keyword)
+- Introduction (local + benefit-driven, include E-E-A-T signals like "serving {$city->name} for 20+ years")
+- H2: Why Choose {$businessName} (trust signals: experience, licensing, local presence)
+- H2: Our Services (with H3 for each type: {$serviceTypesText})
+- H2: Use Cases & Applications (construction sites, events, weddings, emergency, residential)
+- H2: Serving {$city->name} & Surrounding Areas (include nearby cities: {$nearbyCitiesText})
 - H2: Call to Action section
-- INTERNAL LINKING: Naturally link to other service pages using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:standard}}, {{SERVICE_LINK:deluxe}}, {{SERVICE_LINK:ada}}, {{SERVICE_LINK:shower}}
+- INTERNAL LINKING: Naturally link to other service types using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}
+- Voice search optimization: Include conversational phrases people speak (e.g., "How much does a... cost", "Where can I rent...")
 
-4) FAQs (required - 8-15 questions):
-- Generate unique FAQ questions specific to this service type in {$city->name}, {$state->code}
-- Questions should cover: pricing, delivery, duration, types of units, booking process, etc.
-- Answers should be concise, helpful, and include local context when relevant
-- When mentioning other services in answers, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}, {{SERVICE_LINK:standard}}, {{SERVICE_LINK:deluxe}}, {{SERVICE_LINK:ada}}, {{SERVICE_LINK:shower}}
+4) Featured Snippet Optimization (for FAQ answers):
+- Structure answers for Google Position #0
+- Use clear ### H3 headings matching the question
+- Answers: 40-60 words, concise, direct answer first
+- Include "how to" and "what is" style questions
+- Use bullet lists for step-by-step content
+- Featured snippet placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
 
-5) Testimonials (required - 2-4 testimonials):
-- Generate realistic customer testimonials for this service type in {$city->name}, {$state->code}
-- Include: customer_name (realistic first name or initials), content (1-2 sentences about experience), rating (4-5 stars)
-- Vary the scenarios: construction supervisor, wedding planner, event organizer, homeowner, etc.
-- When mentioning other services in testimonials, use placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, etc.
+5) FAQs (required - 8-15 questions):
+- Generate unique FAQ questions for {$serviceLabel} in {$city->name}, {$state->code}
+- Cover: pricing, delivery, duration, unit types, booking process, permits, accessibility
+- Include voice search questions: "How much does... cost in {$city->name}?", "Where to rent... near {$city->name}?"
+- Use conversational/long-tail keywords
+- Answers: concise (40-60 words), include local context
 
-6) Conversion Optimization:
-- Include phone CTA at least 3–5 times using the placeholder: {{PHONE_LINK}}
+7) Testimonials (required - 2-4 testimonials):
+- Generate realistic customer testimonials for {$serviceLabel} in {$city->name}, {$state->code}
+- Include: customer_name (realistic first name or initials), content (1-2 sentences), rating (4-5 stars)
+- Vary scenarios: construction supervisor, wedding planner, event organizer, homeowner, project manager
+- Include E-E-A-T in testimonials: "they've been serving {$city->name} for years", "professional local company"
+- Link other services: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, etc.
+
+8) E-E-A-T & Trust Signals:
+- Emphasize {$businessName}'s local experience ({$city->name} area)
+- Mention years in business, local team
+- Include trust badges, licensing, certifications
+- Add "serving {$city->name} and surrounding areas for X+ years"
+- Include local customer references
+
+9) Conversion Optimization:
+- Include phone CTA at least 3–5 times using {{PHONE_LINK}}
 - Add urgency: same-day delivery, fast setup, limited availability
 - Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
 - Focus on benefits over features
 
-7) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
+10) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
 - When including phone number in content, FAQs, or testimonials, use EXACTLY this placeholder: {{PHONE_LINK}}
 - DO NOT use any other phone number format
 - Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
@@ -113,7 +139,7 @@ Step-by-step requirements:
 - Example WRONG: "Call us at <a href="tel:...">...</a> for a quote"
 - FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
 
-8) Pricing Rule (IMPORTANT):
+11) Pricing Rule (IMPORTANT):
 - DO NOT include any specific price numbers
 - Use soft pricing language:
   - "affordable pricing"
@@ -121,14 +147,14 @@ Step-by-step requirements:
   - "budget-friendly options"
   - "custom quotes available"
 
-9) Writing Style:
+12) Writing Style:
 - 100% human-like (no robotic tone)
-- Conversational, persuasive, easy to read (Grade 6–8)
+- Conversational, persuasive, easy to read (Grade 6-8)
 - Avoid repeating patterns across outputs
 - Make each section feel natural and helpful
 - Include 3-5 internal links to other service types naturally throughout content
 
-10) SEO Constraints:
+13) SEO Constraints:
 - h1_title must be different from meta_title
 - meta_title ≤60 characters
 - meta_description ≤160 characters
@@ -390,5 +416,13 @@ PROMPT;
         }
 
         return $content;
+    }
+
+    protected function getNearbyCities(City $city): array
+    {
+        return $city->nearbyCities()
+            ->limit(5)
+            ->pluck('cities.name')
+            ->toArray();
     }
 }

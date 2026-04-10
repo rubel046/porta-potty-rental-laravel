@@ -151,19 +151,15 @@
 
         <!-- Modal -->
         <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                     @click="showModal = false" class="fixed inset-0 bg-gray-500/75 transition-opacity"></div>
+            <div class="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
+                <div x-show="showModal" 
+                     @click="showModal = false" 
+                     style="display: none;"
+                     class="fixed inset-0 bg-gray-500/75 z-50"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-                <div x-show="showModal" x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div x-show="showModal" 
+                     style="display: none;"
+                     class="relative z-50 rounded-2xl bg-white shadow-xl sm:my-8 sm:w-full sm:max-w-lg text-left">
                     <form
                         :action="editMode ? '/admin/domains/' + currentDomain.id : '{{ route('admin.domains.store') }}'"
                         method="POST">
@@ -171,8 +167,8 @@
                         <input type="hidden" name="_method" :value="editMode ? 'PUT' : 'POST'"
                                x-model="editMode ? 'PUT' : 'POST'">
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[70vh] overflow-y-auto">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-6"
-                                x-text="editMode ? 'Edit Domain' : 'Add New Domain'"></h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-6 text-center"
+                                x-text="editMode ? 'Edit Domain' : 'Create Domain'"></h3>
 
                             <div class="space-y-5">
                                 <div>
@@ -245,9 +241,9 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">CTA Phone</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">CTA Phone (raw format)</label>
                                     <input type="text" name="cta_phone" x-model="currentDomain.cta_phone"
-                                           placeholder="(888) 555-0199"
+                                           placeholder="+18336529344"
                                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2.5 border">
                                 </div>
 
@@ -287,12 +283,31 @@
         </div>
     </div>
 
-    <script>
-        function domainManager() {
-            return {
-                showModal: false,
-                editMode: false,
-                currentDomain: {
+<script>
+function domainManager() {
+    return {
+        showModal: false,
+        editMode: false,
+        storeUrl: '{{ route('admin.domains.store') }}',
+        currentDomain: {
+            id: null,
+            name: '',
+            domain: '',
+            business_name: '',
+            primary_keyword: '',
+            secondary_keywords_text: '',
+            primary_service: '',
+            service_types_text: '',
+            tagline: '',
+            cta_phone: '',
+            primary_color: '#3B82F6',
+            is_active: true
+        },
+        openModal(mode) {
+            console.log('openModal:', mode, 'storeUrl:', this.storeUrl);
+            this.editMode = (mode !== 'create');
+            if (mode === 'create') {
+                this.currentDomain = {
                     id: null,
                     name: '',
                     domain: '',
@@ -305,27 +320,10 @@
                     cta_phone: '',
                     primary_color: '#3B82F6',
                     is_active: true
-                },
-                openModal(mode) {
-                    this.editMode = (mode === 'create');
-                    if (mode === 'create') {
-                        this.currentDomain = {
-                            id: null,
-                            name: '',
-                            domain: '',
-                            business_name: '',
-                            primary_keyword: '',
-                            secondary_keywords_text: '',
-                            primary_service: '',
-                            service_types_text: '',
-                            tagline: '',
-                            cta_phone: '',
-                            primary_color: '#3B82F6',
-                            is_active: true
-                        };
-                    }
-                    this.showModal = true;
-                },
+                };
+            }
+            this.showModal = true;
+        },
                 editDomain(id) {
                     const btn = document.querySelector(`[data-domain-id="${id}"]`);
                     this.editMode = true;

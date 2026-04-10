@@ -12,6 +12,7 @@ use App\Models\State;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CityController extends Controller
 {
@@ -206,6 +207,11 @@ class CityController extends Controller
 
         $city->update($validated);
 
+        if ($validated['is_active'] && $city->state_id) {
+            $updated = DomainState::where('state_id', $city->state_id)->update(['status' => true]);
+            Log::info("Activated state {$city->state_id}, rows: {$updated}");
+        }
+
         return redirect()->route('admin.cities.index')
             ->with('success', "City '{$city->name}' updated!");
     }
@@ -234,6 +240,12 @@ class CityController extends Controller
         if ($domainCity) {
             $domainCity->update(['status' => ! $domainCity->status]);
             $statusText = $domainCity->status ? 'activated' : 'deactivated';
+
+            if ($domainCity->status) {
+                DomainState::where('domain_id', $domain->id)
+                    ->where('state_id', $city->state_id)
+                    ->update(['status' => true]);
+            }
         } else {
             DomainCity::create([
                 'domain_id' => $domain->id,
