@@ -147,6 +147,23 @@ $breadcrumbSchema = [
                             </svg>
                             Get Free Quote
                         </a>
+
+                        @if(!empty($images))
+                        <div class="mt-10">
+                            <h3 class="text-xl font-bold text-slate-800 mb-4">Our Work in {{ $state->name }}</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                @foreach(array_slice($images, 0, 6) as $image)
+                                    @php
+                                        $imageUrl = asset('storage/' . $image['path']);
+                                    @endphp
+                                    <div class="aspect-w-1 aspect-h-1">
+                                        <img src="{{ $imageUrl }}" alt="{{ $image['alt'] ?? 'Service image for ' . $state->name }}" 
+                                             class="object-cover rounded-lg shadow-md" loading="lazy">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
                 <div class="lg:col-span-3 prose prose-slate prose-lg max-w-none

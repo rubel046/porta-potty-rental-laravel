@@ -518,11 +518,6 @@ class PageController extends Controller
                 '@type' => 'City',
                 'name' => $city->name,
             ],
-            'aggregateRating' => [
-                '@type' => 'AggregateRating',
-                'ratingValue' => '4.9',
-                'reviewCount' => '500',
-            ],
         ];
 
         $faqSchema = null;
@@ -571,6 +566,7 @@ class PageController extends Controller
     {
         $state = State::where('slug', $stateSlug)
             ->where('is_active', true)
+            ->with('domainStates') // Eager load the relationship
             ->firstOrFail();
 
         $cities = $state->activeCities()
@@ -581,8 +577,9 @@ class PageController extends Controller
 
         $stateContent = $contentService->getStatePageContent($state);
         $faqs = $stateContent['faqs'] ?? collect();
+        $images = $state->images ?? []; // Use the accessor to get images
 
-        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs'));
+        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images'));
     }
 
     /**

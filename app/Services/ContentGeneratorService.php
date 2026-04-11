@@ -325,6 +325,7 @@ PROMPT;
         $content = $jsonResponse['content'] ?? '';
         $contentCleaned = $this->applyLinkConversions($content);
         $wordCount = str_word_count($content);
+        $images = $this->getImagesForContent();
 
         return [
             'h1_title' => $jsonResponse['h1_title'] ?? "{$primaryKeyword} in {$stateName}, {$stateCode}",
@@ -336,6 +337,7 @@ PROMPT;
                 'question' => $faq['question'],
                 'answer' => $this->applyLinkConversions($faq['answer']),
             ], $jsonResponse['faqs'] ?? []),
+            'images' => $images,
         ];
     }
 

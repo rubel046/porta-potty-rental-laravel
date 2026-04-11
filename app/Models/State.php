@@ -112,4 +112,16 @@ class State extends Model
 
         return $domainState?->content ?? $this->attributes['content'] ?? null;
     }
+
+    public function getImagesAttribute(): ?array
+    {
+        $domain = Domain::current();
+        if (!$domain) {
+            return null;
+        }
+
+        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+        return $domainState?->images;
+    }
 }
