@@ -200,7 +200,7 @@ PROMPT;
         $faqs = $jsonResponse['faqs'] ?? [];
         $testimonials = $jsonResponse['testimonials'] ?? [];
 
-        $images = $this->getImagesForContent($city, $serviceType);
+        $images = $this->getImagesForContent();
         $contentWithImages = $this->embedImagesInContent($content, $images, $serviceType, $city->name);
         $contentCleaned = $this->applyLinkConversions($contentWithImages);
         $contentWithServiceLinks = $this->ensureServiceLinks($contentCleaned, $city);
@@ -228,14 +228,16 @@ PROMPT;
         ];
     }
 
-    protected function getImagesForContent(City $city, string $serviceType): array
+    protected function getImagesForContent(): array
     {
         if (! $this->imageService) {
             return [];
         }
 
+        $count = rand(3, 5);
+
         try {
-            return $this->imageService->getRandomImagesForContent(3);
+            return $this->imageService->getRandomImagesForContent($count);
         } catch (\Exception $e) {
             Log::warning("Failed to get images: {$e->getMessage()}");
 
@@ -254,7 +256,9 @@ PROMPT;
 
         foreach ($images as $image) {
             $altText = ($image['alt'] ?? 'Service').$location;
-            $encodedUrl = str_replace(' ', '%20', $image['url']);
+            $path = $image['path'] ?? '';
+            $url = '/storage/'.$path;
+            $encodedUrl = str_replace(' ', '%20', $url);
             $imageSection .= "<img src=\"{$encodedUrl}\" alt=\"{$altText}\" width=\"800\" height=\"600\" loading=\"lazy\" />\n";
         }
 
@@ -266,11 +270,6 @@ PROMPT;
         }
 
         return $content.$imageSection;
-    }
-
-    public function getAiService(): ?MultiAiService
-    {
-        return $this->aiService;
     }
 
     public function generateStatePageContent(State $state): array
@@ -420,9 +419,15 @@ PROMPT;
 
     protected function getNearbyCities(City $city): array
     {
-        return $city->nearbyCities()
-            ->limit(5)
-            ->pluck('cities.name')
-            ->toArray();
+        $nearby = $city->nearby_cities ?? [];
+        if (empty($nearby)) {
+            return [];
+        }
+
+        if (is_string($nearby)) {
+            $nearby = json_decode($nearby, true) ?? [];
+        }
+
+        return array_slice(array_filter((array) $nearby), 0, 5);
     }
 }

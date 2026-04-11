@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Domain;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ImageService
@@ -11,6 +13,40 @@ class ImageService
         'service-images',
         'hero-banner-images',
     ];
+
+    public function getDomainPrefix(): string
+    {
+        $domain = Domain::current();
+
+        if (! $domain) {
+            $domain = Domain::first();
+        }
+
+        if (! $domain) {
+            Log::error('ImageService: No domain found');
+
+            return '';
+        }
+
+        $prefix = rtrim($domain->domain, '.com');
+
+        if (! $this->folderExists("{$prefix}/service-images")) {
+            Log::error("ImageService: Folder not found for domain {$prefix}");
+
+            return '';
+        }
+
+        return $prefix;
+    }
+
+    protected function folderExists(string $path): bool
+    {
+        try {
+            return count(Storage::disk('public')->files($path)) > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     public function getRandomImages(int $count = 5, ?string $folder = null): array
     {
@@ -37,55 +73,29 @@ class ImageService
         return array_map(function ($image) {
             return [
                 'path' => $image,
-                'url' => asset('storage/'.$image),
                 'filename' => basename($image),
             ];
         }, $images);
     }
 
-    public function getImagesByKeyword(string $keyword, int $count = 3): array
-    {
-        $allImages = $this->getAllImages();
-        $matched = [];
-
-        foreach ($allImages as $image) {
-            $filename = strtolower(basename($image));
-            if (str_contains($filename, strtolower($keyword))) {
-                $matched[] = $image;
-            }
-        }
-
-        if (empty($matched)) {
-            return $this->getRandomImagesForContent($count);
-        }
-
-        shuffle($matched);
-
-        return array_map(function ($image) {
-            return [
-                'path' => $image,
-                'url' => asset('storage/'.$image),
-                'filename' => basename($image),
-            ];
-        }, array_slice($matched, 0, $count));
-    }
-
     protected function getAllImages(): Collection
     {
         $allImages = collect();
+        $prefix = $this->getDomainPrefix();
 
         foreach ($this->imageFolders as $folder) {
-            $images = $this->getImagesFromFolder($folder);
+            $images = $this->getImagesFromFolder($folder, $prefix);
             $allImages = $allImages->merge($images);
         }
 
         return $allImages;
     }
 
-    protected function getImagesFromFolder(string $folder): Collection
+    protected function getImagesFromFolder(string $folder, ?string $prefix = null): Collection
     {
         try {
-            $files = Storage::disk('public')->files($folder);
+            $path = $prefix ? "{$prefix}/{$folder}" : $folder;
+            $files = Storage::disk('public')->files($path);
 
             return collect($files)->filter(function ($file) {
                 $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));

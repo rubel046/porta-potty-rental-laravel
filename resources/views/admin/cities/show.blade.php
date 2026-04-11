@@ -167,7 +167,7 @@
                 <div><dt class="text-gray-500">City</dt><dd class="font-medium">{{ $city->name }}</dd></div>
                 <div><dt class="text-gray-500">State</dt><dd class="font-medium">{{ $city->state?->name }}</dd></div>
                 <div><dt class="text-gray-500">Status</dt>
-                    <dd>@if($city->is_active)<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>@else<span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inactive</span>@endif</dd>
+                    <dd>@if($isActive)<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>@else<span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inactive</span>@endif</dd>
                 </div>
             </dl>
         </div>

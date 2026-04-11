@@ -14,7 +14,7 @@ class ServicePage extends Model
         'meta_title', 'meta_description', 'content', 'content_html',
         'phone_number', 'canonical_url', 'schema_markup',
         'word_count', 'views', 'calls_generated', 'seo_score',
-        'is_published', 'published_at',
+        'is_published', 'published_at', 'images',
     ];
 
     protected $casts = [
@@ -23,6 +23,7 @@ class ServicePage extends Model
         'published_at' => 'datetime',
         'seo_score' => 'float',
         'seo_details' => 'array',
+        'images' => 'array',
     ];
 
     // Service Types

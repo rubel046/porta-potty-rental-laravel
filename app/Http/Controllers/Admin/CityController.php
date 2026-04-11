@@ -16,9 +16,25 @@ use Illuminate\Support\Facades\Log;
 
 class CityController extends Controller
 {
-    public function index(Request $request)
+    private function getDomain(): ?Domain
     {
         $domain = Domain::current();
+
+        if ($domain) {
+            return $domain;
+        }
+
+        $sessionDomainId = session('domain_id');
+        if ($sessionDomainId) {
+            return Domain::find($sessionDomainId);
+        }
+
+        return null;
+    }
+
+    public function index(Request $request)
+    {
+        $domain = $this->getDomain();
 
         if ($domain) {
             $stateIds = DomainState::where('domain_id', $domain->id)->pluck('state_id');
@@ -158,7 +174,14 @@ class CityController extends Controller
 
     public function show(City $city)
     {
+        $domain = $this->getDomain();
         $city->load(['state', 'servicePages', 'phoneNumbers', 'callLogs', 'blogPosts']);
+
+        $domainCity = null;
+        if ($domain) {
+            $domainCity = DomainCity::where('domain_id', $domain->id)->where('city_id', $city->id)->first();
+        }
+        $isActive = $domainCity?->status ?? $city->is_active;
 
         $cacheKey = "city_content_generation_{$city->id}";
         $generationStatus = Cache::get("{$cacheKey}_status", 'idle');
@@ -178,7 +201,7 @@ class CityController extends Controller
             $generationErrors = [];
         }
 
-        return view('admin.cities.show', compact('city', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt'));
+        return view('admin.cities.show', compact('city', 'isActive', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt'));
     }
 
     public function update(Request $request, City $city)
