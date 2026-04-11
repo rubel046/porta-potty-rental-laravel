@@ -6,6 +6,7 @@ use App\Http\Controllers\SitemapController;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\CallLog;
+use App\Models\Domain;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Services\AnthropicService;
@@ -15,6 +16,7 @@ use App\Services\ImageService;
 use App\Services\MultiAiService;
 use App\Services\OpenAIService;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        // Share domain data globally for public site components
+        $this->shareDomainData();
+
         View::composer('admin.layout', function ($view) {
             $todayCalls = CallLog::whereDate('created_at', today())->count();
             $todayRevenue = CallLog::whereDate('created_at', today())
@@ -53,6 +58,29 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->registerSitemapObservers();
+    }
+
+    protected function shareDomainData(): void
+    {
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        $domain = Domain::where('domain', $host)->first();
+
+        if (! $domain) {
+            $domain = Domain::first();
+        }
+
+        view()->share([
+            'domainData' => $domain,
+            'themeColor' => $domain?->theme_color ?? '#22C55E',
+            'logoPath' => $domain?->logo_path,
+        ]);
+
+        // Register domain_view() helper for Blade
+        Blade::directive('domain_view', function ($view) {
+            return "(\\App\\Providers\\DomainViewHelper::resolve({$view}))";
+        });
     }
 
     protected function registerSitemapObservers(): void

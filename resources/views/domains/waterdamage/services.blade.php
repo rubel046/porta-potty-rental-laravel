@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', 'Porta Potty Rental Services | Standard, Deluxe & Luxury Units | Potty Direct')
 @section('meta_description', 'Porta potty rental services nationwide. Standard, Deluxe flushable, ADA accessible, Luxury restroom trailers, portable showers & more. Same-day delivery available across the USA. Call for a free quote!')

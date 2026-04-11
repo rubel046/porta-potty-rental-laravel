@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', $state->seo_title)
 @section('meta_description', $state->seo_description)

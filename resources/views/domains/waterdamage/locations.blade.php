@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', 'Porta Potty Rental Locations | All Cities We Serve')
 @section('meta_description', 'Find porta potty rental near you. We serve hundreds of cities across the USA. Same-day delivery available. Browse all locations or call for a free quote.')

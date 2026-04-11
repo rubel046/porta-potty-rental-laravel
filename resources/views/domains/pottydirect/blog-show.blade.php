@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', $post->meta_title ?? $post->title)
 @section('meta_description', $post->meta_description ?? $post->excerpt)

@@ -21,6 +21,9 @@ class Domain extends Model
         'logo_url',
         'primary_color',
         'is_active',
+        'layout',
+        'theme_color',
+        'logo_path',
     ];
 
     protected $casts = [
@@ -150,5 +153,33 @@ class Domain extends Model
     public static function setCurrent(self $domain): void
     {
         session(['current_domain_id' => $domain->id]);
+    }
+
+    public function getLayoutPath(): string
+    {
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        $layoutPath = "domains.{$prefix}.layout";
+
+        if (view()->exists($layoutPath)) {
+            return $layoutPath;
+        }
+
+        return 'domains.pottydirect.layout';
+    }
+
+    public static function getLayoutPathStatic(): string
+    {
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        $layoutPath = "domains.{$prefix}.layout";
+
+        if (view()->exists($layoutPath)) {
+            return $layoutPath;
+        }
+
+        return 'domains.pottydirect.layout';
     }
 }

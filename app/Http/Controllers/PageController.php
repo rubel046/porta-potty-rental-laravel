@@ -9,6 +9,7 @@ use App\Models\Faq;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Models\Testimonial;
+use App\Providers\DomainViewHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -49,7 +50,7 @@ class PageController extends Controller
             ->take(3)
             ->get();
 
-        return view('pages.home', compact(
+        return view(DomainViewHelper::resolveForController('home'), compact(
             'featuredCities', 'states', 'recentPosts', 'testimonials'
         ));
     }
@@ -271,7 +272,7 @@ class PageController extends Controller
             ],
         ];
 
-        return view('pages.services', compact('serviceTypes', 'addOns'));
+        return view(DomainViewHelper::resolveForController('services'), compact('serviceTypes', 'addOns'));
     }
 
     /**
@@ -383,7 +384,7 @@ class PageController extends Controller
             ],
         ];
 
-        return view('pages.pricing', compact('pricingInfo', 'factors'));
+        return view(DomainViewHelper::resolveForController('pricing'), compact('pricingInfo', 'factors'));
     }
 
     /**
@@ -529,7 +530,7 @@ class PageController extends Controller
             ])->toArray();
         }
 
-        return view('pages.service', compact(
+        return view(DomainViewHelper::resolveForController('service'), compact(
             'servicePage', 'city', 'faqs', 'testimonials',
             'nearbyCityPages', 'otherServices', 'relatedPosts',
             'schemaMarkup', 'faqSchema'
@@ -551,7 +552,7 @@ class PageController extends Controller
             ->byPriority()
             ->paginate(30);
 
-        return view('pages.state', compact('state', 'cities'));
+        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities'));
     }
 
     /**
@@ -561,7 +562,9 @@ class PageController extends Controller
     {
         $search = $request->get('q', '');
 
-        $states = State::where('is_active', true)
+        $states = State::whereHas('domainStates', function ($q) {
+            $q->where('status', true);
+        })
             ->with(['cities' => function ($q) use ($search) {
                 $q->active()->has('servicePages')->orderBy('name');
                 if ($search) {
@@ -571,7 +574,7 @@ class PageController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('pages.locations', compact('states', 'search'));
+        return view(DomainViewHelper::resolveForController('locations'), compact('states', 'search'));
     }
 
     /**

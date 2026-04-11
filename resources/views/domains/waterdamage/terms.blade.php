@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 @section('title', 'Terms of Service | Porta Potty Rental USA')
 @section('meta_description', 'Terms of Service for Porta Potty Rental USA. Read our terms and conditions for using our services.')
 @section('canonical', route('terms'))

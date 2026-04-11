@@ -41,7 +41,7 @@
                style="position: fixed; top: 0; left: 0; width: 288px; max-width: 85vw; height: 100vh; z-index: 50; display: flex; flex-direction: column; background-color: #0f172a; color: white;"
                x-cloak>
             <div style="flex-shrink: 0; padding: 1rem; border-bottom: 1px solid rgba(51, 65, 85, 0.5); display: flex; align-items: center; justify-content: space-between;">
-                <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $domain?->primary_color ?? '#22C55E' }}">🚽</div>
                     <div>
                         <div class="font-bold text-sm leading-tight">{{ $domain?->business_name ?? $domain?->name ?? 'Admin' }}</div>
@@ -155,7 +155,7 @@
     {{-- Desktop Sidebar --}}
     <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
         <div class="p-4 border-b border-slate-700/50">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $currentDomain->primary_color ?? '#22C55E' }}">🚽</div>
                 <div>
                     <div class="font-bold text-sm leading-tight">{{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</div>

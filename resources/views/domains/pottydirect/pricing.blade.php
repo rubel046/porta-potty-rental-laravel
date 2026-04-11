@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Models\Domain::getLayoutPathStatic())
 
 @section('title', 'Porta Potty Rental Pricing | Competitive Rates | Potty Direct')
 @section('meta_description', 'Porta potty rental pricing information. Get competitive rates on standard, deluxe, ADA, and luxury portable toilet rentals. Call for a personalized quote — no hidden fees!')

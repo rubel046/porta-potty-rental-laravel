@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 @section('title', 'About Potty Direct | Leading Porta Potty Rental Company in the USA')
 @section('meta_description', 'Learn about Potty Direct — your trusted partner for affordable, clean portable toilet rentals across the United States. Same-day delivery, competitive pricing, and 25+ years of experience serving construction sites, events, and weddings.')
 @section('canonical', route('about'))

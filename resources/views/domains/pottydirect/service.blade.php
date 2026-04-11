@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Models\Domain::getLayoutPathStatic())
 
 @section('title', $servicePage->meta_title)
 @section('meta_description', $servicePage->meta_description)
@@ -31,7 +31,8 @@ $breadcrumbSchema = [
     @php
         // Get domain from URL directly for public site
         $host = request()->getHost();
-        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+//      $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+        $prefix = 'pottydirect';
 
         $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
             ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))

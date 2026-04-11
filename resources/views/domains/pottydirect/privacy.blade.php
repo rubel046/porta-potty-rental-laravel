@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Models\Domain::getLayoutPathStatic())
 @section('title', 'Privacy Policy | Porta Potty Rental USA')
 @section('meta_description', 'Privacy Policy for Porta Potty Rental USA. Learn how we collect, use, and protect your information.')
 @section('canonical', route('privacy'))

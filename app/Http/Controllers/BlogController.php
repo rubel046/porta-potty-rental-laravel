@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Providers\DomainViewHelper;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -30,7 +31,7 @@ class BlogController extends Controller
             $paginationHeaders .= '<link rel="next" href="'.$posts->nextPageUrl().'">'."\n";
         }
 
-        return view('blog.index', compact('posts', 'paginationHeaders'));
+        return view(DomainViewHelper::resolveForController('blog-index'), compact('posts', 'paginationHeaders'));
     }
 
     public function show(string $slug)
@@ -42,6 +43,6 @@ class BlogController extends Controller
 
         $post->increment('views');
 
-        return view('blog.show', compact('post'));
+        return view(DomainViewHelper::resolveForController('blog-show'), compact('post'));
     }
 }

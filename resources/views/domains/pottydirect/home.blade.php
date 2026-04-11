@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', 'Portable Restroom Rental | Same-Day Delivery Across the USA | Potty Direct')
 @section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call '.phone_display().'!')
