@@ -11,15 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class State extends Model
 {
     protected $fillable = [
-        'domain_id', 'name', 'code', 'slug', 'timezone', 'is_active',
-        'h1_title', 'meta_title', 'meta_description',
-        'content', 'images', 'word_count', 'seo_score',
+        'name', 'code', 'slug', 'timezone', 'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'images' => 'array',
-        'seo_score' => 'float',
     ];
 
     public function domain(): BelongsTo
@@ -69,20 +65,51 @@ class State extends Model
         return url("/porta-potty-rental-{$this->slug}");
     }
 
-    public function getSeoTitleAttribute(): string
+    public function getSeoTitleAttribute(): ?string
     {
-        return $this->meta_title
-            ?? "Porta Potty Rental in {$this->name} | Same-Day Delivery | Potty Direct";
+        $domain = Domain::current();
+        if (! $domain) {
+            return $this->meta_title ?? "Porta Potty Rental in {$this->name} | Same-Day Delivery";
+        }
+
+        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+        return $domainState?->meta_title ?? $this->meta_title ?? "{$domain->primary_service} Rental in {$this->name}";
     }
 
-    public function getSeoDescriptionAttribute(): string
+    public function getSeoDescriptionAttribute(): ?string
     {
-        return $this->meta_description
-            ?? "Find affordable porta potty rental in {$this->name}. Same-day delivery available in {$this->cities()->count()} cities. Construction, events, weddings & more. Call for a free quote!";
+        $domain = Domain::current();
+        if (! $domain) {
+            return $this->meta_description ?? "Find affordable {$domain->primary_service} rental in {$this->name}.";
+        }
+
+        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+        return $domainState?->meta_description ?? $this->meta_description ?? "Find affordable {$domain->primary_service} rental in {$this->name}. Same-day delivery available.";
     }
 
     public function hasContent(): bool
     {
-        return ! empty($this->content);
+        $domain = Domain::current();
+        if (! $domain) {
+            return ! empty($this->content);
+        }
+
+        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+        return $domainState?->content || $this->content;
+    }
+
+    public function getContentAttribute(): ?string
+    {
+        $domain = Domain::current();
+        if (! $domain) {
+            return $this->attributes['content'] ?? null;
+        }
+
+        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+        return $domainState?->content ?? $this->attributes['content'] ?? null;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Http\Controllers\SitemapController;
+use App\Models\Domain;
+use App\Models\DomainState;
 use App\Models\State;
 use App\Services\ContentGeneratorService;
 use Illuminate\Bus\Queueable;
@@ -22,12 +24,14 @@ class GenerateStateContentJob implements ShouldQueue
     public int $timeout = 300;
 
     public function __construct(
-        public State $state
+        public State $state,
+        public ?Domain $domain = null
     ) {}
 
     public function handle(ContentGeneratorService $generator): void
     {
-        $cacheKey = "state_content_generation_{$this->state->id}";
+        $domain = $this->domain ?? Domain::current();
+        $cacheKey = "state_content_generation_{$this->state->id}_{$domain?->id}";
 
         Cache::put("{$cacheKey}_status", 'processing', now()->addMinutes(30));
         Cache::put("{$cacheKey}_progress", 0, now()->addMinutes(30));
@@ -36,13 +40,27 @@ class GenerateStateContentJob implements ShouldQueue
         try {
             $data = $generator->generateStatePageContent($this->state);
 
-            $this->state->update([
-                'h1_title' => $data['h1_title'],
-                'meta_title' => $data['meta_title'],
-                'meta_description' => $data['meta_description'],
-                'content' => $data['content'],
-                'word_count' => $data['word_count'],
-            ]);
+            if ($domain) {
+                DomainState::updateOrCreate(
+                    ['domain_id' => $domain->id, 'state_id' => $this->state->id],
+                    [
+                        'h1_title' => $data['h1_title'],
+                        'meta_title' => $data['meta_title'],
+                        'meta_description' => $data['meta_description'],
+                        'content' => $data['content'],
+                        'word_count' => $data['word_count'],
+                        'status' => true,
+                    ]
+                );
+            } else {
+                $this->state->update([
+                    'h1_title' => $data['h1_title'],
+                    'meta_title' => $data['meta_title'],
+                    'meta_description' => $data['meta_description'],
+                    'content' => $data['content'],
+                    'word_count' => $data['word_count'],
+                ]);
+            }
 
             Cache::put("{$cacheKey}_status", 'completed', now()->addMinutes(30));
             Cache::put("{$cacheKey}_progress", 100, now()->addMinutes(30));
@@ -51,6 +69,7 @@ class GenerateStateContentJob implements ShouldQueue
 
             Log::info('State content generated', [
                 'state' => $this->state->name,
+                'domain' => $domain?->name,
                 'word_count' => $data['word_count'],
             ]);
         } catch (\Throwable $e) {
@@ -68,7 +87,8 @@ class GenerateStateContentJob implements ShouldQueue
 
     public function failed(\Throwable $exception): void
     {
-        $cacheKey = "state_content_generation_{$this->state->id}";
+        $domain = $this->domain ?? Domain::current();
+        $cacheKey = "state_content_generation_{$this->state->id}_{$domain?->id}";
         Cache::put("{$cacheKey}_status", 'failed', now()->addMinutes(30));
         Cache::put("{$cacheKey}_error", $exception->getMessage(), now()->addMinutes(60));
 

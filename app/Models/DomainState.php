@@ -13,10 +13,19 @@ class DomainState extends Model
         'domain_id',
         'state_id',
         'status',
+        'h1_title',
+        'meta_title',
+        'meta_description',
+        'content',
+        'images',
+        'word_count',
+        'seo_score',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'images' => 'array',
+        'seo_score' => 'float',
     ];
 
     public function domain(): BelongsTo

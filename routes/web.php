@@ -336,7 +336,7 @@ require __DIR__.'/auth.php';
 | System Logs (must be before catch-all)
 |----------------------------------------------------------------------
 */
-Route::prefix('logs')->name('admin.logs.')->group(function () {
+Route::prefix('admin/logs')->name('admin.logs.')->middleware(['auth'])->group(function () {
     Route::get('/', [LogViewerController::class, 'index'])->name('index');
     Route::get('/show', [LogViewerController::class, 'show'])->name('show');
     Route::post('/clear', [LogViewerController::class, 'clear'])->name('clear');

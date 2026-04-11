@@ -30,7 +30,7 @@ class DomainMiddleware
             session(['current_domain_id' => $domain->id]);
         }
 
-        view()->share('currentDomain', $domain);
+        view()->share('currentDomain', $domain ?? null);
 
         return $next($request);
     }

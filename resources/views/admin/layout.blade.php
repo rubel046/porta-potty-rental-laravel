@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin') — {{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</title>
+    <title>@yield('title', 'Admin') — {{ $currentDomain?->business_name ?? $currentDomain?->name ?? 'Admin' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
     <style>
@@ -42,9 +42,9 @@
                x-cloak>
             <div style="flex-shrink: 0; padding: 1rem; border-bottom: 1px solid rgba(51, 65, 85, 0.5); display: flex; align-items: center; justify-content: space-between;">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $currentDomain->primary_color ?? '#22C55E' }}">🚽</div>
+                    <div class="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-xl shadow-lg" style="background-color: {{ $domain?->primary_color ?? '#22C55E' }}">🚽</div>
                     <div>
-                        <div class="font-bold text-sm leading-tight">{{ $currentDomain->business_name ?? $currentDomain->name ?? 'Admin' }}</div>
+                        <div class="font-bold text-sm leading-tight">{{ $domain?->business_name ?? $domain?->name ?? 'Admin' }}</div>
                         <div class="text-xs text-slate-400">Admin Panel</div>
                     </div>
                 </a>
@@ -208,6 +208,23 @@
                 <span>Blog Posts</span>
             </a>
 
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Analytics</div>
+
+            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.reports') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span>Reports</span>
+            </a>
+
+            <a href="{{ route('admin.calls.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.calls.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                <span>All Calls</span>
+            </a>
+
+            <a href="{{ route('admin.logs.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.logs.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>System Logs</span>
+            </a>
+
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Management</div>
 
             <a href="{{ route('admin.domains.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.domains.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
@@ -255,7 +272,7 @@
                 </div>
                 <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" 
+                        <button @click="open = !open"
                             @if($currentDomain)
                             style="background-color: {{ $currentDomain->primary_color }}10; border-color: {{ $currentDomain->primary_color }}30; color: {{ $currentDomain->primary_color }};"
                             @endif

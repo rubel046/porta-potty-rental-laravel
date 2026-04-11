@@ -14,9 +14,18 @@ use Illuminate\Support\Facades\Cache;
 
 class StateController extends Controller
 {
+    private function getDomain(): ?Domain
+    {
+        if ($id = session('current_domain_id')) {
+            return Domain::find($id);
+        }
+
+        return Domain::first();
+    }
+
     public function index(): Response
     {
-        $domain = Domain::current();
+        $domain = $this->getDomain();
 
         if ($domain) {
             $states = State::select('states.*')
@@ -47,7 +56,7 @@ class StateController extends Controller
 
     public function edit(State $state): Response
     {
-        $domain = Domain::current();
+        $domain = $this->getDomain();
         $state->loadCount(['cities', 'activeCities']);
 
         if ($domain) {
@@ -55,6 +64,13 @@ class StateController extends Controller
                 ->where('state_id', $state->id)
                 ->first();
             $state->domain_status = $domainState?->status ?? false;
+
+            if ($domainState) {
+                $state->h1_title = $domainState->h1_title;
+                $state->meta_title = $domainState->meta_title;
+                $state->meta_description = $domainState->meta_description;
+                $state->content = $domainState->content;
+            }
         }
 
         return response(view('admin.states.edit', compact('state', 'domain')));
@@ -69,7 +85,15 @@ class StateController extends Controller
             'content' => 'nullable|string',
         ]);
 
-        $state->update($validated);
+        $domain = $this->getDomain();
+        if ($domain) {
+            DomainState::updateOrCreate(
+                ['domain_id' => $domain->id, 'state_id' => $state->id],
+                $validated
+            );
+        } else {
+            $state->update($validated);
+        }
 
         return redirect()->route('admin.states.index')
             ->with('success', "State '{$state->name}' updated!");
@@ -77,13 +101,14 @@ class StateController extends Controller
 
     public function generateContent(State $state): RedirectResponse
     {
-        $cacheKey = "state_content_generation_{$state->id}";
+        $domain = $this->getDomain();
+        $cacheKey = "state_content_generation_{$state->id}_{$domain?->id}";
 
         if (Cache::get("{$cacheKey}_status") === 'processing') {
             return redirect()->back()->with('info', 'Content generation is already in progress!');
         }
 
-        GenerateStateContentJob::dispatch($state);
+        GenerateStateContentJob::dispatch($state, $domain);
 
         return redirect()->back()->with('success', 'Content generation started in background! Refresh the page to see progress.');
     }
@@ -102,7 +127,7 @@ class StateController extends Controller
 
     public function toggleStatus(State $state): RedirectResponse
     {
-        $domain = Domain::current();
+        $domain = $this->getDomain();
 
         if (! $domain) {
             return redirect()->back()->with('error', 'No domain selected');
