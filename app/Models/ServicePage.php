@@ -97,7 +97,7 @@ class ServicePage extends Model
             return $this->phone_number;
         }
 
-        return $this->city->active_phone ?? phone_display();
+        return $this->city->active_phone ?? domain_phone_display();
     }
 
     public function getPhoneRawAttribute(): string
@@ -106,7 +106,7 @@ class ServicePage extends Model
             return preg_replace('/[^0-9+]/', '', $this->phone_number);
         }
 
-        return $this->city->active_phone_raw ?? phone_raw();
+        return $this->city->active_phone_raw ?? domain_phone_raw();
     }
 
     public function getSeoTitleAttribute(): string

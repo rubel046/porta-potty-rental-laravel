@@ -151,7 +151,7 @@ $breadcrumbSchema = [
                     📞 {{ $servicePage->phone_display }}
                 </a>
                 <p class="text-xs sm:text-sm text-slate-400 mt-3 sm:mt-4">
-                    Mon-Sat 7AM-8PM • Same-Day Delivery Available
+                    24/7 Emergency • Same-Day Delivery
                 </p>
             </div>
         </div>
@@ -320,7 +320,7 @@ $breadcrumbSchema = [
                       transition-all hover:scale-105 animate-pulse">
                 📞 {{ $servicePage->phone_display }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • Operators Standing By</p>
+            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Operators Standing By</p>
         </div>
     </section>
 @endsection

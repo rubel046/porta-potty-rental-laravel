@@ -6,7 +6,7 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
 
 $organizationSchema = [
     "@context" => "https://schema.org",
@@ -148,11 +148,11 @@ $organizationSchema = [
                 <p class="text-slate-300 mb-6">
                     If you have questions about this privacy policy, please call us.
                 </p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                           text-white font-bold text-xl py-3 px-8 rounded-full
                           transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
-                    📞 {{ phone_display() }}
+                    📞 {{ domain_phone_display() }}
                 </a>
             </div>
         </div>

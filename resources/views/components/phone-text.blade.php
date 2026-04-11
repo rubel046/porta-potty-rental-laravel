@@ -1,6 +1,6 @@
 @props([
-    'phoneRaw' => config('contact.phone.raw'),
-    'phoneDisplay' => config('contact.phone.display'),
+    'phoneRaw' => domain_phone_raw(),
+    'phoneDisplay' => domain_phone_display(),
 ])
 
 <a href="tel:{{ $phoneRaw }}" {{ $attributes->merge(['class' => 'hover:text-white transition']) }}>

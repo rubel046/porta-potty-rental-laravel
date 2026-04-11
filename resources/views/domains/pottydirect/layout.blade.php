@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
-    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.phone_display().'!')">
+    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.domain_phone_display().'!')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Custom Open Graph Image (can be overridden per page) --}}
@@ -81,8 +81,8 @@
         <span class="hidden sm:inline animate-pulse">🔥</span>
         <span class="font-medium text-center sm:text-left">Same-Day Delivery Available</span>
         <span class="hidden md:inline text-emerald-100">• Call for availability</span>
-        <a href="tel:{{ phone_raw() }}" class="ml-0 sm:ml-2 bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center">
-            📞 {{ phone_display() }}
+        <a href="tel:{{ domain_phone_raw() }}" class="ml-0 sm:ml-2 bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center">
+            📞 {{ domain_phone_display() }}
         </a>
     </div>
 </div>
@@ -224,10 +224,10 @@
 
             {{-- CTA --}}
             <div class="flex items-center gap-1 sm:gap-2">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-bold py-2 px-3 sm:px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
                     <span>📞</span>
-                    <span class="hidden lg:inline">{{ phone_display() }}</span>
+                    <span class="hidden lg:inline">{{ domain_phone_display() }}</span>
                 </a>
 
                 {{-- Mobile Menu Toggle --}}
@@ -276,9 +276,9 @@
             <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white text-center">
                 <h3 class="text-lg font-bold mb-2">Ready to Rent?</h3>
                 <p class="text-emerald-100 text-sm mb-4">Call for instant pricing</p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-bold text-lg py-3 px-8 rounded-full hover:scale-105 transition shadow-lg w-full">
-                    📞 {{ phone_display() }}
+                    📞 {{ domain_phone_display() }}
                 </a>
             </div>
         </div>
@@ -349,12 +349,12 @@
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Contact</h4>
                 <div class="space-y-4">
-                    <a href="tel:{{ phone_raw() }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
+                    <a href="tel:{{ domain_phone_raw() }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
                         <div class="w-9 h-9 bg-slate-800 group-hover:bg-emerald-600/20 rounded-lg flex items-center justify-center transition">
                             <span>📞</span>
                         </div>
                         <div>
-                            <div class="text-white font-semibold">{{ phone_display() }}</div>
+                            <div class="text-white font-semibold">{{ domain_phone_display() }}</div>
                             <div class="text-xs text-slate-500">Tap to call</div>
                         </div>
                     </a>
@@ -391,7 +391,7 @@
 
 {{-- Mobile Sticky CTA --}}
 <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-emerald-600 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] safe-area-bottom">
-    <a href="tel:{{ phone_raw() }}"
+    <a href="tel:{{ domain_phone_raw() }}"
        class="flex items-center justify-center gap-2 text-white font-bold text-base sm:text-lg py-3 sm:py-4">
         <span class="text-lg">📞</span>
         <span>Call Now — Free Quote</span>

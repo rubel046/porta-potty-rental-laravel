@@ -1,21 +1,22 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', 'Portable Restroom Rental | Same-Day Delivery Across the USA | Potty Direct')
-@section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call '.phone_display().'!')
+@section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call '.domain_phone_display().'!')
 @section('canonical', url('/'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $businessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "alternateName" => "Portable Restroom Rental",
-    "description" => "Affordable portable restroom rental service across the USA. Same-day delivery available. Clean, sanitized portable toilets for construction sites, outdoor events, weddings, and more.",
+    "name" => $domain?->business_name ?? "Potty Direct",
+    "alternateName" => $domain?->primary_service ?? "Portable Restroom Rental",
+    "description" => $domain?->tagline ?? "Portable restroom rental service across the USA. Same-day delivery available.",
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -26,7 +27,7 @@ $businessSchema = [
     ],
     "hasOfferCatalog" => [
         "@type" => "OfferCatalog",
-        "name" => "Portable Restroom Rentals",
+        "name" => ($domain?->primary_service ?? "Portable Restroom") . " Rentals",
         "itemListElement" => [
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
@@ -41,7 +42,7 @@ $orgSchema = [
     "@context" => "https://schema.org",
     "@type" => "Organization",
     "@id" => $url . "#organization",
-    "name" => "Potty Direct",
+    "name" => $domain?->business_name ?? "Potty Direct",
     "url" => $url,
     "logo" => $url . "/logo.png",
     "sameAs" => ["https://www.facebook.com/pottydirect", "https://www.twitter.com/pottydirect"],
@@ -53,7 +54,7 @@ $websiteSchema = [
     "@type" => "WebSite",
     "@id" => $url . "#website",
     "url" => $url,
-    "name" => "Potty Direct - Portable Restroom Rental",
+    "name" => ($domain?->business_name ?? "Potty Direct") . " - " . ($domain?->primary_service ?? "Portable Restroom Rental"),
     "publisher" => ["@id" => $url . "#organization"],
     "potentialAction" => ["@type" => "SearchAction", "target" => $url . "/locations?q={search_term_string}", "query-input" => "required name=search_term_string"]
 ];
@@ -96,7 +97,12 @@ $faqSchema = [
         // Get domain prefix from URL directly (no DB query)
         $host = request()->getHost();
         $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host); // "pottydirect.com" → "pottydirect"
-        
+
+        // Fallback for local development
+        if ($prefix === 'localhost' || !Storage::disk('public')->exists($prefix . '/hero-banner-images')) {
+            $prefix = 'pottydirect';
+        }
+
         $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
             ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
             ->toArray();
@@ -141,14 +147,14 @@ $faqSchema = [
 
                 {{-- CTA Buttons --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-lg sm:text-xl md:text-2xl font-bold
                               py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
                               transition-all hover:scale-105 hover:shadow-emerald-500/50
                               flex items-center justify-center gap-2 sm:gap-3 hero-cta-btn">
                         <span class="text-xl sm:text-2xl">📞</span>
-                        {{ phone_display() }}
+                        {{ domain_phone_display() }}
                     </a>
                     <a href="{{ route('locations') }}"
                        class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
@@ -248,7 +254,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ventilation system</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -277,7 +283,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior mirror</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -302,7 +308,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-slip flooring</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Spacious interior</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -327,7 +333,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Vanity & lighting</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Men's & women's sides</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -379,7 +385,7 @@ $faqSchema = [
                 <span class="font-bold">Need Urgent Delivery?</span>
             </div>
             <span class="text-red-100 hidden sm:inline">Same-day emergency service available in most areas.</span>
-            <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
+            <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
                 📞 Call Now
             </a>
         </div>
@@ -460,7 +466,7 @@ $faqSchema = [
                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
                             {{ $useCase['desc'] }}
                         </p>
-                        <a href="tel:{{ phone_raw() }}"
+                        <a href="tel:{{ domain_phone_raw() }}"
                            class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition">
                              {{ $useCase['link_text'] }}
                         </a>
@@ -540,7 +546,7 @@ $faqSchema = [
 
             {{-- CTA --}}
             <div class="text-center mt-10 md:mt-14">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
                           text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full
                           shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
@@ -662,7 +668,7 @@ $faqSchema = [
                         </div>
                     </div>
                     <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700">
-                        <a href="tel:{{ phone_raw() }}"
+                        <a href="tel:{{ domain_phone_raw() }}"
                            class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                             📞 Call for Free Quote
                         </a>
@@ -814,7 +820,7 @@ $faqSchema = [
             </div>
 
             <div class="text-center mt-8 sm:mt-10">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                           text-white font-bold text-base sm:text-lg py-3 sm:py-4 px-6 sm:px-8 rounded-full
                           shadow-xl shadow-emerald-500/25 transition-all hover:scale-105">
@@ -1083,17 +1089,17 @@ $faqSchema = [
                 Serving construction sites, events, weddings, and more across the USA
             </p>
 
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold
                       py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-14 rounded-full shadow-2xl
                       transition-all hover:scale-105
                       shadow-emerald-500/40 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
 
             <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-xs sm:text-sm text-slate-400">
-                <span>⏰ Mon-Sat 7AM-8PM</span>
+                <span>📞 24/7 Emergency Service</span>
                 <span class="text-slate-600 hidden xsm:block">•</span>
                 <span>🚚 Same-Day</span>
                 <span class="text-slate-600 hidden xsm:block">•</span>

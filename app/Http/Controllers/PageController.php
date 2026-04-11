@@ -10,6 +10,7 @@ use App\Models\ServicePage;
 use App\Models\State;
 use App\Models\Testimonial;
 use App\Providers\DomainViewHelper;
+use App\Services\ContentGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -388,6 +389,32 @@ class PageController extends Controller
     }
 
     /**
+     * About Page
+     */
+    public function about()
+    {
+        $domain = Domain::current();
+
+        return view(DomainViewHelper::resolveForController('about'));
+    }
+
+    /**
+     * Privacy Page
+     */
+    public function privacy()
+    {
+        return view(DomainViewHelper::resolveForController('privacy'));
+    }
+
+    /**
+     * Terms Page
+     */
+    public function terms()
+    {
+        return view(DomainViewHelper::resolveForController('terms'));
+    }
+
+    /**
      * City Service Page (SEO এর মূল পেজ)
      */
     public function cityPage(string $slug)
@@ -540,7 +567,7 @@ class PageController extends Controller
     /**
      * State Page — সেই রাজ্যের সব শহর দেখাবে
      */
-    public function statePage(string $stateSlug)
+    public function statePage(string $stateSlug, ContentGeneratorService $contentService)
     {
         $state = State::where('slug', $stateSlug)
             ->where('is_active', true)
@@ -552,7 +579,10 @@ class PageController extends Controller
             ->byPriority()
             ->paginate(30);
 
-        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities'));
+        $stateContent = $contentService->getStatePageContent($state);
+        $faqs = $stateContent['faqs'] ?? collect();
+
+        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs'));
     }
 
     /**

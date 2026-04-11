@@ -17,8 +17,10 @@ use App\Services\MultiAiService;
 use App\Services\OpenAIService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -62,22 +64,28 @@ class AppServiceProvider extends ServiceProvider
 
     protected function shareDomainData(): void
     {
-        $host = request()->getHost();
-        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+        try {
+            if (! Schema::hasTable('domains')) {
+                return;
+            }
+            $host = request()->getHost();
+            $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
 
-        $domain = Domain::where('domain', $host)->first();
+            $domain = Domain::where('domain', $host)->first();
 
-        if (! $domain) {
-            $domain = Domain::first();
+            if (! $domain) {
+                $domain = Domain::first();
+            }
+
+            view()->share([
+                'domainData' => $domain,
+                'themeColor' => $domain?->theme_color ?? '#22C55E',
+                'logoPath' => $domain?->logo_path,
+            ]);
+        } catch (Throwable $e) {
+            // Skip during migrations or when table doesn't exist
         }
 
-        view()->share([
-            'domainData' => $domain,
-            'themeColor' => $domain?->theme_color ?? '#22C55E',
-            'logoPath' => $domain?->logo_path,
-        ]);
-
-        // Register domain_view() helper for Blade
         Blade::directive('domain_view', function ($view) {
             return "(\\App\\Providers\\DomainViewHelper::resolve({$view}))";
         });

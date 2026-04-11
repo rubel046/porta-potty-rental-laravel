@@ -75,9 +75,9 @@ Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])
     ->name('sitemap.blog');
 
 // Static Pages
-Route::view('/about', 'pages.about')->name('about');
-Route::view('/privacy-policy', 'pages.privacy')->name('privacy');
-Route::view('/terms-of-service', 'pages.terms')->name('terms');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms-of-service', [PageController::class, 'terms'])->name('terms');
 
 /*
 |--------------------------------------------------------------------------

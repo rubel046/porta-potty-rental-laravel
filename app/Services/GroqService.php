@@ -50,7 +50,7 @@ class GroqService
                     Log::warning("Groq API attempt {$attempt} failed: {$errorBody}");
 
                     if ($response->status() === 429) {
-                        sleep(2 * $attempt);
+                        sleep(1); // Reduced from 2*attempt to 1 second
 
                         continue;
                     }
@@ -88,7 +88,7 @@ class GroqService
                 Log::warning("Groq API attempt {$attempt} exception: {$e->getMessage()}");
 
                 if ($attempt < $retries) {
-                    sleep($attempt);
+                    usleep(500000); // 0.5 second delay instead of exponential backoff
                 }
             }
         }

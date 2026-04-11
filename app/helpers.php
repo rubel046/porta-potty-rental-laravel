@@ -33,6 +33,57 @@ if (! function_exists('format_phone_display')) {
     }
 }
 
+if (! function_exists('domain_cta_phone')) {
+    function domain_cta_phone(): ?string
+    {
+        $domain = Domain::current();
+
+        if (! $domain && app()->isLocal()) {
+            $envDomain = env('APP_DOMAIN');
+            if ($envDomain) {
+                $domain = Domain::where('domain', 'like', $envDomain.'%')->first();
+            }
+        }
+
+        if (! $domain) {
+            $domain = Domain::where('is_active', true)->first();
+        }
+
+        return $domain?->cta_phone;
+    }
+}
+
+if (! function_exists('domain_phone_display')) {
+    function domain_phone_display(): string
+    {
+        $phone = domain_cta_phone();
+
+        if ($phone) {
+            return format_phone_display($phone);
+        }
+
+        return phone_display();
+    }
+}
+
+if (! function_exists('domain_phone_raw')) {
+    function domain_phone_raw(): string
+    {
+        return domain_cta_phone() ?? phone_raw();
+    }
+}
+
+if (! function_exists('domain_phone_link')) {
+    function domain_phone_link(?string $display = null, array $attributes = []): string
+    {
+        $phone = domain_phone_raw();
+        $display = $display ?? domain_phone_display();
+        $attrs = collect($attributes)->map(fn ($v, $k) => $k.'="'.$v.'"')->implode(' ');
+
+        return "<a href=\"tel:{$phone}\" {$attrs}>{$display}</a>";
+    }
+}
+
 if (! function_exists('website_url')) {
     function website_url(string $path = ''): string
     {
@@ -47,30 +98,11 @@ if (! function_exists('website_name')) {
     }
 }
 
-if (! function_exists('domain_phone')) {
-    function domain_phone(): string
-    {
-        $domain = Domain::current();
-
-        return $domain?->cta_phone ?? phone_raw();
-    }
-}
-
-if (! function_exists('domain_phone_display')) {
-    function domain_phone_display(): string
-    {
-        $phone = domain_phone();
-
-        return $phone ? format_phone_display($phone) : phone_display();
-    }
-}
-
 if (! function_exists('phone_link')) {
     function phone_link(?string $display = null, array $attributes = []): string
     {
         $raw = phone_raw();
         $text = $display ?? phone_display();
-
         $attrString = '';
         foreach ($attributes as $key => $value) {
             $attrString .= " {$key}=\"{$value}\"";

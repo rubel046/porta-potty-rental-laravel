@@ -7,7 +7,7 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
 
 $localBusinessSchema = [
     "@context" => "https://schema.org",
@@ -92,11 +92,11 @@ $breadcrumbSchema = [
                     </div>
                 </div>
                 
-                <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-600/40 hover:scale-105">
+                <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-600/40 hover:scale-105">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                     </svg>
-                    {{ phone_display() }}
+                    {{ domain_phone_display() }}
                 </a>
             </div>
         </div>
@@ -141,7 +141,7 @@ $breadcrumbSchema = [
                         <p class="text-lg text-slate-600 mb-8">
                             We provide reliable, clean, and affordable portable restroom solutions for projects and events throughout {{ $state->name }}.
                         </p>
-                        <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                        <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                             </svg>
@@ -316,11 +316,11 @@ $breadcrumbSchema = [
                 Get a free, no-obligation quote for your porta potty rental in {{ $state->name }}. Same-day delivery available!
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="tel:{{ phone_raw() }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-emerald-600 font-bold text-xl px-10 py-4 rounded-full hover:bg-emerald-50 transition-all shadow-2xl shadow-black/20 hover:scale-105">
+                <a href="tel:{{ domain_phone_raw() }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-emerald-600 font-bold text-xl px-10 py-4 rounded-full hover:bg-emerald-50 transition-all shadow-2xl shadow-black/20 hover:scale-105">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                     </svg>
-                    {{ phone_display() }}
+                    {{ domain_phone_display() }}
                 </a>
                 <a href="{{ route('services') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-emerald-700 transition-colors border-2 border-white/20">
                     View All Services
@@ -330,7 +330,7 @@ $breadcrumbSchema = [
                 </a>
             </div>
             <p class="mt-6 text-emerald-200 text-sm">
-                Mon-Sat 7AM-8PM • Emergency Service Available 24/7
+                24/7 Emergency Service Available
             </p>
         </div>
     </section>

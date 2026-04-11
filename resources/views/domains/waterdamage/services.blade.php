@@ -1,20 +1,21 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Porta Potty Rental Services | Standard, Deluxe & Luxury Units | Potty Direct')
-@section('meta_description', 'Porta potty rental services nationwide. Standard, Deluxe flushable, ADA accessible, Luxury restroom trailers, portable showers & more. Same-day delivery available across the USA. Call for a free quote!')
+@section('title', 'Our Services | Water Damage Restoration')
+@section('meta_description', 'Water damage restoration services nationwide. 24/7 emergency service, extraction, drying, and full restoration.')
 @section('canonical', route('services'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $serviceSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "description" => "Porta potty rental services nationwide. Standard, Deluxe, ADA, Luxury units available.",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
+    "description" => ($domain?->primary_service ?? "Service") . " services nationwide.",
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -32,16 +33,12 @@ $serviceSchema = [
     ],
     "hasOfferCatalog" => [
         "@type" => "OfferCatalog",
-        "name" => "Porta Potty Rental Services",
+        "name" => ($domain?->primary_service ?? "Service") . " Services",
         "itemListElement" => [
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "ADA Accessible Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Portable Shower Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Mobile Restroom Trailer"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "VIP Event Restroom"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Construction Site Package"]]
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Water Extraction"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Drying & Dehumidification"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Mold Remediation"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Full Restoration"]]
         ]
     ],
     "aggregateRating" => [
@@ -239,7 +236,7 @@ $faqSchema = [
                                     </p>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <a href="tel:{{ phone_raw() }}"
+                                    <a href="tel:{{ domain_phone_raw() }}"
                                        class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
                                         📞 Get Quote
                                     </a>
@@ -273,7 +270,7 @@ $faqSchema = [
                             </div>
 
                             {{-- CTA --}}
-                            <a href="tel:{{ phone_raw() }}"
+                            <a href="tel:{{ domain_phone_raw() }}"
                                class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                                       text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
                                 📞 Get Quote for {{ $type['short_name'] }}
@@ -299,7 +296,7 @@ $faqSchema = [
                         <div class="text-4xl mb-4">{{ $addon['icon'] }}</div>
                         <h3 class="font-bold text-slate-800 mb-2">{{ $addon['name'] }}</h3>
                         <p class="text-sm text-slate-500 mb-4 leading-relaxed">{{ $addon['description'] }}</p>
-                        <a href="tel:{{ phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">📞 Call for pricing</a>
+                        <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">📞 Call for pricing</a>
                     </div>
                 @endforeach
             </div>
@@ -417,9 +414,9 @@ $faqSchema = [
         <div class="max-w-3xl mx-auto text-center">
             <h2 class="text-3xl font-bold text-white mb-4">Get Your Custom Quote</h2>
             <p class="text-emerald-100 mb-8">Every project is unique. Call us for personalized pricing based on your specific needs.</p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-flex items-center gap-3 bg-white text-emerald-600 font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:scale-105 transition-all">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
             <p class="text-emerald-200 text-sm mt-4">No obligation • Same-day delivery available</p>
         </div>
@@ -440,14 +437,14 @@ $faqSchema = [
             <p class="text-slate-300 mb-8">
                 Serving construction sites, events, weddings, and more across the USA
             </p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-white text-3xl md:text-4xl font-bold py-5 px-14
                       rounded-full shadow-2xl shadow-emerald-500/40
                       transition-all hover:scale-105 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • No Obligation Quote</p>
+            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • No Obligation Quote</p>
         </div>
     </section>
 

@@ -1,19 +1,20 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
-@section('title', 'About Potty Direct | Leading Porta Potty Rental Company in the USA')
-@section('meta_description', 'Learn about Potty Direct — your trusted partner for affordable, clean portable toilet rentals across the United States. Same-day delivery, competitive pricing, and 25+ years of experience serving construction sites, events, and weddings.')
+@section('title', 'About Us | Water Damage Restoration')
+@section('meta_description', 'Learn about our water damage restoration company. 24/7 emergency service, fast response, and professional restoration across the USA.')
 @section('canonical', route('about'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $localBusinessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "description" => "Your trusted partner for affordable, clean portable toilet rentals across the United States. Same-day delivery, competitive pricing, and 25+ years of experience.",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
+    "description" => $domain?->tagline ?? "Your trusted partner for water damage restoration across the USA.",
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -40,13 +41,9 @@ $organizationSchema = [
     "@context" => "https://schema.org",
     "@type" => "Organization",
     "@id" => $url . "#organization",
-    "name" => "Potty Direct",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
     "url" => $url,
-    "description" => "Leading porta potty rental company serving construction sites, events, and weddings across the USA.",
-    "sameAs" => [
-        "https://www.facebook.com/pottydirect",
-        "https://www.twitter.com/pottydirect"
-    ],
+    "description" => ($domain?->primary_service ?? "Service") . " company serving customers across the USA.",
     "contactPoint" => [
         "@type" => "ContactPoint",
         "telephone" => $phone,
@@ -159,10 +156,10 @@ $organizationSchema = [
             <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 md:p-10 text-center text-white">
                 <h2 class="text-2xl font-bold mb-3">Ready to Rent?</h2>
                 <p class="text-emerald-100 mb-6">Call us for a free, no-obligation quote</p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-3 bg-white text-emerald-600 font-bold text-2xl
                           py-4 px-10 rounded-full hover:scale-105 transition-all shadow-xl">
-                    📞 {{ phone_display() }}
+                    📞 {{ domain_phone_display() }}
                 </a>
             </div>
 

@@ -22,15 +22,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('states', function (Blueprint $table) {
-            $table->dropColumn([
-                'h1_title',
-                'meta_title',
-                'meta_description',
-                'content',
-                'images',
-                'word_count',
-                'seo_score',
-            ]);
+            $columns = ['h1_title', 'meta_title', 'meta_description', 'content', 'images', 'word_count', 'seo_score'];
+            $existing = array_filter($columns, fn ($col) => Schema::hasColumn('states', $col));
+            if (! empty($existing)) {
+                $table->dropColumn($existing);
+            }
         });
     }
 };

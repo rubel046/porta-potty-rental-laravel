@@ -29,10 +29,14 @@ $breadcrumbSchema = [
 
     {{-- Hero Section --}}
     @php
-        // Get domain from URL directly for public site
+        // Get domain prefix from URL directly (no DB query)
         $host = request()->getHost();
-//      $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
-        $prefix = 'pottydirect';
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host); // "pottydirect.com" → "pottydirect"
+
+        // Fallback for local development
+        if ($prefix === 'localhost' || !Storage::disk('public')->exists($prefix . '/hero-banner-images')) {
+            $prefix = 'pottydirect';
+        }
 
         $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
             ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
@@ -151,7 +155,7 @@ $breadcrumbSchema = [
                     📞 {{ $servicePage->phone_display }}
                 </a>
                 <p class="text-xs sm:text-sm text-slate-400 mt-3 sm:mt-4">
-                    Mon-Sat 7AM-8PM • Same-Day Delivery Available
+                    24/7 Emergency • Same-Day Delivery
                 </p>
             </div>
         </div>
@@ -320,7 +324,7 @@ $breadcrumbSchema = [
                       transition-all hover:scale-105 animate-pulse">
                 📞 {{ $servicePage->phone_display }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • Operators Standing By</p>
+            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Operators Standing By</p>
         </div>
     </section>
 @endsection

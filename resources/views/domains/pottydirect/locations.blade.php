@@ -7,7 +7,7 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
 
 $localBusinessSchema = [
     "@context" => "https://schema.org",
@@ -223,14 +223,14 @@ $websiteSchema = [
             <p class="text-xl text-slate-400 mb-8">
                 We're expanding! Call us — we may still serve your area.
             </p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-white text-2xl md:text-3xl font-bold
                       py-4 px-12 rounded-full shadow-2xl shadow-emerald-500/30
                       transition-all hover:scale-105 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • Free Quote</p>
+            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Free Quote</p>
         </div>
     </section>
 @endsection

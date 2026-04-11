@@ -7,7 +7,7 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
 $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : $url . '/og-image.jpg';
 @endphp
 <script type="application/ld+json">
@@ -144,10 +144,10 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                 <div class="mt-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-center">
                     <h3 class="text-2xl font-bold text-white mb-3">Need a Quote?</h3>
                     <p class="text-slate-400 mb-6">Get same-day delivery on porta potty rentals.</p>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-xl
                               py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
-                        📞 {{ phone_display() }}
+                        📞 {{ domain_phone_display() }}
                     </a>
                 </div>
 

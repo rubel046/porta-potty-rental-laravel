@@ -21,7 +21,7 @@ class GenerateCityContentJob implements ShouldQueue
 
     public int $timeout = 600;
 
-    protected int $retryDelaySeconds = 60;
+    protected int $retryDelaySeconds = 5; // Reduced from 60 to 5 seconds
 
     protected int $maxRetriesPerType = 2;
 

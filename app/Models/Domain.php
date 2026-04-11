@@ -145,14 +145,27 @@ class Domain extends Model
 
     public static function current(): ?self
     {
-        return session('current_domain_id')
-            ? static::find(session('current_domain_id'))
-            : static::where('domain', request()->getHost())->first();
+        if (session('current_domain_id')) {
+            return static::find(session('current_domain_id'));
+        }
+
+        $host = request()->getHost();
+        $domain = cache("domain_{$host}");
+
+        if (! $domain) {
+            $domain = static::where('domain', $host)->first();
+            if ($domain) {
+                cache()->put("domain_{$host}", $domain, now()->addHours(1));
+            }
+        }
+
+        return $domain;
     }
 
     public static function setCurrent(self $domain): void
     {
         session(['current_domain_id' => $domain->id]);
+        cache()->put("domain_{$domain->domain}", $domain, now()->addHours(1));
     }
 
     public function getLayoutPath(): string

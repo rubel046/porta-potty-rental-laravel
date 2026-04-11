@@ -1,21 +1,22 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Portable Restroom Rental | Same-Day Delivery Across the USA | Potty Direct')
-@section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call '.phone_display().'!')
+@section('title', 'Water Damage Restoration | 24/7 Emergency Service | Water Damage Pro')
+@section('meta_description', 'Need water damage restoration? We offer 24/7 emergency water extraction, drying, and restoration services. Get your free quote today! Call '.domain_phone_display().'!')
 @section('canonical', url('/'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $businessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "alternateName" => "Portable Restroom Rental",
-    "description" => "Affordable portable restroom rental service across the USA. Same-day delivery available. Clean, sanitized portable toilets for construction sites, outdoor events, weddings, and more.",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
+    "alternateName" => $domain?->primary_service ?? "Water Damage Restoration",
+    "description" => $domain?->tagline ?? "24/7 emergency water damage restoration services.",
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -24,16 +25,6 @@ $businessSchema = [
     "openingHoursSpecification" => [
         ["@type" => "OpeningHoursSpecification", "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens" => "00:00", "closes" => "23:59"]
     ],
-    "hasOfferCatalog" => [
-        "@type" => "OfferCatalog",
-        "name" => "Portable Restroom Rentals",
-        "itemListElement" => [
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "ADA Accessible Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]]
-        ]
-    ],
     "aggregateRating" => ["@type" => "AggregateRating", "ratingValue" => "4.9", "reviewCount" => "500"]
 ];
 
@@ -41,10 +32,8 @@ $orgSchema = [
     "@context" => "https://schema.org",
     "@type" => "Organization",
     "@id" => $url . "#organization",
-    "name" => "Potty Direct",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
     "url" => $url,
-    "logo" => $url . "/logo.png",
-    "sameAs" => ["https://www.facebook.com/pottydirect", "https://www.twitter.com/pottydirect"],
     "contactPoint" => ["@type" => "ContactPoint", "telephone" => $phone, "contactType" => "customer service", "areaServed" => "US", "availableLanguage" => "English"]
 ];
 
@@ -53,7 +42,7 @@ $websiteSchema = [
     "@type" => "WebSite",
     "@id" => $url . "#website",
     "url" => $url,
-    "name" => "Potty Direct - Portable Restroom Rental",
+    "name" => ($domain?->business_name ?? "Water Damage Pro") . " - " . ($domain?->primary_service ?? "Water Damage Restoration"),
     "publisher" => ["@id" => $url . "#organization"],
     "potentialAction" => ["@type" => "SearchAction", "target" => $url . "/locations?q={search_term_string}", "query-input" => "required name=search_term_string"]
 ];
@@ -62,22 +51,11 @@ $faqSchema = [
     "@context" => "https://schema.org",
     "@type" => "FAQPage",
     "mainEntity" => [
-        ["@type" => "Question", "name" => "How much does a porta potty rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. Call us for a personalized quote."]],
-        ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
-        ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
-        ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
-        ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we'll help you determine the right number."]],
-        ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
-        ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
-        ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
-        ["@type" => "Question", "name" => "How often are porta potties serviced?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing."]],
-        ["@type" => "Question", "name" => "Do you provide ADA-accessible portable restrooms?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units."]],
-        ["@type" => "Question", "name" => "What areas do you service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We service cities and counties across the state. Enter your zip code or city on our locations page to see if we service your area, or call us for quick confirmation."]],
-        ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
-        ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
-        ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
-        ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we'll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
-        ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We'll provide a full breakdown before you commit."]]
+        ["@type" => "Question", "name" => "How much does water damage restoration cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by extent of damage. We offer free estimates. Call us for a personalized quote."]],
+        ["@type" => "Question", "name" => "Do you offer 24/7 emergency service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We are available 24/7 for water damage emergencies. Call us anytime."]],
+        ["@type" => "Question", "name" => "How long does water damage restoration take?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Most drying processes take 3-5 days. Full restoration timeline depends on the extent of damage."]],
+        ["@type" => "Question", "name" => "Does insurance cover water damage?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Most homeowner's insurance covers sudden water damage. We work with all major insurance companies."]],
+        ["@type" => "Question", "name" => "Do you offer free estimates?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer free estimates and inspections for all water damage restoration projects."]]
     ]
 ];
 @endphp
@@ -141,14 +119,14 @@ $faqSchema = [
 
                 {{-- CTA Buttons --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-lg sm:text-xl md:text-2xl font-bold
                               py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
                               transition-all hover:scale-105 hover:shadow-emerald-500/50
                               flex items-center justify-center gap-2 sm:gap-3 hero-cta-btn">
                         <span class="text-xl sm:text-2xl">📞</span>
-                        {{ phone_display() }}
+                        {{ domain_phone_display() }}
                     </a>
                     <a href="{{ route('locations') }}"
                        class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
@@ -248,7 +226,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ventilation system</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -277,7 +255,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior mirror</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -302,7 +280,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-slip flooring</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Spacious interior</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -327,7 +305,7 @@ $faqSchema = [
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Vanity & lighting</li>
                         <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Men's & women's sides</li>
                     </ul>
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -379,7 +357,7 @@ $faqSchema = [
                 <span class="font-bold">Need Urgent Delivery?</span>
             </div>
             <span class="text-red-100 hidden sm:inline">Same-day emergency service available in most areas.</span>
-            <a href="tel:{{ phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
+            <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
                 📞 Call Now
             </a>
         </div>
@@ -460,7 +438,7 @@ $faqSchema = [
                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
                             {{ $useCase['desc'] }}
                         </p>
-                        <a href="tel:{{ phone_raw() }}"
+                        <a href="tel:{{ domain_phone_raw() }}"
                            class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition">
                              {{ $useCase['link_text'] }}
                         </a>
@@ -540,7 +518,7 @@ $faqSchema = [
 
             {{-- CTA --}}
             <div class="text-center mt-10 md:mt-14">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
                           text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full
                           shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
@@ -662,7 +640,7 @@ $faqSchema = [
                         </div>
                     </div>
                     <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700">
-                        <a href="tel:{{ phone_raw() }}"
+                        <a href="tel:{{ domain_phone_raw() }}"
                            class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                             📞 Call for Free Quote
                         </a>
@@ -814,7 +792,7 @@ $faqSchema = [
             </div>
 
             <div class="text-center mt-8 sm:mt-10">
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                           text-white font-bold text-base sm:text-lg py-3 sm:py-4 px-6 sm:px-8 rounded-full
                           shadow-xl shadow-emerald-500/25 transition-all hover:scale-105">
@@ -1083,17 +1061,17 @@ $faqSchema = [
                 Serving construction sites, events, weddings, and more across the USA
             </p>
 
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold
                       py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-14 rounded-full shadow-2xl
                       transition-all hover:scale-105
                       shadow-emerald-500/40 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
 
             <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-xs sm:text-sm text-slate-400">
-                <span>⏰ Mon-Sat 7AM-8PM</span>
+                <span>📞 24/7 Emergency Service</span>
                 <span class="text-slate-600 hidden xsm:block">•</span>
                 <span>🚚 Same-Day</span>
                 <span class="text-slate-600 hidden xsm:block">•</span>

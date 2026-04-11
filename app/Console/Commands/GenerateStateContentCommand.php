@@ -2,15 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AiApiKey;
+use App\Models\Domain;
 use App\Models\State;
 use App\Services\ContentGeneratorService;
 use Illuminate\Console\Command;
 
 class GenerateStateContentCommand extends Command
 {
-    protected $signature = 'state:generate-content {--state= : Specific state code} {--all : Generate content for all states}';
+    protected $signature = 'content:generate:state {domain? : Domain slug}';
 
-    protected $description = 'Generate SEO content for state landing pages';
+    protected $description = 'Generate content for states';
 
     public function __construct(
         protected ContentGeneratorService $contentGenerator
@@ -20,42 +22,24 @@ class GenerateStateContentCommand extends Command
 
     public function handle(): int
     {
-        $stateCode = $this->option('state');
-        $all = $this->option('all');
+        $domainSlug = $this->argument('domain');
+        $domain = $domainSlug ? Domain::where('slug', $domainSlug)->first() : null;
 
-        if (! $stateCode && ! $all) {
-            $this->error('Please specify --state=XX or --all');
+        $query = State::active();
 
-            return Command::FAILURE;
-        }
-
-        if ($stateCode) {
-            $state = State::where('code', strtoupper($stateCode))->first();
-
-            if (! $state) {
-                $this->error("State '{$stateCode}' not found.");
-
-                return Command::FAILURE;
-            }
-
-            $this->generateForState($state);
-
-            return Command::SUCCESS;
-        }
-
-        $states = State::active()->get();
+        $states = $query->get();
         $this->info("Generating content for {$states->count()} states...");
 
         $bar = $this->output->createProgressBar($states->count());
         $bar->start();
 
         foreach ($states as $index => $state) {
-            $this->generateForState($state);
+            $this->generateForState($state, $domain);
             $bar->advance();
 
+            // Rate limiting between states
             if ($index < $states->count() - 1) {
-                $this->line('  Waiting 2 minutes before next state...');
-                sleep(120);
+                $this->applyRateLimit();
             }
         }
 
@@ -66,7 +50,19 @@ class GenerateStateContentCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected function generateForState(State $state): void
+    protected function applyRateLimit(): void
+    {
+        $keys = AiApiKey::active()->get();
+        $totalRequests = $keys->sum('requests_today');
+
+        // If high usage (>500 req/min), wait 10 seconds, else wait 3 seconds
+        $waitTime = $totalRequests > 500 ? 10 : 3;
+
+        $this->line("  Rate limiting - waiting {$waitTime}s (requests: {$totalRequests})");
+        sleep($waitTime);
+    }
+
+    protected function generateForState(State $state, ?Domain $domain): void
     {
         $this->line("Generating content for {$state->name}...");
 

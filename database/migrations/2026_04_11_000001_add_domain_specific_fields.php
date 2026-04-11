@@ -46,17 +46,25 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('service_pages', function (Blueprint $table) {
-            $table->dropForeign(['domain_id']);
-            $table->dropColumn('domain_id');
+            if (Schema::hasColumn('service_pages', 'domain_id')) {
+                $table->dropForeign(['domain_id']);
+                $table->dropColumn('domain_id');
+            }
         });
 
         Schema::table('states', function (Blueprint $table) {
-            $table->dropForeign(['domain_id']);
-            $table->dropColumn('domain_id');
+            if (Schema::hasColumn('states', 'domain_id')) {
+                $table->dropForeign(['domain_id']);
+                $table->dropColumn('domain_id');
+            }
         });
 
         Schema::table('domains', function (Blueprint $table) {
-            $table->dropColumn(['business_name', 'primary_keyword', 'secondary_keywords', 'primary_service', 'service_types', 'tagline', 'cta_phone']);
+            $columns = ['business_name', 'primary_keyword', 'secondary_keywords', 'primary_service', 'service_types', 'tagline', 'cta_phone'];
+            $existing = array_filter($columns, fn ($col) => Schema::hasColumn('domains', $col));
+            if (! empty($existing)) {
+                $table->dropColumn($existing);
+            }
         });
     }
 };

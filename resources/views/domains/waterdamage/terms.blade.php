@@ -1,18 +1,19 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
-@section('title', 'Terms of Service | Porta Potty Rental USA')
-@section('meta_description', 'Terms of Service for Porta Potty Rental USA. Read our terms and conditions for using our services.')
+@section('title', 'Terms of Service | Water Damage Restoration')
+@section('meta_description', 'Terms of Service for water damage restoration. Read our terms and conditions.')
 @section('canonical', route('terms'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $organizationSchema = [
     "@context" => "https://schema.org",
     "@type" => "Organization",
     "@id" => $url . "#organization",
-    "name" => "Potty Direct",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
     "url" => $url,
     "telephone" => $phone,
     "contactPoint" => [
@@ -157,11 +158,11 @@ $organizationSchema = [
                 <p class="text-slate-300 mb-6">
                     For questions about these terms, call us today.
                 </p>
-                <a href="tel:{{ phone_raw() }}"
+                <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                           text-white font-bold text-xl py-3 px-8 rounded-full
                           transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
-                    📞 {{ phone_display() }}
+                    📞 {{ domain_phone_display() }}
                 </a>
             </div>
         </div>

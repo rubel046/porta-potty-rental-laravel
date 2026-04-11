@@ -1,7 +1,7 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Porta Potty Rental Blog | Guides, Tips & Pricing Info')
-@section('meta_description', 'Expert guides on porta potty rental pricing, event planning, construction site requirements, and more. Everything you need to know about portable toilet rentals.')
+@section('title', 'Blog | Water Damage Restoration Guides')
+@section('meta_description', 'Expert guides on water damage restoration, mold remediation, and emergency services.')
 @section('canonical', route('blog.index'))
 @section('pagination_headers')
 @if(isset($paginationHeaders) && $paginationHeaders)
@@ -12,14 +12,15 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 @endphp
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "Blog",
-    "headline": "Porta Potty Rental Blog | Guides, Tips & Pricing Info",
-    "description": "Expert guides on porta potty rental pricing, event planning, construction site requirements, and more.",
+    "headline": ($domain?->business_name ?? "Water Damage Pro") . " Blog",
+    "description": "Expert guides on water damage restoration and emergency services.",
     "url": "{{ $url }}/blog"
 }
 </script>
@@ -201,10 +202,10 @@ $phone = phone_raw();
         <div class="max-w-3xl mx-auto">
             <h2 class="text-2xl md:text-3xl font-bold mb-3">Need a Porta Potty Now?</h2>
             <p class="text-emerald-100 mb-6">Call us for instant pricing and same-day delivery.</p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-flex items-center gap-2 bg-white text-emerald-600 font-bold text-xl
                       py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
         </div>
     </section>

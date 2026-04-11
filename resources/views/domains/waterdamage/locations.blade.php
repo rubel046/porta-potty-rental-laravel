@@ -1,20 +1,21 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Porta Potty Rental Locations | All Cities We Serve')
-@section('meta_description', 'Find porta potty rental near you. We serve hundreds of cities across the USA. Same-day delivery available. Browse all locations or call for a free quote.')
+@section('title', 'Service Locations | Cities We Serve')
+@section('meta_description', 'Find water damage restoration near you. We serve cities across the USA. 24/7 emergency service available.')
 @section('canonical', route('locations'))
 
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
+$domain = \App\Models\Domain::current();
 
 $localBusinessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "description" => "Porta potty rental services across the USA. Same-day delivery available.",
+    "name" => $domain?->business_name ?? "Water Damage Pro",
+    "description" => ($domain?->primary_service ?? "Service") . " services across the USA.",
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -37,7 +38,7 @@ $websiteSchema = [
     "@type" => "WebSite",
     "@id" => $url . "#website",
     "url" => $url,
-    "name" => "Potty Direct - Porta Potty Rental",
+    "name" => ($domain?->business_name ?? "Water Damage Pro") . " - " . ($domain?->primary_service ?? "Service"),
     "potentialAction" => [
         "@type" => "SearchAction",
         "target" => $url . "/locations?q={search_term_string}",
@@ -223,14 +224,14 @@ $websiteSchema = [
             <p class="text-xl text-slate-400 mb-8">
                 We're expanding! Call us — we may still serve your area.
             </p>
-            <a href="tel:{{ phone_raw() }}"
+            <a href="tel:{{ domain_phone_raw() }}"
                class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                       text-white text-2xl md:text-3xl font-bold
                       py-4 px-12 rounded-full shadow-2xl shadow-emerald-500/30
                       transition-all hover:scale-105 animate-pulse">
-                📞 {{ phone_display() }}
+                📞 {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • Free Quote</p>
+            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Free Quote</p>
         </div>
     </section>
 @endsection

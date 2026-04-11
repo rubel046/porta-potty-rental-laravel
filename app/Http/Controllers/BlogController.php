@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Providers\DomainViewHelper;
+use App\Services\ContentGeneratorService;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -34,7 +35,7 @@ class BlogController extends Controller
         return view(DomainViewHelper::resolveForController('blog-index'), compact('posts', 'paginationHeaders'));
     }
 
-    public function show(string $slug)
+    public function show(string $slug, ContentGeneratorService $contentService)
     {
         $post = BlogPost::where('slug', $slug)
             ->published()
@@ -42,6 +43,14 @@ class BlogController extends Controller
             ->firstOrFail();
 
         $post->increment('views');
+
+        $city = $post->city;
+        if ($city) {
+            $post->content = $contentService->ensureServiceLinks($post->content, $city);
+            $post->excerpt = $contentService->ensureServiceLinks($post->excerpt ?? '', $city);
+        } else {
+            $post->content = $contentService->ensureServiceLinks($post->content);
+        }
 
         return view(DomainViewHelper::resolveForController('blog-show'), compact('post'));
     }

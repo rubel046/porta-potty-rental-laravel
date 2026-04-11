@@ -4,8 +4,8 @@
 ])
 
 @php
-    $phoneRaw = config('contact.phone.raw');
-    $phoneDisplay = config('contact.phone.display');
+    $phoneRaw = domain_phone_raw();
+    $phoneDisplay = domain_phone_display();
     
     $sizeClasses = [
         'sm' => 'text-sm py-2 px-5',

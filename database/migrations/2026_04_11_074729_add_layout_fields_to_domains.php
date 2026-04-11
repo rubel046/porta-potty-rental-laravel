@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('domains', function (Blueprint $table) {
-            $table->string('layout')->default('default')->after('domain');
-            $table->string('theme_color')->default('#22C55E')->after('layout');
-            $table->string('logo_path')->nullable()->after('theme_color');
+            if (! Schema::hasColumn('domains', 'layout')) {
+                $table->string('layout')->default('default')->after('domain');
+            }
+            if (! Schema::hasColumn('domains', 'theme_color')) {
+                $table->string('theme_color')->default('#22C55E')->after('layout');
+            }
+            if (! Schema::hasColumn('domains', 'logo_path')) {
+                $table->string('logo_path')->nullable()->after('theme_color');
+            }
         });
     }
 

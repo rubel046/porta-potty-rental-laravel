@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\City;
 use App\Models\Domain;
 use App\Models\State;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ContentGeneratorService
@@ -394,8 +395,8 @@ PROMPT;
 
     protected function ensureCorrectPhoneLinks(string $content): string
     {
-        $phoneDisplay = config('contact.phone.display', '(888) 555-0199');
-        $phoneRaw = config('contact.phone.raw', '+18885550199');
+        $phoneDisplay = domain_phone_display();
+        $phoneRaw = domain_phone_raw();
         $styledLink = "<a href=\"tel:{$phoneRaw}\" class=\"text-blue-600 font-semibold hover:underline\">{$phoneDisplay}</a>";
 
         return str_replace('{{PHONE_LINK}}', $styledLink, $content);
@@ -403,7 +404,7 @@ PROMPT;
 
     public function ensureServiceLinks(string $content, ?City $city = null): string
     {
-        $serviceTypes = ['construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower'];
+        $serviceTypes = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower'];
         $domain = Domain::current() ?? Domain::first();
         $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
 
@@ -430,5 +431,273 @@ PROMPT;
         }
 
         return array_slice(array_filter((array) $nearby), 0, 5);
+    }
+
+    public function getStatePageContent(State $state): array
+    {
+        $cacheKey = "state_content_{$state->id}_".(Domain::current()?->id ?? 'default');
+
+        return Cache::remember($cacheKey, 86400, function () use ($state) {
+            return $this->generateStateContent($state);
+        });
+    }
+
+    protected function generateStateContent(State $state): array
+    {
+        $domain = Domain::current() ?? Domain::first();
+        $bizName = $domain?->business_name ?? 'Our Company';
+        $serviceName = $domain?->primary_service ?? 'Portable Restroom Rental';
+
+        $content = <<<HTML
+<h2>Welcome to {$state->name}'s Premier {$serviceName} Service</h2>
+<p>At {$bizName}, we are proud to serve the residents and businesses of {$state->name} with top-quality portable restroom solutions. Whether you're managing a construction site, planning a wedding, or organizing a community event, we have the perfect portable restroom for your needs. With years of experience serving {$state->name}'s diverse communities, we understand the unique challenges and requirements that come with providing exceptional portable sanitation services in this great state. Our team has built a reputation for excellence, reliability, and customer satisfaction that sets us apart from other providers in the region. We believe that every customer deserves access to clean, comfortable, and reliable portable restroom facilities, regardless of the size or nature of their project or event.</p>
+
+<p>Our commitment to quality, reliability, and customer satisfaction has made us a trusted name across {$state->name}. We take pride in every unit we deliver, ensuring it's clean, well-maintained, and ready for immediate use. From the smallest job site to the largest outdoor festival, our team is equipped to handle projects of any size. We believe that every interaction with our customers is an opportunity to demonstrate our commitment to excellence and build lasting relationships. Our fleet of modern, well-maintained units combined with our experienced team ensures that we can handle even the most demanding projects with ease and professionalism.</p>
+
+<p>When you choose {$bizName} for your {$serviceName} needs in {$state->name}, you're not just renting a portable restroom – you're partnering with a company that genuinely cares about your project's success. Our team is dedicated to providing personalized service that meets your specific requirements, whether you're organizing a small backyard event or managing a large-scale construction project. We understand that every project is unique, and we work closely with our customers to ensure their specific needs are met. Our customer-first approach has earned us a loyal following across {$state->name}, with many customers returning to us for all their portable sanitation needs.</p>
+
+<p>We also offers comprehensive planning assistance for events, helping you determine the right number of units, optimal placement, and scheduling that works with your event timeline. Our expertise extends beyond just providing units – we're your partners in ensuring your event or project runs smoothly. We provide detailed site assessments, recommend appropriate unit quantities based on expected attendance or workforce size, and offer flexible delivery and pickup schedules to accommodate your timeline.</p>
+
+<h2>Why Choose Our {$serviceName} Services in {$state->name}?</h2>
+<p>We understand that every project and event has unique requirements. That's why we offer a comprehensive range of portable restroom solutions tailored to {$state->name}'s diverse communities. From the bustling cities to rural areas, our team delivers exceptional service with unbeatable benefits:</p>
+<ul>
+<li>Same-day delivery and pickup available throughout {$state->name}</li>
+<li>Competitive pricing with no hidden fees or surprise charges</li>
+<li>Clean, well-maintained units that exceed industry hygiene standards</li>
+<li>24/7 customer support for emergencies and urgent needs</li>
+<li>Flexible rental periods that adapt to your project timeline</li>
+<li>Professional installation and setup by trained technicians</li>
+<li>Regular servicing during rental period to maintain cleanliness</li>
+<li>Eco-friendly cleaning solutions that protect the environment</li>
+<li>Free quotes and consultations with no obligation</li>
+<li>Fully licensed and insured operations for your peace of mind</li>
+<li>Multiple unit types to meet diverse needs</li>
+<li>Bulk discounts for large orders and long-term rentals</li>
+</ul>
+
+<p>Our team undergoes continuous training to ensure we provide the best customer experience in the industry. We believe in building long-term relationships with our clients through consistent, reliable service and outstanding support. Every member of our team is dedicated to ensuring your complete satisfaction, from the first phone call to the final pickup. We take pride in our reputation and work hard every day to maintain the high standards that our customers expect.</p>
+
+<p>We also offer flexible scheduling options to accommodate your project's timeline. Whether you need units for a single day, a weekend, or several months, we have rental plans that fit your needs and budget. Our goal is to provide solutions that work for you, not just for today but throughout the entire duration of your project. We understand that sometimes plans change, and we work with our customers to accommodate schedule modifications whenever possible.</p>
+
+<h2>Our Comprehensive Services in {$state->name}</h2>
+<p>At {$bizName}, we offer far more than just standard portable restrooms. Our diverse service portfolio includes multiple solutions designed to meet every possible need:</p>
+
+<h3>Standard Portable Restrooms - The Industry Workhorse</h3>
+<p>Perfect for construction sites, outdoor events, and work areas requiring basic sanitation. Our standard units represent the gold standard in portable sanitation. Each unit is built for durability and long-term use, featuring:</p>
+<ul>
+<li>Non-splash urinal for added convenience in high-traffic situations</li>
+<li>Advanced ventilation system that promotes air circulation</li>
+<li>Anti-slip floor surface for safety in all weather conditions</li>
+<li>Hand sanitizer dispenser for improved hygiene</li>
+<li>Toilet paper holder with ample supply capacity</li>
+<li>Interior hook for bags and personal belongings</li>
+<li>Stable entry ramp for easy access</li>
+<li>Durable construction that withstands heavy use</li>
+<li>Privacy lock for security</li>
+<li>Ventilation windows for air flow</li>
+</ul>
+
+<p>These units meet all OSHA workplace requirements and are ideal for construction sites, outdoor work areas, and events where basic but reliable facilities are needed. They provide dependable service while keeping costs manageable for projects with tight budgets.</p>
+
+<h3>Deluxe Flushable Units - Elevated Comfort</h3>
+<p>Ideal for weddings, corporate events, and upscale gatherings where comfort is paramount. Our deluxe units provide a significantly enhanced experience compared to standard portable restrooms. These premium units are perfect for events where your guests expect more comfortable facilities. Features include:</p>
+<ul>
+<li>Fully functional flushing toilet with full water supply</li>
+<li>Hand sink with soap and paper towels</li>
+<li>Interior mirror and enhanced lighting</li>
+<li>Improved ventilation system for better air quality</li>
+<li>Spacious interior design for increased comfort</li>
+<li>Climate control options available for outdoor events</li>
+<li>Premium finishing throughout the interior</li>
+<li>Vanity area with counter space</li>
+</ul>
+
+<p>These units are particularly popular for weddings, corporate events, upscale private parties, and any gathering where guests expect higher-quality facilities. Many customers upgrade their entire event to deluxe units to provide their guests with the best possible experience.</p>
+
+<h3>ADA Accessible Units - Ensuring Accessibility for All</h3>
+<p>We are deeply committed to accessibility and inclusivity. Our ADA-compliant units ensure that everyone can access our facilities at your event or worksite, regardless of physical abilities. These thoughtfully designed units comply with all federal accessibility requirements and include:</p>
+<ul>
+<li>Extra-wide entry door that accommodates wheelchairs (at least 32 inches clear)</li>
+<li>Interior grab bars on both sides for stability and support</li>
+<li>Spacious interior to allow wheelchair maneuverability</li>
+<li>Lowered toilet seat at accessible height</li>
+<li>Non-slip flooring throughout the entire unit</li>
+<li>External access ramp for ground-level entry</li>
+<li>Easy-release privacy hardware</li>
+<li>Lowered sink and mirror for wheelchair access</li>
+</ul>
+
+<p>These units are essential for public events where accessibility is required by law, but they're also the right choice for any event or site where inclusive design matters. Many customers order ADA units as a standard part of their event planning to ensure all guests can participate fully.</p>
+
+<h3>Luxury Restroom Trailers - The Ultimate Experience</h3>
+<p>Make your special event truly memorable with our premium luxury restroom trailers. These state-of-the-art mobile restrooms represent the pinnacle of portable sanitation, offering an experience that rivals indoor bathroom facilities. Perfect for high-end weddings, VIP events, corporate functions, and exclusive gatherings:</p>
+<ul>
+<li>Central air conditioning and heating for year-round comfort</li>
+<li>Premium porcelain toilets (not plastic composite)</li>
+<li>Luxury sinks with flowing water and premium fixtures</li>
+<li>Full-length mirrors for guest convenience</li>
+<li>Integrated stereo music system</li>
+<li>Ambient LED lighting for elegant atmosphere</li>
+<li>Granite or marble vanity counters</li>
+<li>Multiple private stall options</li>
+<li>Separate men's and women's trailer options</li>
+<li>Hands-free fixtures for improved hygiene</li>
+<li>Climate-controlled changing areas</li>
+<li>Professional attendant available upon request</li>
+</ul>
+
+<p>These trailers are the definitive choice for events where only the best will do. They're particularly popular for weddings, charity galas, corporate retreats, and high-profile events where guest experience is paramount. Several trailer units can be linked together for larger events, providing ample facilities for hundreds of guests.</p>
+
+<h3>Portable Shower Units - Complete Facility Solutions</h3>
+<p>For events and worksites requiring shower facilities, we offer complete clean, private portable shower units with both hot and cold water options. These versatile units are ideal for:</p>
+<ul>
+<li>Multi-day outdoor festivals and camping events</li>
+<li>Construction site worker facilities</li>
+<li>Disaster relief and emergency response operations</li>
+<li>Film and television production sites</li>
+<li>Athletic events and endurance competitions</li>
+<li>Remote work camps and locations</li>
+</ul>
+
+<p>Each shower unit includes private shower stalls, hot water capability, non-slip flooring, changing areas, and basic amenities. We can provide single units or entire shower trailers depending on your needs.</p>
+
+<p>To learn more about our complete range of services, visit our <a href="{{SERVICE_LINK:general}}" class="text-blue-600 font-semibold hover:underline">General Service</a> page or explore our specialized <a href="{{SERVICE_LINK:construction}}" class="text-blue-600 font-semibold hover:underline">Construction Services</a>.</p>
+
+<h2>Comprehensive Coverage Across {$state->name}</h2>
+<p>We proudly serve major cities and communities throughout {$state->name}. Our extensive network ensures we can deliver units quickly to any location in the state. Whether you're in a major metropolitan area or a rural community, our dedicated team is ready to serve you with minimal notice. We've invested heavily in building our network of delivery vehicles and trained personnel across {$state->name}, enabling us to offer:</p>
+<ul>
+<li>Rapid delivery to all major cities including metropolitan areas</li>
+<li>Scheduled deliveries to rural and remote locations</li>
+<li>Same-day service availability in key population centers</li>
+<li>Next-day service virtually everywhere in the state</li>
+<li>Emergency response capabilities for urgent needs</li>
+<li>Flexible pickup schedules to match your timeline</li>
+</ul>
+
+<p>Our local presence throughout {$state->name} means we understand the unique characteristics of each region. We know the local regulations, permit requirements, and terrain in different parts of the state. We navigate these complexities for you, handling all the details so you can focus on your project or event.</p>
+
+<p>We maintain strategically positioned depots and delivery hubs throughout {$state->name} to minimize response times and delivery costs. This network allows us to offer same-day service in most urban areas and ensures we can reach even the most remote locations efficiently.</p>
+
+<h2>Events We Proudly Serve in {$state->name}</h2>
+<p>From intimate backyard gatherings to massive community festivals, we provide portable restroom solutions for virtually every type of event in {$state->name}:</p>
+<ul>
+<li>Weddings and receptions of all sizes and styles</li>
+<li>Music festivals, concerts, and outdoor concerts</li>
+<li>Professional sporting events and tournaments</li>
+<li>Community festivals, fairs, and celebrations</li>
+<li>Corporate events, conferences, and seminars</li>
+<li>Construction sites and major construction projects</li>
+<li>Film and television production locations</li>
+<li>Disaster relief and emergency response efforts</li>
+<li>Road construction and infrastructure projects</li>
+<li>Agricultural fairs and farm events</li>
+<li>School and university events</li>
+<li>Religious gatherings and camp meetings</li>
+<li>Political events and rallies</li>
+<li>Historical reenactments and living history events</li>
+</ul>
+
+<p>No event is too big or too small. Our experience spans the full spectrum, from intimate gatherings with just a few guests to massive festivals attracting thousands of attendees. We've served everything from small family reunions to major professional sporting events and large-scale music festivals.</p>
+
+<h2>Construction Site Services in {$state->name}</h2>
+<p>Construction sites have specific requirements when it comes to portable sanitation, and {$bizName} specializes in meeting these demanding needs. At {$bizName}, we understand the unique challenges construction sites face and provide comprehensive solutions that keep your workers comfortable, productive, and compliant with all regulations. Our construction site services include:</p>
+<ul>
+<li>OSHA-compliant units that meet all workplace safety regulations</li>
+<li>Customized servicing schedules based on crew size</li>
+<li>Bulk unit quantities for large construction projects</li>
+<li>Flexible long-term rental options with discounted rates</li>
+<li>Delivery and pickup scheduling that works with project timelines</li>
+<li>High-capacity units with urinals for high-traffic needs</li>
+<li>Hand-washing station availability</li>
+<li>On-site maintenance and rapid replacement when needed</li>
+<li>Site-specific planning and layout consultation</li>
+<li>Coordination with general contractors and project managers</li>
+</ul>
+
+<p>We maintain strong relationships with general contractors, construction companies, and project managers throughout {$state->name}. Our construction division understands the demands of construction sites and provides reliable service that keeps your project moving forward without sanitation-related disruptions.</p>
+
+<h2>Our Dedication to {$state->name}</h2>
+<p>At {$bizName}, we believe in investing in and giving back to the {$state->name} community. We participate in local events, support charitable organizations, and create jobs for local residents. When you rent from {$bizName}, you're supporting a business that genuinely cares about {$state->name}'s continued growth and prosperity.</p>
+
+<p>Our community involvement includes:</p>
+<ul>
+<li>Sponsoring local community events and charitable organizations</li>
+<li>Employing team members from local communities</li>
+<li>Supporting local businesses and vendors</li>
+<li>Participating in community planning and emergency preparedness</li>
+<li>Providing reduced-cost services for qualifying non-profits</li>
+<li>Training programs that develop local workforce skills</li>
+</ul>
+
+<p>We also strongly prioritize environmental sustainability throughout {$state->name}. Our commitment to protecting {$state->name}'s beautiful environment includes:</p>
+<ul>
+<li>Using only bio-degradable cleaning products</li>
+<li>Solar-powered lighting options available for events</li>
+<li>Water conservation measures in all our operations</li>
+<li>Proper waste disposal at licensed treatment facilities only</li>
+<li>Following all EPA and {$state->name} environmental regulations</li>
+<li>Recycling programs for unit materials and packaging</li>
+<li>Electric delivery vehicles where feasible</li>
+</ul>
+
+<p>We're committed to keeping {$state->name} clean and beautiful while providing essential services that both communities and businesses need.</p>
+
+<h2 id="faqs">Frequently Asked Questions About Our {$state->name} Services</h2>
+<p>We commonly receive questions from customers in {$state->name}. Below are detailed answers to help you plan your project or event. If you don't see your question here, please contact us at {{PHONE_LINK}}.</p>
+
+<h2>Obtaining a Free Quote in {$state->name}</h2>
+<p>Ready to get started? We make it easy to get a free, personalized quote for your {$serviceName} needs in {$state->name}. Our quote process is straightforward and comes with no obligation. Here's what you can expect when you contact us:</p>
+<ul>
+<li>Free, no-obligation quotes provided within hours</li>
+<li>Same-day response to all customer inquiries</li>
+<li>Flexible scheduling options that work with your timeline</li>
+<li>Professional delivery and setup by trained technicians</li>
+<li>Outstanding customer support throughout your rental period</li>
+<li>No hidden fees or surprise charges ever</li>
+<li>Price-matching on comparable quotes from competitors</li>
+</ul>
+
+<p>Call us now at {{PHONE_LINK}} to speak with our knowledgeable and friendly team. We look forward to serving you in {$state->name} and making your event or project a complete success!</p>
+HTML;
+
+        $content = $this->applyLinkConversions($content);
+        $content = $this->ensureCorrectPhoneLinks($content);
+        $content = $this->ensureServiceLinks($content);
+
+        $faqs = $this->generateStateFaqs($state, $serviceName);
+
+        return [
+            'content' => $content,
+            'faqs' => $faqs,
+        ];
+    }
+
+    protected function generateStateFaqs(State $state, string $serviceName): array
+    {
+        $domain = Domain::current() ?? Domain::first();
+        $bizName = $domain?->business_name ?? 'Our Company';
+
+        return [
+            [
+                'question' => "How much does {$serviceName} cost in {$state->name}?",
+                'answer' => "Pricing varies based on unit type, quantity, and rental duration. Contact us at {{PHONE_LINK}} for a personalized quote tailored to your needs in {$state->name}.",
+            ],
+            [
+                'question' => "Do you offer same-day delivery in {$state->name}?",
+                'answer' => "Yes! We offer same-day delivery for most orders in {$state->name}. Call before 2 PM for best availability.",
+            ],
+            [
+                'question' => 'What types of units are available?',
+                'answer' => 'We offer standard units, deluxe flushable units, ADA accessible units, and luxury restroom trailers. Visit our services page for more information.',
+            ],
+            [
+                'question' => 'How many units do I need for my event?',
+                'answer' => "A general rule is 1 unit per 50 guests for a 4-hour event. For construction sites, OSHA requires 1 unit per 20 workers. Contact us and we'll help you determine the right number.",
+            ],
+            [
+                'question' => "Do you service all areas of {$state->name}?",
+                'answer' => "Yes, we proudly serve cities and communities throughout {$state->name}. Contact us to confirm service in your specific area.",
+            ],
+        ];
     }
 }

@@ -7,7 +7,7 @@
 @push('schema')
 @php
 $url = url('/');
-$phone = phone_raw();
+$phone = domain_phone_raw();
 $localBusinessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
@@ -119,7 +119,7 @@ $faqSchema = [
         </p>
         <p class="text-slate-600 leading-relaxed">
             Every rental includes <strong>delivery, setup, weekly servicing, and pickup</strong>. 
-            Call us at <a href="tel:{{ phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ phone_display() }}</a> for a free, personalized quote.
+            Call us at <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ domain_phone_display() }}</a> for a free, personalized quote.
         </p>
     </div>
 </section>
@@ -155,7 +155,7 @@ $faqSchema = [
                         </ul>
                     </div>
 
-                    <a href="tel:{{ phone_raw() }}"
+                    <a href="tel:{{ domain_phone_raw() }}"
                        class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
                         📞 {{ $info['cta'] }}
@@ -280,14 +280,14 @@ $faqSchema = [
         <p class="text-slate-300 mb-8">
             Serving construction sites, events, weddings, and more across the USA
         </p>
-        <a href="tel:{{ phone_raw() }}"
+        <a href="tel:{{ domain_phone_raw() }}"
            class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
                   text-white text-3xl md:text-4xl font-bold py-5 px-14
                   rounded-full shadow-2xl shadow-emerald-500/40
                   transition-all hover:scale-105 animate-pulse">
-            📞 {{ phone_display() }}
+            📞 {{ domain_phone_display() }}
         </a>
-        <p class="mt-6 text-slate-400 text-sm">Mon-Sat 7AM-8PM • No Obligation • No Hidden Fees</p>
+        <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • No Obligation • No Hidden Fees</p>
     </div>
 </section>
 
