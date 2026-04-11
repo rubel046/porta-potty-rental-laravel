@@ -64,7 +64,7 @@ DO NOT include testimonials in the main content - they will be generated separat
     "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + city",
     "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
     "meta_description": "Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA",
-    "content": "Write 2000-2500 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content.",
+    "content": "Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content. STRICT WORD COUNT: 2000-3000 words minimum.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
@@ -300,7 +300,7 @@ Return VALID JSON:
     "h1_title": "SEO H1 title (max 80 chars)",
     "meta_title": "Meta title (50-60 chars)",
     "meta_description": "Meta description (120-160 chars)",
-    "content": "1500-2000 words markdown content",
+    "content": "1000+ words markdown content. STRICT WORD COUNT: minimum 1000 words.",
     "faqs": [{"question": "...", "answer": "..."}, ...]
 }
 

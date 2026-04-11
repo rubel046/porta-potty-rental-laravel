@@ -16,7 +16,7 @@ class ImageService
 
     public function getDomainPrefix(): string
     {
-        $domain = Domain::current();
+        $domain = Domain::current() ?? Domain::first();
 
         if (! $domain) {
             Log::error('ImageService: No domain found');
