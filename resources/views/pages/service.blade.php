@@ -29,13 +29,14 @@ $breadcrumbSchema = [
 
     {{-- Hero Section --}}
     @php
-        $heroImages = [
-            'hero-banner-images/11. 20260224_191225_782.webp',
-            'hero-banner-images/11. 20260226_230456_870.webp',
-            'hero-banner-images/14. 20260226_224730_961.webp',
-            'hero-banner-images/16. 20260226_230059_253.webp',
-        ];
-        $randomHero = $heroImages[array_rand($heroImages)];
+        // Get domain from URL directly for public site
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
+            ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
+            ->toArray();
+        $randomHero = !empty($heroImages) ? $heroImages[array_rand($heroImages)] : $prefix . '/hero-banner-images/default.webp';
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
 

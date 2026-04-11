@@ -93,14 +93,14 @@ $faqSchema = [
     {{-- HERO SECTION --}}
     {{-- ============================================ --}}
     @php
-        $heroImages = [
-            'hero-banner-images/11. 20260224_191225_782.webp',
-            'hero-banner-images/11. 20260226_230456_870.webp',
-            'hero-banner-images/14. 20260226_224730_961.webp',
-            'hero-banner-images/16. 20260226_230059_253.webp',
-            'hero-banner-images/18. 20260226_225037_824.webp',
-        ];
-        $randomHero = $heroImages[array_rand($heroImages)];
+        // Get domain prefix from URL directly (no DB query)
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host); // "pottydirect.com" → "pottydirect"
+        
+        $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
+            ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
+            ->toArray();
+        $randomHero = !empty($heroImages) ? $heroImages[array_rand($heroImages)] : $prefix . '/hero-banner-images/default.webp';
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
 

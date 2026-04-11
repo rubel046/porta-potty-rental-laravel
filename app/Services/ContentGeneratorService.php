@@ -251,12 +251,13 @@ PROMPT;
             return $content;
         }
 
+        // Already has domain prefix from ImageService
         $location = $cityName ? " in {$cityName}" : '';
         $imageSection = "\n\n## Our Work\n\n";
 
         foreach ($images as $image) {
             $altText = ($image['alt'] ?? 'Service').$location;
-            $path = $image['path'] ?? '';
+            $path = $image['path'] ?? '';  // Already has "pottydirect/service-images/..."
             $url = '/storage/'.$path;
             $encodedUrl = str_replace(' ', '%20', $url);
             $imageSection .= "<img src=\"{$encodedUrl}\" alt=\"{$altText}\" width=\"800\" height=\"600\" loading=\"lazy\" />\n";
