@@ -418,7 +418,24 @@ PROMPT;
 
     public function ensureServiceLinks(string $content, ?City $city = null): string
     {
-        $serviceTypes = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower', 'contact'];
+        $serviceTypes = [
+            'general',
+            'construction',
+            'wedding',
+            'event',
+            'luxury',
+            'party',
+            'emergency',
+            'residential',
+            'standard',
+            'deluxe',
+            'ada',
+            'shower',
+            'contact',
+            'porta_potty_rental',
+            'dumpster_rental',
+            'toilet_trailer_rental',
+        ];
         $domain = Domain::current() ?? Domain::first();
         $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
 
@@ -428,6 +445,10 @@ PROMPT;
                 if ($type === 'contact') {
                     $slug = '/contact';
                     $label = 'Contact Us';
+                } elseif (in_array($type, ['porta_potty_rental', 'dumpster_rental', 'toilet_trailer_rental'])) {
+                    $baseType = str_replace('_rental', '', $type);
+                    $slug = $city ? "{$baseType}-{$slugPrefix}-rental-{$city->slug}" : "/{$baseType}-service";
+                    $label = ucwords(str_replace('_', ' ', $type));
                 } else {
                     $slug = $city ? "{$type}-{$slugPrefix}-rental-{$city->slug}" : "/{$type}-service";
                     $label = ucfirst($type).' Service';
