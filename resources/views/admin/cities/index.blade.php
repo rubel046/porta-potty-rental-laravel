@@ -42,6 +42,21 @@
                 <input type="hidden" name="is_active" :value="selected">
             </div>
         </div>
+        <div class="w-44" x-data="{ open: false, selected: '{{ request('service_pages_count') }}' }">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Service Pages</label>
+            <div class="relative">
+                <button type="button" @click="open = !open" @click.outside="open = false" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-left flex justify-between items-center bg-white hover:bg-gray-50">
+                    <span x-text="selected === 'has' ? 'Has Pages' : (selected === '0' ? 'No Pages' : 'All')"></span>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition.opacity style="display: none;" class="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <button type="button" @click="selected = ''; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50" :class="selected === '' ? 'bg-green-50 text-green-700 font-medium' : ''">All</button>
+                    <button type="button" @click="selected = 'has'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50" :class="selected === 'has' ? 'bg-green-50 text-green-700 font-medium' : ''">Has Pages</button>
+                    <button type="button" @click="selected = '0'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50" :class="selected === '0' ? 'bg-green-50 text-green-700 font-medium' : ''">No Pages</button>
+                </div>
+                <input type="hidden" name="service_pages_count" :value="selected">
+            </div>
+        </div>
         <div class="w-48" x-data="{ open: false, search: '', selected: '{{ request('state_id') }}', states: [
             @foreach($states as $state){id: '{{ $state->id }}', name: '{{ $state->name }}'},@endforeach
         ]}" @click.outside="open = false">

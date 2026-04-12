@@ -40,6 +40,7 @@ class StateController extends Controller
                         ->where('state_id', $state->id)
                         ->first();
                     $state->domain_status = $domainState?->status ?? false;
+                    $state->domain_state = $domainState;
 
                     return $state;
                 });

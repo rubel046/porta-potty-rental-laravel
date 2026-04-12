@@ -20,6 +20,9 @@ class DomainState extends Model
         'images',
         'word_count',
         'seo_score',
+        'generation_status',
+        'generation_error',
+        'generated_at',
     ];
 
     protected $casts = [

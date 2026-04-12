@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Faq extends Model
 {
     protected $fillable = [
-        'domain_id', 'city_id',
+        'domain_id', 'city_id', 'state_id',
         'service_type',
         'question',
         'answer',
@@ -23,5 +23,10 @@ class Faq extends Model
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function state(): BelongsTo
+    {
+        return $this->belongsTo(State::class);
     }
 }

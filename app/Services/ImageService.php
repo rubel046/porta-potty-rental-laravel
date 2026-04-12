@@ -20,12 +20,14 @@ class ImageService
 
         if (! $domain) {
             Log::error('ImageService: No domain found');
+
             return '';
         }
 
         $prefix = rtrim($domain->domain, '.com');
         if (! $this->folderExists("{$prefix}/service-images")) {
             Log::error("ImageService: Folder not found for domain {$prefix}");
+
             return '';
         }
 

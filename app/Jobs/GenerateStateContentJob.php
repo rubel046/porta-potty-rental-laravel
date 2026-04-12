@@ -5,7 +5,9 @@ namespace App\Jobs;
 use App\Http\Controllers\SitemapController;
 use App\Models\Domain;
 use App\Models\DomainState;
+use App\Models\Faq;
 use App\Models\State;
+use App\Models\Testimonial;
 use App\Services\ContentGeneratorService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,8 +44,14 @@ class GenerateStateContentJob implements ShouldQueue
             Cache::put("{$cacheKey}_progress", 0, now()->addMinutes(30));
             Cache::put("{$cacheKey}_started_at", now()->toIso8601String(), now()->addMinutes(60));
 
+            // Mark as processing
+            DomainState::updateOrCreate(
+                ['domain_id' => $domain->id, 'state_id' => $this->state->id],
+                ['generation_status' => 'processing']
+            );
+
             try {
-                $data = $generator->generateStatePageContent($this->state);
+                $data = $generator->generateStatePageContent($this->state, $domain);
 
                 DomainState::updateOrCreate(
                     ['domain_id' => $domain->id, 'state_id' => $this->state->id],
@@ -55,8 +63,45 @@ class GenerateStateContentJob implements ShouldQueue
                         'word_count' => $data['word_count'],
                         'images' => $data['images'] ?? null,
                         'status' => true,
+                        'generation_status' => 'success',
+                        'generated_at' => now(),
                     ]
                 );
+
+                // Save FAQs for the state
+                if (! empty($data['faqs'])) {
+                    foreach ($data['faqs'] as $faqData) {
+                        Faq::updateOrCreate(
+                            [
+                                'domain_id' => $domain->id,
+                                'state_id' => $this->state->id,
+                                'question' => $faqData['question'],
+                            ],
+                            [
+                                'answer' => $faqData['answer'],
+                                'is_active' => true,
+                            ]
+                        );
+                    }
+                }
+
+                // Save testimonials for the state (if generated)
+                if (! empty($data['testimonials'])) {
+                    foreach ($data['testimonials'] as $testimonialData) {
+                        Testimonial::updateOrCreate(
+                            [
+                                'domain_id' => $domain->id,
+                                'state_id' => $this->state->id,
+                                'customer_name' => $testimonialData['customer_name'],
+                            ],
+                            [
+                                'content' => $testimonialData['content'],
+                                'rating' => $testimonialData['rating'] ?? 5,
+                                'is_active' => true,
+                            ]
+                        );
+                    }
+                }
 
                 Cache::put("{$cacheKey}_status", 'completed', now()->addMinutes(30));
                 Cache::put("{$cacheKey}_progress", 100, now()->addMinutes(30));
@@ -70,6 +115,15 @@ class GenerateStateContentJob implements ShouldQueue
             } catch (\Throwable $e) {
                 Cache::put("{$cacheKey}_status", 'failed', now()->addMinutes(30));
                 Cache::put("{$cacheKey}_error", $e->getMessage(), now()->addMinutes(60));
+
+                // Update status to failed
+                DomainState::updateOrCreate(
+                    ['domain_id' => $domain->id, 'state_id' => $this->state->id],
+                    [
+                        'generation_status' => 'failed',
+                        'generation_error' => $e->getMessage(),
+                    ]
+                );
 
                 Log::error('State content generation failed', [
                     'state' => $this->state->name,

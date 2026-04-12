@@ -78,7 +78,8 @@
                     <th class="px-6 py-4 font-medium">City</th>
                     <th class="px-6 py-4 font-medium">Type</th>
                     <th class="px-6 py-4 font-medium">SEO Score</th>
-                    <th class="px-6 py-4 font-medium">Status</th>
+                    <th class="px-6 py-4 font-medium">Published</th>
+                    <th class="px-6 py-4 font-medium">Generation</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
             </thead>
@@ -128,6 +129,29 @@
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
                                     <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
                                     Draft
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($page->generation_status === 'success')
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                    Generated
+                                </span>
+                            @elseif($page->generation_status === 'processing')
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                                    Processing
+                                </span>
+                            @elseif($page->generation_status === 'failed')
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700" title="{{ $page->generation_error }}">
+                                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                    Failed
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                                    Pending
                                 </span>
                             @endif
                         </td>

@@ -116,7 +116,7 @@ class State extends Model
     public function getImagesAttribute(): ?array
     {
         $domain = Domain::current();
-        if (!$domain) {
+        if (! $domain) {
             return null;
         }
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Testimonial extends Model
 {
     protected $fillable = [
-        'domain_id', 'city_id',
+        'domain_id', 'city_id', 'state_id',
         'customer_name',
         'customer_title',
         'company',
@@ -30,5 +30,10 @@ class Testimonial extends Model
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function state(): BelongsTo
+    {
+        return $this->belongsTo(State::class);
     }
 }

@@ -43,6 +43,12 @@ class GenerateCityContentJob implements ShouldQueue
         $total = count($this->types);
         $cacheKey = "city_content_generation_{$this->city->id}";
         $errors = [];
+        $domainId = $this->domain?->id;
+
+        // Mark all service pages as processing
+        $this->city->servicePages()
+            ->where('domain_id', $domainId)
+            ->update(['generation_status' => 'processing']);
 
         foreach ($this->types as $index => $type) {
             $progress = round((($index + 1) / $total) * 100);
@@ -71,6 +77,8 @@ class GenerateCityContentJob implements ShouldQueue
                             'word_count' => $data['word_count'] ?? 0,
                             'is_published' => true,
                             'published_at' => now(),
+                            'generation_status' => 'success',
+                            'generated_at' => now(),
                         ]
                     );
 
@@ -117,21 +125,44 @@ class GenerateCityContentJob implements ShouldQueue
 
             if (! $typeSuccess && $typeRetries >= $this->maxRetriesPerType) {
                 $errors[] = "{$type}: Max retries reached";
+
+                $domainId = $this->domain?->id;
+                $this->city->servicePages()->updateOrCreate(
+                    ['slug' => "{$type}-rental-{$this->city->slug}", 'domain_id' => $domainId],
+                    [
+                        'domain_id' => $domainId,
+                        'service_type' => $type,
+                        'generation_status' => 'failed',
+                        'generation_error' => "Max retries reached after {$this->maxRetriesPerType} attempts",
+                    ]
+                );
             }
 
             sleep(2);
         }
 
-        Cache::forget("{$cacheKey}_current_type");
-        Cache::put("{$cacheKey}_status", 'completed', now()->addMinutes(30));
-        Cache::forget("{$cacheKey}_progress");
+        $domainId = $this->domain?->id;
 
         if (! empty($errors)) {
             Cache::put("{$cacheKey}_errors", $errors, now()->addMinutes(60));
             Log::warning('Content generation completed with errors', ['city' => $this->city->name, 'errors' => $errors]);
+
+            $this->city->servicePages()
+                ->where('domain_id', $domainId)
+                ->whereNull('generated_at')
+                ->update(['generation_status' => 'failed', 'generation_error' => 'Partial generation - some types failed']);
+        } else {
+            $this->city->servicePages()
+                ->where('domain_id', $domainId)
+                ->whereNull('generated_at')
+                ->update(['generation_status' => 'success', 'generated_at' => now()]);
         }
 
-        Log::info('Content generation completed', ['city' => $this->city->name]);
+        Cache::forget("{$cacheKey}_current_type");
+        Cache::put("{$cacheKey}_status", empty($errors) ? 'completed' : 'partial', now()->addMinutes(30));
+        Cache::forget("{$cacheKey}_progress");
+
+        Log::info('Content generation completed', ['city' => $this->city->name, 'errors' => count($errors)]);
     }
 
     protected function isApiKeyExhausted(\Throwable $e): bool

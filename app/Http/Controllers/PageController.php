@@ -576,7 +576,7 @@ class PageController extends Controller
             ->paginate(30);
 
         $stateContent = $contentService->getStatePageContent($state);
-        $faqs = $stateContent['faqs'] ?? collect();
+        $faqs = collect($stateContent['faqs'] ?? []);
         $images = $state->images ?? []; // Use the accessor to get images
 
         return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images'));

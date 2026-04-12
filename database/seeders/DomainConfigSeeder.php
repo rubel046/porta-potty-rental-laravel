@@ -138,6 +138,6 @@ class DomainConfigSeeder extends Seeder
             : 'Updated pottydirect.com with porta potty configuration');
 
         $this->command->info('✅ Domain configuration seeded successfully');
-        $this->command->line('Service types: ' . implode(', ', $portaPottyServiceTypes));
+        $this->command->line('Service types: '.implode(', ', $portaPottyServiceTypes));
     }
 }

@@ -56,6 +56,19 @@ class CityController extends Controller
                 $query->where('cities.state_id', $request->state_id);
             }
 
+            if ($request->filled('is_active')) {
+                $query->where('domain_cities.status', $request->is_active);
+            }
+
+            if ($request->filled('service_pages_count')) {
+                $count = $request->service_pages_count;
+                if ($count === '0') {
+                    $query->has('servicePages', '=', 0);
+                } elseif ($count === 'has') {
+                    $query->has('servicePages', '>=', 1);
+                }
+            }
+
             $cities = $query->orderByDesc('domain_cities.status')
                 ->orderBy('cities.name')
                 ->paginate(30);

@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Models\City;
 use App\Models\Domain;
+use App\Models\DomainState;
+use App\Models\Faq;
 use App\Models\State;
+use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -302,7 +305,8 @@ Return VALID JSON:
     "meta_title": "Meta title (50-60 chars)",
     "meta_description": "Meta description (120-160 chars)",
     "content": "1000+ words markdown content. STRICT WORD COUNT: minimum 1000 words.",
-    "faqs": [{"question": "...", "answer": "..."}, ...]
+    "faqs": [{"question": "...", "answer": "..."}, ...],
+    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
 
 Requirements:
@@ -312,6 +316,7 @@ Requirements:
 - Use {{PHONE_LINK}} for phone numbers
 - Use {{SERVICE_LINK:type}} for internal links
 - No pricing numbers - use soft pricing language
+- Include 2-3 realistic testimonials in the JSON
 PROMPT;
 
         $systemPrompt = 'You are an SEO writer. Use {{PHONE_LINK}} and {{SERVICE_LINK:type}}. Return valid JSON only.';
@@ -331,12 +336,17 @@ PROMPT;
             'h1_title' => $jsonResponse['h1_title'] ?? "{$primaryKeyword} in {$stateName}, {$stateCode}",
             'meta_title' => $jsonResponse['meta_title'] ?? "{$primaryKeyword} {$stateName} | Fast Delivery",
             'meta_description' => $jsonResponse['meta_description'] ?? "{$primaryKeyword} in {$stateName}. Call now!",
-            'content' => $contentCleaned,
+            'content' => $this->ensureServiceLinks($contentCleaned),
             'word_count' => $wordCount,
             'faqs' => array_map(fn ($faq) => [
                 'question' => $faq['question'],
-                'answer' => $this->applyLinkConversions($faq['answer']),
+                'answer' => $this->ensureServiceLinks($this->applyLinkConversions($faq['answer'])),
             ], $jsonResponse['faqs'] ?? []),
+            'testimonials' => array_map(fn ($t) => [
+                'customer_name' => $t['customer_name'] ?? 'Customer',
+                'content' => $t['content'] ?? '',
+                'rating' => $t['rating'] ?? 5,
+            ], $jsonResponse['testimonials'] ?? []),
             'images' => $images,
         ];
     }
@@ -406,15 +416,21 @@ PROMPT;
 
     public function ensureServiceLinks(string $content, ?City $city = null): string
     {
-        $serviceTypes = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower'];
+        $serviceTypes = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'standard', 'deluxe', 'ada', 'shower', 'contact'];
         $domain = Domain::current() ?? Domain::first();
         $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
 
         foreach ($serviceTypes as $type) {
             $pattern = '/\{\{SERVICE_LINK:'.$type.'\}\}/i';
             if (preg_match($pattern, $content)) {
-                $slug = $city ? "{$type}-{$slugPrefix}-rental-{$city->slug}" : "/{$type}-service";
-                $content = preg_replace($pattern, "<a href=\"{$slug}\" class=\"text-blue-600 font-semibold hover:underline\">".ucfirst($type).' Service</a>', $content);
+                if ($type === 'contact') {
+                    $slug = '/contact';
+                    $label = 'Contact Us';
+                } else {
+                    $slug = $city ? "{$type}-{$slugPrefix}-rental-{$city->slug}" : "/{$type}-service";
+                    $label = ucfirst($type).' Service';
+                }
+                $content = preg_replace($pattern, "<a href=\"{$slug}\" class=\"text-blue-600 font-semibold hover:underline\">{$label}</a>", $content);
             }
         }
 
@@ -437,9 +453,45 @@ PROMPT;
 
     public function getStatePageContent(State $state): array
     {
-        $cacheKey = "state_content_{$state->id}_".(Domain::current()?->id ?? 'default');
+        $domain = Domain::current() ?? Domain::first();
+        $cacheKey = "state_content_{$state->id}_".($domain?->id ?? 'default');
 
-        return Cache::remember($cacheKey, 86400, function () use ($state) {
+        return Cache::remember($cacheKey, 86400, function () use ($state, $domain) {
+            $domainState = DomainState::where('domain_id', $domain?->id)
+                ->where('state_id', $state->id)
+                ->first();
+
+            if ($domainState && $domainState->content) {
+                $faqs = Faq::where('domain_id', $domain?->id)
+                    ->where('state_id', $state->id)
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->get();
+
+                $testimonials = Testimonial::where('domain_id', $domain?->id)
+                    ->where('state_id', $state->id)
+                    ->where('is_active', true)
+                    ->get();
+
+                return [
+                    'h1_title' => $domainState->h1_title,
+                    'meta_title' => $domainState->meta_title,
+                    'meta_description' => $domainState->meta_description,
+                    'content' => $domainState->content,
+                    'word_count' => $domainState->word_count,
+                    'images' => $domainState->images,
+                    'faqs' => $faqs->map(fn ($faq) => [
+                        'question' => $faq->question,
+                        'answer' => $faq->answer,
+                    ])->toArray(),
+                    'testimonials' => $testimonials->map(fn ($t) => [
+                        'customer_name' => $t->customer_name,
+                        'content' => $t->content,
+                        'rating' => $t->rating,
+                    ])->toArray(),
+                ];
+            }
+
             return $this->generateStateContent($state);
         });
     }

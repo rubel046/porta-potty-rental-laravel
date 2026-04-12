@@ -20,6 +20,7 @@
                     <th class="px-6 py-4 font-medium">Cities</th>
                     <th class="px-6 py-4 font-medium">Content</th>
                     <th class="px-6 py-4 font-medium">Status</th>
+                    <th class="px-6 py-4 font-medium">Generated</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
             </thead>
@@ -69,6 +70,31 @@
                                         Inactive
                                     </span>
                                 @endif
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if(isset($state->domain_state) && $state->domain_state)
+                                @if($state->domain_state->generation_status === 'success')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Generated
+                                    </span>
+                                @elseif($state->domain_state->generation_status === 'processing')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Processing
+                                    </span>
+                                @elseif($state->domain_state->generation_status === 'failed')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800" title="{{ $state->domain_state->generation_error }}">
+                                        Failed
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Pending
+                                    </span>
+                                @endif
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Pending
+                                </span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-right">
