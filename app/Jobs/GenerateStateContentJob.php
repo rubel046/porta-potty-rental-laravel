@@ -68,38 +68,39 @@ class GenerateStateContentJob implements ShouldQueue
                     ]
                 );
 
-                // Save FAQs for the state
+                // Delete old FAQs and save new ones for the state
+                Faq::where('domain_id', $domain->id)
+                    ->where('state_id', $this->state->id)
+                    ->delete();
+
                 if (! empty($data['faqs'])) {
-                    foreach ($data['faqs'] as $faqData) {
-                        Faq::updateOrCreate(
-                            [
-                                'domain_id' => $domain->id,
-                                'state_id' => $this->state->id,
-                                'question' => $faqData['question'],
-                            ],
-                            [
-                                'answer' => $faqData['answer'],
-                                'is_active' => true,
-                            ]
-                        );
+                    foreach ($data['faqs'] as $index => $faqData) {
+                        Faq::create([
+                            'domain_id' => $domain->id,
+                            'state_id' => $this->state->id,
+                            'question' => $faqData['question'],
+                            'answer' => $faqData['answer'],
+                            'sort_order' => $index,
+                            'is_active' => true,
+                        ]);
                     }
                 }
 
-                // Save testimonials for the state (if generated)
+                // Delete old testimonials and save new ones for the state
+                Testimonial::where('domain_id', $domain->id)
+                    ->where('state_id', $this->state->id)
+                    ->delete();
+
                 if (! empty($data['testimonials'])) {
                     foreach ($data['testimonials'] as $testimonialData) {
-                        Testimonial::updateOrCreate(
-                            [
-                                'domain_id' => $domain->id,
-                                'state_id' => $this->state->id,
-                                'customer_name' => $testimonialData['customer_name'],
-                            ],
-                            [
-                                'content' => $testimonialData['content'],
-                                'rating' => $testimonialData['rating'] ?? 5,
-                                'is_active' => true,
-                            ]
-                        );
+                        Testimonial::create([
+                            'domain_id' => $domain->id,
+                            'state_id' => $this->state->id,
+                            'customer_name' => $testimonialData['customer_name'],
+                            'content' => $testimonialData['content'],
+                            'rating' => $testimonialData['rating'] ?? 5,
+                            'is_active' => true,
+                        ]);
                     }
                 }
 

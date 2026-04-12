@@ -310,13 +310,15 @@ Return VALID JSON:
 }
 
 Requirements:
-- Focus on {$primaryKeyword} service in {$stateName}
-- Mention {$cityCount} cities we serve
-- Include service types and benefits
+- Focus on {$primaryKeyword} service in {$stateName}, {$stateCode}
+- MUST include {$stateName} specifically in FAQs (e.g., "How much does {$primaryKeyword} cost in {$stateName}?")
+- Mention {$cityCount} cities we serve throughout {$stateName}
+- Each FAQ must be UNIQUE and specific to {$stateName} - do NOT reuse generic FAQs
 - Use {{PHONE_LINK}} for phone numbers
 - Use {{SERVICE_LINK:type}} for internal links
 - No pricing numbers - use soft pricing language
-- Include 2-3 realistic testimonials in the JSON
+- Include 3-5 unique FAQs about {$stateName} specifically
+- Include 2-3 realistic testimonials from {$stateName} customers
 PROMPT;
 
         $systemPrompt = 'You are an SEO writer. Use {{PHONE_LINK}} and {{SERVICE_LINK:type}}. Return valid JSON only.';
