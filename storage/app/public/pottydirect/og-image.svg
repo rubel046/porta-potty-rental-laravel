@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="#10b981" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="250" fill="#10b981" opacity="0.08"/>
+  <circle cx="600" cy="315" r="400" fill="#10b981" opacity="0.03"/>
+  
+  <!-- Logo area -->
+  <rect x="80" y="60" width="80" height="80" rx="16" fill="url(#accent)"/>
+  <text x="120" y="115" font-family="Arial, sans-serif" font-size="50" fill="white" text-anchor="middle">🚽</text>
+  
+  <!-- Brand name -->
+  <text x="180" y="115" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="white">Potty Direct</text>
+  <text x="180" y="145" font-family="Arial, sans-serif" font-size="18" fill="#10b981">Portable Toilets</text>
+  
+  <!-- Main headline -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">Porta Potty Rental</text>
+  
+  <!-- Subheadline -->
+  <text x="600" y="350" font-family="Arial, sans-serif" font-size="32" fill="#94a3b8" text-anchor="middle">Construction • Events • Weddings</text>
+  
+  <!-- Phone number -->
+  <rect x="400" y="400" width="400" height="70" rx="35" fill="url(#accent)"/>
+  <text x="600" y="447" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">📞 +1 (833) 652-9344</text>
+  
+  <!-- Features -->
+  <text x="600" y="530" font-family="Arial, sans-serif" font-size="24" fill="#64748b" text-anchor="middle">Same-Day Delivery • No Hidden Fees • OSHA Compliant</text>
+  
+  <!-- Star rating -->
+  <text x="600" y="590" font-family="Arial, sans-serif" font-size="20" fill="#fbbf24" text-anchor="middle">⭐⭐⭐⭐⭐ 500+ Reviews</text>
+</svg>

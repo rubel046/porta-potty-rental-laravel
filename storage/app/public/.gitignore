@@ -1,2 +1,8 @@
+# Ignore everything in public
 *
+# Except domain folders - track everything inside them
+!!pottydirect/
+!!pottydirect/**
+!!waterdamage/
+!!waterdamage/**
 !.gitignore
