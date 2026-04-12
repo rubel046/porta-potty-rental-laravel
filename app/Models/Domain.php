@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class Domain extends Model
 {
@@ -150,12 +151,19 @@ class Domain extends Model
         }
 
         $host = request()->getHost();
-        $domain = cache("domain_{$host}");
+        $cacheKey = "domain_{$host}";
+        $domain = cache($cacheKey);
+
+        if ($domain && ! $domain instanceof self) {
+            cache()->forget($cacheKey);
+            Log::warning('Domain cache corrupted, refetching from database', ['host' => $host]);
+            $domain = null;
+        }
 
         if (! $domain) {
             $domain = static::where('domain', $host)->first();
             if ($domain) {
-                cache()->put("domain_{$host}", $domain, now()->addHours(1));
+                cache()->put($cacheKey, $domain, now()->addHours(1));
             }
         }
 
