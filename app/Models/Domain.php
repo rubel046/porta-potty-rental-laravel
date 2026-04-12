@@ -146,24 +146,28 @@ class Domain extends Model
 
     public static function current(): ?self
     {
-        if (session('current_domain_id')) {
-            return static::find(session('current_domain_id'));
+        if ($id = session('current_domain_id')) {
+            return static::find($id);
         }
 
         $host = request()->getHost();
-        $cacheKey = "domain_{$host}";
-        $domain = cache($cacheKey);
+        $cacheKey = "domain_id_{$host}";
+        $domainId = cache($cacheKey);
 
-        if ($domain && ! $domain instanceof self) {
+        if ($domainId) {
+            $domain = static::find($domainId);
+            if ($domain) {
+                return $domain;
+            }
             cache()->forget($cacheKey);
-            Log::warning('Domain cache corrupted, refetching from database', ['host' => $host]);
-            $domain = null;
         }
 
-        if (! $domain) {
-            $domain = static::where('domain', $host)->first();
-            if ($domain) {
-                cache()->put($cacheKey, $domain, now()->addHours(1));
+        $domain = static::where('domain', $host)->first();
+        if ($domain) {
+            try {
+                cache()->put($cacheKey, $domain->id, now()->addHours(1));
+            } catch (\Exception $e) {
+                Log::warning('Domain cache write failed', ['host' => $host, 'error' => $e->getMessage()]);
             }
         }
 
