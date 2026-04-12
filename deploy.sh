@@ -10,6 +10,10 @@ composer install --optimize-autoloader --no-dev
 npm run build
 php artisan migrate --force
 
+# Recreate storage symlink (in case of new domain folders)
+rm -f public/storage
+php artisan storage:link
+
 # Recache everything with the new code
 php artisan optimize:clear
 php artisan config:cache
