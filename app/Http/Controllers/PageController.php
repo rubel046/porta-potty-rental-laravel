@@ -30,6 +30,15 @@ class PageController extends Controller
                 ->toArray();
         });
 
+        $topCities = Cache::remember('top_cities_for_schema', 3600, function () {
+            return City::active()
+                ->with('state')
+                ->byPriority()
+                ->take(10)
+                ->get()
+                ->toArray();
+        });
+
         $states = Cache::remember('active_states', 3600, function () {
             return State::whereHas('domainStates', function ($q) {
                 $q->where('status', true);
@@ -55,7 +64,7 @@ class PageController extends Controller
             ->get();
 
         return view('domains.pottydirect.home', compact(
-            'featuredCities', 'states', 'recentPosts', 'testimonials'
+            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities'
         ));
     }
 
@@ -217,10 +226,10 @@ class PageController extends Controller
             ],
             'dumpster' => [
                 'key' => 'dumpster',
-                'name' => 'Waste Container Rentals',
-                'short_name' => 'Dumpsters',
+                'name' => 'Dumpster Rental',
+                'short_name' => 'Dumpster',
                 'icon' => '🗑️',
-                'description' => 'Roll-off dumpsters for construction debris, event waste, and porta potty waste disposal.',
+                'description' => 'Roll-off dumpsters for construction debris, event waste, and porta potty waste disposal. Available in multiple sizes.',
                 'features' => [
                     'Various sizes (10-40 yard)',
                     'Same-day delivery',
@@ -229,6 +238,21 @@ class PageController extends Controller
                     'Recycling available',
                 ],
                 'best_for' => ['Construction Sites', 'Events', 'Home Renovations', 'Commercial'],
+            ],
+            'septic' => [
+                'key' => 'septic',
+                'name' => 'Septic Service',
+                'short_name' => 'Septic',
+                'icon' => '🔧',
+                'description' => 'Professional septic tank pumping, inspection, and maintenance services for residential and commercial properties.',
+                'features' => [
+                    'Septic tank pumping',
+                    'System inspection',
+                    'Maintenance contracts',
+                    'Emergency pumping',
+                    'Grease trap service',
+                ],
+                'best_for' => ['Residential', 'Commercial', 'Restaurants', 'Farm Properties'],
             ],
         ];
 

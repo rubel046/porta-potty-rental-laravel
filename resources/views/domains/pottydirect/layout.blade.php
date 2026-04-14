@@ -225,9 +225,9 @@
             {{-- CTA --}}
             <div class="flex items-center gap-1 sm:gap-2">
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-bold py-2 px-3 sm:px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
+                   class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
                     <span>📞</span>
-                    <span class="hidden lg:inline">{{ domain_phone_display() }}</span>
+                    <span class="hidden md:inline">{{ domain_phone_display() }}</span>
                 </a>
 
                 {{-- Mobile Menu Toggle --}}

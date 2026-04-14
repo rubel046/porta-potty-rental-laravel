@@ -10,6 +10,11 @@ $url = url('/');
 $phone = domain_phone_raw();
 $domain = \App\Models\Domain::current();
 
+$areaServed = collect($topCities ?? [])->map(fn($c) => ["@type" => "City", "name" => $c['name']])->toArray();
+if (empty($areaServed)) {
+    $areaServed = [["@type" => "Country", "name" => "United States"]];
+}
+
 $businessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
@@ -21,7 +26,7 @@ $businessSchema = [
     "telephone" => $phone,
     "priceRange" => "$$",
     "image" => $url . "/og-image.jpg",
-    "areaServed" => ["@type" => "Country", "name" => "United States"],
+    "areaServed" => $areaServed,
     "openingHoursSpecification" => [
         ["@type" => "OpeningHoursSpecification", "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens" => "00:00", "closes" => "23:59"]
     ],
@@ -32,7 +37,9 @@ $businessSchema = [
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "ADA Accessible Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]]
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Dumpster Rental"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Septic Service"]]
         ]
     ],
     "aggregateRating" => ["@type" => "AggregateRating", "ratingValue" => "4.9", "reviewCount" => "500"]
@@ -261,12 +268,47 @@ $howtoSchema = [
                     </a>
                 </div>
 
-                {{-- Zip Code Search Bar --}}
-                <div class="w-full max-w-lg">
-                    <form action="{{ route('locations') }}" method="GET" class="flex shadow-lg rounded-full overflow-hidden">
-                        <input type="text" name="q" placeholder="Enter your city name or zip code"
-                               class="flex-1 bg-white text-slate-800 placeholder-slate-400 text-base py-3 px-6 rounded-l-full focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-8 rounded-r-full transition flex items-center gap-2">
+                {{-- Location Search Bar - Clean Professional Design --}}
+                <div class="w-full max-w-xl">
+                    <form action="{{ route('locations') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
+                        <div class="flex-1 relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <select name="quick_city" 
+                                    class="w-full bg-white/95 backdrop-blur-sm border border-white/20 text-white text-base py-3.5 pl-11 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer appearance-none"
+                                    style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%239%20(22%2C%20205%2C%2025%2C%2020%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%206l4%204%204-4%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.25rem;"
+                                    onchange="if(this.value){window.location=this.value;}">
+                                <option value="" class="text-slate-800">Select your city...</option>
+                                @php
+                                    $quickCities = collect($topCities ?? $featuredCities ?? [])->take(12);
+                                @endphp
+                                @foreach($quickCities as $city)
+                                    @php
+                                        $servicePage = collect($city['service_pages'] ?? [])->firstWhere('service_type', 'general');
+                                        $citySlug = $servicePage['slug'] ?? null;
+                                    @endphp
+                                    @if($citySlug)
+                                        <option value="{{ url($citySlug) }}" class="text-slate-800">{{ $city['name'] }}, {{ $city['state']['code'] ?? '' }}</option>
+                                    @endif
+                                @endforeach
+                                <option value="{{ route('locations') }}" class="text-slate-800">View All Locations</option>
+                            </select>
+                        </div>
+                        <div class="flex-1 relative sm:flex-none sm:w-40">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11.5A2.5 2.5 0 109.5 9a2.5 2.5 0 002.5 2.5z"/>
+                                </svg>
+                            </div>
+                            <input type="text" name="q" placeholder="Enter zip code"
+                                   class="w-full bg-white/95 backdrop-blur-sm border border-white/20 text-white text-base py-3.5 pl-11 pr-4 rounded-full placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3.5 px-8 rounded-full transition-all shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center gap-2 whitespace-nowrap">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
@@ -338,37 +380,31 @@ $howtoSchema = [
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-10 md:mb-14">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
-                    Porta Potty Rental Options for Every Need
+                    Rental Services for Every Need
                 </h2>
                 <p class="text-sm sm:text-base md:text-lg text-slate-500 max-w-2xl mx-auto">
-                    From basic construction units to luxury restroom trailers —
-                    we have the right <strong>portable toilet rental</strong> solution for every budget and event type.
+                    From portable toilets to dumpsters and septic services —
+                    we have the right <strong>service solution</strong> for every project and event type.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6">
                 {{-- Standard --}}
                 <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
                             hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">🚻</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Standard Portable Toilet</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Standard Porta Potty</h3>
                     <p class="text-slate-500 text-sm mb-4">
-                        Perfect for construction sites & basic outdoor needs
+                        Construction & Events
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-splash urinal</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Hand sanitizer</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ventilation system</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
-                    </ul>
                     <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
-                        <span>Get Free Quote</span>
+                        <span>Get Quote</span>
                     </a>
                 </div>
 
@@ -378,26 +414,20 @@ $howtoSchema = [
                             group relative overflow-visible">
                     <div class="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500
                                 text-white text-xs sm:text-sm font-extrabold px-3 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-xl shadow-amber-500/40 z-20">
-                        ⭐ MOST POPULAR
+                        ⭐ POPULAR
                     </div>
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 mt-1 sm:mt-2 group-hover:scale-110 transition-transform duration-300">🚿</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Deluxe Flushable Unit</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Deluxe Flushable</h3>
                     <p class="text-slate-500 text-sm mb-4">
-                        Flushing toilet with hand wash station
+                        Weddings & Events
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Flushing toilet</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Sink with running water</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior mirror</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Weekly servicing</li>
-                    </ul>
                     <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
-                        <span>Get Free Quote</span>
+                        <span>Get Quote</span>
                     </a>
                 </div>
 
@@ -407,22 +437,16 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">♿</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">ADA Accessible Unit</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">ADA Accessible</h3>
                     <p class="text-slate-500 text-sm mb-4">
-                        Wheelchair accessible, fully ADA compliant
+                        Wheelchair Friendly
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Extra-wide door</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Interior grab bars</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Non-slip flooring</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Spacious interior</li>
-                    </ul>
                     <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
-                        <span>Get Free Quote</span>
+                        <span>Get Quote</span>
                     </a>
                 </div>
 
@@ -432,22 +456,54 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-purple-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">✨</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Luxury Restroom Trailer</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Luxury Trailer</h3>
                     <p class="text-slate-500 text-sm mb-4">
-                        Premium restroom trailers for upscale events
+                        VIP Events
                     </p>
-                    <ul class="text-sm text-slate-600 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 text-left">
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Climate controlled</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Porcelain fixtures</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Vanity & lighting</li>
-                        <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Men's & women's sides</li>
-                    </ul>
                     <a href="tel:{{ domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <span class="text-lg">📞</span>
-                        <span>Get Free Quote</span>
+                        <span>Get Quote</span>
+                    </a>
+                </div>
+
+                {{-- Dumpster --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
+                            hover:border-amber-200 hover:shadow-xl hover:shadow-amber-100/50 transition-all duration-300
+                            group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-amber-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">🗑️</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Dumpster Rental</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Construction & Events
+                    </p>
+                    <a href="tel:{{ domain_phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white
+                              font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-amber-600/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Quote</span>
+                    </a>
+                </div>
+
+                {{-- Septic --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 text-center
+                            hover:border-teal-200 hover:shadow-xl hover:shadow-teal-100/50 transition-all duration-300
+                            group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-teal-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">🔧</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Septic Service</h3>
+                    <p class="text-slate-500 text-sm mb-4">
+                        Pumping & Maintenance
+                    </p>
+                    <a href="tel:{{ domain_phone_raw() }}"
+                       class="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white
+                              font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-teal-600/25
+                              hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-lg">📞</span>
+                        <span>Get Quote</span>
                     </a>
                 </div>
             </div>
@@ -479,6 +535,138 @@ $howtoSchema = [
                 <a href="{{ route('blog.index') }}" class="flex flex-col items-center gap-2 group">
                     <span class="text-2xl sm:text-3xl">📝</span>
                     <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">Blog</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- POPULAR SERVICE AREAS (NEW - SEO + Internal Linking) --}}
+    {{-- ============================================ --}}
+    @php
+        $popularCities = collect($topCities ?? $featuredCities ?? [])->take(12);
+    @endphp
+    @if($popularCities->isNotEmpty())
+        <section class="py-8 sm:py-10 px-3 sm:px-4 bg-white border-b border-slate-200">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-6 sm:mb-8">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                        🏙️ Porta Potty Rental Near You
+                    </h2>
+                    <p class="text-sm sm:text-base text-slate-500">
+                        Fast delivery to these cities and surrounding areas
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+                    @foreach($popularCities as $city)
+                        @php
+                            $servicePage = collect($city['service_pages'] ?? [])->firstWhere('service_type', 'general');
+                            $citySlug = $servicePage['slug'] ?? null;
+                        @endphp
+                        @if($citySlug)
+                            <a href="{{ url($citySlug) }}"
+                               class="flex flex-col items-center gap-2 p-3 sm:p-4 bg-slate-50 hover:bg-emerald-50 
+                                      border border-slate-200 hover:border-emerald-300 rounded-xl transition-all group">
+                                <span class="text-lg sm:text-xl">📍</span>
+                                <span class="font-semibold text-slate-700 group-hover:text-emerald-700 text-center text-xs sm:text-sm">
+                                    {{ $city['name'] }}
+                                </span>
+                                <span class="text-xs text-slate-400 group-hover:text-emerald-600">
+                                    {{ $city['state']['code'] ?? '' }}
+                                </span>
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+                <div class="text-center mt-6 sm:mt-8">
+                    <a href="{{ route('locations') }}"
+                       class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base inline-flex items-center gap-2">
+                        View All {{ count($popularCities) }}+ Cities →
+                    </a>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- ============================================ --}}
+    {{-- HOW MANY UNITS DO I NEED? (SEO + CRO) --}}
+    {{-- ============================================ --}}
+    <section class="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-white border-y border-slate-200">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-8 sm:mb-10">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                    📊 How Many Porta Potties Do I Need?
+                </h2>
+                <p class="text-sm sm:text-base text-slate-500">
+                    Use our quick guide to calculate the right number of units for your project or event
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        🏗️ Construction Sites
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">1-10 workers</span>
+                            <span class="font-bold text-emerald-600">1 unit</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">11-20 workers</span>
+                            <span class="font-bold text-emerald-600">2 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">21-40 workers</span>
+                            <span class="font-bold text-emerald-600">3 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">41-100 workers</span>
+                            <span class="font-bold text-emerald-600">5 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-slate-600 text-sm">100+ workers</span>
+                            <span class="font-bold text-emerald-600">1 per 20</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4">*OSHA requires 1 unit per 20 workers</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        🎉 Events & Parties
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">Up to 50 guests</span>
+                            <span class="font-bold text-emerald-600">2 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">50-100 guests</span>
+                            <span class="font-bold text-emerald-600">3 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">100-250 guests</span>
+                            <span class="font-bold text-emerald-600">4-5 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600 text-sm">250-500 guests</span>
+                            <span class="font-bold text-emerald-600">6-8 units</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-slate-600 text-sm">500+ guests</span>
+                            <span class="font-bold text-emerald-600">1 per 50</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4">*Add 20% more if alcohol is served</p>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-slate-500 text-sm mb-4">Not sure? Our team can help you calculate!</p>
+                <a href="tel:{{ domain_phone_raw() }}"
+                   class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
+                    📞 Call for Free Consultation
                 </a>
             </div>
         </div>
@@ -581,6 +769,52 @@ $howtoSchema = [
                         </a>
                     </div>
                 @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- WHY CHOOSE US (SEO + CRO) --}}
+    {{-- ============================================ --}}
+    <section class="py-12 sm:py-14 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10 sm:mb-12 md:mb-14">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+                    Why Choose Potty Direct?
+                </h2>
+                <p class="text-sm sm:text-base md:text-lg text-slate-500 max-w-2xl mx-auto">
+                    Trusted by <strong>50,000+ customers</strong> across the USA for clean, reliable porta potty rentals
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
+                    <div class="text-3xl sm:text-4xl mb-3">🚚</div>
+                    <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">Same-Day Delivery</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Order by 2 PM and get delivery today in most areas</p>
+                </div>
+                <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
+                    <div class="text-3xl sm:text-4xl mb-3">💰</div>
+                    <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">No Hidden Fees</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">The price we quote is the price you pay — guaranteed</p>
+                </div>
+                <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
+                    <div class="text-3xl sm:text-4xl mb-3">🧼</div>
+                    <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">Clean & Sanitized</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Every unit professionally cleaned before delivery</p>
+                </div>
+                <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
+                    <div class="text-3xl sm:text-4xl mb-3">📞</div>
+                    <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">24/7 Support</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">We're always here for emergencies — day or night</p>
+                </div>
+            </div>
+
+            <div class="mt-8 sm:mt-10 text-center">
+                <a href="tel:{{ domain_phone_raw() }}"
+                   class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full transition-all text-sm sm:text-base shadow-lg shadow-emerald-500/25 hover:scale-105">
+                    📞 {{ domain_phone_display() }} — Call Now
+                </a>
             </div>
         </div>
     </section>
@@ -1036,6 +1270,68 @@ $howtoSchema = [
                         Read Reviews →
                     </a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- VIDEO TESTIMONIALS (SEO + Trust) --}}
+    {{-- ============================================ --}}
+    <section class="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-white border-y border-slate-200">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-8 sm:mb-10">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                    🎥 See What Our Customers Say
+                </h2>
+                <p class="text-sm sm:text-base text-slate-500">
+                    Real testimonials from construction pros, event planners, and homeowners
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <div class="relative aspect-video bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="text-4xl">▶</span>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900/90 to-transparent">
+                        <p class="text-white font-semibold text-sm">Mike T. — Construction Manager</p>
+                        <p class="text-slate-300 text-xs">Same-day delivery, clean units</p>
+                    </div>
+                </div>
+
+                <div class="relative aspect-video bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="text-4xl">▶</span>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900/90 to-transparent">
+                        <p class="text-white font-semibold text-sm">Sarah M. — Event Coordinator</p>
+                        <p class="text-slate-300 text-xs">Wedding day flawless</p>
+                    </div>
+                </div>
+
+                <div class="relative aspect-video bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="text-4xl">▶</span>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900/90 to-transparent">
+                        <p class="text-white font-semibold text-sm">David C. — Contractor</p>
+                        <p class="text-slate-300 text-xs">5 years of reliable service</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs sm:text-sm text-slate-500 mb-3">🎬 More video testimonials coming soon</p>
+                <a href="https://youtube.com/@pottydirect" target="_blank"
+                   class="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+                    Subscribe on YouTube →
+                </a>
             </div>
         </div>
     </section>
