@@ -4,14 +4,15 @@
 
 use App\Http\Controllers\Admin\AiApiKeyController;
 // Public Controllers
+use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\GlobalCityController;
-use App\Http\Controllers\Admin\GlobalStateController;
 // Admin Controllers
+use App\Http\Controllers\Admin\GlobalStateController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\Admin\PhoneNumberController;
@@ -243,6 +244,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('service-pages', ServicePageController::class)
         ->except(['create', 'store']);
     // Note: create/store excluded intentionally - pages are auto-generated from cities
+
+    /*
+    |----------------------------------------------------------------------
+    | Blog Categories Management
+    |----------------------------------------------------------------------
+    */
+    Route::resource('blog-categories', BlogCategoryController::class);
 
     /*
     |----------------------------------------------------------------------

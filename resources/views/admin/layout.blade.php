@@ -99,6 +99,11 @@
                     <span>Blog Posts</span>
                 </a>
 
+                <a href="{{ route('admin.blog-categories.index') }}" @click="$dispatch('close-mobile-menu')" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.blog-categories.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span>Blog Categories</span>
+                </a>
+
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Analytics</div>
 
             <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.reports') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
@@ -206,6 +211,11 @@
             <a href="{{ route('admin.blog-posts.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.blog-posts.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 <span>Blog Posts</span>
+            </a>
+
+            <a href="{{ route('admin.blog-categories.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.blog-categories.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <span>Blog Categories</span>
             </a>
 
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Analytics</div>

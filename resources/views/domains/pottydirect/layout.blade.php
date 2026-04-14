@@ -93,8 +93,13 @@
         <div class="flex justify-between items-center h-14 sm:h-16 lg:h-18">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0 my-1">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
-                    🚽
+                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/>
+                        <path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/>
+                        <path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/>
+                        <rect x="5" y="9" width="14" height="11" rx="1"/>
+                    </svg>
                 </div>
                 <div class="hidden sm:block">
                     <div class="text-sm font-bold text-slate-800 leading-tight">Potty Direct</div>
@@ -226,7 +231,9 @@
             <div class="flex items-center gap-1 sm:gap-2">
                 <a href="tel:{{ domain_phone_raw() }}"
                    class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
-                    <span>📞</span>
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     <span class="hidden md:inline">{{ domain_phone_display() }}</span>
                 </a>
 
@@ -253,22 +260,28 @@
             {{-- Mobile Nav Links --}}
             <nav class="space-y-2 mb-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">🏠</span> Home
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Home</span>
                 </a>
                 <a href="{{ route('services') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">🚽</span> Services
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/><path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/><path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/><rect x="5" y="9" width="14" height="11" rx="1"/></svg>
+                    <span>Services</span>
                 </a>
                 <a href="{{ route('pricing') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">💰</span> Pricing
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>Pricing</span>
                 </a>
                 <a href="{{ route('locations') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">📍</span> All Locations
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>All Locations</span>
                 </a>
                 <a href="{{ route('blog.index') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">📝</span> Blog
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Blog</span>
                 </a>
                 <a href="{{ route('about') }}" class="flex items-center gap-3 px-4 py-3 text-lg font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
-                    <span class="text-2xl">ℹ️</span> About Us
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <span>About Us</span>
                 </a>
             </nav>
 
@@ -278,7 +291,8 @@
                 <p class="text-emerald-100 text-sm mb-4">Call for instant pricing</p>
                 <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-bold text-lg py-3 px-8 rounded-full hover:scale-105 transition shadow-lg w-full">
-                    📞 {{ domain_phone_display() }}
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    {{ domain_phone_display() }}
                 </a>
             </div>
         </div>
@@ -298,7 +312,9 @@
             {{-- Brand --}}
             <div class="lg:col-span-1">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg">🚽</div>
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/><path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/><path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/><rect x="5" y="9" width="14" height="11" rx="1"/></svg>
+                    </div>
                     <div>
                         <div class="text-white font-bold text-sm">Potty Direct</div>
                         <div class="text-emerald-400 text-xs font-medium">Portable Restrooms</div>
@@ -309,13 +325,13 @@
                 </p>
                 <div class="flex items-center gap-3">
                     <a href="#" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Facebook">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    </a>
-                    <a href="#" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Twitter">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                     </a>
                     <a href="#" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Instagram">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="LinkedIn">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
                     </a>
                 </div>
             </div>
@@ -351,7 +367,7 @@
                 <div class="space-y-4">
                     <a href="tel:{{ domain_phone_raw() }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
                         <div class="w-9 h-9 bg-slate-800 group-hover:bg-emerald-600/20 rounded-lg flex items-center justify-center transition">
-                            <span>📞</span>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         </div>
                         <div>
                             <div class="text-white font-semibold">{{ domain_phone_display() }}</div>
@@ -359,14 +375,18 @@
                         </div>
                     </a>
                     <div class="flex items-center gap-3 text-sm text-slate-400">
-                        <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">⏰</div>
+                        <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
                         <div>
                             <div class="text-white">{{ config('contact.hours') }}</div>
                             <div class="text-xs text-slate-500">Eastern Time</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-slate-400">
-                        <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">📧</div>
+                        <div class="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        </div>
                         <div>{{ config('contact.email') }}</div>
                     </div>
                 </div>
@@ -393,7 +413,9 @@
 <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-emerald-600 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] safe-area-bottom">
     <a href="tel:{{ domain_phone_raw() }}"
        class="flex items-center justify-center gap-2 text-white font-bold text-base sm:text-lg py-3 sm:py-4">
-        <span class="text-lg">📞</span>
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
         <span>Call Now — Free Quote</span>
     </a>
 </div>

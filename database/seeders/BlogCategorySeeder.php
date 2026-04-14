@@ -3,11 +3,27 @@
 namespace Database\Seeders;
 
 use App\Models\BlogCategory;
+use App\Models\Domain;
 use Illuminate\Database\Seeder;
 
 class BlogCategorySeeder extends Seeder
 {
     public function run(): void
+    {
+        $domains = Domain::all();
+
+        if ($domains->isEmpty()) {
+            $this->seedDefaultCategories(null);
+
+            return;
+        }
+
+        foreach ($domains as $domain) {
+            $this->seedDefaultCategories($domain->id);
+        }
+    }
+
+    private function seedDefaultCategories(?int $domainId): void
     {
         $categories = [
             ['name' => 'Pricing & Costs', 'slug' => 'pricing-costs', 'description' => 'Porta potty rental pricing guides and cost breakdowns', 'icon' => '💰'],
@@ -25,12 +41,12 @@ class BlogCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $i => $category) {
+            $slug = $domainId ? "{$category['slug']}-{$domainId}" : $category['slug'];
+
             BlogCategory::updateOrCreate(
-                ['slug' => $category['slug']],
-                array_merge($category, ['sort_order' => $i])
+                ['slug' => $slug, 'domain_id' => $domainId],
+                array_merge($category, ['sort_order' => $i, 'domain_id' => $domainId])
             );
         }
-
-        $this->command->info('✅ Seeded '.count($categories).' blog categories');
     }
 }

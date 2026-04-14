@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\City;
+use App\Models\Domain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -29,7 +30,12 @@ class BlogPostController extends Controller
 
     public function create()
     {
-        $categories = BlogCategory::orderBy('name')->get();
+        $domain = Domain::current();
+        $query = BlogCategory::orderBy('name');
+        if ($domain) {
+            $query->where('domain_id', $domain->id);
+        }
+        $categories = $query->get();
         $cities = City::active()->with('state')->orderBy('name')->get();
 
         return view('admin.blog-posts.form', compact('categories', 'cities'));
@@ -67,7 +73,12 @@ class BlogPostController extends Controller
 
     public function edit(BlogPost $blogPost)
     {
-        $categories = BlogCategory::orderBy('name')->get();
+        $domain = Domain::current();
+        $query = BlogCategory::orderBy('name');
+        if ($domain) {
+            $query->where('domain_id', $domain->id);
+        }
+        $categories = $query->get();
         $cities = City::active()->with('state')->orderBy('name')->get();
 
         return view('admin.blog-posts.form', [
