@@ -65,43 +65,26 @@ style="display: none;">
                 <span class="text-4xl">📞</span>
             </div>
             
-            {{-- Title --}}
-            <h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-3">
-                {{ $title }}
-            </h3>
+{{-- Title --}}
+            <h3 class=text-2xl md:text-3xl font-bold text-slate-800 mb-3>{{ $title }}</h3>
             
             {{-- Message --}}
-            <p class="text-slate-600 mb-6">
-                {!! str_replace('%DISCOUNT%', '<span class="text-emerald-600 font-bold">' . $discount . '%</span>', $message) !!}
-            </p>
+            <p class=text-slate-600 mb-6>Get a free quote today and let us help you find the perfect portable sanitation solution for your needs!</p>
             
             {{-- Offer details --}}
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
-                <ul class="text-sm text-emerald-800 space-y-2 text-left">
-                    <li class="flex items-center gap-2">
-                        <span class="text-emerald-600">✓</span> Same-day delivery available
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="text-emerald-600">✓</span> Free delivery & pickup
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="text-emerald-600">✓</span> No hidden fees, transparent pricing
-                    </li>
+            <div class=bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6>
+                <ul class=text-sm text-emerald-800 space-y-2 text-left>
+                    <li class=flex items-center gap-2><span class=text-emerald-600>✓</span> Same-day delivery available</li>
+                    <li class=flex items-center gap-2><span class=text-emerald-600>✓</span> Free delivery & pickup</li>
+                    <li class=flex items-center gap-2><span class=text-emerald-600>✓</span> No hidden fees, transparent pricing</li>
                 </ul>
             </div>
             
             {{-- Phone CTA --}}
-            <a href="tel:{{ phone_raw() }}" 
-               class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                      text-white text-xl font-bold py-4 rounded-xl
-                      shadow-lg shadow-emerald-500/30 transition-all hover:scale-[1.02] mb-4">
-                📞 {{ phone_display() }}
-            </a>
+            <a href={{ domain_phone_link() }} class=block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all hover:scale-[1.02] mb-4>📞 {{ domain_phone_display() }}</a>
             
-            {{-- Dismiss link --}}
-            <button @click="dismissed = true" class="text-slate-400 hover:text-slate-600 text-sm transition">
-                No thanks, I'll pay full price
-            </button>
+{{-- Dismiss link --}}
+            <button @click=dismissed class=text-slate-400 hover:text-slate-600 text-sm transition>No thanks</button>
         </div>
         
         {{-- Decorative element --}}

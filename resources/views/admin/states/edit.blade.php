@@ -152,6 +152,7 @@
                             <form method="POST" action="{{ route('admin.states.generate-content', $state) }}">
                                 @csrf
                                 <button type="submit" 
+                                        onclick="if(!confirm('Are you sure you want to generate content with AI for this state?')) return false;"
                                         class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 shadow-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>

@@ -138,7 +138,7 @@ class GenerateCityContentJob implements ShouldQueue
                 );
             }
 
-            sleep(2);
+            sleep(30);
         }
 
         $domainId = $this->domain?->id;
@@ -163,6 +163,10 @@ class GenerateCityContentJob implements ShouldQueue
         Cache::forget("{$cacheKey}_progress");
 
         Log::info('Content generation completed', ['city' => $this->city->name, 'errors' => count($errors)]);
+
+        if (empty($errors)) {
+            $this->city->update(['is_active' => true]);
+        }
     }
 
     protected function isApiKeyExhausted(\Throwable $e): bool

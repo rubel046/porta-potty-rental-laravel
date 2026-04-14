@@ -31,9 +31,12 @@ class PageController extends Controller
         });
 
         $states = Cache::remember('active_states', 3600, function () {
-            return State::where('is_active', true)
-                ->whereHas('cities', fn ($q) => $q->where('is_active', true))
-                ->withCount(['cities' => fn ($q) => $q->where('is_active', true)])
+            return State::whereHas('domainStates', function ($q) {
+                $q->where('status', true);
+            })
+                ->withCount(['cities' => function ($q) {
+                    $q->active();
+                }])
                 ->orderBy('name')
                 ->take(8)
                 ->get()
@@ -589,13 +592,15 @@ class PageController extends Controller
     {
         $search = $request->get('q', '');
 
-        $states = State::whereHas('domainStates', function ($q) {
-            $q->where('status', true);
-        })
+        $states = State::select(['id', 'name', 'slug', 'code'])
+            ->whereHas('domainStates', function ($q) {
+                $q->where('status', true);
+            })
             ->with(['cities' => function ($q) use ($search) {
-                $q->active()->has('servicePages')->orderBy('name');
+                $q->select(['id', 'state_id', 'name', 'slug', 'latitude', 'longitude']);
+                $q->active()->orderBy('name');
                 if ($search) {
-                    $q->where('name', 'LIKE', "%{$search}%");
+                    $q->where('name', 'LIKE', '%'.$search.'%');
                 }
             }])
             ->orderBy('name')

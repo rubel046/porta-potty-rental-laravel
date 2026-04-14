@@ -106,61 +106,48 @@ $websiteSchema = [
                 </div>
             </div>
 
-            @foreach($states->sortBy('name') as $state)
-                @if($state->cities->isNotEmpty())
-                    <div class="mb-8 sm:mb-10 state-group" data-state="{{ strtolower($state->name) }}">
-                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-                            <a href="{{ route('state.page', $state->slug) }}"
-                               class="text-xl sm:text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group">
-                                <span class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white text-sm sm:text-lg">
-                                    {{ substr($state->code, 0, 1) }}
-                                </span>
-                                <span class="hidden sm:inline">{{ $state->name }}</span>
-                                <span class="sm:hidden">{{ $state->code }}</span>
-                                <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
-                            </a>
-                            <span class="text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">
-                                {{ $state->cities->count() }}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
-                            @foreach($state->cities->sortBy('name') as $city)
-                                @php $cityPage = $city->getServicePage('general'); @endphp
-                                @if($cityPage)
-                                    <a href="{{ url($cityPage->slug) }}"
-                                       class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
-                                     hover:text-emerald-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl
-                                     text-xs sm:text-sm font-medium text-slate-700
-                                     transition-all shadow-sm hover:shadow-md flex flex-col group city-item"
-                                       data-city="{{ strtolower($city->name) }}">
-                                        <span class="flex items-center gap-1.5 sm:gap-2">
-                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 group-hover:bg-emerald-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs">
-                                                📍
-                                            </span>
-                                            <span>{{ $city->name }}</span>
-                                        </span>
-                                        @if($city->population)
-                                            <span class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 pl-6 sm:pl-8">{{ number_format($city->population) }}</span>
-                                        @endif
-                                    </a>
-                                @else
-                                    <div class="bg-slate-50 border border-slate-100 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm text-slate-400 flex flex-col">
-                                        <span class="flex items-center gap-1.5 sm:gap-2">
-                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs">📍</span>
-                                            {{ $city->name }}
-                                        </span>
-                                        @if($city->population)
-                                            <span class="text-[10px] sm:text-xs mt-0.5 sm:mt-1 pl-6 sm:pl-8">{{ number_format($city->population) }}</span>
-                                        @endif
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
+@foreach($states->sortBy('name') as $state)
+                <div class=mb-8 sm:mb-10 state-group data-state={{ strtolower($state->name) }}>
+                    <div class=flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5>
+                        <a href={{ route('state.page', $state->slug) }} class=text-xl sm:text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group>
+                            <span class=w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white text-sm sm:text-lg>{{ $state->code }}</span>
+                            <span>{{ $state->name }}</span>
+                            <span class=sm:hidden>{{ $state->code }}</span>
+                            <svg class=w-4 h-4 opacity-0 group-hover:opacity-100 transition fill=none stroke=currentColor viewBox=0 0 24 24><path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14/></svg>
+                        </a>
+                        @if($state->cities->isNotEmpty())
+                        <span class=text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full>{{ $state->cities->count() }}</span>
+                        @endif
                     </div>
-                @endif
+
+                    @if($state->cities->isNotEmpty())
+                    <div class=grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3>
+                        @foreach($state->cities->sortBy('name') as $city)
+                            @php $cityPage = $city->getServicePage('general'); @endphp
+                            @if($cityPage)
+                            <a href={{ url($cityPage->slug) }} class='bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700 transition-all shadow-sm hover:shadow-md flex flex-col group city-item' data-city={{ strtolower($city->name) }}>
+                                <span class=flex items-center gap-1.5 sm:gap-2>
+                                    <span class='w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 group-hover:bg-emerald-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs'>📍</span>
+                                    <span>{{ $city->name }}</span>
+                                </span>
+                                @if($city->population)
+                                <span class='text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 pl-6 sm:pl-8'>{{ number_format($city->population) }}</span>
+                                @endif
+                            </a>
+                            @else
+                            <div class='bg-slate-50 border border-slate-100 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm text-slate-400 flex flex-col'>
+                                <span class=flex items-center gap-1.5 sm:gap-2>
+                                    <span class='w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs'>📍</span>
+                                    {{ $city->name }}
+                                </span>
+                                @if($city->population)
+                                <span class='text-[10px] sm:text-xs mt-0.5 sm:mt-1 pl-6 sm:pl-8'>{{ number_format($city->population) }}</span>
+                                @endif
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    @endif
             @endforeach
 
             {{-- No Results Message --}}

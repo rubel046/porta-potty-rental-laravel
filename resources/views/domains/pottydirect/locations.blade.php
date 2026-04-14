@@ -106,8 +106,7 @@ $websiteSchema = [
             </div>
 
             @foreach($states->sortBy('name') as $state)
-                @if($state->cities->isNotEmpty())
-                    <div class="mb-8 sm:mb-10 state-group" data-state="{{ strtolower($state->name) }}">
+                <div class="mb-8 sm:mb-10 state-group" data-state="{{ strtolower($state->name) }}">
                         <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
                             <a href="{{ route('state.page', $state->slug) }}"
                                class="text-xl sm:text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group">
@@ -159,7 +158,6 @@ $websiteSchema = [
                             @endforeach
                         </div>
                     </div>
-                @endif
             @endforeach
 
             {{-- No Results Message --}}

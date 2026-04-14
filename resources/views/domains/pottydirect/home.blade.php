@@ -922,7 +922,9 @@ $faqSchema = [
                     @if($stateCities->count() > 0)
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-lg sm:text-xl font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
-                                📍 {{ $state['name'] }}
+                                <a href="{{ route('state.page', $state['slug']) }}" class="hover:text-emerald-600 transition">
+                                    📍 {{ $state['name'] }}
+                                </a>
                                 <span class="text-xs sm:text-sm font-normal text-slate-400">
                                 ({{ $state['cities_count'] }} {{ Str::plural('city', $state['cities_count']) }})
                             </span>
