@@ -54,7 +54,7 @@ class PageController extends Controller
             ->take(3)
             ->get();
 
-        return view(DomainViewHelper::resolveForController('home'), compact(
+        return view('domains.pottydirect.home', compact(
             'featuredCities', 'states', 'recentPosts', 'testimonials'
         ));
     }

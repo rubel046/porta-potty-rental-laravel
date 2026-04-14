@@ -3,6 +3,7 @@
 // bootstrap/app.php
 
 use App\Http\Middleware\DomainMiddleware;
+use App\Http\Middleware\RedirectToCity;
 use App\Http\Middleware\TrackTrafficSource;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             DomainMiddleware::class,
             TrackTrafficSource::class,
+            RedirectToCity::class,
         ]);
 
         $middleware->trustProxies(at: '*');

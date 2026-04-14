@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ServicePageController;
 use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SignalWireWebhookController;
 use App\Http\Controllers\SitemapController;
@@ -78,6 +79,10 @@ Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('terms');
+
+// Lead Form Submission (public)
+Route::post('/lead', [LeadController::class, 'store'])
+    ->name('lead.store');
 
 /*
 |--------------------------------------------------------------------------

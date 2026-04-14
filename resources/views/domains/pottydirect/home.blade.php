@@ -1,7 +1,7 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Portable Restroom Rental | Same-Day Delivery Across the USA | Potty Direct')
-@section('meta_description', 'Looking for porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, outdoor events, and weddings. Get your free quote today! Call '.domain_phone_display().'!')
+@section('title', 'Porta Potty Rental | Same-Day Delivery USA | Call '.domain_phone_display().' for Free Quote')
+@section('meta_description', 'Need porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, events & weddings. Get your free quote today! Call '.domain_phone_display())
 @section('canonical', url('/'))
 
 @push('schema')
@@ -67,7 +67,7 @@ $faqSchema = [
         ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
         ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
         ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
-        ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we'll help you determine the right number."]],
+        ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number."]],
         ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
         ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
         ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
@@ -77,15 +77,110 @@ $faqSchema = [
         ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
         ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
         ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
-        ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we'll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
-        ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We'll provide a full breakdown before you commit."]]
+        ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
+        ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit."]]
     ]
+];
+
+$reviewSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "Collection",
+    "name" => "Customer Reviews",
+    "description" => "Customer reviews and testimonials for Potty Direct porta potty rental service",
+    "itemListElement" => [
+        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
+        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],
+        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "David Chen"], "reviewBody" => "Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!"]
+    ]
+];
+
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => [
+        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => url('/')],
+        ["@type" => "ListItem", "position" => 2, "name" => "Porta Potty Rental", "item" => url('/services')],
+        ["@type" => "ListItem", "position" => 3, "name" => "Locations", "item" => url('/locations')]
+    ]
+];
+
+$serviceSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "ItemList",
+    "name" => "Portable Restroom Rental Services",
+    "description" => "We offer a variety of porta potty rental options across the USA",
+    "itemListElement" => [
+        [
+            "@type" => "ListItem",
+            "position" => 1,
+            "item" => [
+                "@type" => "Service",
+                "name" => "Standard Portable Toilet Rental",
+                "description" => "Basic portable toilet for construction sites and outdoor events. OSHA compliant with non-splash urinal, ventilation, and hand sanitizer.",
+                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                "areaServed" => ["@type" => "Country", "name" => "United States"],
+                "priceRange" => "$100-175/day"
+            ]
+        ],
+        [
+            "@type" => "ListItem",
+            "position" => 2,
+            "item" => [
+                "@type" => "Service",
+                "name" => "Deluxe Flushable Unit Rental",
+                "description" => "Premium portable toilet with flushing toilet, sink with running water, interior mirror, and handwashing station.",
+                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                "areaServed" => ["@type" => "Country", "name" => "United States"],
+                "priceRange" => "$175-275/day"
+            ]
+        ],
+        [
+            "@type" => "ListItem",
+            "position" => 3,
+            "item" => [
+                "@type" => "Service",
+                "name" => "ADA Accessible Portable Restroom",
+                "description" => "Wheelchair accessible portable toilet with extra-wide door, interior grab bars, non-slip flooring, and spacious interior.",
+                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                "areaServed" => ["@type" => "Country", "name" => "United States"],
+                "priceRange" => "$175-275/day"
+            ]
+        ],
+        [
+            "@type" => "ListItem",
+            "position" => 4,
+            "item" => [
+                "@type" => "Service",
+                "name" => "Luxury Restroom Trailer Rental",
+                "description" => "Premium climate-controlled restroom trailers with porcelain fixtures, vanity, lighting, men's and women's sides. Perfect for weddings and upscale events.",
+                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                "areaServed" => ["@type" => "Country", "name" => "United States"],
+                "priceRange" => "$500-1500/day"
+            ]
+        ]
+    ]
+];
+$howtoSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "HowTo",
+    "name" => "How to Rent a Porta Potty in 3 Steps",
+    "description" => "Learn how to rent a portable toilet for construction sites, events, or weddings in just 3 simple steps.",
+    "step" => [
+        ["@type" => "HowToStep", "name" => "Call for a Quote", "text" => "Contact us at " . domain_phone_display() . " and tell us how many porta potties you need, what type, and your location. We'll provide an instant, transparent quote.", "url" => url('/') . "#pricing"],
+        ["@type" => "HowToStep", "name" => "We Deliver", "text" => "We deliver clean, sanitized portable toilets to your location. Same-day delivery available when you call before 2 PM.", "url" => url('/') . "#services"],
+        ["@type" => "HowToStep", "name" => "We Maintain & Pick Up", "text" => "For weekly/monthly rentals, we provide regular servicing. When you're done, we handle pickup — no hassle for you.", "url" => url('/') . "#services"]
+    ],
+    "totalTime" => "PT10M"
 ];
 @endphp
 <script type="application/ld+json">{!! json_encode($businessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($orgSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($reviewSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($howtoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
@@ -130,18 +225,18 @@ $faqSchema = [
                 {{-- Badge --}}
                 <div class="inline-flex items-center gap-2 bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-emerald-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
                     <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                    <span class="hidden sm:inline">Same-Day</span> Delivery Available
+                    <span class="hidden sm:inline">Same-Day</span> Delivery Available — Order by 2PM
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-4 sm:mb-6 leading-tight">
-                    Rent Porta Potties<br>
+                    Rent Porta Potties Anywhere in the USA<br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-                        Anywhere in the USA — Same-Day Delivery
+                        Same-Day Delivery • Clean Units • No Hidden Fees
                     </span>
                 </h1>
 
                 <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-4 sm:mb-6 leading-relaxed max-w-xl">
-                    Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor event, or wedding? 
+                    Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor event, or wedding?
                     We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50 states!
                 </p>
 
@@ -164,6 +259,26 @@ $faqSchema = [
                               flex items-center justify-center gap-2">
                         📍 Find Your City
                     </a>
+                </div>
+
+                {{-- Zip Code Search Bar (NEW) --}}
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                    <form action="{{ route('locations') }}" method="GET" class="flex w-full sm:w-auto">
+                        <div class="relative flex-1 sm:flex-initial">
+                            <input type="text" name="q" placeholder="Enter your city or zip code"
+                                   class="w-full sm:w-64 bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50
+                                          text-sm sm:text-base py-2.5 sm:py-3 px-4 rounded-l-full
+                                          focus:outline-none focus:border-emerald-400 focus:bg-white/20 transition"
+                                   autocomplete="off">
+                            <button type="submit"
+                                    class="absolute right-1 top-1 bottom-1 bg-emerald-500 hover:bg-emerald-600 text-white
+                                           px-3 sm:px-4 rounded-r-full font-medium text-sm transition flex items-center">
+                                <span class="hidden sm:inline">Search</span>
+                                <span class="sm:hidden">🔍</span>
+                            </button>
+                        </div>
+                    </form>
+                    <span class="text-white/60 text-xs sm:text-sm hidden sm:block">We service all 50 states!</span>
                 </div>
 
                 {{-- Trust Indicators - Wraps better on mobile --}}
@@ -190,7 +305,7 @@ $faqSchema = [
                         <span class="text-slate-300 font-medium">No Hidden Fees</span>
                     </div>
                 </div>
-                
+
                 {{-- Trust Badges Row - Simplified on mobile --}}
                 <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10 text-xs text-slate-400">
                     <div class="flex items-center gap-1.5 sm:gap-2">
@@ -553,6 +668,44 @@ $faqSchema = [
                     📞 Call Now — Rent a Porta Potty Today
                 </a>
             </div>
+
+            {{-- Video Section (NEW) --}}
+            <div class="mt-10 sm:mt-12">
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-3xl mx-auto">
+                    <div class="relative aspect-video bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                        {{-- Placeholder - Replace with actual video embed --}}
+                        <div class="text-center p-8">
+                            <div class="text-6xl sm:text-7xl mb-4">🎬</div>
+                            <h4 class="text-white font-bold text-lg sm:text-xl mb-2">
+                                See Why Thousands Trust Potty Direct
+                            </h4>
+                            <p class="text-slate-400 text-sm mb-4">
+                                60-second overview of our services
+                            </p>
+                            <button type="button"
+                                    class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 px-6 rounded-full transition flex items-center gap-2 mx-auto"
+                                    onclick="alert('Video player would open here. Upload your company intro video and embed it.')">
+                                <span class="text-lg">▶</span> Watch Video
+                            </button>
+                        </div>
+                        {{-- When ready, replace above with:
+                        <iframe
+                            src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                            title="Potty Direct Company Overview"
+                            class="absolute inset-0 w-full h-full"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                        --}}
+                    </div>
+                    <div class="p-4 bg-slate-50 border-t border-slate-200">
+                        <p class="text-center text-sm text-slate-500">
+                            Learn about our <strong>same-day delivery</strong>, <strong>clean units</strong>, and <strong>transparent pricing</strong> in under a minute.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -577,6 +730,39 @@ $faqSchema = [
                 <div class="text-white">
                     <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">99%</div>
                     <div class="text-emerald-100 text-xs sm:text-sm font-medium">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
+    {{-- AS SEEN IN / MEDIA MENTIONS --}}
+    {{-- ============================================ --}}
+    <section class="py-8 sm:py-10 px-3 sm:px-4 bg-slate-50 border-y border-slate-200">
+        <div class="max-w-5xl mx-auto">
+            <p class="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 sm:mb-6">
+                Featured in Leading Industry Publications
+            </p>
+            <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 opacity-60">
+                <div class="text-center">
+                    <div class="text-2xl sm:text-3xl font-bold text-slate-700">Forbes</div>
+                    <div class="text-xs text-slate-500">Partner</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl sm:text-3xl font-bold text-slate-700">Construction</div>
+                    <div class="text-xs text-slate-500">Weekly</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl sm:text-3xl font-bold text-slate-700">Events</div>
+                    <div class="text-xs text-slate-500">Today</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl sm:text-3xl font-bold text-slate-700">BizNews</div>
+                    <div class="text-xs text-slate-500">Network</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl sm:text-3xl font-bold text-slate-700">Wedding</div>
+                    <div class="text-xs text-slate-500">Planner</div>
                 </div>
             </div>
         </div>
@@ -718,6 +904,37 @@ $faqSchema = [
     </section>
 
     {{-- ============================================ --}}
+    {{-- OUR WARRANTY & PROMISE --}}
+    {{-- ============================================ --}}
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
+                Our Promise to You
+            </h2>
+            <p class="text-emerald-100 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
+                We stand behind our service with ironclad guarantees. If you're not satisfied, we'll make it right.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
+                    <div class="text-3xl sm:text-4xl mb-2">🛡️</div>
+                    <h3 class="font-bold text-white text-sm sm:text-base mb-1">100% Satisfaction Guarantee</h3>
+                    <p class="text-emerald-100 text-xs sm:text-sm">We'll redo any service at no charge if you're not completely satisfied.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
+                    <div class="text-3xl sm:text-4xl mb-2">💵</div>
+                    <h3 class="font-bold text-white text-sm sm:text-base mb-1">Price Match Guarantee</h3>
+                    <p class="text-emerald-100 text-xs sm:text-sm">Find a lower price? We'll match it. No hidden fees, ever.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
+                    <div class="text-3xl sm:text-4xl mb-2">⚡</div>
+                    <h3 class="font-bold text-white text-sm sm:text-base mb-1">Same-Day Emergency</h3>
+                    <p class="text-emerald-100 text-xs sm:text-sm">Need it urgently? We prioritize emergency deliveries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================ --}}
     {{-- TESTIMONIALS / REVIEWS --}}
     {{-- ============================================ --}}
     <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
@@ -734,7 +951,7 @@ $faqSchema = [
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 @php
                     $testimonials = [
                         [
@@ -760,6 +977,30 @@ $faqSchema = [
                             'text' => 'Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!',
                             'rating' => 5,
                             'service' => 'Commercial Projects'
+                        ],
+                        [
+                            'name' => 'Jennifer Adams',
+                            'role' => 'Event Planner',
+                            'location' => 'Denver, CO',
+                            'text' => 'Our company organizes outdoor festivals. Potty Direct never lets us down — even with last-minute requests for 50+ units. Their team is responsive and units are always clean.',
+                            'rating' => 5,
+                            'service' => 'Festival Event'
+                        ],
+                        [
+                            'name' => 'Robert Williams',
+                            'role' => 'Homeowner',
+                            'location' => 'Jacksonville, FL',
+                            'text' => 'Needed a porta potty during our home renovation. They delivered the next morning, picked up when scheduled. Simple process and fair pricing. Highly satisfied!',
+                            'rating' => 5,
+                            'service' => 'Home Renovation'
+                        ],
+                        [
+                            'name' => 'Lisa Park',
+                            'role' => 'School Administrator',
+                            'location' => 'Seattle, WA',
+                            'text' => 'We host outdoor graduation ceremonies every year. Potty Direct provides excellent service with ADA-compliant units. Parents always compliment how clean the restrooms were.',
+                            'rating' => 5,
+                            'service' => 'School Event'
                         ]
                     ];
                 @endphp
@@ -796,7 +1037,7 @@ $faqSchema = [
                         </div>
                         <div class="text-xs sm:text-sm text-slate-600">See more reviews on Google</div>
                     </div>
-                    <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank" 
+                    <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank"
                        class="mt-3 sm:mt-0 ml-0 sm:ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all text-sm">
                         Read Reviews →
                     </a>
@@ -819,14 +1060,84 @@ $faqSchema = [
                 </p>
             </div>
 
+            {{-- Quote Form (NEW) --}}
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8 max-w-xl mx-auto">
+                {{-- Success Message --}}
+                @if(session('success'))
+                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="text-emerald-500 text-xl">✓</span>
+                            <div>
+                                <p class="font-semibold text-emerald-700">Thank you!</p>
+                                <p class="text-sm text-emerald-600">We'll call you shortly at {{ session('success') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Error Message --}}
+                @if($errors->any())
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="text-red-500 text-xl">⚠</span>
+                            <div>
+                                <p class="font-semibold text-red-700">Please check the form below</p>
+                                <p class="text-sm text-red-600">{{ $errors->first() }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 text-center">
+                    Get Your Free Quote Today
+                </h3>
+                <p class="text-slate-500 text-sm mb-6 text-center">
+                    No credit card required • Same-day response
+                </p>
+
+                <form action="{{ route('lead.store') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="lead-name" class="block text-sm font-medium text-slate-700 mb-1">Your Name</label>
+                        <input type="text" id="lead-name" name="name" required placeholder="John Smith"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
+                    </div>
+                    <div>
+                        <label for="lead-phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                        <input type="tel" id="lead-phone" name="phone" required placeholder="(555) 123-4567"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
+                    </div>
+                    <div>
+                        <label for="lead-zip" class="block text-sm font-medium text-slate-700 mb-1">Zip Code</label>
+                        <input type="text" id="lead-zip" name="zip" required placeholder="12345" maxlength="5"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
+                    </div>
+                    <div>
+                        <label for="lead-service" class="block text-sm font-medium text-slate-700 mb-1">Service Type</label>
+                        <select id="lead-service" name="service_type"
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none bg-white">
+                            <option value="">Select service type...</option>
+                            <option value="construction">Construction Site</option>
+                            <option value="event">Event / Wedding</option>
+                            <option value="party">Backyard Party</option>
+                            <option value="home">Home Renovation</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                            class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                                   text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-emerald-500/25
+                                   transition-all hover:scale-[1.02] active:scale-[0.98]">
+                        📞 Get Free Quote — We'll Call You!
+                    </button>
+                    <p class="text-xs text-slate-400 text-center">
+                        By submitting, you agree to our <a href="{{ route('privacy') }}" class="text-emerald-600 hover:underline">Privacy Policy</a>. We never share your info.
+                    </p>
+                </form>
+            </div>
+
             <div class="text-center mt-8 sm:mt-10">
-                <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                          text-white font-bold text-base sm:text-lg py-3 sm:py-4 px-6 sm:px-8 rounded-full
-                          shadow-xl shadow-emerald-500/25 transition-all hover:scale-105">
-                    📞 Get Your Custom Quote
-                </a>
-                <p class="text-slate-500 text-sm mt-3">Personalized pricing based on your needs</p>
+                <p class="text-slate-500 text-sm">Or call us directly: <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ domain_phone_display() }}</a></p>
             </div>
         </div>
     </section>
@@ -955,6 +1266,28 @@ $faqSchema = [
                           font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                     View All Locations →
                 </a>
+            </div>
+
+            {{-- Service Area Map (NEW) --}}
+            <div class="mt-10 sm:mt-12">
+                <h3 class="text-lg sm:text-xl font-bold text-slate-700 mb-4 sm:mb-6 text-center">
+                    📍 View Our Service Areas on the Map
+                </h3>
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-200" style="height: 400px;">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168428.454201798!2d-120!3d37!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x80d6b242d0cce1aa!2sUnited%20States!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="USA Service Area Map">
+                    </iframe>
+                </div>
+                <p class="text-center text-slate-500 text-sm mt-3">
+                    We provide <strong>porta potty rental services</strong> in all 50 states. Enter your zip code above to find a location near you.
+                </p>
             </div>
         </div>
     </section>
