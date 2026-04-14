@@ -261,28 +261,22 @@ $howtoSchema = [
                     </a>
                 </div>
 
-                {{-- Zip Code Search Bar (NEW) --}}
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    <form action="{{ route('locations') }}" method="GET" class="flex w-full sm:w-auto">
-                        <div class="relative flex-1 sm:flex-initial">
-                            <input type="text" name="q" placeholder="Enter your city or zip code"
-                                   class="w-full sm:w-64 bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50
-                                          text-sm sm:text-base py-2.5 sm:py-3 px-4 rounded-l-full
-                                          focus:outline-none focus:border-emerald-400 focus:bg-white/20 transition"
-                                   autocomplete="off">
-                            <button type="submit"
-                                    class="absolute right-1 top-1 bottom-1 bg-emerald-500 hover:bg-emerald-600 text-white
-                                           px-3 sm:px-4 rounded-r-full font-medium text-sm transition flex items-center">
-                                <span class="hidden sm:inline">Search</span>
-                                <span class="sm:hidden">🔍</span>
-                            </button>
-                        </div>
+                {{-- Zip Code Search Bar --}}
+                <div class="w-full max-w-lg">
+                    <form action="{{ route('locations') }}" method="GET" class="flex shadow-lg rounded-full overflow-hidden">
+                        <input type="text" name="q" placeholder="Enter your city name or zip code"
+                               class="flex-1 bg-white text-slate-800 placeholder-slate-400 text-base py-3 px-6 rounded-l-full focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-8 rounded-r-full transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <span>Search</span>
+                        </button>
                     </form>
-                    <span class="text-white/60 text-xs sm:text-sm hidden sm:block">We service all 50 states!</span>
                 </div>
 
                 {{-- Trust Indicators - Wraps better on mobile --}}
-                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 text-xs sm:text-sm trust-indicators">
+                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 mt-4 text-xs sm:text-sm trust-indicators">
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <div class="flex">
                             <span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span>
@@ -1047,7 +1041,7 @@ $howtoSchema = [
     </section>
 
     {{-- ============================================ --}}
-    {{-- PRICING TABLE --}}
+    {{-- PRICING / CALL TO ACTION --}}
     {{-- ============================================ --}}
     <section id="pricing" class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
         <div class="max-w-4xl mx-auto">
@@ -1060,84 +1054,26 @@ $howtoSchema = [
                 </p>
             </div>
 
-            {{-- Quote Form (NEW) --}}
             <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8 max-w-xl mx-auto">
-                {{-- Success Message --}}
-                @if(session('success'))
-                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <span class="text-emerald-500 text-xl">✓</span>
-                            <div>
-                                <p class="font-semibold text-emerald-700">Thank you!</p>
-                                <p class="text-sm text-emerald-600">We'll call you shortly at {{ session('success') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Error Message --}}
-                @if($errors->any())
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <span class="text-red-500 text-xl">⚠</span>
-                            <div>
-                                <p class="font-semibold text-red-700">Please check the form below</p>
-                                <p class="text-sm text-red-600">{{ $errors->first() }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
                 <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 text-center">
                     Get Your Free Quote Today
                 </h3>
                 <p class="text-slate-500 text-sm mb-6 text-center">
-                    No credit card required • Same-day response
+                    Call now for immediate assistance
                 </p>
 
-                <form action="{{ route('lead.store') }}" method="POST" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label for="lead-name" class="block text-sm font-medium text-slate-700 mb-1">Your Name</label>
-                        <input type="text" id="lead-name" name="name" required placeholder="John Smith"
-                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
-                    </div>
-                    <div>
-                        <label for="lead-phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-                        <input type="tel" id="lead-phone" name="phone" required placeholder="(555) 123-4567"
-                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
-                    </div>
-                    <div>
-                        <label for="lead-zip" class="block text-sm font-medium text-slate-700 mb-1">Zip Code</label>
-                        <input type="text" id="lead-zip" name="zip" required placeholder="12345" maxlength="5"
-                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none">
-                    </div>
-                    <div>
-                        <label for="lead-service" class="block text-sm font-medium text-slate-700 mb-1">Service Type</label>
-                        <select id="lead-service" name="service_type"
-                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition outline-none bg-white">
-                            <option value="">Select service type...</option>
-                            <option value="construction">Construction Site</option>
-                            <option value="event">Event / Wedding</option>
-                            <option value="party">Backyard Party</option>
-                            <option value="home">Home Renovation</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <button type="submit"
-                            class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                                   text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-emerald-500/25
-                                   transition-all hover:scale-[1.02] active:scale-[0.98]">
-                        📞 Get Free Quote — We'll Call You!
-                    </button>
-                    <p class="text-xs text-slate-400 text-center">
-                        By submitting, you agree to our <a href="{{ route('privacy') }}" class="text-emerald-600 hover:underline">Privacy Policy</a>. We never share your info.
-                    </p>
-                </form>
-            </div>
+                <a href="tel:{{ domain_phone_raw() }}"
+                   class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                          text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-emerald-500/25
+                          transition-all hover:scale-[1.02] active:scale-[0.98]
+                          flex items-center justify-center gap-3">
+                    <span class="text-xl">📞</span>
+                    {{ domain_phone_display() }}
+                </a>
 
-            <div class="text-center mt-8 sm:mt-10">
-                <p class="text-slate-500 text-sm">Or call us directly: <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ domain_phone_display() }}</a></p>
+                <p class="text-xs text-slate-400 text-center mt-4">
+                    Same-day delivery available • No hidden fees
+                </p>
             </div>
         </div>
     </section>

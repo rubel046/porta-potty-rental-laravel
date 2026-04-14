@@ -45,7 +45,7 @@ class PageController extends Controller
 
         $recentPosts = BlogPost::published()
             ->latest('published_at')
-            ->take(3)
+            ->take(6)
             ->get();
 
         $testimonials = Testimonial::where('is_featured', true)
