@@ -7,6 +7,7 @@ php artisan optimize:clear
 
 git pull origin main
 composer install --optimize-autoloader --no-dev
+rm -rf public/build
 npm run build
 php artisan migrate --force
 
