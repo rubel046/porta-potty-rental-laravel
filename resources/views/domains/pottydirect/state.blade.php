@@ -92,7 +92,7 @@ $breadcrumbSchema = [
                     </div>
                 </div>
                 
-                <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-600/40 hover:scale-105">
+                <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-all shadow-2xl shadow-amber-500/30 hover:shadow-amber-600/40 hover:scale-105">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                     </svg>
@@ -224,7 +224,7 @@ $breadcrumbSchema = [
                         <a href="{{ $cities->previousPageUrl() }}" class="px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Previous</a>
                     @endif
                     
-                    <span class="px-4 py-2 bg-emerald-500 text-white rounded-lg">
+                    <span class="px-4 py-2 bg-amber-500 text-white rounded-lg">
                         Page {{ $cities->currentPage() }} of {{ $cities->lastPage() }}
                     </span>
                     
@@ -254,8 +254,8 @@ $breadcrumbSchema = [
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <a href="{{ route('services') }}#standard" class="group bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-emerald-500 transition-colors">
-                        <svg class="w-7 h-7 text-emerald-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-amber-500 transition-colors">
+                        <svg class="w-7 h-7 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
                         </svg>
                     </div>

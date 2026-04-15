@@ -37,7 +37,7 @@
             
             const result = await response.json();
             
-            if (result.success) {
+            if (result.success && result.data) {
                 this.generated = true;
                 this.data = result.data;
                 this.populateForm(result.data);

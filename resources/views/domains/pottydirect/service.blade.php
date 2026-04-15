@@ -54,7 +54,7 @@ $breadcrumbSchema = [
         </div>
 
         {{-- Decorative --}}
-        <div class="absolute top-16 sm:top-20 right-4 sm:right-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-emerald-500/10 rounded-full blur-3xl desktop-only"></div>
+        <div class="absolute top-16 sm:top-20 right-4 sm:right-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-amber-500/10 rounded-full blur-3xl desktop-only"></div>
 
         <div class="relative max-w-7xl mx-auto px-3 sm:px-6 py-12 sm:py-16 md:py-28 w-full">
             <div class="max-w-2xl md:max-w-3xl">
@@ -85,9 +85,9 @@ $breadcrumbSchema = [
                 {{-- CTA --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <a href="tel:{{ $servicePage->phone_raw }}"
-                       class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-600 hover:to-emerald-700
+                       class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                               text-lg sm:text-xl md:text-2xl md:text-3xl font-bold
-                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
+                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-amber-500/30
                               transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3">
                         <span class="text-xl sm:text-2xl">📞</span>
                         {{ $servicePage->phone_display }}
@@ -149,9 +149,9 @@ $breadcrumbSchema = [
                     Call now for instant pricing on porta potty rental in {{ $city->name }}
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
-                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-400 hover:to-emerald-500
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                           text-white font-bold text-base sm:text-xl py-3 sm:py-4 px-6 sm:px-10 rounded-full
-                          transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
+                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30">
                     📞 {{ $servicePage->phone_display }}
                 </a>
                 <p class="text-xs sm:text-sm text-slate-400 mt-3 sm:mt-4">
@@ -308,7 +308,7 @@ $breadcrumbSchema = [
         <div class="absolute inset-0 opacity-5">
             <div class="absolute top-10 left-10 text-[200px]">🚽</div>
         </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
         <div class="relative max-w-3xl mx-auto">
             <h2 class="text-3xl md:text-5xl font-extrabold mb-5">
@@ -318,9 +318,9 @@ $breadcrumbSchema = [
                 Free quote • No hidden fees • Same-day delivery available
             </p>
             <a href="tel:{{ $servicePage->phone_raw }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-400 hover:to-emerald-500
+               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                       text-white text-3xl md:text-4xl font-bold py-5 px-14
-                      rounded-full shadow-2xl shadow-emerald-500/40
+                      rounded-full shadow-2xl shadow-amber-500/40
                       transition-all hover:scale-105 animate-pulse">
                 📞 {{ $servicePage->phone_display }}
             </a>

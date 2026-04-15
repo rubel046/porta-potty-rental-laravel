@@ -782,7 +782,10 @@ HTML;
     public function generateBlogPostContent(BlogCategory $category, ?City $city = null): array
     {
         if (! $this->aiService) {
-            throw new \RuntimeException('AI service not configured. Please set up MultiAiService to generate content.');
+            return [
+                'success' => false,
+                'error' => 'AI service not configured. Please check MultiAiService setup.',
+            ];
         }
 
         $domain = Domain::current() ?? Domain::first();
@@ -905,7 +908,10 @@ PROMPT;
             $response = $this->aiService->generateContent($prompt);
 
             if (empty($response)) {
-                throw new \RuntimeException('AI returned empty response');
+                return [
+                    'success' => false,
+                    'error' => 'AI returned empty response. Please check API configuration.',
+                ];
             }
 
             $data = json_decode($response, true);
@@ -915,11 +921,18 @@ PROMPT;
                     'error' => json_last_error_msg(),
                     'response' => substr($response, 0, 500),
                 ]);
-                throw new \RuntimeException('AI returned invalid JSON');
+
+                return [
+                    'success' => false,
+                    'error' => 'AI returned invalid JSON response.',
+                ];
             }
 
             if (! isset($data['content'])) {
-                throw new \RuntimeException('AI response missing required fields');
+                return [
+                    'success' => false,
+                    'error' => 'AI response missing required fields.',
+                ];
             }
 
             return [

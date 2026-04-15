@@ -154,10 +154,10 @@ class BlogPostController extends Controller
         try {
             $result = $generator->generateBlogPostContent($category, $city);
 
-            if (! $result['success']) {
+            if (! $result || ! ($result['success'] ?? false)) {
                 return response()->json([
                     'success' => false,
-                    'error' => $result['error'] ?? 'Failed to generate content',
+                    'error' => $result['error'] ?? 'Failed to generate content. Please check AI configuration.',
                 ], 422);
             }
 
@@ -166,14 +166,14 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'title' => $result['title'],
-                    'slug' => $result['slug'],
-                    'excerpt' => $result['excerpt'],
-                    'content' => $result['content'],
-                    'meta_title' => $result['meta_title'],
-                    'meta_description' => $result['meta_description'],
-                    'focus_keyword' => $result['focus_keyword'],
-                    'secondary_keywords' => $result['secondary_keywords'],
+                    'title' => $result['title'] ?? '',
+                    'slug' => $result['slug'] ?? '',
+                    'excerpt' => $result['excerpt'] ?? '',
+                    'content' => $result['content'] ?? '',
+                    'meta_title' => $result['meta_title'] ?? '',
+                    'meta_description' => $result['meta_description'] ?? '',
+                    'focus_keyword' => $result['focus_keyword'] ?? '',
+                    'secondary_keywords' => $result['secondary_keywords'] ?? [],
                     'blog_category_id' => $category->id,
                     'city_id' => $city?->id,
                     'domain_id' => $domain?->id,
