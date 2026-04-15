@@ -743,7 +743,7 @@ $faqSchema = [
                                 <span class="text-amber-400 text-lg">★</span>
                             @endfor
                         </div>
-                        <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">"{{ $testimonial['text'] }}"</p>
+                        <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">{!! $testimonial['text'] !!}</p>
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                                 {{ substr($testimonial['name'], 0, 1) }}

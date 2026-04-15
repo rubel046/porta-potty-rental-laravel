@@ -75,13 +75,13 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-{{-- Announcement Banner --}}
-<div id="announcement-banner" class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2 px-3 sm:px-4">
+{{-- Announcement Banner - Enhanced Urgency --}}
+<div id="announcement-banner" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-2 px-3 sm:px-4">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
         <span class="hidden sm:inline animate-pulse">🔥</span>
-        <span class="font-medium text-center sm:text-left">Same-Day Delivery Available</span>
-        <span class="hidden md:inline text-emerald-100">• Call for availability</span>
-        <a href="tel:{{ domain_phone_raw() }}" class="ml-0 sm:ml-2 bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center">
+        <span class="font-semibold text-center sm:text-left">Same-Day Delivery: Order by 2PM</span>
+        <span class="hidden md:inline text-amber-100">• Limited availability</span>
+        <a href="tel:{{ domain_phone_raw() }}" class="ml-0 sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center">
             📞 {{ domain_phone_display() }}
         </a>
     </div>
@@ -228,25 +228,25 @@
             </div>
 
             {{-- CTA --}}
-            <div class="flex items-center gap-1 sm:gap-2">
-                <a href="tel:{{ domain_phone_raw() }}"
-                   class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-5 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105">
+<div class="flex items-center gap-1 sm:gap-2">
+                <a href="tel:+18336529344" class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-4 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all hover:scale-105 ring-2 ring-amber-400/30">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
-                    <span class="hidden md:inline">{{ domain_phone_display() }}</span>
+                    <span class="hidden md:inline">Get Quote</span>
+                    <span class="md:hidden text-xs">Call Now</span>
                 </a>
 
-                {{-- Mobile Menu Toggle --}}
+                
                 <button id="mobile-menu-btn" type="button" class="lg:hidden p-2 h-auto min-h-[2.5rem] rounded-lg hover:bg-slate-100 transition flex items-center justify-center" aria-label="Menu">
                     <span id="menu-icon" class="flex items-center justify-center">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </span>
                     <span id="menu-close-icon" class="hidden flex items-center justify-center">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </span>
                 </button>
@@ -414,17 +414,17 @@
     </div>
 </footer>
 
-{{-- Mobile Sticky CTA --}}
-<div class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-emerald-600 md:hidden z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] safe-area-bottom">
+{{-- Mobile Sticky CTA - Enhanced with pulse --}}
+<div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
     <a href="tel:{{ domain_phone_raw() }}"
-       class="flex items-center justify-center gap-2 text-white font-bold text-base sm:text-lg py-3 sm:py-4">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <svg class="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
         </svg>
         <span>Call Now — Free Quote</span>
     </a>
 </div>
-<div class="h-12 md:hidden safe-area-bottom"></div>
+<div class="h-20 md:hidden"></div>
 
 <script>
     // Header scroll effect - shrink on scroll

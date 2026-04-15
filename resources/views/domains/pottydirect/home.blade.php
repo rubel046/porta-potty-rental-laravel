@@ -249,33 +249,48 @@
                     states!
                 </p>
 
-                {{-- CTA Buttons --}}
+                {{-- CTA Buttons - PHONE IS PRIMARY CTA --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    {{-- PRIMARY CTA: Phone number as large button --}}
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-lg sm:text-xl md:text-2xl font-bold
-                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
-                              transition-all hover:scale-105 hover:shadow-emerald-500/50
-                              flex items-center justify-center gap-2 sm:gap-3 hero-cta-btn">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
+                              text-white text-xl sm:text-2xl md:text-3xl font-bold
+                              py-4 sm:py-5 px-8 sm:px-12 rounded-2xl shadow-2xl shadow-amber-500/40
+                              transition-all hover:scale-[1.02] hover:shadow-amber-500/50
+                              flex items-center justify-center gap-3 sm:gap-4
+                              ring-4 ring-amber-400/30 animate-pulse-slow">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
-                        {{ domain_phone_display() }}
+                        <span>{{ domain_phone_display() }}</span>
                     </a>
+                    
+                    {{-- SECONDARY CTA: Find city --}}
                     <a href="{{ route('locations') }}"
                        class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
-                              border border-white/20 text-white text-base sm:text-lg font-semibold
-                              py-3 sm:py-4 px-6 sm:px-8 rounded-full
-                              transition-all hover:scale-105
+                              border-2 border-white/30 text-white text-base sm:text-lg font-semibold
+                              py-3 sm:py-4 px-6 sm:px-8 rounded-xl
+                              transition-all hover:scale-[1.02]
                               flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                             <circle cx="12" cy="10" r="3"/>
                         </svg>
-                        Find Your City
+                        <span>Find Your City</span>
                     </a>
+                </div>
+
+                {{-- Urgency Badge - High contrast for visibility on dark background --}}
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+                    <span class="inline-flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-xs sm:text-sm px-3 py-1.5 rounded-full font-semibold shadow-lg">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>Same-day delivery: Order by 2PM</span>
+                    </span>
                 </div>
 
                 {{-- Location Search Bar - Improved --}}
@@ -433,6 +448,76 @@
                 <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z"
                       fill="white"/>
             </svg>
+        </div>
+    </section>
+
+    {{-- CONSOLIDATED TRUST SIGNALS BAR --}}
+    <section class="py-4 sm:py-6 bg-gradient-to-r from-emerald-50 to-emerald-50 border-b border-emerald-100">
+        <div class="max-w-6xl mx-auto px-3 sm:px-6">
+            <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-center">
+                {{-- Trust Score --}}
+                <div class="flex items-center gap-2">
+                    <div class="flex">
+                        @for($i = 0; $i < 5; $i++)
+                            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <span class="text-sm font-bold text-slate-700">4.9/5</span>
+                    <span class="text-xs text-slate-500">(500+ reviews)</span>
+                </div>
+                
+                <span class="hidden sm:inline text-emerald-300">|</span>
+                
+                {{-- BBB --}}
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-700">BBB A+</span>
+                </div>
+                
+                <span class="hidden sm:inline text-emerald-300">|</span>
+                
+                {{-- Same-Day --}}
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-700">Same-Day Delivery</span>
+                </div>
+                
+                <span class="hidden sm:inline text-emerald-300">|</span>
+                
+                {{-- No Hidden Fees --}}
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-700">No Hidden Fees</span>
+                </div>
+                
+                <span class="hidden md:inline text-emerald-300">|</span>
+                
+                {{-- 24/7 --}}
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-700">24/7 Support</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -739,105 +824,198 @@
     @endif
 
     {{-- ============================================ --}}
-    {{-- HOW MANY UNITS DO I NEED? (SEO + CRO) --}}
+    {{-- INTERACTIVE UNIT CALCULATOR WIDGET --}}
     {{-- ============================================ --}}
-    <section class="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-white border-y border-slate-200">
-        <div class="max-w-5xl mx-auto">
+    <section class="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-gradient-to-br from-slate-50 via-white to-slate-50 border-y border-slate-200">
+        <div class="max-w-4xl mx-auto">
             <div class="text-center mb-8 sm:mb-10">
                 <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
-                    How Many Porta Potties Do I Need?
+                    🤔 How Many Units Do You Need?
                 </h2>
                 <p class="text-sm sm:text-base text-slate-500">
-                    Use our quick guide to calculate the right number of units for your project or event
+                    Use our interactive calculator to find the right number of porta potties
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             stroke-width="1.5">
-                            <path d="m2 22 10-10"/>
-                            <path d="m16 8-1.17-1.17"/>
-                            <path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/>
-                        </svg>
-                        Construction Sites
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">1-10 workers</span>
-                            <span class="font-bold text-emerald-600">1 unit</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">11-20 workers</span>
-                            <span class="font-bold text-emerald-600">2 units</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">21-40 workers</span>
-                            <span class="font-bold text-emerald-600">3 units</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">41-100 workers</span>
-                            <span class="font-bold text-emerald-600">5 units</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-slate-600 text-sm">100+ workers</span>
-                            <span class="font-bold text-emerald-600">1 per 20</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-4">*OSHA requires 1 unit per 20 workers</p>
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                {{-- Calculator Tabs --}}
+                <div class="flex border-b border-slate-200">
+                    <button onclick="switchCalculator('construction')" 
+                            id="calc-tab-construction"
+                            class="flex-1 py-4 px-6 text-center font-semibold text-sm sm:text-base bg-emerald-500 text-white transition-all calc-tab">
+                        🏗️ Construction
+                    </button>
+                    <button onclick="switchCalculator('event')" 
+                            id="calc-tab-event"
+                            class="flex-1 py-4 px-6 text-center font-semibold text-sm sm:text-base text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all calc-tab">
+                        🎉 Event / Party
+                    </button>
                 </div>
 
-                <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             stroke-width="1.5">
-                            <path d="M12 2v8"/>
-                            <path d="M8 6c0-2.21 2.239-4 5-4s5 1.79 5 4"/>
-                            <path d="M3 22h18"/>
-                            <circle cx="7" cy="18" r="2"/>
-                            <circle cx="17" cy="18" r="2"/>
-                        </svg>
-                        Events & Parties
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">Up to 50 guests</span>
-                            <span class="font-bold text-emerald-600">2 units</span>
+                {{-- Calculator Content --}}
+                <div class="p-6 sm:p-8">
+                    {{-- Construction Calculator --}}
+                    <div id="calculator-construction" class="calc-content">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-3">
+                                    Number of Workers
+                                </label>
+                                <input type="range" id="workers-slider" min="1" max="200" value="20" 
+                                       class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                                       oninput="updateConstructionCalc()">
+                                <div class="flex justify-between mt-2">
+                                    <span class="text-xs text-slate-400">1</span>
+                                    <span class="text-lg font-bold text-emerald-600" id="workers-display">20</span>
+                                    <span class="text-xs text-slate-400">200+</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                <svg class="w-5 h-5 text-amber-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <span class="text-sm text-amber-800">OSHA requires 1 unit per 20 workers</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">50-100 guests</span>
-                            <span class="font-bold text-emerald-600">3 units</span>
+
+                        {{-- Result --}}
+                        <div class="mt-8 p-6 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl text-center">
+                            <div class="text-white text-sm mb-1">Recommended Units</div>
+                            <div class="text-white text-4xl sm:text-5xl font-bold" id="construction-result">2</div>
+                            <div class="text-emerald-100 text-sm mt-2">units for your job site</div>
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">100-250 guests</span>
-                            <span class="font-bold text-emerald-600">4-5 units</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
-                            <span class="text-slate-600 text-sm">250-500 guests</span>
-                            <span class="font-bold text-emerald-600">6-8 units</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-slate-600 text-sm">500+ guests</span>
-                            <span class="font-bold text-emerald-600">1 per 50</span>
+
+                        <div class="mt-6 text-center">
+                            <a href="tel:{{ domain_phone_raw() }}"
+                               class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02]">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                Call for Exact Quote
+                            </a>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-400 mt-4">*Add 20% more if alcohol is served</p>
-                </div>
-            </div>
 
-            <div class="mt-8 text-center">
-                <p class="text-slate-500 text-sm mb-4">Not sure? Our team can help you calculate!</p>
-                <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                    </svg>
-                    Call for Free Consultation
-                </a>
+                    {{-- Event Calculator --}}
+                    <div id="calculator-event" class="calc-content hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-3">
+                                    Number of Guests
+                                </label>
+                                <input type="range" id="guests-slider" min="10" max="500" value="100" step="10"
+                                       class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                       oninput="updateEventCalc()">
+                                <div class="flex justify-between mt-2">
+                                    <span class="text-xs text-slate-400">10</span>
+                                    <span class="text-lg font-bold text-blue-600" id="guests-display">100</span>
+                                    <span class="text-xs text-slate-400">500+</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-3">
+                                    Event Duration
+                                </label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button onclick="setEventDuration('short')" 
+                                            class="duration-btn py-3 px-4 border-2 border-emerald-500 bg-emerald-500 text-white rounded-xl font-semibold text-sm"
+                                            data-duration="short">
+                                        4 hours
+                                    </button>
+                                    <button onclick="setEventDuration('medium')" 
+                                            class="duration-btn py-3 px-4 border-2 border-slate-200 text-slate-600 rounded-xl font-semibold text-sm hover:border-emerald-300"
+                                            data-duration="medium">
+                                        8 hours
+                                    </button>
+                                    <button onclick="setEventDuration('long')" 
+                                            class="duration-btn py-3 px-4 border-2 border-slate-200 text-slate-600 rounded-xl font-semibold text-sm hover:border-emerald-300"
+                                            data-duration="long">
+                                        All Day
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                <input type="checkbox" id="alcohol-check" class="w-4 h-4 accent-blue-600" onchange="updateEventCalc()">
+                                <label for="alcohol-check" class="text-sm text-blue-800">Alcohol will be served (+20% units recommended)</label>
+                            </div>
+                        </div>
+
+                        {{-- Result --}}
+                        <div class="mt-8 p-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-center">
+                            <div class="text-white text-sm mb-1">Recommended Units</div>
+                            <div class="text-white text-4xl sm:text-5xl font-bold" id="event-result">3</div>
+                            <div class="text-blue-100 text-sm mt-2">units for your event</div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <a href="tel:{{ domain_phone_raw() }}"
+                               class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02]">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                Call for Exact Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <script>
+        let eventDuration = 'short';
+
+        function switchCalculator(type) {
+            document.querySelectorAll('.calc-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.calc-tab').forEach(tab => {
+                tab.classList.remove('bg-emerald-500', 'text-white');
+                tab.classList.add('text-slate-500');
+            });
+            document.getElementById('calculator-' + type).classList.remove('hidden');
+            document.getElementById('calc-tab-' + type).classList.add('bg-emerald-500', 'text-white');
+            document.getElementById('calc-tab-' + type).classList.remove('text-slate-500');
+        }
+
+        function updateConstructionCalc() {
+            const workers = parseInt(document.getElementById('workers-slider').value);
+            document.getElementById('workers-display').textContent = workers;
+            const units = Math.ceil(workers / 20);
+            document.getElementById('construction-result').textContent = units;
+        }
+
+        function setEventDuration(duration) {
+            eventDuration = duration;
+            document.querySelectorAll('.duration-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+                btn.classList.add('border-slate-200', 'text-slate-600');
+            });
+            const activeBtn = document.querySelector(`[data-duration="${duration}"]`);
+            activeBtn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+            activeBtn.classList.remove('border-slate-200', 'text-slate-600');
+            updateEventCalc();
+        }
+
+        function updateEventCalc() {
+            const guests = parseInt(document.getElementById('guests-slider').value);
+            document.getElementById('guests-display').textContent = guests;
+            
+            let ratio = eventDuration === 'short' ? 50 : (eventDuration === 'medium' ? 25 : 20);
+            let units = Math.ceil(guests / ratio);
+            
+            if (document.getElementById('alcohol-check').checked) {
+                units = Math.ceil(units * 1.2);
+            }
+            
+            document.getElementById('event-result').textContent = units;
+        }
+
+        updateConstructionCalc();
+    </script>
 
     {{-- ============================================ --}}
     {{-- EMERGENCY SERVICE BANNER --}}
@@ -1494,7 +1672,7 @@
                             @endfor
                         </div>
                         <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
-                            "{{ $testimonial['text'] }}"</p>
+                            {!! $testimonial['text'] !!}</p>
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                                 {{ substr($testimonial['name'], 0, 1) }}
@@ -1832,10 +2010,12 @@
                         'a' => 'We believe in transparent pricing. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">Quotes include delivery, setup, servicing, and pickup</a> — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit.',
                     ],
                 ];
+                $visibleFaqs = array_slice($homeFaqs, 0, 4);
+                $hiddenFaqs = array_slice($homeFaqs, 4);
             @endphp
 
-            <div class="space-y-3">
-                @foreach($homeFaqs as $faq)
+            <div class="space-y-3" id="faq-container">
+                @foreach($visibleFaqs as $faq)
                     <details
                             class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
                         <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
@@ -1850,13 +2030,34 @@
                         </div>
                     </details>
                 @endforeach
+
+                <div id="hidden-faqs" class="hidden space-y-3">
+                    @foreach($hiddenFaqs as $faq)
+                        <details
+                                class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
+                            <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
+                                        font-semibold text-slate-800 hover:text-emerald-600 transition
+                                        list-none text-sm sm:text-base">
+                                <span>{{ $faq['q'] }}</span>
+                                <span class="text-xl sm:text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
+                                         transition-all duration-300 ml-2 sm:ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">+</span>
+                            </summary>
+                            <div class="px-4 sm:px-5 pb-4 sm:pb-5 text-slate-600 leading-relaxed text-sm sm:text-base">
+                                <p>{!! $faq['a'] !!}</p>
+                            </div>
+                        </details>
+                    @endforeach
+                </div>
             </div>
 
             <div class="text-center mt-6 sm:mt-8">
-                <a href="{{ route('blog.index') }}"
-                   class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base">
-                    View more porta potty rental guides →
-                </a>
+                <button onclick="document.getElementById('hidden-faqs').classList.remove('hidden'); this.remove();"
+                        class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base inline-flex items-center gap-2">
+                    <span>View all {{ count($homeFaqs) }} questions</span>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </section>
