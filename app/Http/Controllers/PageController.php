@@ -21,19 +21,37 @@ class PageController extends Controller
      */
     public function home()
     {
-        $featuredCities = Cache::remember('featured_cities', 3600, function () {
-            return City::active()
-                ->with(['state', 'servicePages'])
-                ->byPriority()
+        $domain = Domain::current();
+
+        $featuredCities = Cache::remember('featured_cities_'.($domain?->id ?? 'default'), 3600, function () use ($domain) {
+            $query = City::active()->with(['state', 'servicePages' => function ($q) use ($domain) {
+                if ($domain) {
+                    $q->where('domain_id', $domain->id);
+                }
+            }]);
+
+            if ($domain) {
+                $query->whereHas('domains', fn ($q) => $q->where('domain_id', $domain->id));
+            }
+
+            return $query->byPriority()
                 ->take(20)
                 ->get()
                 ->toArray();
         });
 
-        $topCities = Cache::remember('top_cities_for_schema', 3600, function () {
-            return City::active()
-                ->with('state')
-                ->byPriority()
+        $topCities = Cache::remember('top_cities_for_schema_'.($domain?->id ?? 'default'), 3600, function () use ($domain) {
+            $query = City::active()->with(['state', 'servicePages' => function ($q) use ($domain) {
+                if ($domain) {
+                    $q->where('domain_id', $domain->id);
+                }
+            }]);
+
+            if ($domain) {
+                $query->whereHas('domains', fn ($q) => $q->where('domain_id', $domain->id));
+            }
+
+            return $query->byPriority()
                 ->take(10)
                 ->get()
                 ->toArray();

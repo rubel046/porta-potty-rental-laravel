@@ -10,7 +10,7 @@ class BlogCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $domains = Domain::all();
+        $domains = Domain::where('id', 1)->get();
 
         if ($domains->isEmpty()) {
             $this->seedDefaultCategories(null);

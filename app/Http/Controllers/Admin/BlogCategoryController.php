@@ -34,8 +34,12 @@ class BlogCategoryController extends Controller
     public function create()
     {
         $domains = Domain::orderBy('name')->get();
+        $domain = Domain::current();
 
-        return view('admin.blog-categories.form', compact('domains'));
+        $nextSortOrder = BlogCategory::where('domain_id', $domain?->id)
+            ->max('sort_order') + 1;
+
+        return view('admin.blog-categories.form', compact('domains', 'nextSortOrder'));
     }
 
     public function store(Request $request)

@@ -43,10 +43,12 @@
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <input type="hidden" name="icon" :value="selected">
-                <div x-show="open" x-transition.opacity style="display: none;" class="absolute z-20 w-80 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 flex gap-1 overflow-x-auto">
-                    @foreach(['📁','💰','🎉','🏗️','💒','📋','📰','🚨','🏠','✨','🧼','☀️','📍','🔧','📦','🚚','⏰','⭐','🎯','📞','💵','🛠️','🏢','🌳'] as $icon)
-                    <button type="button" @click="selected = '{{ $icon }}'; open = false" class="p-2 text-xl hover:bg-gray-100 rounded shrink-0" :class="selected === '{{ $icon }}' ? 'bg-green-100' : ''">{{ $icon }}</button>
-                    @endforeach
+                <div x-show="open" x-transition.opacity style="display: none;" class="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                    <div class="flex flex-wrap gap-1">
+                        @foreach(['📁','💰','🎉','🏗️','💒','📋','📰','🚨','🏠','✨','🧼','☀️','📍','🔧','📦','🚚','⏰','⭐','🎯','📞','💵','🛠️','🏢','🌳'] as $icon)
+                        <button type="button" @click="selected = '{{ $icon }}'; open = false" class="p-1.5 text-lg hover:bg-gray-100 rounded-md transition" :class="selected === '{{ $icon }}' ? 'bg-green-100' : ''">{{ $icon }}</button>
+                        @endforeach
+                    </div>
                 </div>
                 <p class="text-xs text-gray-400 mt-1">Click to select</p>
             </div>
@@ -54,7 +56,7 @@
             <div>
                 <label class="form-label">Sort Order</label>
                 <input type="number" name="sort_order" class="form-input" min="0"
-                       value="{{ old('sort_order', $category->sort_order ?? 0) }}">
+                       value="{{ old('sort_order', isset($category) ? $category->sort_order : ($nextSortOrder ?? 0)) }}">
             </div>
         </div>
 

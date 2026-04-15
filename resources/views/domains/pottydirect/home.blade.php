@@ -5,189 +5,189 @@
 @section('canonical', url('/'))
 
 @push('schema')
-@php
-$url = url('/');
-$phone = domain_phone_raw();
-$domain = \App\Models\Domain::current();
+    @php
+        $url = url('/');
+        $phone = domain_phone_raw();
+        $domain = \App\Models\Domain::current();
 
-$areaServed = collect($topCities ?? [])->map(fn($c) => ["@type" => "City", "name" => $c['name']])->toArray();
-if (empty($areaServed)) {
-    $areaServed = [["@type" => "Country", "name" => "United States"]];
-}
+        $areaServed = collect($topCities ?? [])->map(fn($c) => ["@type" => "City", "name" => $c['name']])->toArray();
+        if (empty($areaServed)) {
+            $areaServed = [["@type" => "Country", "name" => "United States"]];
+        }
 
-$businessSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "LocalBusiness",
-    "@id" => $url . "#business",
-    "name" => $domain?->business_name ?? "Potty Direct",
-    "alternateName" => $domain?->primary_service ?? "Portable Restroom Rental",
-    "description" => $domain?->tagline ?? "Portable restroom rental service across the USA. Same-day delivery available.",
-    "url" => $url,
-    "telephone" => $phone,
-    "priceRange" => "$$",
-    "image" => $url . "/og-image.jpg",
-    "areaServed" => $areaServed,
-    "openingHoursSpecification" => [
-        ["@type" => "OpeningHoursSpecification", "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens" => "00:00", "closes" => "23:59"]
-    ],
-    "hasOfferCatalog" => [
-        "@type" => "OfferCatalog",
-        "name" => ($domain?->primary_service ?? "Portable Restroom") . " Rentals",
-        "itemListElement" => [
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "ADA Accessible Unit"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Dumpster Rental"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Septic Service"]]
-        ]
-    ],
-    "aggregateRating" => ["@type" => "AggregateRating", "ratingValue" => "4.9", "reviewCount" => "500"]
-];
+        $businessSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "LocalBusiness",
+            "@id" => $url . "#business",
+            "name" => $domain?->business_name ?? "Potty Direct",
+            "alternateName" => $domain?->primary_service ?? "Portable Restroom Rental",
+            "description" => $domain?->tagline ?? "Portable restroom rental service across the USA. Same-day delivery available.",
+            "url" => $url,
+            "telephone" => $phone,
+            "priceRange" => "$$",
+            "image" => $url . "/og-image.jpg",
+            "areaServed" => $areaServed,
+            "openingHoursSpecification" => [
+                ["@type" => "OpeningHoursSpecification", "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens" => "00:00", "closes" => "23:59"]
+            ],
+            "hasOfferCatalog" => [
+                "@type" => "OfferCatalog",
+                "name" => ($domain?->primary_service ?? "Portable Restroom") . " Rentals",
+                "itemListElement" => [
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Standard Portable Restroom Rental"]],
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Deluxe Flushable Unit"]],
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "ADA Accessible Unit"]],
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Luxury Restroom Trailer"]],
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Dumpster Rental"]],
+                    ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Septic Service"]]
+                ]
+            ],
+            "aggregateRating" => ["@type" => "AggregateRating", "ratingValue" => "4.9", "reviewCount" => "500"]
+        ];
 
-$orgSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "Organization",
-    "@id" => $url . "#organization",
-    "name" => $domain?->business_name ?? "Potty Direct",
-    "url" => $url,
-    "logo" => $url . "/logo.png",
-    "sameAs" => ["https://www.facebook.com/pottydirect", "https://www.twitter.com/pottydirect"],
-    "contactPoint" => ["@type" => "ContactPoint", "telephone" => $phone, "contactType" => "customer service", "areaServed" => "US", "availableLanguage" => "English"]
-];
+        $orgSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "Organization",
+            "@id" => $url . "#organization",
+            "name" => $domain?->business_name ?? "Potty Direct",
+            "url" => $url,
+            "logo" => $url . "/logo.png",
+            "sameAs" => ["https://www.facebook.com/pottydirect", "https://www.twitter.com/pottydirect"],
+            "contactPoint" => ["@type" => "ContactPoint", "telephone" => $phone, "contactType" => "customer service", "areaServed" => "US", "availableLanguage" => "English"]
+        ];
 
-$websiteSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "WebSite",
-    "@id" => $url . "#website",
-    "url" => $url,
-    "name" => ($domain?->business_name ?? "Potty Direct") . " - " . ($domain?->primary_service ?? "Portable Restroom Rental"),
-    "publisher" => ["@id" => $url . "#organization"],
-    "potentialAction" => ["@type" => "SearchAction", "target" => $url . "/locations?q={search_term_string}", "query-input" => "required name=search_term_string"]
-];
+        $websiteSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "WebSite",
+            "@id" => $url . "#website",
+            "url" => $url,
+            "name" => ($domain?->business_name ?? "Potty Direct") . " - " . ($domain?->primary_service ?? "Portable Restroom Rental"),
+            "publisher" => ["@id" => $url . "#organization"],
+            "potentialAction" => ["@type" => "SearchAction", "target" => $url . "/locations?q={search_term_string}", "query-input" => "required name=search_term_string"]
+        ];
 
-$faqSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "FAQPage",
-    "mainEntity" => [
-        ["@type" => "Question", "name" => "How much does a porta potty rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. Call us for a personalized quote."]],
-        ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
-        ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
-        ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
-        ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number."]],
-        ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
-        ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
-        ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
-        ["@type" => "Question", "name" => "How often are porta potties serviced?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing."]],
-        ["@type" => "Question", "name" => "Do you provide ADA-accessible portable restrooms?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units."]],
-        ["@type" => "Question", "name" => "What areas do you service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We service cities and counties across the state. Enter your zip code or city on our locations page to see if we service your area, or call us for quick confirmation."]],
-        ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
-        ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
-        ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
-        ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
-        ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit."]]
-    ]
-];
-
-$reviewSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "Collection",
-    "name" => "Customer Reviews",
-    "description" => "Customer reviews and testimonials for Potty Direct porta potty rental service",
-    "itemListElement" => [
-        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
-        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],
-        ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "David Chen"], "reviewBody" => "Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!"]
-    ]
-];
-
-$breadcrumbSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "BreadcrumbList",
-    "itemListElement" => [
-        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => url('/')],
-        ["@type" => "ListItem", "position" => 2, "name" => "Porta Potty Rental", "item" => url('/services')],
-        ["@type" => "ListItem", "position" => 3, "name" => "Locations", "item" => url('/locations')]
-    ]
-];
-
-$serviceSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "ItemList",
-    "name" => "Portable Restroom Rental Services",
-    "description" => "We offer a variety of porta potty rental options across the USA",
-    "itemListElement" => [
-        [
-            "@type" => "ListItem",
-            "position" => 1,
-            "item" => [
-                "@type" => "Service",
-                "name" => "Standard Portable Toilet Rental",
-                "description" => "Basic portable toilet for construction sites and outdoor events. OSHA compliant with non-splash urinal, ventilation, and hand sanitizer.",
-                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
-                "areaServed" => ["@type" => "Country", "name" => "United States"],
-                "priceRange" => "$100-175/day"
+        $faqSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "FAQPage",
+            "mainEntity" => [
+                ["@type" => "Question", "name" => "How much does a porta potty rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. Call us for a personalized quote."]],
+                ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
+                ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
+                ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
+                ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number."]],
+                ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
+                ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
+                ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
+                ["@type" => "Question", "name" => "How often are porta potties serviced?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing."]],
+                ["@type" => "Question", "name" => "Do you provide ADA-accessible portable restrooms?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units."]],
+                ["@type" => "Question", "name" => "What areas do you service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We service cities and counties across the state. Enter your zip code or city on our locations page to see if we service your area, or call us for quick confirmation."]],
+                ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
+                ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
+                ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
+                ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
+                ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit."]]
             ]
-        ],
-        [
-            "@type" => "ListItem",
-            "position" => 2,
-            "item" => [
-                "@type" => "Service",
-                "name" => "Deluxe Flushable Unit Rental",
-                "description" => "Premium portable toilet with flushing toilet, sink with running water, interior mirror, and handwashing station.",
-                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
-                "areaServed" => ["@type" => "Country", "name" => "United States"],
-                "priceRange" => "$175-275/day"
+        ];
+
+        $reviewSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "Collection",
+            "name" => "Customer Reviews",
+            "description" => "Customer reviews and testimonials for Potty Direct porta potty rental service",
+            "itemListElement" => [
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "David Chen"], "reviewBody" => "Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!"]
             ]
-        ],
-        [
-            "@type" => "ListItem",
-            "position" => 3,
-            "item" => [
-                "@type" => "Service",
-                "name" => "ADA Accessible Portable Restroom",
-                "description" => "Wheelchair accessible portable toilet with extra-wide door, interior grab bars, non-slip flooring, and spacious interior.",
-                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
-                "areaServed" => ["@type" => "Country", "name" => "United States"],
-                "priceRange" => "$175-275/day"
+        ];
+
+        $breadcrumbSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "BreadcrumbList",
+            "itemListElement" => [
+                ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => url('/')],
+                ["@type" => "ListItem", "position" => 2, "name" => "Porta Potty Rental", "item" => url('/services')],
+                ["@type" => "ListItem", "position" => 3, "name" => "Locations", "item" => url('/locations')]
             ]
-        ],
-        [
-            "@type" => "ListItem",
-            "position" => 4,
-            "item" => [
-                "@type" => "Service",
-                "name" => "Luxury Restroom Trailer Rental",
-                "description" => "Premium climate-controlled restroom trailers with porcelain fixtures, vanity, lighting, men's and women's sides. Perfect for weddings and upscale events.",
-                "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
-                "areaServed" => ["@type" => "Country", "name" => "United States"],
-                "priceRange" => "$500-1500/day"
+        ];
+
+        $serviceSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "ItemList",
+            "name" => "Portable Restroom Rental Services",
+            "description" => "We offer a variety of porta potty rental options across the USA",
+            "itemListElement" => [
+                [
+                    "@type" => "ListItem",
+                    "position" => 1,
+                    "item" => [
+                        "@type" => "Service",
+                        "name" => "Standard Portable Toilet Rental",
+                        "description" => "Basic portable toilet for construction sites and outdoor events. OSHA compliant with non-splash urinal, ventilation, and hand sanitizer.",
+                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "areaServed" => ["@type" => "Country", "name" => "United States"],
+                        "priceRange" => "$100-175/day"
+                    ]
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 2,
+                    "item" => [
+                        "@type" => "Service",
+                        "name" => "Deluxe Flushable Unit Rental",
+                        "description" => "Premium portable toilet with flushing toilet, sink with running water, interior mirror, and handwashing station.",
+                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "areaServed" => ["@type" => "Country", "name" => "United States"],
+                        "priceRange" => "$175-275/day"
+                    ]
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "item" => [
+                        "@type" => "Service",
+                        "name" => "ADA Accessible Portable Restroom",
+                        "description" => "Wheelchair accessible portable toilet with extra-wide door, interior grab bars, non-slip flooring, and spacious interior.",
+                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "areaServed" => ["@type" => "Country", "name" => "United States"],
+                        "priceRange" => "$175-275/day"
+                    ]
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 4,
+                    "item" => [
+                        "@type" => "Service",
+                        "name" => "Luxury Restroom Trailer Rental",
+                        "description" => "Premium climate-controlled restroom trailers with porcelain fixtures, vanity, lighting, men's and women's sides. Perfect for weddings and upscale events.",
+                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "areaServed" => ["@type" => "Country", "name" => "United States"],
+                        "priceRange" => "$500-1500/day"
+                    ]
+                ]
             ]
-        ]
-    ]
-];
-$howtoSchema = [
-    "@context" => "https://schema.org",
-    "@type" => "HowTo",
-    "name" => "How to Rent a Porta Potty in 3 Steps",
-    "description" => "Learn how to rent a portable toilet for construction sites, events, or weddings in just 3 simple steps.",
-    "step" => [
-        ["@type" => "HowToStep", "name" => "Call for a Quote", "text" => "Contact us at " . domain_phone_display() . " and tell us how many porta potties you need, what type, and your location. We'll provide an instant, transparent quote.", "url" => url('/') . "#pricing"],
-        ["@type" => "HowToStep", "name" => "We Deliver", "text" => "We deliver clean, sanitized portable toilets to your location. Same-day delivery available when you call before 2 PM.", "url" => url('/') . "#services"],
-        ["@type" => "HowToStep", "name" => "We Maintain & Pick Up", "text" => "For weekly/monthly rentals, we provide regular servicing. When you're done, we handle pickup — no hassle for you.", "url" => url('/') . "#services"]
-    ],
-    "totalTime" => "PT10M"
-];
-@endphp
-<script type="application/ld+json">{!! json_encode($businessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($orgSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($reviewSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($howtoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+        ];
+        $howtoSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "HowTo",
+            "name" => "How to Rent a Porta Potty in 3 Steps",
+            "description" => "Learn how to rent a portable toilet for construction sites, events, or weddings in just 3 simple steps.",
+            "step" => [
+                ["@type" => "HowToStep", "name" => "Call for a Quote", "text" => "Contact us at " . domain_phone_display() . " and tell us how many porta potties you need, what type, and your location. We'll provide an instant, transparent quote.", "url" => url('/') . "#pricing"],
+                ["@type" => "HowToStep", "name" => "We Deliver", "text" => "We deliver clean, sanitized portable toilets to your location. Same-day delivery available when you call before 2 PM.", "url" => url('/') . "#services"],
+                ["@type" => "HowToStep", "name" => "We Maintain & Pick Up", "text" => "For weekly/monthly rentals, we provide regular servicing. When you're done, we handle pickup — no hassle for you.", "url" => url('/') . "#services"]
+            ],
+            "totalTime" => "PT10M"
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($businessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($orgSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($reviewSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($howtoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
@@ -243,8 +243,10 @@ $howtoSchema = [
                 </h1>
 
                 <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-4 sm:mb-6 leading-relaxed max-w-xl">
-                    Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor event, or wedding?
-                    We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50 states!
+                    Need a <strong class="text-white">porta potty rental</strong> for your construction site, outdoor
+                    event, or wedding?
+                    We deliver clean, sanitized <strong class="text-white">portable toilet rentals</strong> to all 50
+                    states!
                 </p>
 
                 {{-- CTA Buttons --}}
@@ -255,7 +257,8 @@ $howtoSchema = [
                               py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
                               transition-all hover:scale-105 hover:shadow-emerald-500/50
                               flex items-center justify-center gap-2 sm:gap-3 hero-cta-btn">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
                         {{ domain_phone_display() }}
@@ -266,8 +269,10 @@ $howtoSchema = [
                               py-3 sm:py-4 px-6 sm:px-8 rounded-full
                               transition-all hover:scale-105
                               flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
                         </svg>
                         Find Your City
                     </a>
@@ -275,15 +280,19 @@ $howtoSchema = [
 
                 {{-- Location Search Bar - Improved --}}
                 <div class="w-full max-w-2xl">
-                    <form action="{{ route('locations') }}" method="GET" class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <form action="{{ route('locations') }}" method="GET"
+                          class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <div class="flex-1 relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             </div>
-                            <select name="quick_city" 
+                            <select name="quick_city"
                                     class="w-full bg-white border-2 border-white/20 text-slate-800 text-base py-3.5 pl-11 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 cursor-pointer appearance-none font-medium"
                                     style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%206l4%204%204-4%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.25rem;"
                                     onchange="if(this.value){window.location=this.value;}">
@@ -297,25 +306,32 @@ $howtoSchema = [
                                         $citySlug = $servicePage['slug'] ?? null;
                                     @endphp
                                     @if($citySlug)
-                                        <option value="{{ url($citySlug) }}" class="text-slate-800">{{ $city['name'] }}, {{ $city['state']['code'] ?? '' }}</option>
+                                        <option value="{{ url($citySlug) }}" class="text-slate-800">{{ $city['name'] }}
+                                            , {{ $city['state']['code'] ?? '' }}</option>
                                     @endif
                                 @endforeach
-                                <option value="{{ route('locations') }}" class="text-slate-800">View All Locations</option>
+                                <option value="{{ route('locations') }}" class="text-slate-800">View All Locations
+                                </option>
                             </select>
                         </div>
                         <div class="flex-1 relative sm:flex-none sm:w-36">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11.5A2.5 2.5 0 109.5 9a2.5 2.5 0 002.5 2.5z"/>
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 11.5A2.5 2.5 0 109.5 9a2.5 2.5 0 002.5 2.5z"/>
                                 </svg>
                             </div>
                             <input type="text" name="q" placeholder="Zip code"
                                    class="w-full bg-white border-2 border-white/20 text-slate-800 text-base py-3.5 pl-11 pr-4 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 font-medium">
                         </div>
-                        <button type="submit" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 px-6 sm:px-8 rounded-xl transition-all shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center gap-2 whitespace-nowrap">
+                        <button type="submit"
+                                class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 px-6 sm:px-8 rounded-xl transition-all shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center gap-2 whitespace-nowrap">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                             <span>Search</span>
                         </button>
@@ -326,27 +342,51 @@ $howtoSchema = [
                 <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 mt-4 text-xs sm:text-sm trust-indicators">
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <div class="flex">
-                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
                         </div>
                         <span class="text-slate-300 font-medium">4.9/5</span>
                     </div>
                     <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
                         <span class="text-slate-300 font-medium">Licensed & Insured</span>
                     </div>
                     <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
                         <span class="text-slate-300 font-medium">Same-Day</span>
                     </div>
                     <div class="hidden xsm:block h-4 w-px bg-white/20"></div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
                         <span class="text-slate-300 font-medium">No Hidden Fees</span>
                     </div>
                 </div>
@@ -355,25 +395,31 @@ $howtoSchema = [
                 <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-2 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10 text-xs text-slate-400">
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect
+                                        x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>
                         </span>
                         <span class="hidden sm:inline">BBB A+</span>
                     </div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path
+                                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         </span>
                         <span class="hidden sm:inline">OSHA</span>
                     </div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 22 10-10"/><path d="m16 8-1.17-1.17"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="m2 22 10-10"/><path d="m16 8-1.17-1.17"/><path
+                                        d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/></svg>
                         </span>
                         <span class="hidden sm:inline">25+ Yrs</span>
                     </div>
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <span class="px-1.5 sm:px-2 py-0.5 bg-white/10 rounded text-sm">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle
+                                        cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path
+                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         </span>
                         <span class="hidden sm:inline">50K+</span>
                     </div>
@@ -412,7 +458,8 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/>
                             <path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/>
                             <path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/>
@@ -427,7 +474,9 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
@@ -442,7 +491,8 @@ $howtoSchema = [
                     </div>
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 mt-1 sm:mt-2 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="5" width="18" height="14" rx="1"/>
                             <path d="M3 9h18"/>
                             <path d="M7 19v-7"/>
@@ -458,7 +508,9 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
                               text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
@@ -469,7 +521,8 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="17" r="3"/>
                             <path d="M9 17h1"/>
                             <path d="M10 13v-2a2 2 0 1 0-4 0"/>
@@ -487,7 +540,9 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
@@ -498,7 +553,8 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-purple-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M8 22v-7"/>
                             <path d="M16 22v-7"/>
                             <path d="M12 22V8"/>
@@ -514,7 +570,9 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
@@ -525,7 +583,8 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-amber-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="7" width="20" height="13" rx="2"/>
                             <path d="M6 7V4"/>
                             <path d="M18 7V4"/>
@@ -542,7 +601,9 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-amber-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
@@ -553,7 +614,8 @@ $howtoSchema = [
                             group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20 bg-teal-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 flex items-center justify-center text-teal-600 group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.7 1.7a1 1 0 0 0 1.4 0l3.3-3.3a1 1 0 0 0 0-1.4L18 3"/>
                             <path d="M5 5a2 2 0 0 0-2 2v5"/>
                             <path d="M5 9a2 2 0 0 0 2 2h5"/>
@@ -567,14 +629,17 @@ $howtoSchema = [
                        class="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-teal-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                         <span>Get Quote</span>
                     </a>
                 </div>
             </div>
 
             <div class="text-center mt-6 sm:mt-8">
-                <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-2">
+                <a href="{{ route('services') }}"
+                   class="text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-2">
                     View All Services →
                 </a>
             </div>
@@ -586,19 +651,39 @@ $howtoSchema = [
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-wrap justify-center gap-6 sm:gap-8 text-center">
                 <a href="{{ route('services') }}" class="flex flex-col items-center gap-2 group">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/><path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/><path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/><rect x="5" y="9" width="14" height="11" rx="1"/></svg>
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/>
+                        <path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/>
+                        <path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/>
+                        <rect x="5" y="9" width="14" height="11" rx="1"/>
+                    </svg>
                     <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">Our Services</span>
                 </a>
                 <a href="{{ route('pricing') }}" class="flex flex-col items-center gap-2 group">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
                     <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">View Pricing</span>
                 </a>
                 <a href="{{ route('locations') }}" class="flex flex-col items-center gap-2 group">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
                     <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">All Locations</span>
                 </a>
                 <a href="{{ route('blog.index') }}" class="flex flex-col items-center gap-2 group">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 group-hover:text-emerald-600 transition"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
                     <span class="font-semibold text-slate-700 group-hover:text-emerald-600 transition text-sm sm:text-base">Blog</span>
                 </a>
             </div>
@@ -630,7 +715,7 @@ $howtoSchema = [
                         @endphp
                         @if($citySlug)
                             <a href="{{ url($citySlug) }}"
-                               class="flex flex-col items-center gap-2 p-3 sm:p-4 bg-slate-50 hover:bg-emerald-50 
+                               class="flex flex-col items-center gap-2 p-3 sm:p-4 bg-slate-50 hover:bg-emerald-50
                                       border border-slate-200 hover:border-emerald-300 rounded-xl transition-all group">
                                 <span class="text-lg sm:text-xl">📍</span>
                                 <span class="font-semibold text-slate-700 group-hover:text-emerald-700 text-center text-xs sm:text-sm">
@@ -659,9 +744,9 @@ $howtoSchema = [
     <section class="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-white border-y border-slate-200">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-8 sm:mb-10">
-<h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
-                        How Many Porta Potties Do I Need?
-                    </h2>
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                    How Many Porta Potties Do I Need?
+                </h2>
                 <p class="text-sm sm:text-base text-slate-500">
                     Use our quick guide to calculate the right number of units for your project or event
                 </p>
@@ -670,7 +755,12 @@ $howtoSchema = [
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 22 10-10"/><path d="m16 8-1.17-1.17"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/></svg>
+                        <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5">
+                            <path d="m2 22 10-10"/>
+                            <path d="m16 8-1.17-1.17"/>
+                            <path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/>
+                        </svg>
                         Construction Sites
                     </h3>
                     <div class="space-y-3">
@@ -700,7 +790,14 @@ $howtoSchema = [
 
                 <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-200">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v8"/><path d="M8 6c0-2.21 2.239-4 5-4s5 1.79 5 4"/><path d="M3 22h18"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+                        <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5">
+                            <path d="M12 2v8"/>
+                            <path d="M8 6c0-2.21 2.239-4 5-4s5 1.79 5 4"/>
+                            <path d="M3 22h18"/>
+                            <circle cx="7" cy="18" r="2"/>
+                            <circle cx="17" cy="18" r="2"/>
+                        </svg>
                         Events & Parties
                     </h3>
                     <div class="space-y-3">
@@ -733,7 +830,9 @@ $howtoSchema = [
                 <p class="text-slate-500 text-sm mb-4">Not sure? Our team can help you calculate!</p>
                 <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     Call for Free Consultation
                 </a>
             </div>
@@ -746,12 +845,20 @@ $howtoSchema = [
     <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 sm:py-3 px-3 sm:px-4">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center sm:text-left text-xs sm:text-sm">
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <svg class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <svg class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
                 <span class="font-bold">Need Urgent Delivery?</span>
             </div>
             <span class="text-red-100 hidden sm:inline">Same-day emergency service available in most areas.</span>
-            <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <a href="tel:{{ domain_phone_raw() }}"
+               class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
                 Call Now
             </a>
         </div>
@@ -840,8 +947,11 @@ $howtoSchema = [
                         </p>
                         <a href="tel:{{ domain_phone_raw() }}"
                            class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition inline-flex items-center gap-1">
-                             {{ $useCase['link_text'] }}
-                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                            {{ $useCase['link_text'] }}
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m12 19-7-7 7-7"/>
+                                <path d="M19 12H5"/>
+                            </svg>
                         </a>
                     </div>
                 @endforeach
@@ -865,22 +975,40 @@ $howtoSchema = [
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.5">
+                        <rect x="1" y="3" width="15" height="13"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
                     <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">Same-Day Delivery</h3>
                     <p class="text-xs sm:text-sm text-slate-500">Order by 2 PM and get delivery today in most areas</p>
                 </div>
                 <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.5">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
                     <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">No Hidden Fees</h3>
-                    <p class="text-xs sm:text-sm text-slate-500">The price we quote is the price you pay — guaranteed</p>
+                    <p class="text-xs sm:text-sm text-slate-500">The price we quote is the price you pay —
+                        guaranteed</p>
                 </div>
                 <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
                     <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">Clean & Sanitized</h3>
                     <p class="text-xs sm:text-sm text-slate-500">Every unit professionally cleaned before delivery</p>
                 </div>
                 <div class="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.5">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     <h3 class="font-bold text-slate-800 mb-2 text-sm sm:text-base">24/7 Support</h3>
                     <p class="text-xs sm:text-sm text-slate-500">We're always here for emergencies — day or night</p>
                 </div>
@@ -889,7 +1017,9 @@ $howtoSchema = [
             <div class="mt-8 sm:mt-10 text-center">
                 <a href="tel:{{ domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full transition-all text-sm sm:text-base shadow-lg shadow-emerald-500/25 hover:scale-105">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     {{ domain_phone_display() }} — Call Now
                 </a>
             </div>
@@ -925,7 +1055,8 @@ $howtoSchema = [
                     </p>
                     <div class="hidden sm:block absolute top-8 -right-4 md:-right-6 lg:-right-10 text-slate-300">
                         <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </div>
                 </div>
@@ -944,7 +1075,8 @@ $howtoSchema = [
                     </p>
                     <div class="hidden sm:block absolute top-8 -right-4 md:-right-6 lg:-right-10 text-slate-300">
                         <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </div>
                 </div>
@@ -970,7 +1102,9 @@ $howtoSchema = [
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
                           text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full
                           shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     Call Now — Rent a Porta Potty Today
                 </a>
             </div>
@@ -981,7 +1115,11 @@ $howtoSchema = [
                     <div class="relative aspect-video bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
                         {{-- Placeholder - Replace with actual video embed --}}
                         <div class="text-center p-8">
-                            <svg class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                            <svg class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-slate-500" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="1">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <polygon points="10 8 16 12 10 16 10 8"/>
+                            </svg>
                             <h4 class="text-white font-bold text-lg sm:text-xl mb-2">
                                 See Why Thousands Trust Potty Direct
                             </h4>
@@ -991,24 +1129,26 @@ $howtoSchema = [
                             <button type="button"
                                     class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 px-6 rounded-full transition flex items-center gap-2 mx-auto"
                                     onclick="alert('Video player would open here. Upload your company intro video and embed it.')">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
                                 Watch Video
                             </button>
                         </div>
-                        {{-- When ready, replace above with:
+
                         <iframe
-                            src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                            src="https://www.youtube.com/embed/qnmJ31rg118?si=Fc2nOSkql9M_-bYZ"
                             title="Potty Direct Company Overview"
                             class="absolute inset-0 w-full h-full"
                             frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen>
                         </iframe>
-                        --}}
                     </div>
                     <div class="p-4 bg-slate-50 border-t border-slate-200">
                         <p class="text-center text-sm text-slate-500">
-                            Learn about our <strong>same-day delivery</strong>, <strong>clean units</strong>, and <strong>transparent pricing</strong> in under a minute.
+                            Learn about our <strong>same-day delivery</strong>, <strong>clean units</strong>, and
+                            <strong>transparent pricing</strong> in under a minute.
                         </p>
                     </div>
                 </div>
@@ -1052,19 +1192,38 @@ $howtoSchema = [
             </p>
             <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12">
                 <div class="flex items-center gap-2 text-slate-600">
-                    <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
                     <span class="text-sm font-semibold">OSHA Compliant</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
-                    <svg class="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg class="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
                     <span class="text-sm font-semibold">BBB A+ Rated</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
-                    <svg class="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="17" r="3"/><path d="M9 17h1"/><path d="M10 13v-2a2 2 0 1 0-4 0"/><path d="M14 17H8"/><path d="M15 17a2 2 0 1 0 4 0"/><path d="M17 17h2"/></svg>
+                    <svg class="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <circle cx="12" cy="17" r="3"/>
+                        <path d="M9 17h1"/>
+                        <path d="M10 13v-2a2 2 0 1 0-4 0"/>
+                        <path d="M14 17H8"/>
+                        <path d="M15 17a2 2 0 1 0 4 0"/>
+                        <path d="M17 17h2"/>
+                    </svg>
                     <span class="text-sm font-semibold">ADA Certified</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
-                    <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
                     <span class="text-sm font-semibold">EPA Compliant</span>
                 </div>
             </div>
@@ -1084,28 +1243,36 @@ $howtoSchema = [
                     </h3>
                     <div class="space-y-3 sm:space-y-4">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">✅</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">
+                                ✅
+                            </div>
                             <div>
                                 <div class="font-semibold text-slate-800 text-sm sm:text-base">OSHA Compliant</div>
                                 <div class="text-xs sm:text-sm text-slate-500">Safety regulations</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">♿</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">
+                                ♿
+                            </div>
                             <div>
                                 <div class="font-semibold text-slate-800 text-sm sm:text-base">ADA Certified</div>
                                 <div class="text-xs sm:text-sm text-slate-500">Wheelchair accessible</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">🏢</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">
+                                🏢
+                            </div>
                             <div>
                                 <div class="font-semibold text-slate-800 text-sm sm:text-base">BBB A+ Rated</div>
                                 <div class="text-xs sm:text-sm text-slate-500">Better Business Bureau</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">🌿</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg sm:rounded-xl flex items-center justify-center text-xl">
+                                🌿
+                            </div>
                             <div>
                                 <div class="font-semibold text-slate-800 text-sm sm:text-base">EPA Compliant</div>
                                 <div class="text-xs sm:text-sm text-slate-500">Eco-friendly disposal</div>
@@ -1170,7 +1337,8 @@ $howtoSchema = [
     {{-- ============================================ --}}
     {{-- WHY CHOOSE US --}}
     {{-- ============================================ --}}
-    <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <section
+            class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-8 sm:mb-10 md:mb-14">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
@@ -1221,30 +1389,36 @@ $howtoSchema = [
                 <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
                     <div class="text-3xl sm:text-4xl mb-2">🛡️</div>
                     <h3 class="font-bold text-white text-sm sm:text-base mb-1">100% Satisfaction Guarantee</h3>
-                    <p class="text-emerald-100 text-xs sm:text-sm">We'll redo any service at no charge if you're not completely satisfied.</p>
+                    <p class="text-emerald-100 text-xs sm:text-sm">We'll redo any service at no charge if you're not
+                        completely satisfied.</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
                     <div class="text-3xl sm:text-4xl mb-2">💵</div>
                     <h3 class="font-bold text-white text-sm sm:text-base mb-1">Price Match Guarantee</h3>
-                    <p class="text-emerald-100 text-xs sm:text-sm">Find a lower price? We'll match it. No hidden fees, ever.</p>
+                    <p class="text-emerald-100 text-xs sm:text-sm">Find a lower price? We'll match it. No hidden fees,
+                        ever.</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
                     <div class="text-3xl sm:text-4xl mb-2">⚡</div>
                     <h3 class="font-bold text-white text-sm sm:text-base mb-1">Same-Day Emergency</h3>
-                    <p class="text-emerald-100 text-xs sm:text-sm">Need it urgently? We prioritize emergency deliveries.</p>
+                    <p class="text-emerald-100 text-xs sm:text-sm">Need it urgently? We prioritize emergency
+                        deliveries.</p>
                 </div>
             </div>
         </div>
     </section>
 
     {{-- ============================================ --}}
-{{-- TESTIMONIALS / REVIEWS --}}
+    {{-- TESTIMONIALS / REVIEWS --}}
     {{-- ============================================ --}}
     <section class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-8 sm:mb-10 md:mb-14">
                 <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
-                    <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
                     <span>Trusted by</span> 50,000+ Customers
                 </div>
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -1313,17 +1487,22 @@ $howtoSchema = [
                     <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl transition-all">
                         <div class="flex items-center gap-1 mb-3 sm:mb-4">
                             @for($i = 0; $i < 5; $i++)
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
                             @endfor
                         </div>
-                        <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">"{{ $testimonial['text'] }}"</p>
+                        <p class="text-slate-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
+                            "{{ $testimonial['text'] }}"</p>
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                                 {{ substr($testimonial['name'], 0, 1) }}
                             </div>
                             <div>
                                 <div class="font-bold text-slate-800 text-sm sm:text-base">{{ $testimonial['name'] }}</div>
-                                <div class="text-xs sm:text-sm text-slate-500">{{ $testimonial['role'] }} · {{ $testimonial['location'] }}</div>
+                                <div class="text-xs sm:text-sm text-slate-500">{{ $testimonial['role'] }}
+                                    · {{ $testimonial['location'] }}</div>
                             </div>
                         </div>
                     </div>
@@ -1333,31 +1512,54 @@ $howtoSchema = [
             {{-- Google Reviews CTA --}}
             <div class="mt-8 sm:mt-10 md:mt-12 text-center">
                 <div class="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.96 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.96 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.96 20.53 7.7 23 12 23z"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.96 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
                     <div class="text-center sm:text-left">
                         <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
                             <span class="text-slate-800 font-bold text-sm sm:text-base">Google Reviews</span>
                             <div class="flex">
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
                             </div>
                         </div>
                         <div class="text-xs sm:text-sm text-slate-600">See more reviews on Google</div>
                     </div>
                     <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank"
                        class="mt-3 sm:mt-0 ml-0 sm:ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all text-sm inline-flex items-center gap-1">
-                         Read Reviews
-                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                        Read Reviews
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m12 19-7-7 7-7"/>
+                            <path d="M19 12H5"/>
+                        </svg>
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-{{-- ============================================ --}}
+    {{-- ============================================ --}}
     {{-- PRICING / CALL TO ACTION --}}
     {{-- ============================================ --}}
     <section id="pricing" class="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 bg-slate-50">
@@ -1384,7 +1586,9 @@ $howtoSchema = [
                           text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-emerald-500/25
                           transition-all hover:scale-[1.02] active:scale-[0.98]
                           flex items-center justify-center gap-3">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     {{ domain_phone_display() }}
                 </a>
 
@@ -1486,7 +1690,8 @@ $howtoSchema = [
                     @if($stateCities->count() > 0)
                         <div class="mb-6 sm:mb-8">
                             <h3 class="text-lg sm:text-xl font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
-                                <a href="{{ route('state.page', $state['slug']) }}" class="hover:text-emerald-600 transition">
+                                <a href="{{ route('state.page', $state['slug']) }}"
+                                   class="hover:text-emerald-600 transition">
                                     📍 {{ $state['name'] }}
                                 </a>
                                 <span class="text-xs sm:text-sm font-normal text-slate-400">
@@ -1528,18 +1733,19 @@ $howtoSchema = [
                 </h3>
                 <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-200" style="height: 400px;">
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168428.454201798!2d-120!3d37!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x80d6b242d0cce1aa!2sUnited%20States!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus"
-                        width="100%"
-                        height="100%"
-                        style="border:0;"
-                        allowfullscreen=""
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        title="USA Service Area Map">
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168428.454201798!2d-120!3d37!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x80d6b242d0cce1aa!2sUnited%20States!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="USA Service Area Map">
                     </iframe>
                 </div>
                 <p class="text-center text-slate-500 text-sm mt-3">
-                    We provide <strong>porta potty rental services</strong> in all 50 states. Enter your zip code above to find a location near you.
+                    We provide <strong>porta potty rental services</strong> in all 50 states. Enter your zip code above
+                    to find a location near you.
                 </p>
             </div>
         </div>
@@ -1630,7 +1836,8 @@ $howtoSchema = [
 
             <div class="space-y-3">
                 @foreach($homeFaqs as $faq)
-                    <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
+                    <details
+                            class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
                         <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
                                     font-semibold text-slate-800 hover:text-emerald-600 transition
                                     list-none text-sm sm:text-base">
@@ -1646,7 +1853,8 @@ $howtoSchema = [
             </div>
 
             <div class="text-center mt-6 sm:mt-8">
-                <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base">
+                <a href="{{ route('blog.index') }}"
+                   class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm sm:text-base">
                     View more porta potty rental guides →
                 </a>
             </div>

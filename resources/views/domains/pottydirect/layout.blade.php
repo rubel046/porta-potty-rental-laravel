@@ -324,6 +324,11 @@
                     Your trusted partner for clean, affordable portable restroom rentals. Serving cities nationwide with same-day delivery available.
                 </p>
                 <div class="flex items-center gap-3">
+                    <a href="https://youtube.com/@pottydirect" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Youtube">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21.582 6.186c-.23-.86-.908-1.538-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418c-.86.23-1.538.908-1.768 1.768C2 7.746 2 12 2 12s0 4.254.418 5.814c.23.86.908 1.538 1.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418c.86-.23 1.538-.908 1.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15.464V8.536L16 12l-6 3.464z"/>
+                        </svg>
+                    </a>
                     <a href="#" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Facebook">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                     </a>
@@ -456,7 +461,7 @@
 
     menuBtn?.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         if (mobileMenu.style.display === 'none' || mobileMenu.style.display === '') {
             mobileMenu.style.display = 'block';
             if (menuIcon) menuIcon.classList.add('hidden');
@@ -576,7 +581,7 @@
     // Mobile Header Search functionality (uses separate mobile-search-results dropdown)
     const mobileHeaderSearchInput = document.getElementById('mobile-header-search');
     const mobileSearchResults = document.getElementById('mobile-search-results');
-    
+
     if (mobileHeaderSearchInput && mobileSearchResults) {
         let searchTimeout;
 
