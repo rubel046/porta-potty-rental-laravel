@@ -68,17 +68,17 @@ $faqSchema = [
 @section('content')
 
 {{-- Trust Banner --}}
-<div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
+<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
         <div class="flex items-center gap-2">
-            <span>⭐</span>
-            <span class="font-semibold">4.9/5 Rating from 500+ Reviews</span>
+            <span class="text-amber-200">⭐</span>
+            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
         </div>
-        <span class="text-emerald-100">|</span>
+        <span class="hidden md:inline text-amber-200">|</span>
         <span>🏢 BBB A+ Rated</span>
-        <span class="text-emerald-100">|</span>
+        <span class="hidden md:inline text-amber-200">|</span>
         <span>🏗️ 25+ Years Experience</span>
-        <span class="text-emerald-100">|</span>
+        <span class="hidden md:inline text-amber-200">|</span>
         <span>🚚 Same-Day Delivery</span>
     </div>
 </div>
@@ -86,10 +86,7 @@ $faqSchema = [
 {{-- Hero --}}
 <section class="relative py-16 md:py-20 overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 right-20 text-[180px]">💰</div>
-    </div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5">
@@ -119,7 +116,7 @@ $faqSchema = [
         </p>
         <p class="text-slate-600 leading-relaxed">
             Every rental includes <strong>delivery, setup, weekly servicing, and pickup</strong>. 
-            Call us at <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">{{ domain_phone_display() }}</a> for a free, personalized quote.
+            Call us at <a href="tel:{{ domain_phone_raw() }}" class="text-amber-600 font-semibold hover:underline">{{ domain_phone_display() }}</a> for a free, personalized quote.
         </p>
     </div>
 </section>
@@ -134,7 +131,8 @@ $faqSchema = [
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($pricingInfo as $info)
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-amber-300 hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-amber-50 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-4xl mb-4">{{ $info['icon'] }}</div>
                     <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $info['title'] }}</h3>
                     <p class="text-slate-600 text-sm mb-4 leading-relaxed">{{ $info['description'] }}</p>
@@ -149,15 +147,15 @@ $faqSchema = [
                         <ul class="mt-2 space-y-1">
                             @foreach($info['includes'] as $include)
                                 <li class="flex items-center gap-2 text-sm text-slate-600">
-                                    <span class="text-emerald-500">✓</span> {{ $include }}
+                                    <span class="text-amber-500">✓</span> {{ $include }}
                                 </li>
                             @endforeach
                         </ul>
                     </div>
 
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                       class="block w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
+                              text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02]">
                         📞 {{ $info['cta'] }}
                     </a>
                 </div>
@@ -186,7 +184,7 @@ $faqSchema = [
 </section>
 
 {{-- Why Choose Us --}}
-<section class="py-12 md:py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+<section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600">
     <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-3xl font-bold text-white mb-4">Why Our Pricing Stands Out</h2>
         
@@ -194,22 +192,22 @@ $faqSchema = [
             <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
                 <div class="text-3xl mb-3">💰</div>
                 <h3 class="font-bold text-white mb-2">No Hidden Fees</h3>
-                <p class="text-emerald-100 text-sm">The price we quote is the price you pay. No surprise charges on your final bill.</p>
+                <p class="text-amber-100 text-sm">The price we quote is the price you pay. No surprise charges on your final bill.</p>
             </div>
             <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
                 <div class="text-3xl mb-3">📦</div>
                 <h3 class="font-bold text-white mb-2">Volume Discounts</h3>
-                <p class="text-emerald-100 text-sm">Rent more and save more. We offer competitive pricing for large orders.</p>
+                <p class="text-amber-100 text-sm">Rent more and save more. We offer competitive pricing for large orders.</p>
             </div>
             <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
                 <div class="text-3xl mb-3">📅</div>
                 <h3 class="font-bold text-white mb-2">Flexible Terms</h3>
-                <p class="text-emerald-100 text-sm">Daily, weekly, monthly options. Choose what works best for your project.</p>
+                <p class="text-amber-100 text-sm">Daily, weekly, monthly options. Choose what works best for your project.</p>
             </div>
             <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
                 <div class="text-3xl mb-3">🧹</div>
                 <h3 class="font-bold text-white mb-2">Servicing Included</h3>
-                <p class="text-emerald-100 text-sm">Weekly cleaning, pumping, and restocking at no extra cost.</p>
+                <p class="text-amber-100 text-sm">Weekly cleaning, pumping, and restocking at no extra cost.</p>
             </div>
         </div>
     </div>
@@ -269,7 +267,7 @@ $faqSchema = [
     <div class="absolute inset-0 opacity-5">
         <div class="absolute top-10 left-10 text-[200px]">📞</div>
     </div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
     <div class="relative max-w-3xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Get Your Free Quote Today</h2>
@@ -281,9 +279,9 @@ $faqSchema = [
             Serving construction sites, events, weddings, and more across the USA
         </p>
         <a href="tel:{{ domain_phone_raw() }}"
-           class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+           class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                   text-white text-3xl md:text-4xl font-bold py-5 px-14
-                  rounded-full shadow-2xl shadow-emerald-500/40
+                  rounded-full shadow-2xl shadow-amber-500/40
                   transition-all hover:scale-105 animate-pulse">
             📞 {{ domain_phone_display() }}
         </a>
@@ -294,14 +292,26 @@ $faqSchema = [
 {{-- Navigation to other pages --}}
 <section class="py-8 px-4 bg-slate-50">
     <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-4 text-sm">
-        <a href="{{ route('home') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">← Back to Home</a>
+        <a href="{{ route('home') }}" class="text-amber-600 hover:text-amber-700 font-medium">← Back to Home</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
+        <a href="{{ route('services') }}" class="text-amber-600 hover:text-amber-700 font-medium">View All Services</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+        <a href="{{ route('locations') }}" class="text-amber-600 hover:text-amber-700 font-medium">Find Your City</a>
         <span class="text-slate-300">|</span>
-        <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
+        <a href="{{ route('blog.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">Blog</a>
     </div>
 </section>
+
+{{-- Mobile Sticky CTA --}}
+<div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
+    <a href="tel:{{ domain_phone_raw() }}"
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>Call Now — Free Quote</span>
+    </a>
+</div>
+<div class="h-20 md:hidden"></div>
 
 @endsection
