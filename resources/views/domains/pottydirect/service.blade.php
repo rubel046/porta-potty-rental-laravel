@@ -85,7 +85,7 @@ $breadcrumbSchema = [
                 {{-- CTA --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <a href="tel:{{ $servicePage->phone_raw }}"
-                       class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+                       class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-600 hover:to-emerald-700
                               text-lg sm:text-xl md:text-2xl md:text-3xl font-bold
                               py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-emerald-500/30
                               transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3">
@@ -149,7 +149,7 @@ $breadcrumbSchema = [
                     Call now for instant pricing on porta potty rental in {{ $city->name }}
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
-                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-400 hover:to-emerald-500
                           text-white font-bold text-base sm:text-xl py-3 sm:py-4 px-6 sm:px-10 rounded-full
                           transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
                     📞 {{ $servicePage->phone_display }}
@@ -318,7 +318,7 @@ $breadcrumbSchema = [
                 Free quote • No hidden fees • Same-day delivery available
             </p>
             <a href="tel:{{ $servicePage->phone_raw }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-emerald-400 hover:to-emerald-500
                       text-white text-3xl md:text-4xl font-bold py-5 px-14
                       rounded-full shadow-2xl shadow-emerald-500/40
                       transition-all hover:scale-105 animate-pulse">

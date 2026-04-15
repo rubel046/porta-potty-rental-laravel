@@ -97,17 +97,17 @@ $faqSchema = [
 @section('content')
 
     {{-- Trust Banner --}}
-    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
+    <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
             <div class="flex items-center gap-2">
-                <span>⭐</span>
-                <span class="font-semibold">4.9/5 Rating from 500+ Reviews</span>
+                <span class="text-amber-200">⭐</span>
+                <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
             </div>
-            <span class="text-emerald-100">|</span>
+            <span class="hidden md:inline text-amber-200">|</span>
             <span>🏢 BBB A+ Rated</span>
-            <span class="text-emerald-100">|</span>
+            <span class="hidden md:inline text-amber-200">|</span>
             <span>🏗️ 25+ Years Experience</span>
-            <span class="text-emerald-100">|</span>
+            <span class="hidden md:inline text-amber-200">|</span>
             <span>🇺🇸 50,000+ Customers</span>
         </div>
     </div>
@@ -115,11 +115,7 @@ $faqSchema = [
     {{-- Hero --}}
     <section class="relative py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 right-20 text-[180px]">🚽</div>
-            <div class="absolute bottom-10 left-10 text-[120px]">🚿</div>
-        </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5">
@@ -142,21 +138,21 @@ $faqSchema = [
     <section class="py-6 px-4 bg-slate-50 border-b border-slate-200">
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-wrap justify-center gap-4 text-sm">
-                <a href="#standard" class="text-emerald-600 hover:text-emerald-700 font-medium">🚻 Standard Units</a>
+                <a href="#standard" class="text-amber-600 hover:text-amber-700 font-medium">🚻 Standard Units</a>
                 <span class="text-slate-300">|</span>
-                <a href="#deluxe" class="text-emerald-600 hover:text-emerald-700 font-medium">🚿 Deluxe Flushable</a>
+                <a href="#deluxe" class="text-amber-600 hover:text-amber-700 font-medium">🚿 Deluxe Flushable</a>
                 <span class="text-slate-300">|</span>
-                <a href="#ada" class="text-emerald-600 hover:text-emerald-700 font-medium">♿ ADA Accessible</a>
+                <a href="#ada" class="text-amber-600 hover:text-amber-700 font-medium">♿ ADA Accessible</a>
                 <span class="text-slate-300">|</span>
-                <a href="#luxury" class="text-emerald-600 hover:text-emerald-700 font-medium">✨ Luxury Trailers</a>
+                <a href="#luxury" class="text-amber-600 hover:text-amber-700 font-medium">✨ Luxury Trailers</a>
                 <span class="text-slate-300">|</span>
-                <a href="#shower" class="text-emerald-600 hover:text-emerald-700 font-medium">🚿 Portable Showers</a>
+                <a href="#shower" class="text-amber-600 hover:text-amber-700 font-medium">🚿 Portable Showers</a>
                 <span class="text-slate-300">|</span>
-                <a href="#mobile" class="text-emerald-600 hover:text-emerald-700 font-medium">🚐 Mobile Trailers</a>
+                <a href="#mobile" class="text-amber-600 hover:text-amber-700 font-medium">🚐 Mobile Trailers</a>
                 <span class="text-slate-300">|</span>
-                <a href="#vip" class="text-emerald-600 hover:text-emerald-700 font-medium">👔 VIP Restrooms</a>
+                <a href="#vip" class="text-amber-600 hover:text-amber-700 font-medium">👔 VIP Restrooms</a>
                 <span class="text-slate-300">|</span>
-                <a href="#construction" class="text-emerald-600 hover:text-emerald-700 font-medium">🏗️ Construction Packages</a>
+                <a href="#construction" class="text-amber-600 hover:text-amber-700 font-medium">🏗️ Construction Packages</a>
             </div>
         </div>
     </section>
@@ -179,10 +175,10 @@ $faqSchema = [
     </section>
 
     {{-- Events We Serve --}}
-    <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+    <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">We Serve All Types of Events & Occasions</h2>
-            <p class="text-lg text-emerald-100 mb-8">No matter what you're planning, we have the right porta potty rental solution</p>
+            <p class="text-lg text-amber-100 mb-8">No matter what you're planning, we have the right porta potty rental solution</p>
 
             <div class="bg-white/10 backdrop-blur rounded-2xl p-8">
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
@@ -206,7 +202,7 @@ $faqSchema = [
                 </div>
             </div>
 
-            <p class="text-emerald-200 mt-6">Plus many more! Call us to discuss your specific event needs.</p>
+            <p class="text-amber-200 mt-6">Plus many more! Call us to discuss your specific event needs.</p>
         </div>
     </section>
 
@@ -221,7 +217,7 @@ $faqSchema = [
             <div class="grid md:grid-cols-2 gap-8">
                 @foreach($serviceTypes as $type)
                     <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden
-                                hover:shadow-xl hover:border-emerald-200 transition-all duration-300 group" id="{{ $type['key'] }}">
+                                hover:shadow-xl hover:border-amber-300 transition-all duration-300 group" id="{{ $type['key'] }}">
                         {{-- Header --}}
                         <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 text-white">
                             <div class="flex items-start justify-between gap-4">
@@ -240,7 +236,7 @@ $faqSchema = [
                                 </div>
                                 <div class="flex-shrink-0">
                                     <a href="tel:{{ domain_phone_raw() }}"
-                                       class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
+                                       class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
                                         📞 Get Quote
                                     </a>
                                 </div>
@@ -254,8 +250,8 @@ $faqSchema = [
                             <ul class="space-y-3 mb-6">
                                 @foreach($type['features'] as $feature)
                                     <li class="flex items-center gap-3 text-slate-600">
-                                        <span class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <span class="text-emerald-600 text-xs">✓</span>
+                                        <span class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <span class="text-amber-600 text-xs">✓</span>
                                         </span>
                                         {{ $feature }}
                                     </li>
@@ -274,8 +270,8 @@ $faqSchema = [
 
                             {{-- CTA --}}
                             <a href="tel:{{ domain_phone_raw() }}"
-                               class="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                                      text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                               class="block w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
+                                      text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02]">
                                 📞 Get Quote for {{ $type['short_name'] }}
                             </a>
                         </div>
@@ -295,11 +291,11 @@ $faqSchema = [
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($addOns as $addon)
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-emerald-200 transition-all">
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all">
                         <div class="text-4xl mb-4">{{ $addon['icon'] }}</div>
                         <h3 class="font-bold text-slate-800 mb-2">{{ $addon['name'] }}</h3>
                         <p class="text-sm text-slate-500 mb-4 leading-relaxed">{{ $addon['description'] }}</p>
-                        <a href="tel:{{ domain_phone_raw() }}" class="text-emerald-600 font-semibold hover:underline">📞 Call for pricing</a>
+                        <a href="tel:{{ domain_phone_raw() }}" class="text-amber-600 font-semibold hover:underline">📞 Call for pricing</a>
                     </div>
                 @endforeach
             </div>
@@ -413,15 +409,15 @@ $faqSchema = [
     </section>
 
     {{-- Get Custom Quote --}}
-    <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+    <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600">
         <div class="max-w-3xl mx-auto text-center">
             <h2 class="text-3xl font-bold text-white mb-4">Get Your Custom Quote</h2>
-            <p class="text-emerald-100 mb-8">Every project is unique. Call us for personalized pricing based on your specific needs.</p>
+            <p class="text-amber-100 mb-8">Every project is unique. Call us for personalized pricing based on your specific needs.</p>
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-flex items-center gap-3 bg-white text-emerald-600 font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:scale-105 transition-all">
+               class="inline-flex items-center gap-3 bg-white text-amber-600 font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:scale-105 transition-all">
                 📞 {{ domain_phone_display() }}
             </a>
-            <p class="text-emerald-200 text-sm mt-4">No obligation • Same-day delivery available</p>
+            <p class="text-amber-200 text-sm mt-4">No obligation • Same-day delivery available</p>
         </div>
     </section>
 
@@ -430,7 +426,7 @@ $faqSchema = [
         <div class="absolute inset-0 opacity-5">
             <div class="absolute top-10 left-10 text-[200px]">🚽</div>
         </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
         <div class="relative max-w-3xl mx-auto">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
@@ -441,9 +437,9 @@ $faqSchema = [
                 Serving construction sites, events, weddings, and more across the USA
             </p>
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                       text-white text-3xl md:text-4xl font-bold py-5 px-14
-                      rounded-full shadow-2xl shadow-emerald-500/40
+                      rounded-full shadow-2xl shadow-amber-500/40
                       transition-all hover:scale-105 animate-pulse">
                 📞 {{ domain_phone_display() }}
             </a>
@@ -454,13 +450,26 @@ $faqSchema = [
     {{-- Quick Links --}}
     <section class="py-8 px-4 bg-slate-50">
         <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm">
-            <a href="{{ route('home') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">← Back to Home</a>
+            <a href="{{ route('home') }}" class="text-amber-600 hover:text-amber-700 font-medium">← Back to Home</a>
             <span class="text-slate-300">|</span>
-            <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View Pricing</a>
+            <a href="{{ route('pricing') }}" class="text-amber-600 hover:text-amber-700 font-medium">View Pricing</a>
             <span class="text-slate-300">|</span>
-            <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+            <a href="{{ route('locations') }}" class="text-amber-600 hover:text-amber-700 font-medium">Find Your City</a>
             <span class="text-slate-300">|</span>
-            <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
+            <a href="{{ route('blog.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">Blog</a>
         </div>
     </section>
+
+{{-- Mobile Sticky CTA --}}
+<div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
+    <a href="tel:{{ domain_phone_raw() }}"
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>Call Now — Free Quote</span>
+    </a>
+</div>
+<div class="h-20 md:hidden"></div>
+
 @endsection

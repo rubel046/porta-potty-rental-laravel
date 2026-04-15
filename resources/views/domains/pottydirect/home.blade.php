@@ -343,7 +343,7 @@
                                    class="w-full bg-white border-2 border-white/20 text-slate-800 text-base py-3.5 pl-11 pr-4 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 font-medium">
                         </div>
                         <button type="submit"
-                                class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 px-6 sm:px-8 rounded-xl transition-all shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center gap-2 whitespace-nowrap">
+                                class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-3.5 px-6 sm:px-8 rounded-xl transition-all shadow-lg hover:shadow-amber-500/40 flex items-center justify-center gap-2 whitespace-nowrap">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -452,7 +452,7 @@
     </section>
 
     {{-- CONSOLIDATED TRUST SIGNALS BAR --}}
-    <section class="py-4 sm:py-6 bg-gradient-to-r from-emerald-50 to-emerald-50 border-b border-emerald-100">
+    <section class="py-4 sm:py-6 bg-gradient-to-r from-amber-50 to-amber-50 border-b border-amber-100">
         <div class="max-w-6xl mx-auto px-3 sm:px-6">
             <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-center">
                 {{-- Trust Score --}}
@@ -590,8 +590,8 @@
                         Weddings & Events
                     </p>
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                              text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/25
+                       class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
+                              text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-amber-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -882,7 +882,7 @@
                         </div>
 
                         {{-- Result --}}
-                        <div class="mt-8 p-6 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl text-center">
+                        <div class="mt-8 p-6 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl text-center">
                             <div class="text-white text-sm mb-1">Recommended Units</div>
                             <div class="text-white text-4xl sm:text-5xl font-bold" id="construction-result">2</div>
                             <div class="text-emerald-100 text-sm mt-2">units for your job site</div>
@@ -1337,12 +1337,12 @@
     {{-- ============================================ --}}
     {{-- TRUST STATS COUNTER --}}
     {{-- ============================================ --}}
-    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-amber-500 to-amber-600">
         <div class="max-w-5xl mx-auto">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
                 <div class="text-white">
                     <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">25+</div>
-                    <div class="text-emerald-100 text-xs sm:text-sm font-medium">Years</div>
+                    <div class="text-amber-100 text-xs sm:text-sm font-medium">Years</div>
                 </div>
                 <div class="text-white">
                     <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">50K+</div>
@@ -1555,12 +1555,12 @@
     {{-- ============================================ --}}
     {{-- OUR WARRANTY & PROMISE --}}
     {{-- ============================================ --}}
-    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gradient-to-r from-amber-500 to-amber-600">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
                 Our Promise to You
             </h2>
-            <p class="text-emerald-100 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
+            <p class="text-amber-100 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
                 We stand behind our service with ironclad guarantees. If you're not satisfied, we'll make it right.
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -1760,8 +1760,8 @@
                 </p>
 
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-                          text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-emerald-500/25
+                   class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
+                          text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-amber-500/25
                           transition-all hover:scale-[1.02] active:scale-[0.98]
                           flex items-center justify-center gap-3">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2087,11 +2087,11 @@
             </p>
 
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+               class="inline-block bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                       text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold
                       py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-14 rounded-full shadow-2xl
                       transition-all hover:scale-105
-                      shadow-emerald-500/40 animate-pulse">
+                      shadow-amber-500/40 animate-pulse">
                 📞 {{ domain_phone_display() }}
             </a>
 

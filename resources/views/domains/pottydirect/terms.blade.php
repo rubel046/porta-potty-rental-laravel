@@ -158,9 +158,9 @@ $organizationSchema = [
                     For questions about these terms, call us today.
                 </p>
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500
+                   class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                           text-white font-bold text-xl py-3 px-8 rounded-full
-                          transition-all hover:scale-105 shadow-xl shadow-emerald-500/30">
+                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30">
                     📞 {{ domain_phone_display() }}
                 </a>
             </div>

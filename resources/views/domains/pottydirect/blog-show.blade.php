@@ -42,18 +42,18 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
 @section('content')
 
     {{-- Trust Banner --}}
-    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
-            <div class="flex items-center gap-2">
-                <span>⭐</span>
-                <span class="font-semibold">4.9/5 Rating from 500+ Reviews</span>
-            </div>
-            <span class="text-emerald-100">|</span>
-            <span>🏢 BBB A+ Rated</span>
-            <span class="text-emerald-100">|</span>
-            <span>🏗️ 25+ Years Experience</span>
+<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
+        <div class="flex items-center gap-2">
+            <span class="text-amber-200">⭐</span>
+            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
         </div>
+        <span class="hidden md:inline text-amber-200">|</span>
+        <span>🏢 BBB A+ Rated</span>
+        <span class="hidden md:inline text-amber-200">|</span>
+        <span>🏗️ 25+ Years Experience</span>
     </div>
+</div>
 
     <article>
         {{-- Header --}}
@@ -145,7 +145,7 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                     <h3 class="text-2xl font-bold text-white mb-3">Need a Quote?</h3>
                     <p class="text-slate-400 mb-6">Get same-day delivery on porta potty rentals.</p>
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-xl
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-xl
                               py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
                         📞 {{ domain_phone_display() }}
                     </a>
@@ -154,19 +154,19 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                 {{-- Related Services --}}
                 <div class="mt-12 grid sm:grid-cols-3 gap-4">
                     <a href="{{ route('services') }}"
-                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
                         <div class="text-3xl mb-2">🚽</div>
                         <h4 class="font-bold text-slate-800">Our Services</h4>
                         <p class="text-sm text-slate-600 mt-1">Standard, Deluxe, ADA & more</p>
                     </a>
                     <a href="{{ route('locations') }}"
-                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
                         <div class="text-3xl mb-2">📍</div>
                         <h4 class="font-bold text-slate-800">Find Locations</h4>
                         <p class="text-sm text-slate-600 mt-1">Browse cities we serve</p>
                     </a>
                     <a href="{{ route('pricing') }}"
-                       class="bg-emerald-50 hover:bg-emerald-100 p-6 rounded-xl text-center transition border border-emerald-100">
+                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
                         <div class="text-3xl mb-2">💰</div>
                         <h4 class="font-bold text-slate-800">View Pricing</h4>
                         <p class="text-sm text-slate-600 mt-1">Transparent rates</p>

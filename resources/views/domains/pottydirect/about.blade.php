@@ -156,11 +156,11 @@ $organizationSchema = [
             </div>
 
             {{-- CTA --}}
-            <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 md:p-10 text-center text-white">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-8 md:p-10 text-center text-white">
                 <h2 class="text-2xl font-bold mb-3">Ready to Rent?</h2>
-                <p class="text-emerald-100 mb-6">Call us for a free, no-obligation quote</p>
+                <p class="text-amber-100 mb-6">Call us for a free, no-obligation quote</p>
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-white text-emerald-600 font-bold text-2xl
+                   class="inline-flex items-center gap-3 bg-white text-amber-600 font-bold text-2xl
                           py-4 px-10 rounded-full hover:scale-105 transition-all shadow-xl">
                     📞 {{ domain_phone_display() }}
                 </a>
@@ -169,15 +169,28 @@ $organizationSchema = [
             {{-- Quick Links --}}
             <div class="mt-10 pt-8 border-t border-slate-200">
                 <div class="flex flex-wrap justify-center gap-6 text-sm">
-                    <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
+                    <a href="{{ route('services') }}" class="text-amber-600 hover:text-amber-700 font-medium">View All Services</a>
                     <span class="text-slate-300">|</span>
-                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View Pricing</a>
+                    <a href="{{ route('pricing') }}" class="text-amber-600 hover:text-amber-700 font-medium">View Pricing</a>
                     <span class="text-slate-300">|</span>
-                    <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+                    <a href="{{ route('locations') }}" class="text-amber-600 hover:text-amber-700 font-medium">Find Your City</a>
                     <span class="text-slate-300">|</span>
-                    <a href="{{ route('blog.index') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Blog</a>
+                    <a href="{{ route('blog.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">Blog</a>
                 </div>
             </div>
         </div>
     </section>
+
+{{-- Mobile Sticky CTA --}}
+<div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
+    <a href="tel:{{ domain_phone_raw() }}"
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>Call Now — Free Quote</span>
+    </a>
+</div>
+<div class="h-20 md:hidden"></div>
+
 @endsection

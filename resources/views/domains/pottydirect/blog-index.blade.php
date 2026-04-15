@@ -5,15 +5,15 @@
 
 @section('content')
 
-<div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left">
+<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
         <div class="flex items-center gap-2">
-            <span>⭐</span>
-            <span class="font-semibold">4.9/5 Rating from 500+ Reviews</span>
+            <span class="text-amber-200">⭐</span>
+            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
         </div>
-        <span class="text-emerald-100">|</span>
+        <span class="hidden md:inline text-amber-200">|</span>
         <span>🏢 BBB A+ Rated</span>
-        <span class="text-emerald-100">|</span>
+        <span class="hidden md:inline text-amber-200">|</span>
         <span>🏗️ 25+ Years Experience</span>
     </div>
 </div>
@@ -76,13 +76,26 @@
     </div>
 </section>
 
-<section class="py-12 md:py-16 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-center">
+<section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-center">
     <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-bold mb-3">Need a Porta Potty Now?</h2>
-        <p class="text-emerald-100 mb-6">Call us for instant pricing and same-day delivery.</p>
-        <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-2 bg-white text-emerald-600 font-bold text-xl py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
+        <p class="text-amber-100 mb-6">Call us for instant pricing and same-day delivery.</p>
+        <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-2 bg-white text-amber-600 font-bold text-xl py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
             📞 {{ domain_phone_display() }}
         </a>
     </div>
 </section>
+
+{{-- Mobile Sticky CTA --}}
+<div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
+    <a href="tel:{{ domain_phone_raw() }}"
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>Call Now — Free Quote</span>
+    </a>
+</div>
+<div class="h-20 md:hidden"></div>
+
 @endsection
