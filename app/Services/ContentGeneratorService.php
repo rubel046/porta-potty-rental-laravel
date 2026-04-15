@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BlogCategory;
 use App\Models\City;
 use App\Models\Domain;
 use App\Models\DomainState;
@@ -776,5 +777,265 @@ HTML;
                 'answer' => "Yes, we proudly serve cities and communities throughout {$state->name}. Contact us to confirm service in your specific area.",
             ],
         ];
+    }
+
+    public function generateBlogPostContent(BlogCategory $category, ?City $city = null): array
+    {
+        if (! $this->aiService) {
+            throw new \RuntimeException('AI service not configured. Please set up MultiAiService to generate content.');
+        }
+
+        $domain = Domain::current() ?? Domain::first();
+        $state = $city?->state;
+        $businessName = $domain?->business_name ?? 'Our Company';
+        $primaryKeyword = $domain?->primary_keyword ?? 'porta potty rental';
+        $nearbyCitiesList = $city ? $this->getNearbyCities($city) : [];
+        $nearbyCitiesText = implode(', ', $nearbyCitiesList);
+
+        $titleSuffix = $city ? " in {$city->name}" : '';
+        $locationContext = $city ? "{$city->name}" : 'your area';
+        $cityName = $city?->name ?? '';
+        $stateCode = $state?->code ?? '';
+
+        if ($state) {
+            $titleSuffix .= ", {$state->code}";
+            $locationContext .= ", {$state->code}";
+        }
+
+        $categoryTopics = $this->getCategoryBlogTopics($category->slug);
+
+        $prompt = <<<PROMPT
+Act like a senior SEO content writer and blog strategist with 40+ years of experience creating viral, SEO-optimized blog posts for service-based websites in the USA. You understand Google's E-E-A-T requirements and write content that ranks and converts.
+
+Your goal is to generate a highly detailed, 100% unique, human-like, SEO-optimized blog post that drives organic traffic and phone call leads for {$businessName}.
+
+CONTEXT:
+- Category: {$category->name}
+- Category Description: {$category->description}
+- Location: {$locationContext}
+- Business: {$businessName}
+- Primary Service: {$primaryKeyword}
+- Nearby Cities: {$nearbyCitiesText}
+
+TASK: Return a VALID JSON object with EXACTLY this structure:
+
+{
+    "title": "SEO-optimized blog post title (max 100 chars) - compelling and click-worthy",
+    "slug": "url-friendly-slug",
+    "excerpt": "Meta excerpt (max 200 chars) - compelling summary with CTA",
+    "content": "Write 1500-2500 words of HIGH-QUALITY SEO blog content in markdown format. Include proper heading hierarchy (## H2, ### H3), bullet points, and structured content.",
+    "meta_title": "SEO title (50-60 chars) - include keyword + location + benefit",
+    "meta_description": "Meta description (120-160 chars) - compelling with urgency and CTA",
+    "focus_keyword": "primary focus keyword for this post",
+    "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
+}
+
+CONTENT REQUIREMENTS:
+
+1) TITLE OPTIMIZATION:
+- Use power words (ultimate guide, complete, essential, expert, etc.)
+- Include year for timeliness: 2026
+- Make it click-worthy and shareable
+- Include primary keyword naturally
+
+2) CONTENT STRUCTURE (in "content" field):
+- Start with engaging introduction (hook the reader)
+- Use multiple H2 headings with keywords
+- Include H3 subheadings for detail
+- Add bullet points and numbered lists
+- Include real examples and use cases
+- Add quotes or expert insights where appropriate
+- Include internal linking opportunities naturally
+- Strong conclusion with CTA
+
+3) SEO OPTIMIZATION:
+- Primary keyword density: 1-2%
+- Include secondary keywords naturally throughout
+- Use long-tail keywords (questions, location-based)
+- Add semantic keywords for TF-IDF optimization
+
+4) LOCAL SEO (if city provided):
+- Include {$cityName} naturally 10-15 times
+- Mention {$stateCode} context
+- Include nearby cities: {$nearbyCitiesText}
+- Add local intent phrases
+
+5) E-E-A-T SIGNALS:
+- Include experience signals (serving area for X+ years)
+- Add expertise references
+- Include authoritativeness (certifications, reviews)
+- Build trust (customer testimonials mentioned, guarantees)
+
+6) CONVERSION ELEMENTS:
+- Include CTAs at least 2-3 times
+- Use phone placeholder: {{PHONE_LINK}}
+- Add urgency where appropriate
+- Include problem-solution framing
+
+7) WRITING STYLE:
+- Conversational, engaging tone (like talking to a friend)
+- Easy to read (Grade 6-8 level)
+- Avoid fluff and filler words
+- Make it actionable and useful
+
+8) TECHNICAL REQUIREMENTS:
+- Content word count: 1500-2500 words
+- Heading hierarchy: H2, H3 properly nested
+- Use markdown formatting throughout
+- Bold important phrases sparingly
+
+9) OUTPUT RULES:
+- Return ONLY valid JSON
+- Do NOT add explanations outside JSON
+- Do NOT add markdown code fences
+- Ensure all fields are filled
+- Ensure JSON is properly formatted
+
+SELF-CHECK before output:
+- [ ] Title is compelling and under 100 chars
+- [ ] Content is 1500+ words
+- [ ] Keywords included naturally
+- [ ] Strong opening hook
+- [ ] Proper heading structure
+- [ ] CTAs present
+- [ ] Local SEO optimized (if city provided)
+PROMPT;
+
+        try {
+            $response = $this->aiService->generateContent($prompt);
+
+            if (empty($response)) {
+                throw new \RuntimeException('AI returned empty response');
+            }
+
+            $data = json_decode($response, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('ContentGenerator: Invalid JSON from AI', [
+                    'error' => json_last_error_msg(),
+                    'response' => substr($response, 0, 500),
+                ]);
+                throw new \RuntimeException('AI returned invalid JSON');
+            }
+
+            if (! isset($data['content'])) {
+                throw new \RuntimeException('AI response missing required fields');
+            }
+
+            return [
+                'success' => true,
+                'title' => $data['title'] ?? '',
+                'slug' => $data['slug'] ?? '',
+                'excerpt' => $data['excerpt'] ?? '',
+                'content' => $data['content'] ?? '',
+                'meta_title' => $data['meta_title'] ?? '',
+                'meta_description' => $data['meta_description'] ?? '',
+                'focus_keyword' => $data['focus_keyword'] ?? '',
+                'secondary_keywords' => $data['secondary_keywords'] ?? [],
+            ];
+        } catch (\Exception $e) {
+            Log::error('ContentGenerator: Blog post generation failed', [
+                'category' => $category->id,
+                'city' => $city?->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    protected function getCategoryBlogTopics(string $categorySlug): array
+    {
+        return match ($categorySlug) {
+            'pricing-costs' => [
+                'average pricing by unit type',
+                'factors affecting rental costs',
+                'hidden fees and how to avoid them',
+                'budget-friendly options',
+                'price comparisons',
+                'cost calculators',
+                'saving money tips',
+            ],
+            'event-planning' => [
+                'event type specific guidance',
+                'guest count calculations',
+                'amenity recommendations',
+                'placement strategies',
+                'vendor coordination',
+                'weather considerations',
+            ],
+            'construction' => [
+                'OSHA compliance requirements',
+                'worker safety standards',
+                'site placement strategies',
+                'multi-story considerations',
+                'weather adaptations',
+            ],
+            'weddings' => [
+                'elegant restroom options',
+                'aesthetic considerations',
+                'guest comfort planning',
+                'venue-specific guidance',
+                'luxury alternatives',
+            ],
+            'guides-tips' => [
+                'how-to guides',
+                'beginner tips',
+                'best practices',
+                'maintenance guidance',
+                'selection criteria',
+            ],
+            'industry-news' => [
+                'industry trends',
+                'technology updates',
+                'regulatory changes',
+                'market insights',
+            ],
+            'emergency-services' => [
+                'emergency response',
+                'disaster relief',
+                'urgent needs',
+                'quick deployment',
+            ],
+            'residential' => [
+                'home renovation projects',
+                'backyard events',
+                'DIY projects',
+                'seasonal needs',
+            ],
+            'luxury-restrooms' => [
+                'premium amenities',
+                'VIP events',
+                'high-end alternatives',
+                'corporate events',
+            ],
+            'health-safety' => [
+                'sanitation standards',
+                'hygiene practices',
+                'cleanliness protocols',
+                'safety compliance',
+            ],
+            'seasonal' => [
+                'summer considerations',
+                'winter solutions',
+                'weather-specific tips',
+                'seasonal promotions',
+            ],
+            'locations' => [
+                'city-specific guidance',
+                'local regulations',
+                'regional pricing',
+                'area-specific tips',
+            ],
+            default => [
+                'general guidance',
+                'beginner tips',
+                'best practices',
+                'common questions',
+            ],
+        };
     }
 }

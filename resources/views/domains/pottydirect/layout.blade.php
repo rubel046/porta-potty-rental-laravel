@@ -93,13 +93,8 @@
         <div class="flex justify-between items-center h-14 sm:h-16 lg:h-18">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0 my-1">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
-                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/>
-                        <path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/>
-                        <path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/>
-                        <rect x="5" y="9" width="14" height="11" rx="1"/>
-                    </svg>
+<div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform text-lg">
+                    🚽
                 </div>
                 <div class="hidden sm:block">
                     <div class="text-sm font-bold text-slate-800 leading-tight">Potty Direct</div>
@@ -312,12 +307,12 @@
             {{-- Brand --}}
             <div class="lg:col-span-1">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22v-4a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v4"/><path d="M5 22V6a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1"/><path d="M19 22V6a2 2 0 0 0-2-2V3a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v1"/><rect x="5" y="9" width="14" height="11" rx="1"/></svg>
+                    <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center text-lg">
+                        🚽
                     </div>
                     <div>
                         <div class="text-white font-bold text-sm">Potty Direct</div>
-                        <div class="text-emerald-400 text-xs font-medium">Portable Restrooms</div>
+                        <div class="text-amber-400 text-xs font-medium">Portable Restrooms</div>
                     </div>
                 </div>
                 <p class="text-sm text-slate-400 leading-relaxed mb-6">

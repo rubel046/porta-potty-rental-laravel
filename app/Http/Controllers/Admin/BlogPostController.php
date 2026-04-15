@@ -7,6 +7,7 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\City;
 use App\Models\Domain;
+use App\Services\ContentGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -59,6 +60,11 @@ class BlogPostController extends Controller
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        $domain = Domain::current();
+        if ($domain) {
+            $validated['domain_id'] = $domain->id;
         }
 
         if ($request->boolean('is_published')) {
@@ -120,5 +126,64 @@ class BlogPostController extends Controller
 
         return redirect()->route('admin.blog-posts.index')
             ->with('success', 'Blog post deleted!');
+    }
+
+    public function generateForm()
+    {
+        $domain = Domain::current();
+        $query = BlogCategory::where('is_active', true);
+        if ($domain) {
+            $query->where('domain_id', $domain->id);
+        }
+        $categories = $query->orderBy('name')->get();
+        $cities = City::active()->with('state')->orderBy('name')->get();
+
+        return view('admin.blog-posts.generate', compact('categories', 'cities'));
+    }
+
+    public function generate(Request $request, ContentGeneratorService $generator)
+    {
+        $validated = $request->validate([
+            'blog_category_id' => 'required|exists:blog_categories,id',
+            'city_id' => 'nullable|exists:cities,id',
+        ]);
+
+        $category = BlogCategory::findOrFail($validated['blog_category_id']);
+        $city = isset($validated['city_id']) ? City::findOrFail($validated['city_id']) : null;
+
+        try {
+            $result = $generator->generateBlogPostContent($category, $city);
+
+            if (! $result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $result['error'] ?? 'Failed to generate content',
+                ], 422);
+            }
+
+            $domain = Domain::current();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'title' => $result['title'],
+                    'slug' => $result['slug'],
+                    'excerpt' => $result['excerpt'],
+                    'content' => $result['content'],
+                    'meta_title' => $result['meta_title'],
+                    'meta_description' => $result['meta_description'],
+                    'focus_keyword' => $result['focus_keyword'],
+                    'secondary_keywords' => $result['secondary_keywords'],
+                    'blog_category_id' => $category->id,
+                    'city_id' => $city?->id,
+                    'domain_id' => $domain?->id,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
