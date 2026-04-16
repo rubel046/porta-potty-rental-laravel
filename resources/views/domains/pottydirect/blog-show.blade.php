@@ -1,4 +1,4 @@
-@extends(\App\Providers\DomainViewHelper::resolve('layout'))
+@extends('domains.pottydirect.layout')
 
 @section('title', $post->meta_title ?? $post->title)
 @section('meta_description', $post->meta_description ?? $post->excerpt)
@@ -6,54 +6,41 @@
 
 @push('schema')
 @php
-$url = url('/');
-$phone = domain_phone_raw();
-$imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : $url . '/og-image.jpg';
+$articleSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "Article",
+    "headline" => $post->title,
+    "description" => $post->meta_description ?? $post->excerpt,
+    "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
+    "datePublished" => $post->published_at?->toIso8601String(),
+    "dateModified" => $post->updated_at->toIso8601String(),
+    "author" => ["@type" => "Organization", "name" => "Potty Direct"],
+    "publisher" => [
+        "@type" => "Organization",
+        "name" => "Potty Direct",
+        "logo" => ["@type" => "ImageObject", "url" => url('/logo.png')]
+    ],
+    "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $post->url]
+];
 @endphp
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "{{ $post->title }}",
-    "description": "{{ $post->meta_description ?? $post->excerpt }}",
-    "image": "{{ $imageUrl }}",
-    "datePublished": "{{ $post->published_at?->toIso8601String() }}",
-    "dateModified": "{{ $post->updated_at->toIso8601String() }}",
-    "author": {
-        "@type": "Organization",
-        "name": "Potty Direct"
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "Potty Direct",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "{{ $url }}/logo.png"
-        }
-    },
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "{{ $post->url }}"
-    }
-}
-</script>
+<script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
 
     {{-- Trust Banner --}}
-<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-amber-200">⭐</span>
-            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
+    <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
+            <div class="flex items-center gap-2">
+                <span class="text-amber-200">⭐</span>
+                <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
+            </div>
+            <span class="hidden md:inline text-amber-200">|</span>
+            <span>🏢 BBB A+ Rated</span>
+            <span class="hidden md:inline text-amber-200">|</span>
+            <span>🏗️ 25+ Years Experience</span>
         </div>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>🏢 BBB A+ Rated</span>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>🏗️ 25+ Years Experience</span>
     </div>
-</div>
 
     <article>
         {{-- Header --}}
@@ -145,7 +132,7 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                     <h3 class="text-2xl font-bold text-white mb-3">Need a Quote?</h3>
                     <p class="text-slate-400 mb-6">Get same-day delivery on porta potty rentals.</p>
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-xl
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-xl
                               py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
                         📞 {{ domain_phone_display() }}
                     </a>
@@ -176,7 +163,7 @@ $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : 
                 {{-- Back to Blog --}}
                 <div class="mt-10 text-center">
                     <a href="{{ route('blog.index') }}"
-                       class="inline-flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-medium transition">
+                       class="inline-flex items-center gap-2 text-slate-500 hover:text-amber-600 font-medium transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>

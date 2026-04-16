@@ -157,7 +157,7 @@ class BlogPostController extends Controller
             if (! $result || ! ($result['success'] ?? false)) {
                 return response()->json([
                     'success' => false,
-                    'error' => $result['error'] ?? 'Failed to generate content. Please check AI configuration.',
+                    'error' => $result['error'] ?? 'Failed to generate content. Please check AI API keys configuration.',
                 ], 422);
             }
 
@@ -180,6 +180,8 @@ class BlogPostController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Log::error('Blog post generation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
