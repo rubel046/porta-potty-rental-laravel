@@ -258,7 +258,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     |----------------------------------------------------------------------
     */
     Route::get('/blog-posts/generate', [BlogPostController::class, 'generateForm'])
-        ->name('blog-posts.generate');
+        ->name('blog-posts.generate-form');
     Route::post('/blog-posts/generate', [BlogPostController::class, 'generate'])
         ->name('blog-posts.generate');
     Route::resource('blog-posts', BlogPostController::class);
