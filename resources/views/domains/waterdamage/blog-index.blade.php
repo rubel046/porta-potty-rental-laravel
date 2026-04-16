@@ -85,11 +85,17 @@ $domain = \App\Models\Domain::current();
                             hover:shadow-xl hover:border-emerald-200 transition-all duration-300 group">
                     <div class="flex flex-col md:flex-row gap-6 md:gap-8">
                         {{-- Image --}}
-                        <div class="md:w-56 h-40 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
-                                rounded-xl flex items-center justify-center text-5xl flex-shrink-0
-                                group-hover:scale-105 transition-transform duration-300">
-                            🚽
-                        </div>
+                        @if($post->featured_image)
+                            <a href="{{ $post->url }}" class="md:w-56 h-40 flex-shrink-0 overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-300">
+                                <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+                            </a>
+                        @else
+                            <div class="md:w-56 h-40 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
+                                    rounded-xl flex items-center justify-center text-5xl flex-shrink-0
+                                    group-hover:scale-105 transition-transform duration-300">
+                                🚽
+                            </div>
+                        @endif
 
                         {{-- Content --}}
                         <div class="flex-1">
@@ -105,7 +111,7 @@ $domain = \App\Models\Domain::current();
                             </h2>
 
                             <p class="text-slate-500 text-sm md:text-base mb-4 line-clamp-2 leading-relaxed">
-                                {{ $post->excerpt }}
+                                {!! $post->excerpt !!}
                             </p>
 
                             <div class="flex items-center gap-5 text-sm text-slate-400">

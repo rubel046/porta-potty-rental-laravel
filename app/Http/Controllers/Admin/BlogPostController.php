@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\Domain;
 use App\Services\ContentGeneratorService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
@@ -50,10 +51,11 @@ class BlogPostController extends Controller
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'city_id' => 'nullable|exists:cities,id',
             'content' => 'required|string|min:100',
-            'excerpt' => 'nullable|string|max:500',
+            'excerpt' => 'nullable|string|max:2000',
             'meta_title' => 'nullable|string|max:200',
-            'meta_description' => 'nullable|string|max:500',
+            'meta_description' => 'nullable|string|max:2000',
             'focus_keyword' => 'nullable|string|max:200',
+            'featured_image' => 'nullable|string|max:500',
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
         ]);
@@ -75,6 +77,57 @@ class BlogPostController extends Controller
 
         return redirect()->route('admin.blog-posts.index')
             ->with('success', 'Blog post created!');
+    }
+
+    public function storeMultiple(Request $request)
+    {
+        $posts = $request->input('posts', []);
+
+        if (empty($posts)) {
+            return response()->json(['success' => false, 'error' => 'No posts to save']);
+        }
+
+        $domain = Domain::current();
+        $savedCount = 0;
+
+        foreach ($posts as $postData) {
+            if (empty($postData['title']) || empty($postData['content'])) {
+                continue;
+            }
+
+            $slug = $postData['slug'] ?? Str::slug($postData['title']);
+            $slug = BlogPost::where('slug', $slug)->exists()
+                ? $slug.'-'.time()
+                : $slug;
+
+            $data = [
+                'title' => $postData['title'],
+                'slug' => $slug,
+                'excerpt' => $postData['excerpt'] ?? '',
+                'content' => $postData['content'],
+                'meta_title' => $postData['meta_title'] ?? '',
+                'meta_description' => $postData['meta_description'] ?? '',
+                'focus_keyword' => $postData['focus_keyword'] ?? '',
+                'featured_image' => $postData['featured_image'] ?? '',
+                'blog_category_id' => $postData['blog_category_id'] ?? null,
+                'city_id' => $postData['city_id'] ?? null,
+                'domain_id' => $domain?->id,
+                'is_published' => isset($postData['is_published']) && $postData['is_published'] == '1',
+            ];
+
+            if ($data['is_published']) {
+                $data['published_at'] = now();
+            }
+
+            BlogPost::create($data);
+            $savedCount++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'count' => $savedCount,
+            'message' => "{$savedCount} posts created successfully",
+        ]);
     }
 
     public function edit(BlogPost $blogPost)
@@ -102,10 +155,11 @@ class BlogPostController extends Controller
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'city_id' => 'nullable|exists:cities,id',
             'content' => 'required|string|min:100',
-            'excerpt' => 'nullable|string|max:500',
+            'excerpt' => 'nullable|string|max:2000',
             'meta_title' => 'nullable|string|max:200',
-            'meta_description' => 'nullable|string|max:500',
+            'meta_description' => 'nullable|string|max:2000',
             'focus_keyword' => 'nullable|string|max:200',
+            'featured_image' => 'nullable|string|max:500',
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
         ]);
@@ -150,6 +204,7 @@ class BlogPostController extends Controller
 
         $category = BlogCategory::findOrFail($validated['blog_category_id']);
         $city = isset($validated['city_id']) ? City::findOrFail($validated['city_id']) : null;
+        $domain = Domain::current();
 
         try {
             $result = $generator->generateBlogPostContent($category, $city);
@@ -160,8 +215,6 @@ class BlogPostController extends Controller
                     'error' => $result['error'] ?? 'Failed to generate content. Please check AI API keys configuration.',
                 ], 422);
             }
-
-            $domain = Domain::current();
 
             return response()->json([
                 'success' => true,
@@ -174,13 +227,14 @@ class BlogPostController extends Controller
                     'meta_description' => $result['meta_description'] ?? '',
                     'focus_keyword' => $result['focus_keyword'] ?? '',
                     'secondary_keywords' => $result['secondary_keywords'] ?? [],
+                    'featured_image' => $result['featured_image'] ?? '',
                     'blog_category_id' => $category->id,
                     'city_id' => $city?->id,
                     'domain_id' => $domain?->id,
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Blog post generation error: '.$e->getMessage());
+            Log::error('Blog post generation error: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,

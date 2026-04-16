@@ -1817,7 +1817,7 @@
                                 </h3>
 
                                 <p class="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed">
-                                    {{ $post->excerpt }}
+                                    {!! $post->excerpt !!}
                                 </p>
 
                                 <span class="text-xs text-slate-400 flex items-center gap-1.5 sm:gap-2">

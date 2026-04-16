@@ -8,7 +8,7 @@
     generated: false,
     error: null,
     data: null,
-    category_id: '',
+category_id: '',
     city_id: '',
 
     async generate() {
@@ -36,7 +36,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken
                 },
-                body: JSON.stringify({
+body: JSON.stringify({
                     blog_category_id: this.category_id,
                     city_id: this.city_id || null
                 })
@@ -45,12 +45,12 @@
             const result = await response.json();
             console.log('API Response:', JSON.stringify(result, null, 2));
 
-            if (result.success && result.data && result.data.content) {
+            if (result.success && result.data) {
                 this.generated = true;
                 this.data = result.data;
                 this.populateForm(result.data);
             } else {
-                this.error = result.error || 'Generation failed: ' + JSON.stringify(result);
+                this.error = result.error || 'Generation failed';
             }
         } catch (e) {
             this.error = e.message || 'An error occurred';
@@ -75,6 +75,7 @@
         setValue('[name=meta_title]', data.meta_title);
         setValue('[name=meta_description]', data.meta_description);
         setValue('[name=focus_keyword]', data.focus_keyword);
+        setValue('[name=featured_image]', data.featured_image);
         setValue('[name=blog_category_id]', data.blog_category_id);
         setValue('[name=city_id]', data.city_id);
 
@@ -197,6 +198,11 @@
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Focus Keyword</label>
                     <input type="text" name="focus_keyword" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+                    <input type="text" name="featured_image" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="pottydirect/service-images/...">
                 </div>
 
                 <div class="md:col-span-2 flex items-center gap-6">

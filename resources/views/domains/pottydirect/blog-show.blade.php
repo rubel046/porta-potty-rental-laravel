@@ -10,7 +10,7 @@ $articleSchema = [
     "@context" => "https://schema.org",
     "@type" => "Article",
     "headline" => $post->title,
-    "description" => $post->meta_description ?? $post->excerpt,
+    "description" => $post->meta_description ?? strip_tags($post->excerpt),
     "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),
@@ -104,10 +104,16 @@ $articleSchema = [
         <div class="py-12 md:py-16 px-4">
             <div class="max-w-5xl mx-auto">
                 {{-- Article Image --}}
-                <div class="h-64 md:h-80 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
-                            rounded-2xl flex items-center justify-center text-8xl mb-10 shadow-inner">
-                    🚽
-                </div>
+                @if($post->featured_image)
+                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                         alt="{{ $post->title }}"
+                         class="w-full h-64 md:h-80 object-cover rounded-2xl mb-10 shadow-lg">
+                @else
+                    <div class="h-64 md:h-80 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
+                                rounded-2xl flex items-center justify-center text-8xl mb-10 shadow-inner">
+                        🚽
+                    </div>
+                @endif
 
                 {{-- Article Body --}}
                 <div class="prose prose-lg max-w-none

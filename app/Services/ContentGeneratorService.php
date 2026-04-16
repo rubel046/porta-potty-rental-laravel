@@ -368,15 +368,7 @@ PROMPT;
             return $json ?? [];
         }
 
-        $label = $serviceType ? ucfirst($serviceType) : 'Rental';
-
-        return [
-            ['question' => "How much does {$label} cost in {$city->name}?", 'answer' => 'Pricing varies. Call for a free quote tailored to your needs.'],
-            ['question' => 'Do you offer same-day delivery?', 'answer' => 'Yes! Call before 2 PM for same-day service (subject to availability).'],
-            ['question' => 'How often are units serviced?', 'answer' => 'Weekly cleaning, pumping, sanitizing included. Daily service available for events.'],
-            ['question' => 'How many units do I need?', 'answer' => '1 unit per 50 guests (4hr event) or 1 per 25 guests (8hr). Call for exact calculation.'],
-            ['question' => 'What areas do you serve?', 'answer' => "We serve {$city->name} and all surrounding communities."],
-        ];
+        return [];
     }
 
     public function generateTestimonials(City $city, ?string $serviceType = null): array
@@ -393,11 +385,7 @@ PROMPT;
             return $json ?? [];
         }
 
-        return [
-            ['customer_name' => 'John D.', 'content' => 'Great service! Units were clean and delivered on time.', 'rating' => 5],
-            ['customer_name' => 'Sarah M.', 'content' => 'Professional team. Very satisfied with the experience.', 'rating' => 5],
-            ['customer_name' => 'Mike R.', 'content' => 'Excellent service for our project. Recommend!', 'rating' => 5],
-        ];
+        return [];
     }
 
     protected function applyLinkConversions(string $text): string
@@ -549,6 +537,7 @@ PROMPT;
         }
 
         $serviceTypesText = implode(', ', array_map(fn ($t) => ucfirst($t), $serviceTypes));
+        $imagePath = @$this->imageService->getRandomImagesForContent(1)[0]['path'] ?? '';
 
         $prompt = <<<PROMPT
 Act like a senior SEO strategist, content marketing expert, and local lead generation specialist with 40+ years of experience ranking USA service-based blogs (especially porta potty rental and local services).
@@ -618,12 +607,12 @@ Return a VALID JSON object with EXACTLY this structure:
 {
     "title": "SEO-optimized H1 title (max 80 chars)",
     "slug": "url-friendly-slug",
-    "excerpt": "Meta excerpt (max 160 chars)",
+    "excerpt": "Write a compelling blog excerpt (250-350 WORDS) that summarizes the blog post content. Include key benefits, local context, and a CTA. Do NOT include {{PHONE_LINK}} in excerpt.",
     "content": "Write 2000-3000 words of HIGH-QUALITY SEO blog content in markdown format. Include proper heading hierarchy (## H2, ### H3), bullet points, and structured content. Include CTAs with phone number {{PHONE_LINK}}.",
     "meta_title": "SEO title (50-60 chars)",
     "meta_description": "Meta description (120-160 chars)",
     "focus_keyword": "primary focus keyword",
-    "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
+    "secondary_keywords": ["keyword1", "keyword2", "keyword3"],
 }
 
 Constraints:
@@ -663,7 +652,7 @@ PROMPT;
                 ];
             }
 
-            $excerpt = $this->applyLinkConversions($this->ensureServiceLinks($data['excerpt'], $city));
+            $excerpt = $this->ensureServiceLinks($data['excerpt'], $city);
             $content = $this->applyLinkConversions($this->ensureServiceLinks($data['content'], $city));
 
             return [
@@ -676,6 +665,7 @@ PROMPT;
                 'meta_description' => $data['meta_description'] ?? '',
                 'focus_keyword' => $data['focus_keyword'] ?? '',
                 'secondary_keywords' => $data['secondary_keywords'] ?? [],
+                'featured_image' => $imagePath,
             ];
         } catch (\Exception $e) {
             Log::error('ContentGenerator: Blog post generation failed', [

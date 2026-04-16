@@ -34,9 +34,9 @@
             <article class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
                 <a href="{{ route('blog.show', $post->slug) }}" class="block">
                     @if($post->featured_image)
-                    <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                    <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover rounded-t-xl">
                     @else
-                    <div class="w-full h-48 bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
+                    <div class="w-full h-48 bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center rounded-t-xl">
                         <span class="text-6xl">🚽</span>
                     </div>
                     @endif
@@ -50,7 +50,7 @@
                     <a href="{{ route('blog.show', $post->slug) }}" class="block">
                         <h2 class="text-lg font-bold text-slate-800 mb-2 hover:text-emerald-600 transition">{{ $post->title }}</h2>
                     </a>
-                    <p class="text-slate-500 text-sm line-clamp-2">{{ $post->excerpt }}</p>
+                    <p class="text-slate-500 text-sm line-clamp-2">{!! $post->excerpt !!}</p>
                     <a href="{{ route('blog.show', $post->slug) }}" class="inline-flex items-center gap-1 text-emerald-600 font-medium mt-4 hover:underline">
                         Read More
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
