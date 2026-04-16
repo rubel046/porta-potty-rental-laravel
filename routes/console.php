@@ -12,3 +12,10 @@ Artisan::command('inspire', function () {
 Schedule::command('report:calls --period=today')
     ->dailyAt('23:55')
     ->timezone('Asia/Dhaka');
+
+// Daily AI blog post generation (runs daily at random time between 6-9 AM EST)
+// Use scheduler:random() in Laravel 11+ or use external script
+Schedule::command('blog:generate-daily')
+    ->dailyAt('07:30')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/blog-generation.log');
