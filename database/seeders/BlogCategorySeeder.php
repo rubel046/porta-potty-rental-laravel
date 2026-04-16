@@ -239,22 +239,15 @@ class BlogCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $i => $category) {
-            $baseSlug = $category['slug'];
-            $slug = $baseSlug;
-            $counter = 0;
-
-            while (BlogCategory::where('slug', $slug)->where(function ($q) use ($domainId) {
-                $q->where('domain_id', $domainId);
-                if ($domainId === null) {
-                    $q->orWhereNull('domain_id');
-                }
-            })->exists()) {
-                $slug = $baseSlug.'-'.$counter;
-                $counter++;
+            // Skip if already exists
+            if (BlogCategory::where('slug', $category['slug'])
+                ->where('domain_id', $domainId)
+                ->exists()) {
+                continue;
             }
 
             BlogCategory::create(
-                array_merge($category, ['slug' => $slug, 'sort_order' => $i, 'domain_id' => $domainId])
+                array_merge($category, ['sort_order' => $i, 'domain_id' => $domainId])
             );
         }
     }
