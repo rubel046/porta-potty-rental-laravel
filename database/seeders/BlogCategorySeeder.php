@@ -246,7 +246,8 @@ class BlogCategorySeeder extends Seeder
                 continue;
             }
 
-            BlogCategory::create(
+            BlogCategory::updateOrCreate(
+                ['slug' => $category['slug']],
                 array_merge($category, ['sort_order' => $i, 'domain_id' => $domainId])
             );
         }
