@@ -508,7 +508,7 @@ PROMPT;
         });
     }
 
-    public function generateBlogPostContent(BlogCategory $category, ?City $city = null): array
+    public function generateBlogPostContent(BlogCategory $category, ?City $city = null, int $iteration = 1): array
     {
         if (! $this->aiService) {
             return [
@@ -539,6 +539,14 @@ PROMPT;
         $serviceTypesText = implode(', ', array_map(fn ($t) => ucfirst($t), $serviceTypes));
         $imagePath = @$this->imageService->getRandomImagesForContent(1)[0]['path'] ?? '';
 
+        // Add variation based on iteration
+        $variationAngle = match ($iteration) {
+            1 => 'Focus on cost-effective solutions and budget-friendly options',
+            2 => 'Focus on convenience, speed of delivery, and emergency services',
+            3 => 'Focus on luxury options, events, and premium customer experience',
+            default => 'Provide a comprehensive overview with practical tips and real-world examples'
+        };
+
         $prompt = <<<PROMPT
 Act like a senior SEO strategist, content marketing expert, and local lead generation specialist with 40+ years of experience ranking USA service-based blogs (especially porta potty rental and local services).
 
@@ -556,6 +564,9 @@ CONTEXT:
 - Secondary Keywords: {$secondaryKeywords}
 - Nearby Cities: {$nearbyCitiesText}
 - Service Types: {$serviceTypesText}
+- Content Angle #{$iteration}: {$variationAngle}
+
+IMPORTANT: This is post #{$iteration} for this location. Generate UNIQUE content different from previous posts. Focus on a different angle, different keywords, and different structure than typical posts.
 
 Step-by-step instructions:
 

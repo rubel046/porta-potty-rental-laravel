@@ -207,7 +207,12 @@ class BlogPostController extends Controller
         $domain = Domain::current();
 
         try {
-            $result = $generator->generateBlogPostContent($category, $city);
+            // Check how many posts already exist for this city/category to determine angle
+            $existingCount = BlogPost::where('blog_category_id', $category->id)
+                ->when($city, fn ($q) => $q->where('city_id', $city->id))
+                ->count();
+
+            $result = $generator->generateBlogPostContent($category, $city, $existingCount + 1);
 
             if (! $result || ! ($result['success'] ?? false)) {
                 return response()->json([
@@ -216,11 +221,21 @@ class BlogPostController extends Controller
                 ], 422);
             }
 
+            $slug = $result['slug'] ?? Str::slug($result['title'] ?? 'blog-post');
+
+            // Make slug unique if it already exists
+            $baseSlug = $slug;
+            $counter = 1;
+            while (BlogPost::where('slug', $slug)->exists()) {
+                $slug = $baseSlug.'-'.$counter;
+                $counter++;
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'title' => $result['title'] ?? '',
-                    'slug' => $result['slug'] ?? '',
+                    'slug' => $slug,
                     'excerpt' => $result['excerpt'] ?? '',
                     'content' => $result['content'] ?? '',
                     'meta_title' => $result['meta_title'] ?? '',
