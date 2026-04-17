@@ -145,6 +145,13 @@ class GenerateCityContentJob implements ShouldQueue
             sleep(30);
         }
 
+        $this->city->servicePages()
+            ->where('domain_id', $domainId)
+            ->update([
+                'generation_status' => 'success',
+                'generated_at' => now(),
+            ]);
+
         $domainId = $this->domain?->id;
 
         if (! empty($errors)) {
