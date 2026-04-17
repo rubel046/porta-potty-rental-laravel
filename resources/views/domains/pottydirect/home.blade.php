@@ -1822,12 +1822,20 @@
                         <a href="{{ $post->url }}"
                            class="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-xl
                           transition-all duration-300 overflow-hidden group border border-slate-200">
-                            {{-- Image Placeholder --}}
-                            <div class="h-36 sm:h-48 bg-gradient-to-br from-blue-100 to-emerald-50
-                                flex items-center justify-center text-5xl sm:text-6xl
-                                group-hover:scale-105 transition-transform duration-500">
-                                🚽
-                            </div>
+                            @php
+                                $postImage = $post->featured_image;
+                            @endphp
+                            @if($postImage)
+                                <img src="{{ $postImage }}"
+                                     alt="{{ $post->title }}"
+                                     class="h-36 sm:h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @else
+                                <div class="h-36 sm:h-48 bg-gradient-to-br from-blue-100 to-emerald-50
+                                    flex items-center justify-center text-5xl sm:text-6xl
+                                    group-hover:scale-105 transition-transform duration-500">
+                                    🚽
+                                </div>
+                            @endif
 
                             <div class="p-4 sm:p-6">
                                 @if($post->category)
