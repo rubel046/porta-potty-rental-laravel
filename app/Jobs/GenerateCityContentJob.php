@@ -102,8 +102,8 @@ class GenerateCityContentJob implements ShouldQueue
 
                     $typeSuccess = true;
 
-                    // Sleep for 1 minute before next service type (avoid rate limiting)
-                    sleep(30);
+                    // Sleep for 2 minutes before next service type (avoid rate limiting)
+                    sleep(120);
                 } catch (\Throwable $e) {
                     $typeRetries++;
 

@@ -88,7 +88,7 @@ class GroqService
                 Log::warning("Groq API attempt {$attempt} exception: {$e->getMessage()}");
 
                 if ($attempt < $retries) {
-                    usleep(500000); // 0.5 second delay instead of exponential backoff
+                    sleep(2); // 2 second delay between attempts
                 }
             }
         }

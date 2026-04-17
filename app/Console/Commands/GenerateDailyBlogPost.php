@@ -111,7 +111,7 @@ class GenerateDailyBlogPost extends Command
 
             $this->info("  Created post: {$post->title} (ID: {$post->id})");
 
-            // Sleep for 2 minutes before next post (avoid rate limiting)
+            // Sleep for 2 minutes before next domain post (avoid rate limiting)
             sleep(120);
 
             Log::info('Daily blog post generated', [
