@@ -522,6 +522,7 @@ PROMPT;
         $businessName = $domain?->business_name ?? 'Our Company';
         $websiteUrl = $domain?->website_url ?? 'https://example.com';
         $primaryKeyword = $domain?->primary_keyword ?? 'porta potty rental';
+        $primaryService = $domain?->primary_service;
         $secondaryKeywords = $domain?->getSecondaryKeywordsFormatted() ?? '';
         $serviceTypes = $domain?->getServiceTypes() ?? ['construction', 'event', 'wedding', 'luxury', 'party', 'emergency', 'residential'];
         $nearbyCitiesList = $city ? $this->getNearbyCities($city) : [];
@@ -548,11 +549,11 @@ PROMPT;
         };
 
         $prompt = <<<PROMPT
-Act like a senior SEO strategist, content marketing expert, and local lead generation specialist with 40+ years of experience ranking USA service-based blogs (especially porta potty rental and local services).
+Act like a senior SEO strategist, content marketing expert, and local lead generation specialist with 40+ years of experience ranking USA service-based blogs (especially {$primaryService} and local services).
 
 Your goal is to generate a HIGH-QUALITY, 100% unique, human-like, SEO-optimized blog post that ranks on Google, attracts USA traffic, and converts visitors into phone call leads for {$websiteUrl}.
 
-Task: Create a long-form blog post (2000–3000 words) targeting low-competition, high-intent keywords in the porta potty rental niche.
+Task: Create a long-form blog post (2000–3000 words) targeting low-competition, high-intent keywords in the {$primaryService} niche. with a strong emphasis on local relevance and timely content.
 
 CONTEXT:
 - Category: {$category->name}
@@ -566,14 +567,18 @@ CONTEXT:
 - Service Types: {$serviceTypesText}
 - Content Angle #{$iteration}: {$variationAngle}
 
+Special Instruction (HIGH PRIORITY):
+- If there are any recent events, local news, seasonal trends, emergencies, construction booms, festivals, or city-specific developments in {$cityName} or surrounding areas, you MUST prioritize incorporating them into the content.
+- Align the blog angle with current affairs when relevant (e.g., events needing rentals, disaster response, local regulations, infrastructure projects).
+- This content must feel timely, locally aware, and contextually relevant.
+
 IMPORTANT: This is post #{$iteration} for this location. Generate UNIQUE content different from previous posts. Focus on a different angle, different keywords, and different structure than typical posts.
 
-Step-by-step instructions:
-
+Requirements:
 1) Keyword Research (MANDATORY):
 - Identify 1 primary keyword (low competition + good search volume)
 - Identify 5–10 secondary + LSI keywords
-- Include long-tail keywords (e.g., "how many porta potties for construction site", "same day porta potty rental near me")
+- Include long-tail keywords (e.g., "same day {$primaryService} near me")
 - Focus on USA search intent only
 
 2) SEO Optimization:
