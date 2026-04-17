@@ -521,7 +521,32 @@
         </div>
     </section>
 
-    {{-- ============================================ --}}
+    {{-- GENERATION PROGRESS SUMMARY --}}
+    @if($stats['total_cities'] > 0)
+        <section class="py-8 sm:py-10 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-5xl mx-auto px-3 sm:px-6">
+                <div class="grid grid-cols-2 gap-4 sm:gap-8 text-center">
+                    <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                        <div class="text-2xl sm:text-3xl font-bold text-emerald-600">
+                            {{ $stats['generated_cities'] }} / {{ $stats['total_cities'] }}
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-500 mt-1">
+                            Cities Generated
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-600">
+                            {{ $stats['generated_states'] }} / {{ $stats['total_states'] }}
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-500 mt-1">
+                            States Generated
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- SERVICE OPTIONS --}}
     {{-- ============================================ --}}
     <section id="services" class="py-12 md:py-16 lg:py-20 px-3 sm:px-4">

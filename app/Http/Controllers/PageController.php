@@ -13,6 +13,7 @@ use App\Providers\DomainViewHelper;
 use App\Services\ContentGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PageController extends Controller
 {
@@ -81,8 +82,18 @@ class PageController extends Controller
             ->take(3)
             ->get();
 
+        $stats = [
+            'generated_cities' => ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id'),
+            'total_cities' => DB::table('domain_cities')->distinct('city_id')->count('city_id'),
+            'generated_states' => ServicePage::where('generation_status', 'success')->distinct('state_id')->count('state_id'),
+            'total_states' => DB::table('domain_cities')
+                ->join('cities', 'domain_cities.city_id', '=', 'cities.id')
+                ->distinct('cities.state_id')
+                ->count('cities.state_id'),
+        ];
+
         return view('domains.pottydirect.home', compact(
-            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities'
+            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats'
         ));
     }
 
