@@ -145,28 +145,9 @@ class GenerateCityContentJob implements ShouldQueue
             sleep(30);
         }
 
-        $this->city->servicePages()
-            ->where('domain_id', $domainId)
-            ->update([
-                'generation_status' => 'success',
-                'generated_at' => now(),
-            ]);
-
-        $domainId = $this->domain?->id;
-
         if (! empty($errors)) {
             Cache::put("{$cacheKey}_errors", $errors, now()->addMinutes(60));
             Log::warning('Content generation completed with errors', ['city' => $this->city->name, 'errors' => $errors]);
-
-            $this->city->servicePages()
-                ->where('domain_id', $domainId)
-                ->whereNull('generated_at')
-                ->update(['generation_status' => 'failed', 'generation_error' => 'Partial generation - some types failed']);
-        } else {
-            $this->city->servicePages()
-                ->where('domain_id', $domainId)
-                ->whereNull('generated_at')
-                ->update(['generation_status' => 'success', 'generated_at' => now()]);
         }
 
         Cache::forget("{$cacheKey}_current_type");
