@@ -142,6 +142,7 @@ class GenerateCityContentJob implements ShouldQueue
             }
 
             // No extra sleep - already sleeping after success
+            sleep(30);
         }
 
         $domainId = $this->domain?->id;

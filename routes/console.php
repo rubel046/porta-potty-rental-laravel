@@ -19,3 +19,10 @@ Schedule::command('blog:generate-daily')
     ->dailyAt('07:30')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/blog-generation.log');
+
+// Daily city service page generation (runs after blog generation)
+// Controlled by DAILY_CITY_PAGE_GENERATION env variable (default: 5 cities per day)
+Schedule::command('city:generate-daily-pages')
+    ->dailyAt('08:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/city-page-generation.log');
