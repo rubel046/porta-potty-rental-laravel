@@ -1826,7 +1826,7 @@
                                 $postImage = $post->featured_image;
                             @endphp
                             @if($postImage)
-                                <img src="{{ $postImage }}"
+                                <img src="{{ asset('storage/' . $postImage) }}"
                                      alt="{{ $post->title }}"
                                      class="h-36 sm:h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500">
                             @else
