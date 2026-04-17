@@ -85,11 +85,11 @@ class PageController extends Controller
         $stats = [
             'generated_cities' => ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id'),
             'total_cities' => DB::table('domain_cities')->distinct('city_id')->count('city_id'),
-            'generated_states' => ServicePage::where('generation_status', 'success')->distinct('state_id')->count('state_id'),
-            'total_states' => DB::table('domain_cities')
-                ->join('cities', 'domain_cities.city_id', '=', 'cities.id')
+            'generated_states' => ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
+                ->where('service_pages.generation_status', 'success')
                 ->distinct('cities.state_id')
                 ->count('cities.state_id'),
+            'total_states' => DB::table('domain_states')->count(),
         ];
 
         return view('domains.pottydirect.home', compact(

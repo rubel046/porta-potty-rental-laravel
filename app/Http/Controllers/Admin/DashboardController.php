@@ -79,11 +79,11 @@ class DashboardController extends Controller
         // Active Resources
         $generatedCities = ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id');
         $totalCities = DB::table('domain_cities')->distinct('city_id')->count('city_id');
-        $generatedStates = ServicePage::where('generation_status', 'success')->distinct('state_id')->count('state_id');
-        $totalStates = DB::table('domain_cities')
-            ->join('cities', 'domain_cities.city_id', '=', 'cities.id')
+        $generatedStates = ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
+            ->where('service_pages.generation_status', 'success')
             ->distinct('cities.state_id')
             ->count('cities.state_id');
+        $totalStates = DB::table('domain_states')->count();
 
         $resourceStats = [
             'published_pages' => $generatedCities.' / '.$totalCities,
