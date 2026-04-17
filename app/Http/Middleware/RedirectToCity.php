@@ -64,18 +64,35 @@ class RedirectToCity
 
     private function getGeoData(string $ip): ?array
     {
+        if (! config('app.ip_geolocation_enabled', true)) {
+            return null;
+        }
+
         $cacheKey = 'geo_'.$ip;
 
         return Cache::remember($cacheKey, now()->addDays(7), function () use ($ip) {
             try {
-                $response = file_get_contents('https://ipapi.co/'.$ip.'/json/');
+                $context = stream_context_create([
+                    'http' => [
+                        'method' => 'GET',
+                        'timeout' => 5,
+                        'header' => "User-Agent: Laravel/1.0\r\n",
+                    ],
+                ]);
+
+                $response = @file_get_contents('https://ipapi.co/'.$ip.'/json/', false, $context);
+
+                if ($response === false) {
+                    return null;
+                }
+
                 $data = json_decode($response, true);
 
                 if ($data && isset($data['country_code'])) {
                     return $data;
                 }
             } catch (\Exception $e) {
-                Log::warning('IP geolocation lookup failed: '.$e->getMessage());
+                // Silent fail - don't log every failure
             }
 
             return null;

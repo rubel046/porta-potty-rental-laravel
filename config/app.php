@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | IP Geolocation
+    |--------------------------------------------------------------------------
+    |
+    | Enable/disable IP-based geolocation redirects
+    |
+    */
+    'ip_geolocation_enabled' => env('IP_GEOLOCATION_ENABLED', true),
+
 ];
