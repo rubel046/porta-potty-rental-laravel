@@ -73,6 +73,9 @@ Route::get('/sitemap-full.xml', [SitemapController::class, 'index'])
 Route::get('/sitemap-cities.xml', [SitemapController::class, 'cities'])
     ->name('sitemap.cities');
 
+Route::get('/sitemap-states.xml', [SitemapController::class, 'states'])
+    ->name('sitemap.states');
+
 Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])
     ->name('sitemap.blog');
 

@@ -39,6 +39,7 @@ class SitemapController extends Controller
             return SitemapIndex::create()
                 ->add(url('/sitemap-full.xml'))
                 ->add(url('/sitemap-cities.xml'))
+                ->add(url('/sitemap-states.xml'))
                 ->add(url('/sitemap-blog.xml'))
                 ->render();
         });
@@ -52,17 +53,38 @@ class SitemapController extends Controller
             $sitemap = Sitemap::create();
 
             ServicePage::published()
-                ->where('service_type', 'general')
                 ->chunk(500, function ($pages) use ($sitemap) {
                     foreach ($pages as $page) {
+                        $priority = $this->calculatePagePriority($page);
                         $sitemap->add(
                             Url::create(url("/{$page->slug}"))
                                 ->setLastModificationDate($page->updated_at)
                                 ->setChangeFrequency('weekly')
-                                ->setPriority(0.8)
+                                ->setPriority($priority)
                         );
                     }
                 });
+
+            return $sitemap->render();
+        });
+
+        return $this->xmlResponse($xml);
+    }
+
+    public function states(): Response
+    {
+        $xml = Cache::remember('sitemap_states', now()->addHours(self::CACHE_TTL_HOURS), function () {
+            $sitemap = Sitemap::create();
+
+            State::active()->chunk(100, function ($states) use ($sitemap) {
+                foreach ($states as $state) {
+                    $sitemap->add(
+                        Url::create(url("/porta-potty-rental-{$state->slug}"))
+                            ->setPriority(0.7)
+                            ->setChangeFrequency('weekly')
+                    );
+                }
+            });
 
             return $sitemap->render();
         });
@@ -96,6 +118,7 @@ class SitemapController extends Controller
     {
         Cache::forget('sitemap_main');
         Cache::forget('sitemap_cities');
+        Cache::forget('sitemap_states');
         Cache::forget('sitemap_blog');
         Cache::forget('sitemap_index');
     }
