@@ -102,8 +102,8 @@ class GenerateCityContentJob implements ShouldQueue
 
                     $typeSuccess = true;
 
-                    // Sleep for 30 sec before next service type (avoid rate limiting)
-                    sleep(30);
+                    // Sleep for 15 sec before next service type (avoid rate limiting)
+                    sleep(15);
                 } catch (\Throwable $e) {
                     $typeRetries++;
 
@@ -121,7 +121,7 @@ class GenerateCityContentJob implements ShouldQueue
                             'type' => $type,
                             'error' => $e->getMessage(),
                         ]);
-                        break;
+                        // Continue to next type instead of breaking
                     }
                 }
             }
@@ -141,7 +141,7 @@ class GenerateCityContentJob implements ShouldQueue
                 );
             }
 
-            sleep(60);
+            // No extra sleep - already sleeping after success
         }
 
         $domainId = $this->domain?->id;
