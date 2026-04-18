@@ -49,16 +49,13 @@ class LogViewerController extends Controller
             'blog-generation' => 'blog-generation.log',
             'city-page-generation' => 'city-page-generation.log',
             'worker' => 'worker.log',
-            'calls' => 'calls-'.now()->format('Y-m-d').'.log',
-            'google-indexing' => 'google-indexing.log',
-            default => 'laravel-'.now()->format('Y-m-d').'.log',
+            'calls' => 'calls-*.log',
+            'google-indexing' => 'google-indexing*.log',
+            'laravel' => 'laravel.log',
+            default => 'laravel.log',
         };
 
-        if ($logType === 'laravel' || $logType === 'calls' || $logType === 'google-indexing') {
-            $logs = $this->getLogContent($filename);
-        } else {
-            $logs = $this->getLogContent($filename);
-        }
+        $logs = $this->getLogContent($filename);
 
         if ($request->filled('level') && $request->level !== 'all') {
             $logs = array_filter($logs, fn ($log) => $log['level'] === $request->level);
@@ -109,7 +106,7 @@ class LogViewerController extends Controller
             'worker' => 'worker.log',
             'calls' => 'calls-'.now()->format('Y-m-d').'.log',
             'google-indexing' => 'google-indexing.log',
-            default => 'laravel-'.now()->format('Y-m-d').'.log',
+            default => 'laravel.log',
         };
 
         $logPath = storage_path('logs/'.$filename);
@@ -129,7 +126,7 @@ class LogViewerController extends Controller
             'worker' => 'worker.log',
             'calls' => 'calls-'.now()->format('Y-m-d').'.log',
             'google-indexing' => 'google-indexing.log',
-            default => 'laravel-'.now()->format('Y-m-d').'.log',
+            default => 'laravel.log',
         };
 
         $logPath = storage_path('logs/'.$filename);
@@ -202,7 +199,7 @@ class LogViewerController extends Controller
         $logFiles = [];
 
         $patterns = [
-            'laravel' => '/laravel-(\d{4}-\d{2}-\d{2})\.log/',
+            'laravel' => '/laravel\.log/',
             'blog-generation' => '/blog-generation\.log/',
             'city-page-generation' => '/city-page-generation\.log/',
             'worker' => '/worker\.log/',
@@ -232,50 +229,63 @@ class LogViewerController extends Controller
 
     protected function getLogContent(string $filename): array
     {
-        $logPath = storage_path('logs/'.$filename);
+        $logs = [];
+        $files = [];
 
-        if (! File::exists($logPath)) {
+        if (str_contains($filename, '*')) {
+            $files = File::glob(storage_path('logs/'.$filename));
+        } else {
+            $logPath = storage_path('logs/'.$filename);
+            if (File::exists($logPath)) {
+                $files = [$logPath];
+            }
+        }
+
+        if (empty($files)) {
             return [];
         }
 
-        $content = File::get($logPath);
-        $lines = explode("\n", $content);
-
-        $logs = [];
+        $fileLogs = [];
         $entry = [];
 
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) {
-                continue;
+        foreach ($files as $file) {
+            $content = File::get($file);
+            $lines = explode("\n", $content);
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (empty($line)) {
+                    continue;
+                }
+
+                if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.*)$/', $line, $matches)) {
+                    if (! empty($entry)) {
+                        $fileLogs[] = $entry;
+                    }
+
+                    $entry = [
+                        'timestamp' => $matches[1],
+                        'level' => strtolower($matches[3]),
+                        'env' => $matches[2],
+                        'message' => $matches[4],
+                        'context' => [],
+                    ];
+                } elseif (! empty($entry) && Str::startsWith($line, '[')) {
+                    if (preg_match('/^\[(.*?)\]\s+(.*)$/', $line, $contextMatch)) {
+                        $entry['context'][$contextMatch[1]] = $contextMatch[2];
+                    }
+                } elseif (! empty($entry)) {
+                    $entry['message'] .= "\n".$line;
+                }
             }
 
-            if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.*)$/', $line, $matches)) {
-                if (! empty($entry)) {
-                    $logs[] = $entry;
-                }
-
-                $entry = [
-                    'timestamp' => $matches[1],
-                    'level' => strtolower($matches[3]),
-                    'env' => $matches[2],
-                    'message' => $matches[4],
-                    'context' => [],
-                ];
-            } elseif (! empty($entry) && Str::startsWith($line, '[')) {
-                if (preg_match('/^\[(.*?)\]\s+(.*)$/', $line, $contextMatch)) {
-                    $entry['context'][$contextMatch[1]] = $contextMatch[2];
-                }
-            } elseif (! empty($entry)) {
-                $entry['message'] .= "\n".$line;
+            if (! empty($entry)) {
+                $fileLogs[] = $entry;
+                $entry = [];
             }
         }
 
-        if (! empty($entry)) {
-            $logs[] = $entry;
-        }
-
-        return array_reverse($logs);
+        return array_reverse($fileLogs);
     }
 
     protected function getLogStats(): array

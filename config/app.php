@@ -133,4 +133,14 @@ return [
     */
     'ip_geolocation_enabled' => env('IP_GEOLOCATION_ENABLED', true),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Daily City Page Generation
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of cities to generate content for per day
+    |
+    */
+    'daily_city_page_generation' => (int) env('DAILY_CITY_PAGE_GENERATION', 5),
+
 ];

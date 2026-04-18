@@ -16,7 +16,7 @@ class GenerateCityServicePagesDaily extends Command
 
     public function handle(): int
     {
-        $maxCitiesPerDay = (int) env('DAILY_CITY_PAGE_GENERATION', 5);
+        $maxCitiesPerDay = (int) config('app.daily_city_page_generation', 5);
 
         $domainId = $this->option('domain');
 
