@@ -103,28 +103,23 @@ class GenerateCityServicePagesDaily extends Command
     protected function getCitiesNeedingGeneration(Domain $domain, array $serviceTypes, int $limit)
     {
         $domainId = $domain->id;
-        $requiredCount = count($serviceTypes);
 
-        // Get city IDs that have fewer than required service pages or have failed/pending/processing status
-        $cityIdsWithPages = DB::table('service_pages')
-            ->select('city_id')
-            ->where('domain_id', $domainId)
-            ->whereIn('service_type', $serviceTypes)
-            ->groupBy('city_id')
-            ->havingRaw('COUNT(*) < ?', [$requiredCount])
-            ->orHavingRaw('MAX(generation_status) IN (?, ?, ?)', ['failed', 'pending', 'processing'])
-            ->pluck('city_id')
-            ->toArray();
-
-        // Get cities that are linked to this domain but NOT in the above list (need generation)
+        // Get city IDs where content_generated is false or null
         $cityIdsNeeded = DB::table('domain_cities')
             ->where('domain_id', $domainId)
-            ->whereNotIn('city_id', $cityIdsWithPages)
+            ->where(function ($query) {
+                $query->where('content_generated', false)
+                    ->orWhereNull('content_generated');
+            })
+            ->take($limit)
             ->pluck('city_id')
             ->toArray();
 
-        // Get the city models for those IDs (limited)
-        return City::whereIn('id', array_slice($cityIdsNeeded, 0, $limit))
+        if (empty($cityIdsNeeded)) {
+            return collect();
+        }
+
+        return City::whereIn('id', $cityIdsNeeded)
             ->with('state')
             ->get();
     }

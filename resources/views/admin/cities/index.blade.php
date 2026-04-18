@@ -106,6 +106,7 @@
                     <th class="px-6 py-4 font-medium">State</th>
                     <th class="px-6 py-4 font-medium">Zip Codes</th>
                     <th class="px-6 py-4 font-medium">Service Pages</th>
+                    <th class="px-6 py-4 font-medium">Content</th>
                     <th class="px-6 py-4 font-medium">Status</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
@@ -141,6 +142,28 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="text-gray-900">{{ $city->service_pages_count ?? 0 }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($domain && isset($city->content_generated))
+                                <form method="POST" action="{{ route('admin.cities.toggle-content-generated', $city) }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-left" @if($city->content_generated) title="Mark as not generated" @else title="Mark as generated" @endif>
+                                        @if($city->content_generated)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                                Generated
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                                <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                                                Pending
+                                            </span>
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                <span class="text-gray-400">—</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             @if($domain && isset($city->domain_status))
@@ -189,7 +212,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                        <td colspan="8" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                                 <p class="text-gray-500 font-medium">No cities found</p>

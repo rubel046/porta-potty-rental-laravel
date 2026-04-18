@@ -13,10 +13,14 @@ class DomainCity extends Model
         'domain_id',
         'city_id',
         'status',
+        'content_generated',
+        'content_generated_at',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'content_generated' => 'boolean',
+        'content_generated_at' => 'datetime',
     ];
 
     public function domain(): BelongsTo

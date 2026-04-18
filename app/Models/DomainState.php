@@ -23,12 +23,16 @@ class DomainState extends Model
         'generation_status',
         'generation_error',
         'generated_at',
+        'indexed_at',
+        'indexing_requested',
     ];
 
     protected $casts = [
         'status' => 'boolean',
         'images' => 'array',
         'seo_score' => 'float',
+        'indexed_at' => 'datetime',
+        'indexing_requested' => 'boolean',
     ];
 
     public function domain(): BelongsTo

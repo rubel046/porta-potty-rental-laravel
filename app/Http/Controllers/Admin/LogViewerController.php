@@ -18,7 +18,8 @@ class LogViewerController extends Controller
 
     public function index(Request $request)
     {
-        $logs = $this->getLogs($request);
+        $logType = $request->get('file', 'laravel');
+        $logs = $this->getLogsByType($logType, $request);
         $perPage = (int) $request->get('per_page', 100);
         $currentPage = (int) $request->get('page', 1);
         $totalLogs = count($logs);
@@ -34,12 +35,62 @@ class LogViewerController extends Controller
             'critical' => 'CRITICAL',
         ];
 
-        $stats = $this->getLogStats();
+        $stats = $this->getLogStatsByType($logType);
 
         return view('admin.logs.index', compact(
             'logs', 'logFiles', 'levels', 'stats',
-            'perPage', 'currentPage', 'totalPages', 'totalLogs', 'paginatedLogs'
+            'perPage', 'currentPage', 'totalPages', 'totalLogs', 'paginatedLogs', 'logType'
         ));
+    }
+
+    protected function getLogsByType(string $logType, Request $request): array
+    {
+        $filename = match ($logType) {
+            'blog-generation' => 'blog-generation.log',
+            'city-page-generation' => 'city-page-generation.log',
+            'worker' => 'worker.log',
+            'calls' => 'calls-'.now()->format('Y-m-d').'.log',
+            'google-indexing' => 'google-indexing.log',
+            default => 'laravel-'.now()->format('Y-m-d').'.log',
+        };
+
+        if ($logType === 'laravel' || $logType === 'calls' || $logType === 'google-indexing') {
+            $logs = $this->getLogContent($filename);
+        } else {
+            $logs = $this->getLogContent($filename);
+        }
+
+        if ($request->filled('level') && $request->level !== 'all') {
+            $logs = array_filter($logs, fn ($log) => $log['level'] === $request->level);
+        }
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $logs = array_filter($logs, fn ($log) => str_contains(strtolower($log['message']), $search));
+        }
+
+        return array_values($logs);
+    }
+
+    protected function getLogStatsByType(string $logType): array
+    {
+        $logs = $this->getLogsByType($logType, new Request);
+        $stats = [
+            'total' => count($logs),
+            'info' => 0,
+            'warning' => 0,
+            'error' => 0,
+            'critical' => 0,
+        ];
+
+        foreach ($logs as $log) {
+            $level = $log['level'];
+            if (isset($stats[$level])) {
+                $stats[$level]++;
+            }
+        }
+
+        return $stats;
     }
 
     public function show(Request $request, ?string $date = null)
@@ -49,22 +100,44 @@ class LogViewerController extends Controller
         return view('admin.logs.show', compact('logs', 'date'));
     }
 
-    public function clear()
+    public function clear(Request $request)
     {
-        if (File::exists($this->logPath)) {
-            File::put($this->logPath, '');
+        $logType = $request->get('file', 'laravel');
+        $filename = match ($logType) {
+            'blog-generation' => 'blog-generation.log',
+            'city-page-generation' => 'city-page-generation.log',
+            'worker' => 'worker.log',
+            'calls' => 'calls-'.now()->format('Y-m-d').'.log',
+            'google-indexing' => 'google-indexing.log',
+            default => 'laravel-'.now()->format('Y-m-d').'.log',
+        };
+
+        $logPath = storage_path('logs/'.$filename);
+        if (File::exists($logPath)) {
+            File::put($logPath, '');
         }
 
         return redirect()->back()->with('success', 'Log file cleared successfully!');
     }
 
-    public function download()
+    public function download(Request $request)
     {
-        if (! File::exists($this->logPath)) {
+        $logType = $request->get('file', 'laravel');
+        $filename = match ($logType) {
+            'blog-generation' => 'blog-generation.log',
+            'city-page-generation' => 'city-page-generation.log',
+            'worker' => 'worker.log',
+            'calls' => 'calls-'.now()->format('Y-m-d').'.log',
+            'google-indexing' => 'google-indexing.log',
+            default => 'laravel-'.now()->format('Y-m-d').'.log',
+        };
+
+        $logPath = storage_path('logs/'.$filename);
+        if (! File::exists($logPath)) {
             return redirect()->back()->with('error', 'Log file not found.');
         }
 
-        return response()->download($this->logPath, 'laravel.log');
+        return response()->download($logPath, $filename);
     }
 
     protected function getLogs(Request $request, ?string $date = null): array
@@ -128,16 +201,81 @@ class LogViewerController extends Controller
         $files = File::files(storage_path('logs'));
         $logFiles = [];
 
+        $patterns = [
+            'laravel' => '/laravel-(\d{4}-\d{2}-\d{2})\.log/',
+            'blog-generation' => '/blog-generation\.log/',
+            'city-page-generation' => '/city-page-generation\.log/',
+            'worker' => '/worker\.log/',
+            'calls' => '/calls-\d{4}-\d{2}-\d{2}\.log/',
+            'google-indexing' => '/google-indexing(?:-\w+)?\.log/',
+        ];
+
         foreach ($files as $file) {
-            if (preg_match('/laravel-(\d{4}-\d{2}-\d{2})\.log/', $file->getFilename(), $matches)) {
-                $logFiles[] = [
-                    'date' => $matches[1],
-                    'path' => $file->getPathname(),
-                ];
+            $filename = $file->getFilename();
+            foreach ($patterns as $type => $pattern) {
+                if (preg_match($pattern, $filename)) {
+                    $logFiles[] = [
+                        'name' => $filename,
+                        'type' => $type,
+                        'path' => $file->getPathname(),
+                        'date' => preg_match('/(\d{4}-\d{2}-\d{2})/', $filename, $m) ? $m[1] : date('Y-m-d', $file->getMTime()),
+                    ];
+                    break;
+                }
             }
         }
 
-        return array_reverse($logFiles);
+        usort($logFiles, fn ($a, $b) => $b['date'].$b['name'] <=> $a['date'].$a['name']);
+
+        return $logFiles;
+    }
+
+    protected function getLogContent(string $filename): array
+    {
+        $logPath = storage_path('logs/'.$filename);
+
+        if (! File::exists($logPath)) {
+            return [];
+        }
+
+        $content = File::get($logPath);
+        $lines = explode("\n", $content);
+
+        $logs = [];
+        $entry = [];
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+
+            if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.*)$/', $line, $matches)) {
+                if (! empty($entry)) {
+                    $logs[] = $entry;
+                }
+
+                $entry = [
+                    'timestamp' => $matches[1],
+                    'level' => strtolower($matches[3]),
+                    'env' => $matches[2],
+                    'message' => $matches[4],
+                    'context' => [],
+                ];
+            } elseif (! empty($entry) && Str::startsWith($line, '[')) {
+                if (preg_match('/^\[(.*?)\]\s+(.*)$/', $line, $contextMatch)) {
+                    $entry['context'][$contextMatch[1]] = $contextMatch[2];
+                }
+            } elseif (! empty($entry)) {
+                $entry['message'] .= "\n".$line;
+            }
+        }
+
+        if (! empty($entry)) {
+            $logs[] = $entry;
+        }
+
+        return array_reverse($logs);
     }
 
     protected function getLogStats(): array

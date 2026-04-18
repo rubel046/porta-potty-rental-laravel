@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\City;
 use App\Models\Domain;
+use App\Models\DomainCity;
 use App\Services\ContentGeneratorService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -156,6 +157,17 @@ class GenerateCityContentJob implements ShouldQueue
 
         Log::info('Content generation completed', ['city' => $this->city->name, 'errors' => count($errors)]);
 
+        $domainId = $this->domain?->id;
+
+        if ($domainId) {
+            DomainCity::where('domain_id', $domainId)
+                ->where('city_id', $this->city->id)
+                ->update([
+                    'content_generated' => empty($errors),
+                    'content_generated_at' => empty($errors) ? now() : null,
+                ]);
+        }
+
         if (empty($errors)) {
             $this->city->update(['is_active' => true]);
         }
@@ -175,6 +187,16 @@ class GenerateCityContentJob implements ShouldQueue
     {
         $cacheKey = "city_content_generation_{$this->city->id}";
         Cache::put("{$cacheKey}_status", 'failed', now()->addMinutes(30));
+
+        $domainId = $this->domain?->id;
+        if ($domainId) {
+            DomainCity::where('domain_id', $domainId)
+                ->where('city_id', $this->city->id)
+                ->update([
+                    'content_generated' => false,
+                    'content_generated_at' => null,
+                ]);
+        }
 
         Log::error('Content generation failed', [
             'city' => $this->city->name,

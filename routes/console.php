@@ -12,19 +12,18 @@ Schedule::command('blog:generate-daily')
 // Daily city service page generation (runs after blog generation)
 // Controlled by DAILY_CITY_PAGE_GENERATION env variable (default: 5 cities per day)
 Schedule::command('city:generate-daily-pages')
-//    ->dailyAt('11:30')
-    ->everyFiveMinutes()
+    ->dailyAt('11:30')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/city-page-generation.log');
 
 // Google Indexing API - submit URLs every 6 hours (max 200 URLs per batch)
 // Also checks and marks indexed status
-//Schedule::command('google:index')
+// Schedule::command('google:index')
 //    ->everySixHours()
 //    ->timezone('America/New_York')
 //    ->appendOutputTo('storage/logs/google-indexing.log');
 //
-//Schedule::command('google:index --check')
+// Schedule::command('google:index --check')
 //    ->dailyAt('02:00')
 //    ->timezone('America/New_York')
 //    ->appendOutputTo('storage/logs/google-indexing-check.log');

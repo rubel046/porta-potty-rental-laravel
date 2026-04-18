@@ -16,6 +16,7 @@ class BlogPost extends Model
         'secondary_keywords', 'schema_markup',
         'word_count', 'views', 'reading_time',
         'is_published', 'is_featured', 'published_at',
+        'indexed_at', 'indexing_requested',
     ];
 
     protected $casts = [
@@ -24,6 +25,8 @@ class BlogPost extends Model
         'is_published' => 'boolean',
         'is_featured' => 'boolean',
         'published_at' => 'datetime',
+        'indexed_at' => 'datetime',
+        'indexing_requested' => 'boolean',
     ];
 
     public function category(): BelongsTo

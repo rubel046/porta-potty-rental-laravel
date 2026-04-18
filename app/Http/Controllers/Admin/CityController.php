@@ -78,6 +78,7 @@ class CityController extends Controller
                     ->where('city_id', $city->id)
                     ->first();
                 $city->domain_status = $domainCity?->status ?? false;
+                $city->content_generated = $domainCity?->content_generated ?? false;
             });
 
             return view('admin.cities.index', compact('cities', 'states', 'domain'));
@@ -290,6 +291,38 @@ class CityController extends Controller
             ]);
             $statusText = 'activated';
         }
+
+        return redirect()->back()->with('success', "City '{$city->name}' {$statusText}!");
+    }
+
+    public function toggleContentGenerated(City $city)
+    {
+        $domain = Domain::current();
+
+        if (! $domain) {
+            return redirect()->back()->with('error', 'No domain selected');
+        }
+
+        $domainCity = DomainCity::where('domain_id', $domain->id)
+            ->where('city_id', $city->id)
+            ->first();
+
+        if ($domainCity) {
+            $newStatus = ! $domainCity->content_generated;
+            $domainCity->update([
+                'content_generated' => $newStatus,
+                'content_generated_at' => $newStatus ? now() : null,
+            ]);
+        } else {
+            DomainCity::create([
+                'domain_id' => $domain->id,
+                'city_id' => $city->id,
+                'content_generated' => true,
+                'content_generated_at' => now(),
+            ]);
+        }
+
+        $statusText = $newStatus ? 'marked as generated' : 'marked as not generated';
 
         return redirect()->back()->with('success', "City '{$city->name}' {$statusText}!");
     }

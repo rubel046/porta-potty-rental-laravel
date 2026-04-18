@@ -63,13 +63,19 @@
         </div>
     </div>
 
-    {{-- Filters --}}
+    {{-- File Selector --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <form method="GET" class="flex flex-wrap gap-4 items-end">
             <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs text-gray-500 mb-1">Search</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search in logs..." 
-                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label class="block text-xs text-gray-500 mb-1">Log File</label>
+                <select name="file" onchange="this.form.submit()" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                    <option value="laravel" {{ request('file', 'laravel') === 'laravel' ? 'selected' : '' }}>Laravel (laravel.log)</option>
+                    <option value="blog-generation" {{ request('file') === 'blog-generation' ? 'selected' : '' }}>Blog Generation (blog-generation.log)</option>
+                    <option value="city-page-generation" {{ request('file') === 'city-page-generation' ? 'selected' : '' }}>City Page Generation (city-page-generation.log)</option>
+                    <option value="worker" {{ request('file') === 'worker' ? 'selected' : '' }}>Worker (worker.log)</option>
+                    <option value="calls" {{ request('file') === 'calls' ? 'selected' : '' }}>Calls (calls-*.log)</option>
+                    <option value="google-indexing" {{ request('file') === 'google-indexing' ? 'selected' : '' }}>Google Indexing (google-indexing*.log)</option>
+                </select>
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1">Level</label>
@@ -110,6 +116,7 @@
             </button>
             <form method="POST" action="{{ route('admin.logs.clear') }}" onsubmit="return confirm('Are you sure you want to clear all logs?');">
                 @csrf
+                <input type="hidden" name="file" value="{{ request('file', 'laravel') }}">
                 <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     Clear Logs
@@ -117,6 +124,7 @@
             </form>
             <form method="POST" action="{{ route('admin.logs.download') }}">
                 @csrf
+                <input type="hidden" name="file" value="{{ request('file', 'laravel') }}">
                 <button type="submit" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Download

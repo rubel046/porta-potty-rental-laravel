@@ -191,6 +191,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/cities/{city}/toggle-status', [CityController::class, 'toggleStatus'])
         ->name('cities.toggle-status');
 
+    // Toggle content generated status for city
+    Route::post('/cities/{city}/toggle-content-generated', [CityController::class, 'toggleContentGenerated'])
+        ->name('cities.toggle-content-generated');
+
     // Auto-generate service pages for a city
     Route::post('/cities/{city}/generate-pages', [CityController::class, 'generatePages'])
         ->name('cities.generate-pages');
