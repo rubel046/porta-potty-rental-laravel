@@ -15,6 +15,7 @@ class ServicePage extends Model
         'phone_number', 'canonical_url', 'schema_markup',
         'word_count', 'views', 'calls_generated', 'seo_score',
         'is_published', 'published_at', 'images',
+        'indexed_at', 'indexing_requested',
     ];
 
     protected $casts = [
@@ -24,6 +25,8 @@ class ServicePage extends Model
         'seo_score' => 'float',
         'seo_details' => 'array',
         'images' => 'array',
+        'indexed_at' => 'datetime',
+        'indexing_requested' => 'boolean',
     ];
 
     // Service Types

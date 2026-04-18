@@ -43,4 +43,10 @@ return [
         'duplicate_hours' => (int) env('CALL_DUPLICATE_HOURS', 72),
     ],
 
+    'google' => [
+        'client_email' => env('GOOGLE_CLIENT_EMAIL'),
+        'private_key' => env('GOOGLE_PRIVATE_KEY'),
+        'search_console_url' => env('GOOGLE_SEARCH_CONSOLE_URL'),
+    ],
+
 ];
