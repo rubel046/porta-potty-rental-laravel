@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
+use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -89,9 +90,13 @@ class DashboardController extends Controller
             ->count();
         $totalStates = DB::table('domain_states')->count();
 
+        $indexedLinks = IndexingUrl::where('indexed', true)->count();
+        $totalIndexedCandidates = IndexingUrl::count();
+
         $resourceStats = [
             'published_pages' => $generatedCities.' / '.$totalCities,
             'generated_states' => $generatedStates.' / '.$totalStates,
+            'indexed_links' => $indexedLinks.' / '.$totalIndexedCandidates,
             'active_numbers' => PhoneNumber::where('is_active', true)->count(),
             'active_buyers' => Buyer::active()->count(),
         ];

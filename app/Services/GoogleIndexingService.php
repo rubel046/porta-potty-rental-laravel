@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BlogPost;
 use App\Models\DomainState;
+use App\Models\IndexingUrl;
 use App\Models\ServicePage;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
@@ -198,64 +199,32 @@ class GoogleIndexingService
             'total' => 0,
         ];
 
-        $fourDaysAgo = now()->subDays(4);
-
-        $servicePageUrls = ServicePage::where('generation_status', 'success')
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('generated_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('generated_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->where('is_published', true)
-            ->orderBy('generated_at', 'asc')
+        // Get pending URLs from tracking table that haven't been submitted yet
+        $pendingUrls = IndexingUrl::where('status', 'pending')
+            ->whereNull('requested_at')
             ->limit(self::MAX_URLS_PER_BATCH)
             ->get()
-            ->map(fn ($page) => url($page->slug))
+            ->pluck('url')
             ->toArray();
 
-        $statePageUrls = DomainState::where('generation_status', 'success')
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('generated_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('generated_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->where('status', true)
-            ->orderBy('generated_at', 'asc')
-            ->limit(self::MAX_URLS_PER_BATCH)
-            ->get()
-            ->map(fn ($state) => url('state/'.$state->state->slug))
-            ->toArray();
-
-        $blogPostUrls = BlogPost::where('is_published', true)
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('published_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('published_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->orderBy('published_at', 'asc')
-            ->limit(self::MAX_URLS_PER_BATCH)
-            ->get()
-            ->map(fn ($post) => url('blog/'.$post->slug))
-            ->toArray();
-
-        $allUrls = array_merge($servicePageUrls, $statePageUrls, $blogPostUrls);
-        $allUrls = array_unique($allUrls);
-        $allUrls = array_slice($allUrls, 0, self::MAX_URLS_PER_BATCH);
-
-        if (empty($allUrls)) {
+        if (empty($pendingUrls)) {
             return $stats;
+        }
+
+        $allUrls = $pendingUrls;
+
+        // Track URLs in indexing_urls table
+        foreach ($allUrls as $url) {
+            $type = 'service';
+            if (str_contains($url, '/blog/')) {
+                $type = 'blog';
+            } elseif (str_contains($url, '/state/')) {
+                $type = 'state';
+            }
+            IndexingUrl::firstOrCreate(
+                ['url' => $url],
+                ['type' => $type, 'status' => 'pending']
+            );
         }
 
         $results = $this->indexUrls($allUrls);
@@ -263,8 +232,17 @@ class GoogleIndexingService
         $indexedUrls = $results['urls'];
         $indexedCount = count($indexedUrls);
 
-        $baseUrl = config('app.url');
+        // Update tracking records
+        foreach ($indexedUrls as $url) {
+            IndexingUrl::where('url', $url)->update([
+                'indexed' => true,
+                'indexed_at' => now(),
+                'status' => 'indexed',
+            ]);
+        }
 
+        // Update original records
+        $baseUrl = config('app.url');
         $servicePageSlugs = [];
         $statePageSlugs = [];
         $blogPostSlugs = [];
@@ -392,46 +370,9 @@ class GoogleIndexingService
 
     public function getPendingCount(): int
     {
-        $fourDaysAgo = now()->subDays(4);
-
-        $servicePageCount = ServicePage::where('generation_status', 'success')
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('generated_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('generated_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->where('is_published', true)
+        // Use the indexing_urls table for tracking
+        return IndexingUrl::where('indexed', false)
+            ->where('status', 'pending')
             ->count();
-
-        $statePageCount = DomainState::where('generation_status', 'success')
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('generated_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('generated_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->where('status', true)
-            ->count();
-
-        $blogPostCount = BlogPost::where('is_published', true)
-            ->whereNull('indexed_at')
-            ->where(function ($q) use ($fourDaysAgo) {
-                $q->where('published_at', '<=', $fourDaysAgo)
-                    ->orWhereNull('published_at');
-            })
-            ->where(function ($q) {
-                $q->where('indexing_requested', false)
-                    ->orWhereNull('indexing_requested');
-            })
-            ->count();
-
-        return $servicePageCount + $statePageCount + $blogPostCount;
     }
 }

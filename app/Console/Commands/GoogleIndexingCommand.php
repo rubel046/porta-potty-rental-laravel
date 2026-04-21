@@ -70,7 +70,7 @@ class GoogleIndexingCommand extends Command
     {
         $this->info('Checking indexing status via Google Indexing API...');
 
-        $fourDaysAgo = now()->subDays(4);
+        $threeDaysAgo = now()->subDays(3);
 
         $pages = ServicePage::where('generation_status', 'success')
             ->where('indexing_requested', true)
@@ -105,12 +105,12 @@ class GoogleIndexingCommand extends Command
     {
         $this->info('Manually marking URLs as indexed...');
 
-        $fourDaysAgo = now()->subDays(4);
+        $threeDaysAgo = now()->subDays(3);
 
         $urls = ServicePage::where('generation_status', 'success')
             ->where('indexing_requested', true)
             ->whereNull('indexed_at')
-            ->where('generated_at', '<', $fourDaysAgo)
+            ->where('generated_at', '<', $threeDaysAgo)
             ->limit(50)
             ->get()
             ->map(fn ($p) => url($p->slug))

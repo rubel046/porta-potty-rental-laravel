@@ -16,14 +16,20 @@ Schedule::command('city:generate-daily-pages')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/city-page-generation.log');
 
-// Google Indexing API - submit URLs every 6 hours (max 200 URLs per batch)
-// Also checks and marks indexed status
-// Schedule::command('google:index')
-//    ->everySixHours()
-//    ->timezone('America/New_York')
-//    ->appendOutputTo('storage/logs/google-indexing.log');
-//
-// Schedule::command('google:index --check')
-//    ->dailyAt('02:00')
-//    ->timezone('America/New_York')
-//    ->appendOutputTo('storage/logs/google-indexing-check.log');
+// Sync indexing URLs daily (fetch from sitemap)
+Schedule::command('indexing:sync')
+    ->dailyAt('00:30')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/indexing-sync.log');
+
+// Google Indexing API - submit URLs every 3 days (URLs must be 3+ days old)
+Schedule::command('google:index')
+    ->cron('0 3 * * *') // Every 3 days at 3 AM EST
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/google-indexing.log');
+
+// Check indexing status daily
+Schedule::command('google:index --check')
+    ->dailyAt('04:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/google-indexing-check.log');
