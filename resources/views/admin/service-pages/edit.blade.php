@@ -25,6 +25,13 @@
                     </div>
 
                     <div class="mb-6">
+                        <label class="form-label">Slug *</label>
+                        <input type="text" name="slug" class="form-input"
+                               value="{{ old('slug', $page->slug) }}" required>
+                        @error('slug') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-6">
                         <label class="form-label">H1 Title *</label>
                         <input type="text" name="h1_title" class="form-input"
                                value="{{ old('h1_title', $page->h1_title) }}" required>

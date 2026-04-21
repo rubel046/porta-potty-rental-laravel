@@ -62,6 +62,7 @@ class ServicePageController extends Controller
     public function update(Request $request, ServicePage $servicePage)
     {
         $validated = $request->validate([
+            'slug' => 'required|string|max:250|unique:service_pages,slug,'.$servicePage->id,
             'h1_title' => 'required|string|max:250',
             'meta_title' => 'required|string|max:200',
             'meta_description' => 'required|string|max:500',
@@ -83,6 +84,10 @@ class ServicePageController extends Controller
         $validated['content'] = $content;
 
         $validated['word_count'] = str_word_count(strip_tags($content));
+
+        if ($request->filled('slug')) {
+            $servicePage->slug = $request->slug;
+        }
 
         $servicePage->update($validated);
         $servicePage->calculateSeoScore();

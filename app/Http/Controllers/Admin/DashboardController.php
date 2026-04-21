@@ -7,7 +7,6 @@ use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
 use App\Models\PhoneNumber;
-use App\Models\ServicePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -77,12 +76,17 @@ class DashboardController extends Controller
             ->get();
 
         // Active Resources
-        $generatedCities = ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id');
+        $generatedCities = DB::table('domain_cities')
+            ->whereNotNull('content_generated')
+            ->where('content_generated', true)
+            ->where('status', true)
+            ->distinct('city_id')
+            ->count('city_id');
         $totalCities = DB::table('domain_cities')->distinct('city_id')->count('city_id');
-        $generatedStates = ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
-            ->where('service_pages.generation_status', 'success')
-            ->distinct('cities.state_id')
-            ->count('cities.state_id');
+        $generatedStates = DB::table('domain_states')
+            ->where('generation_status', 'success')
+            ->where('status', true)
+            ->count();
         $totalStates = DB::table('domain_states')->count();
 
         $resourceStats = [
