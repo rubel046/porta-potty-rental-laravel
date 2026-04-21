@@ -25,6 +25,7 @@ class Domain extends Model
         'layout',
         'theme_color',
         'logo_path',
+        'google_business_url',
     ];
 
     protected $casts = [

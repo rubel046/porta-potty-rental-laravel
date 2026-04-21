@@ -36,6 +36,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PageController::class, 'home'])
     ->name('home');
 
+// Near Me redirects for SEO
+Route::get('/porta-potty-near-me', fn () => redirect('/', 301));
+Route::get('/porta-potty-rental-near-me', fn () => redirect('/', 301));
+Route::get('/porta-potty-rentals-near-me', fn () => redirect('/', 301));
+Route::get('/rent-a-porta-potty-near-me', fn () => redirect('/', 301));
+
 // All Locations Page
 Route::get('/locations', [PageController::class, 'locations'])
     ->name('locations');

@@ -32,6 +32,7 @@ class DomainController extends Controller
             'tagline' => 'nullable|string|max:255',
             'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
+            'google_business_url' => 'nullable|url|max:500',
             'is_active' => 'boolean',
         ]);
 
@@ -58,6 +59,7 @@ class DomainController extends Controller
             'tagline' => 'nullable|string|max:255',
             'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
+            'google_business_url' => 'nullable|url|max:500',
             'is_active' => 'boolean',
         ]);
 

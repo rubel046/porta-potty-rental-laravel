@@ -93,11 +93,11 @@
             "@context" => "https://schema.org",
             "@type" => "Collection",
             "name" => "Customer Reviews",
-            "description" => "Customer reviews and testimonials for Potty Direct porta potty rental service",
+            "description" => "Customer reviews and testimonials for " . ($domain?->business_name ?? "Potty Direct") . " porta potty rental service",
             "itemListElement" => [
-                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use Potty Direct for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
-                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],
-                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "David Chen"], "reviewBody" => "Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!"]
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use " . ($domain?->business_name ?? "Potty Direct") . " for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],
+                ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "David Chen"], "reviewBody" => "Been working with them for 5 years. Always competitive pricing, never had an issue with delivery timing. They treat my job sites like their own. Outstanding service!"]
             ]
         ];
 
@@ -124,7 +124,7 @@
                         "@type" => "Service",
                         "name" => "Standard Portable Toilet Rental",
                         "description" => "Basic portable toilet for construction sites and outdoor events. OSHA compliant with non-splash urinal, ventilation, and hand sanitizer.",
-                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "provider" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"],
                         "areaServed" => ["@type" => "Country", "name" => "United States"],
                         "priceRange" => "$100-175/day"
                     ]
@@ -136,7 +136,7 @@
                         "@type" => "Service",
                         "name" => "Deluxe Flushable Unit Rental",
                         "description" => "Premium portable toilet with flushing toilet, sink with running water, interior mirror, and handwashing station.",
-                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "provider" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"],
                         "areaServed" => ["@type" => "Country", "name" => "United States"],
                         "priceRange" => "$175-275/day"
                     ]
@@ -148,7 +148,7 @@
                         "@type" => "Service",
                         "name" => "ADA Accessible Portable Restroom",
                         "description" => "Wheelchair accessible portable toilet with extra-wide door, interior grab bars, non-slip flooring, and spacious interior.",
-                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "provider" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"],
                         "areaServed" => ["@type" => "Country", "name" => "United States"],
                         "priceRange" => "$175-275/day"
                     ]
@@ -160,7 +160,7 @@
                         "@type" => "Service",
                         "name" => "Luxury Restroom Trailer Rental",
                         "description" => "Premium climate-controlled restroom trailers with porcelain fixtures, vanity, lighting, men's and women's sides. Perfect for weddings and upscale events.",
-                        "provider" => ["@type" => "LocalBusiness", "name" => "Potty Direct"],
+                        "provider" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"],
                         "areaServed" => ["@type" => "Country", "name" => "United States"],
                         "priceRange" => "$500-1500/day"
                     ]
@@ -219,7 +219,8 @@
                  class="w-full h-full object-cover"
                  width="1920"
                  height="1080"
-                 loading="eager">
+                 loading="eager"
+                 decoding="async">
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60"></div>
         </div>
 

@@ -17,12 +17,36 @@ $breadcrumbSchema = [
         ["@type" => "ListItem", "position" => 3, "name" => $city->name, "item" => url($servicePage->slug)]
     ]
 ];
+
+$reviewSchema = null;
+if ($testimonials->isNotEmpty()) {
+    $reviewSchema = [
+        "@context" => "https://schema.org",
+        "@type" => "AggregateRating",
+        "itemReviewed" => [
+            "@type" => "LocalBusiness",
+            "name" => $domain?->business_name ?? "Potty Direct",
+            "address" => [
+                "@type" => "PostalAddress",
+                "addressLocality" => $city->name,
+                "addressRegion" => $city->state->code,
+                "addressCountry" => "US"
+            ]
+        ],
+        "ratingValue" => round($testimonials->avg('rating'), 1),
+        "reviewCount" => $testimonials->count(),
+        "bestRating" => 5
+    ];
+}
 @endphp
 <script type="application/ld+json">{!! json_encode($schemaMarkup, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @if(!empty($faqSchema))
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endif
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@if($reviewSchema)
+<script type="application/ld+json">{!! json_encode($reviewSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endpush
 
 @section('content')
@@ -49,7 +73,8 @@ $breadcrumbSchema = [
         {{-- Hero Background Image --}}
         <div class="absolute inset-0">
             <img src="{{ $heroUrl }}" alt="Porta potty rental in {{ $city->name }}"
-                 class="w-full h-full object-cover">
+                 class="w-full h-full object-cover"
+                 width="1920" height="1080" loading="eager" decoding="async">
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60"></div>
         </div>
 

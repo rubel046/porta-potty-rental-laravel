@@ -14,10 +14,10 @@ $articleSchema = [
     "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),
-    "author" => ["@type" => "Organization", "name" => "Potty Direct"],
+    "author" => ["@type" => "Organization", "name" => ($domain?->business_name ?? 'Potty Direct')],
     "publisher" => [
         "@type" => "Organization",
-        "name" => "Potty Direct",
+        "name" => ($domain?->business_name ?? 'Potty Direct'),
         "logo" => ["@type" => "ImageObject", "url" => url('/logo.png')]
     ],
     "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $post->url]

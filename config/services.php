@@ -49,4 +49,8 @@ return [
         'search_console_url' => env('GOOGLE_SEARCH_CONSOLE_URL'),
     ],
 
+    'ga4' => [
+        'measurement_id' => env('GA4_MEASUREMENT_ID', ''),
+    ],
+
 ];

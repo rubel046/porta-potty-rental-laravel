@@ -3,6 +3,18 @@
 @section('title', 'Porta Potty Rental Blog | Guides, Tips & Pricing Info')
 @section('meta_description', 'Expert guides on porta potty rental pricing, event planning, construction site requirements, and more.')
 
+@section('pagination_headers')
+@if($posts->currentPage() > 1)
+    <link rel="prev" href="{{ $posts->previousPageUrl() }}">
+@endif
+@if($posts->hasMorePages())
+    <link rel="next" href="{{ $posts->nextPageUrl() }}">
+@endif
+@if($posts->currentPage() > 1)
+    <meta name="robots" content="noindex, follow">
+@endif
+@endsection
+
 @section('content')
 
 <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
@@ -69,8 +81,8 @@
         </div>
 
         @if($posts->hasPages())
-        <div class="mt-12 flex justify-center">
-            {{ $posts->links() }}
+        <div class="mt-12">
+            <x-blog-pagination :paginator="$posts" />
         </div>
         @endif
     </div>

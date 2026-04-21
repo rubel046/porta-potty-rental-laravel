@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php $domain = \App\Models\Domain::current(); @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
@@ -25,7 +26,7 @@
     <meta property="og:url" content="@yield('canonical', url()->current())">
     <meta property="og:title" content="@yield('title')">
     <meta property="og:description" content="@yield('meta_description')">
-    <meta property="og:site_name" content="Potty Direct">
+    <meta property="og:site_name" content="{{ $domain?->business_name ?? 'Potty Direct' }}">
     <meta property="og:locale" content="en_US">
 
     {{-- Twitter Card --}}
@@ -44,7 +45,7 @@
 
     {{-- Additional SEO --}}
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="author" content="Potty Direct">
+    <meta name="author" content="{{ $domain?->business_name ?? 'Potty Direct' }}">
     <meta name="geo.region" content="US">
     <meta name="geo.placename" content="United States">
     <meta name="distribution" content="global">
@@ -63,18 +64,21 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
 
     {{-- Google Analytics 4 --}}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    @if(config('services.ga4.measurement_id'))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.ga4.measurement_id') }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
+        gtag('config', '{{ config('services.ga4.measurement_id') }}');
     </script>
+    @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
+@php $domain = \App\Models\Domain::current(); @endphp
 
 {{-- Announcement Banner - Enhanced Urgency --}}
 <div id="announcement-banner" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-2 px-3 sm:px-4">
@@ -320,6 +324,13 @@
                     Your trusted partner for clean, affordable portable restroom rentals. Serving cities nationwide with same-day delivery available.
                 </p>
                 <div class="flex items-center gap-3">
+                    @if($domain?->google_business_url)
+                    <a href="{{ $domain->google_business_url }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Google Business Profile">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </a>
+                    @endif
                     <a href="https://youtube.com/@pottydirect" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Youtube">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21.582 6.186c-.23-.86-.908-1.538-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418c-.86.23-1.538.908-1.768 1.768C2 7.746 2 12 2 12s0 4.254.418 5.814c.23.86.908 1.538 1.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418c.86-.23 1.538-.908 1.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15.464V8.536L16 12l-6 3.464z"/>

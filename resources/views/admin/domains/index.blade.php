@@ -108,6 +108,7 @@
                                     data-tagline="{{ htmlspecialchars($domain->tagline ?? '', ENT_QUOTES) }}"
                                     data-cta-phone="{{ htmlspecialchars($domain->cta_phone ?? '', ENT_QUOTES) }}"
                                     data-color="{{ $domain->primary_color }}"
+                                    data-google-business-url="{{ htmlspecialchars($domain->google_business_url ?? '', ENT_QUOTES) }}"
                                     data-active="{{ $domain->is_active ? '1' : '0' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -258,6 +259,13 @@
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Google Business Profile URL</label>
+                                    <input type="url" name="google_business_url" x-model="currentDomain.google_business_url"
+                                           placeholder="https://business.google.com/sites/l/..."
+                                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2.5 border">
+                                </div>
+
                                 <div class="flex items-center">
                                     <input type="checkbox" name="is_active" x-model="currentDomain.is_active" value="1"
                                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -319,6 +327,7 @@ function domainManager() {
                     tagline: '',
                     cta_phone: '',
                     primary_color: '#3B82F6',
+                    google_business_url: '',
                     is_active: true
                 };
             }
@@ -339,6 +348,7 @@ function domainManager() {
                         tagline: btn.dataset.tagline || '',
                         cta_phone: btn.dataset.ctaPhone || '',
                         primary_color: btn.dataset.color || '#3B82F6',
+                        google_business_url: btn.dataset.googleBusinessUrl || '',
                         is_active: btn.dataset.active === '1'
                     };
                     this.showModal = true;

@@ -200,7 +200,7 @@ class ServicePage extends Model
             'residential' => "Residential porta potty rental in {$city->name}, {$state->code}. Home renovation and DIY project portable toilets.",
         ];
 
-        return [
+        $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'LocalBusiness',
             'name' => $serviceNames[$serviceType] ?? $serviceNames['general'],
@@ -224,6 +224,33 @@ class ServicePage extends Model
                 'itemListElement' => $this->getServiceOfferings($serviceType),
             ],
         ];
+
+        if (in_array($serviceType, ['wedding', 'event'])) {
+            $schema['event'] = [
+                '@type' => 'Event',
+                'name' => "{$serviceNames[$serviceType]} - {$city->name}",
+                'description' => $descriptions[$serviceType],
+                'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+                'eventStatus' => 'https://schema.org/EventScheduled',
+                'location' => [
+                    '@type' => 'Place',
+                    'name' => "{$city->name} Area",
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'addressLocality' => $city->name,
+                        'addressRegion' => $state->code,
+                        'addressCountry' => 'US',
+                    ],
+                ],
+                'provider' => [
+                    '@type' => 'LocalBusiness',
+                    'name' => $serviceNames[$serviceType],
+                    'telephone' => $this->phone_raw,
+                ],
+            ];
+        }
+
+        return $schema;
     }
 
     protected function getServiceOfferings(string $serviceType): array
