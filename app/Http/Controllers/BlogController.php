@@ -21,7 +21,7 @@ class BlogController extends Controller
                 }
             })
             ->latest('published_at')
-            ->paginate(10)
+            ->paginate(12)
             ->appends($request->query());
 
         $paginationHeaders = '';
