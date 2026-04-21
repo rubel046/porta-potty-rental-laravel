@@ -1,4 +1,15 @@
 @if($paginator->hasPages())
+    @php
+        $currentPage = $paginator->currentPage();
+        $lastPage = $paginator->lastPage();
+        $urlRange = [];
+        $showMax = 5;
+        $start = max(1, $currentPage - floor($showMax / 2));
+        $end = min($lastPage, $start + $showMax - 1);
+        if ($end - $start + 1 < $showMax) {
+            $start = max(1, $end - $showMax + 1);
+        }
+    @endphp
     <nav class="flex items-center justify-center gap-1" role="navigation">
         {{-- Previous Page --}}
         @if($paginator->onFirstPage())
@@ -15,26 +26,30 @@
             </a>
         @endif
 
-        {{-- Page Numbers --}}
-        @foreach($elements as $element)
-            @if(is_string($element))
-                <span class="px-4 py-2 text-slate-400">{{ $element }}</span>
+        {{-- First Page --}}
+        @if($start > 1)
+            <a href="{{ $paginator->url(1) }}" class="px-4 py-2 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition">1</a>
+            @if($start > 2)
+                <span class="px-4 py-2 text-slate-400">...</span>
             @endif
+        @endif
 
-            @if(is_array($element))
-                @foreach($element as $page => $url)
-                    @if($page == $paginator->currentPage())
-                        <span class="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg">
-                            {{ $page }}
-                        </span>
-                    @else
-                        <a href="{{ $url }}" class="px-4 py-2 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition">
-                            {{ $page }}
-                        </a>
-                    @endif
-                @endforeach
+        {{-- Page Numbers --}}
+        @for($i = $start; $i <= $end; $i++)
+            @if($i == $currentPage)
+                <span class="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg">{{ $i }}</span>
+            @else
+                <a href="{{ $paginator->url($i) }}" class="px-4 py-2 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition">{{ $i }}</a>
             @endif
-        @endforeach
+        @endfor
+
+        {{-- Last Page --}}
+        @if($end < $lastPage)
+            @if($end < $lastPage - 1)
+                <span class="px-4 py-2 text-slate-400">...</span>
+            @endif
+            <a href="{{ $paginator->url($lastPage) }}" class="px-4 py-2 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition">{{ $lastPage }}</a>
+        @endif
 
         {{-- Next Page --}}
         @if($paginator->hasMorePages())
