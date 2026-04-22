@@ -104,13 +104,10 @@
                                     {{ $url->created_at?->format('M d, Y') }}
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <form method="POST" action="{{ route('admin.indexing-urls.destroy', $url) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs">
-                                            Remove
-                                        </button>
-                                    </form>
+                                    <button type="button" class="text-red-600 hover:text-red-800 text-xs remove-url"
+                                        data-id="{{ $url->id }}" data-url="{{ route('admin.indexing-urls.destroy', $url->id) }}">
+                                        Remove
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -159,6 +156,31 @@
 <script>
 document.getElementById('select-all').addEventListener('change', function() {
     document.querySelectorAll('.url-checkbox').forEach(cb => cb.checked = this.checked);
+});
+
+document.querySelectorAll('.remove-url').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        if (!confirm('Remove this URL from indexing queue?')) return;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = this.dataset.url;
+        
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = '{{ csrf_token() }}';
+        
+        const method = document.createElement('input');
+        method.type = 'hidden';
+        method.name = '_method';
+        method.value = 'DELETE';
+        
+        form.appendChild(csrf);
+        form.appendChild(method);
+        document.body.appendChild(form);
+        form.submit();
+    });
 });
 </script>
 @endpush

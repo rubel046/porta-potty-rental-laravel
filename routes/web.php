@@ -342,12 +342,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     */
     Route::get('/indexing-urls', [IndexingUrlController::class, 'index'])
         ->name('indexing-urls.index');
-    Route::delete('/indexing-urls/{indexingUrl}', [IndexingUrlController::class, 'destroy'])
-        ->name('indexing-urls.destroy');
-    Route::post('/indexing-urls/batch', [IndexingUrlController::class, 'batch'])
+    Route::post('/indexing-urls-do-action-v2', [IndexingUrlController::class, 'batch'])
         ->name('indexing-urls.batch');
-    Route::post('/indexing-urls/submit', [IndexingUrlController::class, 'submit'])
+    Route::post('/indexing-urls-submit-one-v2', [IndexingUrlController::class, 'submit'])
         ->name('indexing-urls.submit');
+    Route::delete('/indexing-urls-remove/{indexingUrl}', [IndexingUrlController::class, 'destroy'])
+        ->name('indexing-urls.destroy');
+
 });
 
 /*
