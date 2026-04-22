@@ -70,7 +70,7 @@ class GenerateCityContentJob implements ShouldQueue
                         [
                             'domain_id' => $domainId,
                             'service_type' => $data['service_type'] ?? $type,
-                            'h1_title' => $data['h1_title'] ?? '',
+                            'h1_title' => $data['h1_title'] ?? null,
                             'meta_title' => $data['meta_title'] ?? '',
                             'meta_description' => $data['meta_description'] ?? '',
                             'content' => $data['content'] ?? '',

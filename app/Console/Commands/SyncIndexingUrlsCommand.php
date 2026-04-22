@@ -2,10 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\BlogPost;
-use App\Models\DomainState;
 use App\Models\IndexingUrl;
-use App\Models\ServicePage;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 
@@ -71,7 +68,7 @@ class SyncIndexingUrlsCommand extends Command
         foreach ($staticUrls as $staticUrl) {
             $fullUrl = $baseUrl.$staticUrl;
 
-            if ($type && 'static' !== $type) {
+            if ($type && $type !== 'static') {
                 continue;
             }
 
@@ -103,7 +100,7 @@ class SyncIndexingUrlsCommand extends Command
 
             if (! empty($matches[1])) {
                 $urls = $matches[1];
-                $this->info('Found ' . count($urls) . ' URLs in ' . $sitemapFile);
+                $this->info('Found '.count($urls).' URLs in '.$sitemapFile);
             }
         } catch (\Throwable $e) {
             $this->warn("Failed to fetch {$sitemapFile}: ".$e->getMessage());

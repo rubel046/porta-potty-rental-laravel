@@ -104,6 +104,25 @@
             </div>
         @endif
 
+        {{-- Google Business Profile --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-gray-800">Google Business Profile</h2>
+            </div>
+            <form method="POST" action="{{ route('admin.cities.update-gmb', $city) }}" class="flex gap-3">
+                @csrf
+                <input type="url" name="gmb_url" value="{{ $domainCity?->gmb_url ?? '' }}" 
+                       placeholder="https://business.google.com/sites/l/..." 
+                       class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
+                    Save GMB URL
+                </button>
+            </form>
+            @if($domainCity?->gmb_url)
+                <p class="mt-2 text-sm text-green-600">✓ GMB URL saved</p>
+            @endif
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-gray-800">Service Pages</h2>

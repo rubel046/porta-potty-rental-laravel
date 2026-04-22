@@ -213,6 +213,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('/cities/{city}/delete-pages', [CityController::class, 'deletePages'])
         ->name('cities.delete-pages');
 
+    // Update GMB URL for city
+    Route::post('/cities/{city}/update-gmb', [CityController::class, 'updateGmb'])
+        ->name('cities.update-gmb');
+
     // Import JSON content for a city
     Route::post('/cities/{city}/import-json', [CityController::class, 'importJson'])
         ->name('cities.import-json');

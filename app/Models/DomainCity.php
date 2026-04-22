@@ -15,6 +15,7 @@ class DomainCity extends Model
         'status',
         'content_generated',
         'content_generated_at',
+        'gmb_url',
     ];
 
     protected $casts = [

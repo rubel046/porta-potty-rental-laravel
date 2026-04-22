@@ -66,7 +66,7 @@ TASK: Return a VALID JSON object with EXACTLY this structure:
 DO NOT include FAQs in the main content - they will be generated separately.
 DO NOT include testimonials in the main content - they will be generated separately.
 {
-    "h1_title": "An SEO-optimized H1 title (max 80 chars) - must include service + city",
+    "h1_title": "REQUIRED - SEO-optimized H1 title (max 80 chars) - must include service + city - DO NOT LEAVE EMPTY",
     "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
     "meta_description": "Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA",
     "content": "Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content. STRICT WORD COUNT: 2000-3000 words minimum.",
@@ -160,6 +160,7 @@ Step-by-step requirements:
 - Include 3-5 internal links to other service types naturally throughout content
 
 13) SEO Constraints:
+- h1_title is REQUIRED - must be included in output, never null or empty
 - h1_title must be different from meta_title
 - meta_title ≤60 characters
 - meta_description ≤160 characters
@@ -173,6 +174,7 @@ Step-by-step requirements:
 - Ensure JSON is properly formatted
 
 Self-check before output:
+- h1_title is present and not empty
 - Content is 2000+ words
 - No pricing numbers used
 - Keywords included naturally
@@ -198,8 +200,8 @@ PROMPT;
             throw new \RuntimeException("AI JSON generation failed for {$city->name} ({$serviceType})");
         }
 
-        $h1Title = $jsonResponse['h1_title'] ?? "{$serviceLabel} in {$city->name}, {$state->code}";
-        $metaTitle = $jsonResponse['meta_title'] ?? "{$serviceLabel} in {$city->name}, {$state->code}";
+        $h1Title = $jsonResponse['h1_title'] ?: "{$serviceLabel} in {$city->name}, {$state->code}";
+        $metaTitle = $jsonResponse['meta_title'] ?: "{$serviceLabel} in {$city->name}, {$state->code}";
         $metaDescription = $jsonResponse['meta_description'] ?? "{$serviceLabel} in {$city->name}, {$state->code}. Call for quote!";
         $content = $jsonResponse['content'];
         $faqs = $jsonResponse['faqs'] ?? [];

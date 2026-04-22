@@ -215,7 +215,7 @@ class CityController extends Controller
             $generationErrors = [];
         }
 
-        return view('admin.cities.show', compact('city', 'isActive', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt'));
+        return view('admin.cities.show', compact('city', 'domain', 'domainCity', 'isActive', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt'));
     }
 
     public function update(Request $request, City $city)
@@ -325,6 +325,36 @@ class CityController extends Controller
         $statusText = $newStatus ? 'marked as generated' : 'marked as not generated';
 
         return redirect()->back()->with('success', "City '{$city->name}' {$statusText}!");
+    }
+
+    public function updateGmb(Request $request, City $city)
+    {
+        $domain = Domain::current();
+
+        if (! $domain) {
+            return redirect()->back()->with('error', 'No domain selected');
+        }
+
+        $request->validate([
+            'gmb_url' => 'nullable|url|max:500',
+        ]);
+
+        $domainCity = DomainCity::where('domain_id', $domain->id)
+            ->where('city_id', $city->id)
+            ->first();
+
+        if ($domainCity) {
+            $domainCity->update(['gmb_url' => $request->gmb_url]);
+        } else {
+            DomainCity::create([
+                'domain_id' => $domain->id,
+                'city_id' => $city->id,
+                'gmb_url' => $request->gmb_url,
+                'status' => true,
+            ]);
+        }
+
+        return redirect()->back()->with('success', "GMB URL updated for {$city->name}!");
     }
 
     public function generatePages(City $city)
