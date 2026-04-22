@@ -87,10 +87,7 @@ class GoogleIndexingCommand extends Command
     {
         $this->info('Checking indexing status via Google Indexing API...');
 
-        $threeDaysAgo = now()->subDays(3);
-
-        $pages = ServicePage::where('generation_status', 'success')
-            ->where('indexing_requested', true)
+        $submittedUrls = IndexingUrl::where('status', 'submitted')
             ->whereNull('indexed_at')
             ->limit(50)
             ->get();
@@ -98,17 +95,22 @@ class GoogleIndexingCommand extends Command
         $checked = 0;
         $indexed = 0;
 
-        foreach ($pages as $page) {
-            $url = url($page->slug);
-            $status = $this->indexingService->checkIndexedStatus($url);
+        foreach ($submittedUrls as $urlRecord) {
+            $status = $this->indexingService->checkIndexedStatus($urlRecord->url);
 
             if ($status && ($status['indexed'] ?? false)) {
-                $page->update(['indexed_at' => now()]);
+                $urlRecord->update([
+                    'indexed' => true,
+                    'indexed_at' => now(),
+                    'status' => 'indexed',
+                ]);
                 $indexed++;
+            } elseif (! $status) {
+                // API call failed, keep as submitted
             }
 
             $checked++;
-            $this->line("Checked {$checked}: {$url}");
+            $this->line("Checked {$checked}: {$urlRecord->url}");
 
             usleep(100000);
         }

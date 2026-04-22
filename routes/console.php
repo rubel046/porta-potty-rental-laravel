@@ -28,7 +28,7 @@ Schedule::command('google:index')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/google-indexing.log');
 
-// Check indexing status daily
+// Check indexing status daily at 4 AM
 Schedule::command('google:index --check')
     ->dailyAt('04:00')
     ->timezone('America/New_York')

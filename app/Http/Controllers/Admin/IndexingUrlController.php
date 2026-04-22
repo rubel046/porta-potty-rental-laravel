@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\IndexingUrl;
+use App\Services\GoogleIndexingService;
 use Illuminate\Http\Request;
 
 class IndexingUrlController extends Controller
 {
+    public function __construct(
+        protected GoogleIndexingService $indexingService
+    ) {}
+
     public function index(Request $request)
     {
         $query = IndexingUrl::query()->orderByDesc('created_at');
@@ -53,18 +58,46 @@ class IndexingUrlController extends Controller
 
         $urls = IndexingUrl::whereIn('id', $request->ids)->get();
 
-        foreach ($urls as $url) {
-            if ($request->action === 'delete') {
+        if ($request->action === 'delete') {
+            foreach ($urls as $url) {
                 $url->delete();
-            } elseif ($request->action === 'submit') {
-                $url->markAsSubmitted();
             }
+
+            return redirect()->back()->with('success', 'Selected URLs have been removed');
         }
 
-        $message = $request->action === 'delete'
-            ? 'Selected URLs have been removed'
-            : 'Selected URLs have been submitted for indexing';
+        if ($request->action === 'submit') {
+            $urlStrings = $urls->pluck('url')->toArray();
+            $results = $this->indexingService->indexUrls($urlStrings);
 
-        return redirect()->back()->with('success', $message);
+            foreach ($urls as $url) {
+                if (in_array($url->url, $results['urls'])) {
+                    $url->update([
+                        'status' => 'submitted',
+                        'requested_at' => now(),
+                    ]);
+                } elseif (! empty($results['errors'])) {
+                    $urlError = collect($results['errors'])->first(fn ($e) => str_contains($e, $url->url));
+                    if ($urlError) {
+                        $url->update([
+                            'status' => 'failed',
+                            'error_message' => $urlError,
+                        ]);
+                    }
+                }
+            }
+
+            $message = $results['submitted'] > 0
+                ? "{$results['submitted']} URLs submitted for indexing"
+                : 'Failed to submit URLs';
+
+            if (! empty($results['errors'])) {
+                $message .= '. Some errors occurred.';
+            }
+
+            return redirect()->back()->with('success', $message);
+        }
+
+        return redirect()->back();
     }
 }
