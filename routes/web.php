@@ -346,6 +346,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         ->name('indexing-urls.destroy');
     Route::post('/indexing-urls/batch', [IndexingUrlController::class, 'batch'])
         ->name('indexing-urls.batch');
+    Route::post('/indexing-urls/submit', [IndexingUrlController::class, 'submit'])
+        ->name('indexing-urls.submit');
 });
 
 /*
