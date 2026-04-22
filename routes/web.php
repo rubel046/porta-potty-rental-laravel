@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\GlobalCityController;
 // Admin Controllers
 use App\Http\Controllers\Admin\GlobalStateController;
+use App\Http\Controllers\Admin\IndexingUrlController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\Admin\PhoneNumberController;
@@ -333,6 +334,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         ->name('api-keys.reset');
     Route::post('/api-keys/reset-all', [AiApiKeyController::class, 'resetAll'])
         ->name('api-keys.reset-all');
+
+    /*
+    |----------------------------------------------------------------------
+    | Indexing URLs
+    |----------------------------------------------------------------------
+    */
+    Route::get('/indexing-urls', [IndexingUrlController::class, 'index'])
+        ->name('indexing-urls.index');
+    Route::delete('/indexing-urls/{indexingUrl}', [IndexingUrlController::class, 'destroy'])
+        ->name('indexing-urls.destroy');
+    Route::post('/indexing-urls/batch', [IndexingUrlController::class, 'batch'])
+        ->name('indexing-urls.batch');
 });
 
 /*

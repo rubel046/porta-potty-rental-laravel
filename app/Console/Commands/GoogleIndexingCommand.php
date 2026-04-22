@@ -31,6 +31,13 @@ class GoogleIndexingCommand extends Command
             return Command::FAILURE;
         }
 
+        if (str_contains(config('app.url'), 'localhost')) {
+            $this->error('Cannot index localhost URLs. Update APP_URL to a public domain in .env');
+            $this->line('Current APP_URL: '.config('app.url'));
+
+            return Command::FAILURE;
+        }
+
         if ($this->option('check')) {
             return $this->checkStatus();
         }
@@ -62,6 +69,16 @@ class GoogleIndexingCommand extends Command
         $this->line("  - Service Pages: {$stats['service_pages']}");
         $this->line("  - State Pages: {$stats['domain_states']}");
         $this->line("  - Blog Posts: {$stats['blog_posts']}");
+
+        if (! empty($stats['errors'])) {
+            $this->warn('Errors encountered:');
+            foreach (array_slice($stats['errors'], 0, 10) as $error) {
+                $this->line("  - {$error}");
+            }
+            if (count($stats['errors']) > 10) {
+                $this->line('  ... and '.(count($stats['errors']) - 10).' more errors');
+            }
+        }
 
         return Command::SUCCESS;
     }

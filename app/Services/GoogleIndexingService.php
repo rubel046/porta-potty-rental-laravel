@@ -197,6 +197,7 @@ class GoogleIndexingService
             'domain_states' => 0,
             'blog_posts' => 0,
             'total' => 0,
+            'errors' => [],
         ];
 
         // Get pending URLs from tracking table that haven't been submitted yet
@@ -231,6 +232,7 @@ class GoogleIndexingService
 
         $indexedUrls = $results['urls'];
         $indexedCount = count($indexedUrls);
+        $stats['errors'] = $results['errors'] ?? [];
 
         // Update tracking records
         foreach ($indexedUrls as $url) {
