@@ -18,13 +18,15 @@ class GenerateCityContentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 10;
+    public int $tries = 25;
+
+    public int $backoff = 60;
 
     public int $timeout = 1800;
 
-    protected int $retryDelaySeconds = 10;
+    protected int $retryDelaySeconds = 30;
 
-    protected int $maxRetriesPerType = 3;
+    protected int $maxRetriesPerType = 5;
 
     public function __construct(
         public City $city,

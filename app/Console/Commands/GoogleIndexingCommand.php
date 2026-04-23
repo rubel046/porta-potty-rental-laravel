@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\IndexingUrl;
 use App\Models\ServicePage;
 use App\Services\GoogleIndexingService;
 use Illuminate\Console\Command;
@@ -23,17 +24,10 @@ class GoogleIndexingCommand extends Command
     public function handle(): int
     {
         if (! $this->indexingService->isConfigured()) {
-            $this->error('Google Indexing API not configured. Please set:');
+            $this->error('Google Indexing API not configured. Set GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY in .env');
             $this->line('  - GOOGLE_CLIENT_EMAIL');
             $this->line('  - GOOGLE_PRIVATE_KEY');
             $this->line('  - GOOGLE_SEARCH_CONSOLE_URL');
-
-            return Command::FAILURE;
-        }
-
-        if (str_contains(config('app.url'), 'localhost')) {
-            $this->error('Cannot index localhost URLs. Update APP_URL to a public domain in .env');
-            $this->line('Current APP_URL: '.config('app.url'));
 
             return Command::FAILURE;
         }
@@ -44,6 +38,13 @@ class GoogleIndexingCommand extends Command
 
         if ($this->option('mark')) {
             return $this->markIndexed();
+        }
+
+        if (str_contains(config('app.url'), 'localhost')) {
+            $this->error('Cannot index localhost URLs. Update APP_URL to a public domain in .env');
+            $this->line('Current APP_URL: '.config('app.url'));
+
+            return Command::FAILURE;
         }
 
         return $this->submitUrls();
