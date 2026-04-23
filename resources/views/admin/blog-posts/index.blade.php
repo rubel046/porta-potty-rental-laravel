@@ -69,6 +69,7 @@
                     <th class="px-6 py-4 font-medium">Category</th>
                     <th class="px-6 py-4 font-medium">City</th>
                     <th class="px-6 py-4 font-medium">Views</th>
+                    <th class="px-6 py-4 font-medium">Created</th>
                     <th class="px-6 py-4 font-medium">Status</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
@@ -93,6 +94,9 @@
                             <span class="@if($post->views > 100) text-green-600 font-medium @else text-gray-500 @endif">
                                 {{ number_format($post->views) }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-gray-500 text-xs">{{ $post->created_at?->format('M d, Y') }}</span>
                         </td>
                         <td class="px-6 py-4">
                             @if($post->is_published)
