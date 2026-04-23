@@ -18,6 +18,8 @@ class GoogleIndexingService
 
     protected const API_URL = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
 
+    protected const METADATA_URL = 'https://indexing.googleapis.com/v3/urlNotifications/metadata';
+
     protected ?string $clientEmail = null;
 
     protected ?string $privateKey = null;
@@ -297,13 +299,13 @@ class GoogleIndexingService
             return null;
         }
 
+        $encodedUrl = urlencode($url);
+        $metadataUrl = self::METADATA_URL.'?url='.$encodedUrl;
+
         try {
-            $response = $this->getHttpClient()->get(self::API_URL, [
+            $response = $this->getHttpClient()->get($metadataUrl, [
                 'headers' => [
                     'Authorization' => 'Bearer '.$accessToken,
-                ],
-                'query' => [
-                    'url' => $url,
                 ],
             ]);
 
