@@ -8,6 +8,7 @@
 
 @push('schema')
 @php
+$domain = \App\Models\Domain::current();
 $breadcrumbSchema = [
     "@context" => "https://schema.org",
     "@type" => "BreadcrumbList",

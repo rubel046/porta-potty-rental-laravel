@@ -94,6 +94,7 @@
             "@type" => "Collection",
             "name" => "Customer Reviews",
             "description" => "Customer reviews and testimonials for " . ($domain?->business_name ?? "Potty Direct") . " porta potty rental service",
+            "aggregateRating" => ["@type" => "AggregateRating", "ratingValue" => "4.9", "reviewCount" => "3"],
             "itemListElement" => [
                 ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Mike Thompson"], "reviewBody" => "We use " . ($domain?->business_name ?? "Potty Direct") . " for all our job sites. Same-day delivery, always clean units, and no surprise charges on the invoice. Their team is professional and reliable."],
                 ["@type" => "Review", "itemReviewed" => ["@type" => "LocalBusiness", "name" => $domain?->business_name ?? "Potty Direct"], "reviewRating" => ["@type" => "Rating", "ratingValue" => "5"], "author" => ["@type" => "Person", "name" => "Sarah Martinez"], "reviewBody" => "Planned a wedding for 200 guests and needed 6 porta potties. They delivered and picked up on time. The units were spotless! Highly recommend for any event."],

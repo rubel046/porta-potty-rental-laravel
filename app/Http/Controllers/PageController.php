@@ -552,7 +552,7 @@ class PageController extends Controller
         $schemaMarkup = [
             '@context' => 'https://schema.org',
             '@type' => 'LocalBusiness',
-            'name' => $servicePage->heading,
+            'name' => ($domain?->business_name ?? 'Potty Direct').' in '.$city->name,
             'description' => $servicePage->seo_description,
             'address' => [
                 '@type' => 'PostalAddress',
@@ -606,12 +606,19 @@ class PageController extends Controller
                 ],
                 'reviewBody' => $t->content,
             ])->toArray();
+
+            $schemaMarkup['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => round($testimonials->avg('rating'), 1),
+                'reviewCount' => $testimonials->count(),
+                'bestRating' => 5,
+            ];
         }
 
         return view(DomainViewHelper::resolveForController('service'), compact(
             'servicePage', 'city', 'faqs', 'testimonials',
             'nearbyCityPages', 'otherServices', 'relatedPosts',
-            'schemaMarkup', 'faqSchema'
+            'schemaMarkup', 'faqSchema', 'domain'
         ));
     }
 
