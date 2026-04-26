@@ -768,7 +768,7 @@ $faqSchema = [
                         </div>
                         <div class="text-xs sm:text-sm text-slate-600">See more reviews on Google</div>
                     </div>
-                    <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank" 
+                    <a href="https://search.google.com/search?q=Potty+Direct+reviews" target="_blank" rel="noopener noreferrer" 
                        class="mt-3 sm:mt-0 ml-0 sm:ml-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all text-sm">
                         Read Reviews →
                     </a>

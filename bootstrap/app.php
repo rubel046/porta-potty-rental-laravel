@@ -8,6 +8,7 @@ use App\Http\Middleware\TrackTrafficSource;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -31,5 +32,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function ($request, Throwable $e) {
+            if ($e instanceof NotFoundHttpException) {
+                return response()->view('errors.404', [], 404);
+            }
+        });
     })->create();
