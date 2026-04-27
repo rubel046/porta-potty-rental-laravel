@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function ($request, Throwable $e) {
+        $exceptions->render(function (Throwable $e, $request) {
             if ($e instanceof NotFoundHttpException) {
                 return response()->view('errors.404', [], 404);
             }
