@@ -25,6 +25,12 @@ class ServicePageController extends Controller
         if ($request->filled('published')) {
             $query->where('is_published', $request->published);
         }
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
 
         $servicePages = $query->orderBy('slug')->paginate(30);
         $cities = City::active()->with('state')->orderBy('name')->get();

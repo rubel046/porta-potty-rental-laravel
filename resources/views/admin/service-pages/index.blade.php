@@ -55,11 +55,23 @@
                 <input type="hidden" name="published" :value="selected">
             </div>
         </div>
+        <div class="flex gap-2 items-end">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">From</label>
+                <input type="date" name="from_date" value="{{ request('from_date') }}" 
+                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">To</label>
+                <input type="date" name="to_date" value="{{ request('to_date') }}" 
+                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+            </div>
+        </div>
         <div class="flex gap-2">
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
                 Filter
             </button>
-            @if(request()->anyFilled(['search', 'city_id', 'service_type', 'published']))
+            @if(request()->anyFilled(['search', 'city_id', 'service_type', 'published', 'from_date', 'to_date']))
                 <a href="{{ route('admin.service-pages.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                     Clear
                 </a>
@@ -81,6 +93,7 @@
                     <th class="px-6 py-4 font-medium">SEO Score</th>
                     <th class="px-6 py-4 font-medium">Published</th>
                     <th class="px-6 py-4 font-medium">Generation</th>
+                    <th class="px-6 py-4 font-medium">Created</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
             </thead>
@@ -161,6 +174,9 @@
                                 </span>
                             @endif
                         </td>
+                        <td class="px-6 py-4">
+                            <span class="text-gray-500 text-xs">{{ $page->created_at?->format('M d, Y') }}</span>
+                        </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('admin.service-pages.show', $page) }}" class="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition" title="SEO Details">
@@ -177,7 +193,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                        <td colspan="8" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 <p class="text-gray-500 font-medium">No service pages found</p>

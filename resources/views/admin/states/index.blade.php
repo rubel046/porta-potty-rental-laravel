@@ -22,6 +22,7 @@
                     <th class="px-6 py-4 font-medium">Content</th>
                     <th class="px-6 py-4 font-medium">Status</th>
                     <th class="px-6 py-4 font-medium">Generated</th>
+                    <th class="px-6 py-4 font-medium">Created</th>
                     <th class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
             </thead>
@@ -103,6 +104,9 @@
                                 </span>
                             @endif
                         </td>
+                        <td class="px-6 py-4">
+                            <span class="text-gray-500 text-xs">{{ $state->created_at?->format('M d, Y') }}</span>
+                        </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <form method="POST" action="{{ route('admin.states.toggle-status', $state) }}" class="inline">
@@ -135,7 +139,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                             No states found.
                         </td>
                     </tr>
