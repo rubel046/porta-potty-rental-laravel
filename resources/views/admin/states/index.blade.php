@@ -18,6 +18,7 @@
                     <th class="px-6 py-4 font-medium">State</th>
                     <th class="px-6 py-4 font-medium">Code</th>
                     <th class="px-6 py-4 font-medium">Cities</th>
+                    <th class="px-6 py-4 font-medium">Views</th>
                     <th class="px-6 py-4 font-medium">Content</th>
                     <th class="px-6 py-4 font-medium">Status</th>
                     <th class="px-6 py-4 font-medium">Generated</th>
@@ -37,6 +38,11 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="text-gray-600">{{ $state->active_cities_count }} active / {{ $state->cities_count }} total</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="@if($state->views > 100) text-green-600 font-medium @else text-gray-500 @endif">
+                                {{ number_format($state->views ?? 0) }}
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             @if($state->hasContent())
@@ -129,7 +135,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                             No states found.
                         </td>
                     </tr>

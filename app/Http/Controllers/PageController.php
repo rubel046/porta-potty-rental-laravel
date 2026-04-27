@@ -629,8 +629,10 @@ class PageController extends Controller
     {
         $state = State::where('slug', $stateSlug)
             ->where('is_active', true)
-            ->with('domainStates') // Eager load the relationship
+            ->with('domainStates')
             ->firstOrFail();
+
+        $state->incrementViews();
 
         $cities = $state->activeCities()
             ->has('servicePages')

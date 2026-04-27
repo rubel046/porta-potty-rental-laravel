@@ -11,12 +11,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class State extends Model
 {
     protected $fillable = [
-        'name', 'code', 'slug', 'timezone', 'is_active',
+        'name', 'code', 'slug', 'timezone', 'is_active', 'views',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function incrementViews(): void
+    {
+        $this->increment('views');
+    }
 
     public function domain(): BelongsTo
     {
