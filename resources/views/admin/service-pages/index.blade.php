@@ -212,20 +212,24 @@
                 {{ $servicePages->firstItem() }} - {{ $servicePages->lastItem() }} of {{ $servicePages->total() }}
             </div>
             <nav class="flex items-center gap-1">
+                @php
+                    $queryParams = array_filter(request()->only(['search', 'city_id', 'service_type', 'published', 'from_date', 'to_date']));
+                @endphp
+
                 @if($servicePages->currentPage() > 1)
-                    <a href="{{ $servicePages->previousPageUrl() }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">Previous</a>
+                    <a href="{{ $servicePages->url(1) . '&' . http_build_query($queryParams) }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">Previous</a>
                 @endif
                 
-                @foreach($servicePages->getUrlRange(max(1, $servicePages->currentPage() - 2), min($servicePages->lastPage(), $servicePages->currentPage() + 2)) as $page => $url)
-                    @if($page == $servicePages->currentPage())
-                        <span class="px-3 py-1.5 text-sm rounded-lg bg-green-600 text-white font-medium">{{ $page }}</span>
+                @foreach($servicePages->getUrlRange(max(1, $servicePages->currentPage() - 2), min($servicePages->lastPage(), $servicePages->currentPage() + 2)) as $pageNum => $url)
+                    @if($pageNum == $servicePages->currentPage())
+                        <span class="px-3 py-1.5 text-sm rounded-lg bg-green-600 text-white font-medium">{{ $pageNum }}</span>
                     @else
-                        <a href="{{ $url }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">{{ $page }}</a>
+                        <a href="{{ $url . '&' . http_build_query($queryParams) }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">{{ $pageNum }}</a>
                     @endif
                 @endforeach
 
                 @if($servicePages->currentPage() < $servicePages->lastPage())
-                    <a href="{{ $servicePages->nextPageUrl() }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">Next</a>
+                    <a href="{{ $servicePages->url($servicePages->lastPage()) . '&' . http_build_query($queryParams) }}" class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">Next</a>
                 @endif
             </nav>
         </div>
