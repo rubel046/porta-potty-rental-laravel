@@ -19,12 +19,12 @@ class LogViewerController extends Controller
     public function index(Request $request)
     {
         $logType = $request->get('file', 'laravel');
-        $logs = $this->getLogsByType($logType, $request);
-        $perPage = (int) $request->get('per_page', 100);
-        $currentPage = (int) $request->get('page', 1);
-        $totalLogs = count($logs);
-        $totalPages = ceil($totalLogs / $perPage);
-        $paginatedLogs = array_slice($logs, ($currentPage - 1) * $perPage, $perPage);
+        $perPage = min((int) $request->get('per_page', 100), 500);
+        $currentPage = max(1, (int) $request->get('page', 1));
+        $levelFilter = $request->get('level', 'all');
+        $searchFilter = $request->get('search', '');
+
+        $result = $this->getLogsWithStats($logType, $levelFilter, $searchFilter, $currentPage, $perPage);
 
         $logFiles = $this->getLogFiles();
 
@@ -35,12 +35,127 @@ class LogViewerController extends Controller
             'critical' => 'CRITICAL',
         ];
 
-        $stats = $this->getLogStatsByType($logType);
-
         return view('admin.logs.index', compact(
-            'logs', 'logFiles', 'levels', 'stats',
-            'perPage', 'currentPage', 'totalPages', 'totalLogs', 'paginatedLogs', 'logType'
-        ));
+            'logFiles', 'levels',
+            'perPage', 'currentPage', 'logType'
+        ) + [
+            'logs' => $result['logs'],
+            'stats' => $result['stats'],
+            'paginatedLogs' => $result['logs'],
+            'totalLogs' => $result['stats']['total'],
+            'totalPages' => ceil($result['stats']['total'] / $perPage),
+        ]);
+    }
+
+    protected function getLogsWithStats(string $logType, string $levelFilter, string $searchFilter, int $currentPage, int $perPage): array
+    {
+        $filename = match ($logType) {
+            'blog-generation' => 'blog-generation.log',
+            'city-page-generation' => 'city-page-generation.log',
+            'worker' => 'worker.log',
+            'calls' => 'calls-*.log',
+            'google-indexing' => 'google-indexing*.log',
+            'laravel' => 'laravel.log',
+            default => 'laravel.log',
+        };
+
+        $files = [];
+
+        if (str_contains($filename, '*')) {
+            $files = File::glob(storage_path('logs/'.$filename));
+        } else {
+            $logPath = storage_path('logs/'.$filename);
+            if (File::exists($logPath)) {
+                $files = [$logPath];
+            }
+        }
+
+        if (empty($files)) {
+            return [
+                'logs' => [],
+                'stats' => ['total' => 0, 'info' => 0, 'warning' => 0, 'error' => 0, 'critical' => 0],
+            ];
+        }
+
+        $stats = [
+            'total' => 0,
+            'info' => 0,
+            'warning' => 0,
+            'error' => 0,
+            'critical' => 0,
+        ];
+
+        $filteredLogs = [];
+        $entry = [];
+        $offset = ($currentPage - 1) * $perPage;
+        $needed = $perPage;
+
+        foreach ($files as $file) {
+            $handle = fopen($file, 'r');
+            if ($handle === false) {
+                continue;
+            }
+
+            while (($line = fgets($handle)) !== false) {
+                $line = trim($line);
+                if (empty($line)) {
+                    continue;
+                }
+
+                if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.*)$/', $line, $matches)) {
+                    if (! empty($entry)) {
+                        $this->processLogEntry($entry, $stats, $levelFilter, $searchFilter, $filteredLogs, $offset, $needed);
+                    }
+
+                    $entry = [
+                        'timestamp' => $matches[1],
+                        'level' => strtolower($matches[3]),
+                        'env' => $matches[2],
+                        'message' => $matches[4],
+                        'context' => [],
+                    ];
+                } elseif (! empty($entry) && Str::startsWith($line, '[')) {
+                    if (preg_match('/^\[(.*?)\]\s+(.*)$/', $line, $contextMatch)) {
+                        $entry['context'][$contextMatch[1]] = $contextMatch[2];
+                    }
+                } elseif (! empty($entry)) {
+                    $entry['message'] .= "\n".$line;
+                }
+            }
+
+            if (! empty($entry)) {
+                $this->processLogEntry($entry, $stats, $levelFilter, $searchFilter, $filteredLogs, $offset, $needed);
+                $entry = [];
+            }
+
+            fclose($handle);
+        }
+
+        $filteredLogs = array_reverse($filteredLogs);
+
+        return [
+            'logs' => $filteredLogs,
+            'stats' => $stats,
+        ];
+    }
+
+    protected function processLogEntry(array $entry, array &$stats, string $levelFilter, string $searchFilter, array &$filteredLogs, int $offset, int $needed): void
+    {
+        $stats['total']++;
+        $level = $entry['level'];
+        if (isset($stats[$level])) {
+            $stats[$level]++;
+        }
+
+        $levelMatch = $levelFilter === 'all' || $entry['level'] === $levelFilter;
+        $searchMatch = empty($searchFilter) || str_contains(strtolower($entry['message']), strtolower($searchFilter));
+
+        if ($levelMatch && $searchMatch) {
+            $count = count($filteredLogs);
+            if ($count < $offset + $needed) {
+                $filteredLogs[] = $entry;
+            }
+        }
     }
 
     protected function getLogsByType(string $logType, Request $request): array
