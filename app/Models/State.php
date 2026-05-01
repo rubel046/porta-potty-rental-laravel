@@ -105,7 +105,7 @@ class State extends Model
         }
 
         if ($domainState?->meta_description) {
-            return $domainState->meta_description;
+            return str_replace('{{PHONE_LINK}}', domain_phone_display(), $domainState->meta_description);
         }
 
         if ($this->meta_description) {

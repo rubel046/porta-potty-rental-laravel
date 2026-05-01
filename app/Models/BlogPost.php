@@ -50,6 +50,15 @@ class BlogPost extends Model
         return $query->where('is_featured', true);
     }
 
+    public function getSeoDescriptionAttribute(): string
+    {
+        if (! $this->meta_description) {
+            return '';
+        }
+
+        return str_replace('{{PHONE_LINK}}', domain_phone_display(), $this->meta_description);
+    }
+
     public function getUrlAttribute(): string
     {
         return url("blog/{$this->slug}");
