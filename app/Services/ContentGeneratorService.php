@@ -237,7 +237,8 @@ PROMPT;
 
         $h1Title = $jsonResponse['h1_title'];
         $metaTitle = $jsonResponse['meta_title'];
-        $metaDescription = $jsonResponse['meta_description'];
+        // Replace {{PHONE_LINK}} with raw phone number (not HTML link) for meta tags
+        $metaDescription = str_replace('{{PHONE_LINK}}', domain_phone_display(), $jsonResponse['meta_description']);
         $content = $jsonResponse['content'];
         $faqs = $jsonResponse['faqs'] ?? [];
         $testimonials = $jsonResponse['testimonials'] ?? [];
@@ -502,7 +503,7 @@ PROMPT;
             $pattern = '/\{\{SERVICE_LINK:'.$type.'\}\}/i';
             if (preg_match($pattern, $content)) {
                 if ($type === 'contact') {
-                    $slug = '/contact';
+                    $slug = '/about';
                     $label = 'Contact Us';
                 } elseif (in_array($type, ['porta_potty_rental', 'dumpster_rental', 'toilet_trailer_rental'])) {
                     $baseType = str_replace('_rental', '', $type);

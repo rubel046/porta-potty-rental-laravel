@@ -42,7 +42,6 @@ class SyncIndexingUrlsCommand extends Command
             '/pricing',
             '/locations',
             '/blog',
-            '/contact',
             '/privacy',
             '/terms',
         ];
@@ -119,7 +118,7 @@ class SyncIndexingUrlsCommand extends Command
         }
 
         // Static pages
-        if ($path === '/' || in_array($path, ['/services', '/pricing', '/locations', '/about', '/blog', '/contact', '/privacy', '/privacy-policy', '/terms', '/terms-of-service'])) {
+        if ($path === '/' || in_array($path, ['/services', '/pricing', '/locations', '/about', '/blog', '/privacy', '/privacy-policy', '/terms', '/terms-of-service'])) {
             return 'static';
         }
 

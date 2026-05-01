@@ -46,16 +46,9 @@ class ServicePage extends Model
 
     const TYPE_RESIDENTIAL = 'residential';
 
-    const SERVICE_TYPES = [
-        self::TYPE_GENERAL => 'General Porta Potty Rental',
-        self::TYPE_CONSTRUCTION => 'Construction Site Rental',
-        self::TYPE_WEDDING => 'Wedding Rental',
-        self::TYPE_EVENT => 'Event Rental',
-        self::TYPE_LUXURY => 'Luxury Restroom Trailer',
-        self::TYPE_PARTY => 'Party Rental',
-        self::TYPE_EMERGENCY => 'Emergency Rental',
-        self::TYPE_RESIDENTIAL => 'Residential Rental',
-    ];
+    const TYPE_PORTABLE = 'portable';
+
+    // SERVICE_TYPES is now dynamic - use getServiceTypes() method
 
     // Relationships
     public function city(): BelongsTo
@@ -75,11 +68,26 @@ class ServicePage extends Model
 
     public function getServiceTypeLabelAttribute(): string
     {
-        if ($this->domain && $this->domain->primary_service) {
-            return $this->domain->getServiceTypeLabel($this->service_type);
+        $domain = $this->domain ?? Domain::current() ?? Domain::first();
+
+        if ($domain && $domain->primary_service) {
+            return $domain->getServiceTypeLabel($this->service_type);
         }
 
-        return self::SERVICE_TYPES[$this->service_type] ?? ucfirst($this->service_type);
+        // Fallback labels (should not be needed if domain is configured)
+        $fallbackLabels = [
+            self::TYPE_GENERAL => 'General Service Rental',
+            self::TYPE_CONSTRUCTION => 'Construction Site Rental',
+            self::TYPE_WEDDING => 'Wedding Rental',
+            self::TYPE_EVENT => 'Event Rental',
+            self::TYPE_LUXURY => 'Luxury Restroom Trailer',
+            self::TYPE_PARTY => 'Party Rental',
+            self::TYPE_EMERGENCY => 'Emergency Rental',
+            self::TYPE_RESIDENTIAL => 'Residential Rental',
+            self::TYPE_PORTABLE => 'Portable Rental',
+        ];
+
+        return $fallbackLabels[$this->service_type] ?? ucfirst($this->service_type).' Rental';
     }
 
     // Scopes
@@ -128,19 +136,24 @@ class ServicePage extends Model
     public function getSeoDescriptionAttribute(): string
     {
         if ($this->meta_description) {
-            return $this->meta_description;
+            // Replace {{PHONE_LINK}} with plain text phone number (not HTML link)
+            return str_replace('{{PHONE_LINK}}', domain_phone_display(), $this->meta_description);
         }
 
-        $city = $this->city;
-        $typeLabel = match ($this->service_type) {
-            self::TYPE_CONSTRUCTION => 'construction sites and job sites',
-            self::TYPE_WEDDING => 'weddings and outdoor celebrations',
-            self::TYPE_EVENT => 'events, festivals, and gatherings',
-            self::TYPE_LUXURY => 'VIP events and upscale celebrations',
-            default => 'construction sites, events, and weddings',
+        $domain = $this->domain ?? Domain::current() ?? Domain::first();
+        $serviceLabel = $domain ? $domain->getServiceTypeLabel($this->service_type) : 'Service';
+        $cityName = $this->city->name;
+        $stateCode = $this->city->state->code;
+
+        $description = match ($this->service_type) {
+            self::TYPE_CONSTRUCTION => "{$serviceLabel} in {$cityName}, {$stateCode}. Same-day delivery available.",
+            self::TYPE_WEDDING => "{$serviceLabel} in {$cityName}, {$stateCode}. Professional service available.",
+            self::TYPE_EVENT => "{$serviceLabel} in {$cityName}, {$stateCode}. Multiple options available.",
+            self::TYPE_LUXURY => "{$serviceLabel} in {$cityName}, {$stateCode}. Premium service available.",
+            default => "{$serviceLabel} in {$cityName}, {$stateCode}. Same-day delivery available.",
         };
 
-        return "Need portable toilet rental in {$city->name}, {$city->state->code}? We offer same-day delivery of clean, affordable porta potties for {$typeLabel}. Call {$city->name} now for a free quote!";
+        return $description;
     }
 
     public function getH1TitleAttribute($value): string
@@ -177,34 +190,39 @@ class ServicePage extends Model
         $city = $this->city;
         $state = $city->state;
         $serviceType = $this->service_type;
+        $domain = $this->domain ?? Domain::current() ?? Domain::first();
+        $serviceLabel = $domain ? $domain->getServiceTypeLabel($serviceType) : 'Service';
 
         $serviceNames = [
-            'general' => "Porta Potty Rental {$city->name}",
-            'construction' => "Construction Site Porta Potty {$city->name}",
-            'wedding' => "Wedding Restroom Rental {$city->name}",
-            'event' => "Event Porta Potty Rental {$city->name}",
-            'luxury' => "Luxury Restroom Trailer {$city->name}",
-            'party' => "Party Porta Potty Rental {$city->name}",
-            'emergency' => "Emergency Porta Potty {$city->name}",
-            'residential' => "Residential Porta Potty {$city->name}",
+            'general' => "{$serviceLabel} {$city->name}",
+            'construction' => "Construction Site {$serviceLabel} {$city->name}",
+            'wedding' => "Wedding {$serviceLabel} {$city->name}",
+            'event' => "Event {$serviceLabel} {$city->name}",
+            'luxury' => "Luxury {$serviceLabel} Trailer {$city->name}",
+            'party' => "Party {$serviceLabel} {$city->name}",
+            'emergency' => "Emergency {$serviceLabel} {$city->name}",
+            'residential' => "Residential {$serviceLabel} {$city->name}",
         ];
 
         $descriptions = [
-            'general' => "Clean, affordable portable toilet rental in {$city->name}, {$state->code}. Same-day delivery available for construction sites, events, and weddings.",
-            'construction' => "OSHA-compliant portable toilet rental for construction sites in {$city->name}, {$state->code}. Weekly servicing, same-day delivery available.",
-            'wedding' => "Elegant wedding restroom rental in {$city->name}, {$state->code}. Luxury trailers and deluxe units for your special day.",
-            'event' => "Portable toilet rental for events in {$city->name}, {$state->code}. Festivals, parties, corporate events. Multiple unit packages available.",
-            'luxury' => "Luxury restroom trailer rental in {$city->name}, {$state->code}. Climate-controlled, elegant facilities for VIP events and weddings.",
-            'party' => "Party porta potty rental in {$city->name}, {$state->code}. Perfect for backyard parties, birthdays, and family reunions.",
-            'emergency' => "Emergency portable toilet rental in {$city->name}, {$state->code}. Fast same-day delivery for plumbing failures and disaster relief.",
-            'residential' => "Residential porta potty rental in {$city->name}, {$state->code}. Home renovation and DIY project portable toilets.",
+            'general' => "Professional, reliable {$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery available.",
+            'construction' => "Professional {$serviceLabel} for construction sites in {$city->name}, {$state->code}. Weekly servicing, same-day delivery available.",
+            'wedding' => "Elegant {$serviceLabel} for weddings in {$city->name}, {$state->code}. Quality service for your special day.",
+            'event' => "{$serviceLabel} for events in {$city->name}, {$state->code}. Festivals, parties, corporate events. Multiple options available.",
+            'luxury' => "Luxury {$serviceLabel} trailer rental in {$city->name}, {$state->code}. Premium facilities for VIP events.",
+            'party' => "{$serviceLabel} for parties in {$city->name}, {$state->code}. Perfect for celebrations and gatherings.",
+            'emergency' => "Emergency {$serviceLabel} in {$city->name}, {$state->code}. Fast same-day delivery when you need it most.",
+            'residential' => "{$serviceLabel} for residential projects in {$city->name}, {$state->code}. Home renovation and DIY projects.",
         ];
+
+        // Replace {{PHONE_LINK}} in description if present
+        $description = str_replace('{{PHONE_LINK}}', domain_phone_display(), $descriptions[$serviceType] ?? $descriptions['general']);
 
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'LocalBusiness',
             'name' => $serviceNames[$serviceType] ?? $serviceNames['general'],
-            'description' => $descriptions[$serviceType] ?? $descriptions['general'],
+            'description' => $description,
             'telephone' => $this->phone_raw,
             'address' => [
                 '@type' => 'PostalAddress',
@@ -255,43 +273,46 @@ class ServicePage extends Model
 
     protected function getServiceOfferings(string $serviceType): array
     {
+        $domain = $this->domain ?? Domain::current() ?? Domain::first();
+        $serviceLabel = $domain ? $domain->getServiceTypeLabel($serviceType) : 'Service';
+
         $offerings = [
             'general' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Standard Portable Toilet']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Deluxe Flushable Unit']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'ADA Accessible Unit']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Standard {$serviceLabel}"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Deluxe {$serviceLabel}"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Accessible Unit']],
             ],
             'construction' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Construction Site Portable Toilet']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Construction Site {$serviceLabel}"]],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Hand Wash Station']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'OSHA Compliant Units']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Compliant Units']],
             ],
             'wedding' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Luxury Restroom Trailer']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Deluxe Flushable Unit']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Wedding Restroom Package']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Premium {$serviceLabel} Trailer"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Deluxe {$serviceLabel}"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Wedding {$serviceLabel} Package"]],
             ],
             'event' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Event Portable Toilet']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Event {$serviceLabel}"]],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Hand Wash Station']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'ADA Accessible Unit']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Accessible Unit']],
             ],
             'luxury' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Executive Series Trailer']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Ambassador Series Trailer']],
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Presidential Series Trailer']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Executive Series {$serviceLabel} Trailer"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Ambassador Series {$serviceLabel} Trailer"]],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Presidential Series {$serviceLabel} Trailer"]],
             ],
             'party' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Party Portable Toilet']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Party {$serviceLabel}"]],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Deluxe Party Unit']],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Hand Wash Station']],
             ],
             'emergency' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Emergency Portable Toilet']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Emergency {$serviceLabel}"]],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Same-Day Emergency Delivery']],
             ],
             'residential' => [
-                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Residential Portable Toilet']],
+                ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => "Residential {$serviceLabel}"]],
                 ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Home Project Sanitation']],
             ],
         ];
@@ -495,17 +516,40 @@ class ServicePage extends Model
 
     private function getServiceKeywords(): array
     {
-        $keywords = [
-            'general' => ['primary' => 'porta potty rental', 'secondary' => 'portable toilet'],
-            'construction' => ['primary' => 'construction site portable toilets', 'secondary' => 'job site toilets'],
-            'wedding' => ['primary' => 'wedding restroom rentals', 'secondary' => 'wedding portable toilets'],
-            'event' => ['primary' => 'event portable toilet rental', 'secondary' => 'festival restroom'],
-            'luxury' => ['primary' => 'luxury restroom trailer', 'secondary' => 'VIP restroom trailer'],
-            'party' => ['primary' => 'party porta potty rental', 'secondary' => 'party portable toilets'],
-            'emergency' => ['primary' => 'emergency portable toilet', 'secondary' => '24/7 portable toilet'],
-            'residential' => ['primary' => 'residential porta potty', 'secondary' => 'home renovation toilet'],
+        $domain = $this->domain ?? Domain::current() ?? Domain::first();
+        $serviceType = $this->service_type;
+
+        // Get domain-specific keywords
+        $primaryKeyword = $domain->primary_keyword ?? 'service rental';
+        $secondaryKeywords = $domain->getSecondaryKeywords();
+
+        // Build keywords based on service type
+        $typeSuffixes = [
+            'general' => '',
+            'construction' => 'construction site',
+            'wedding' => 'wedding',
+            'event' => 'event',
+            'luxury' => 'luxury',
+            'party' => 'party',
+            'emergency' => 'emergency',
+            'residential' => 'residential',
         ];
 
-        return $keywords[$this->service_type] ?? ['primary' => 'porta potty rental', 'secondary' => 'portable toilet'];
+        $suffix = $typeSuffixes[$serviceType] ?? '';
+        $primary = $suffix ? "{$suffix} {$primaryKeyword}" : $primaryKeyword;
+
+        // Build secondary keywords
+        $secondary = $primaryKeyword;
+        if (! empty($suffix)) {
+            $secondary .= ", {$suffix}";
+        }
+        if (! empty($secondaryKeywords)) {
+            $secondary .= ', '.implode(', ', array_slice($secondaryKeywords, 0, 3));
+        }
+
+        return [
+            'primary' => $primary,
+            'secondary' => $secondary,
+        ];
     }
 }

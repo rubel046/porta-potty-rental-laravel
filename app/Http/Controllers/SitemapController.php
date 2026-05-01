@@ -147,10 +147,13 @@ class SitemapController extends Controller
 
     protected function addStates(Sitemap $sitemap): void
     {
-        State::active()->chunk(100, function ($states) use ($sitemap) {
+        $domain = Domain::current() ?? Domain::first();
+        $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
+
+        State::active()->chunk(100, function ($states) use ($sitemap, $slugPrefix) {
             foreach ($states as $state) {
                 $sitemap->add(
-                    Url::create(url("/porta-potty-rental-{$state->slug}"))
+                    Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
                         ->setPriority(0.7)
                         ->setChangeFrequency('weekly')
                 );

@@ -18,7 +18,7 @@
             <a href="/" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
                 Go Home
             </a>
-            <a href="/contact" class="bg-white border-2 border-gray-200 hover:border-emerald-500 text-gray-700 hover:text-emerald-600 font-semibold py-3 px-6 rounded-lg transition-all">
+            <a href="/about" class="bg-white border-2 border-gray-200 hover:border-emerald-500 text-gray-700 hover:text-emerald-600 font-semibold py-3 px-6 rounded-lg transition-all">
                 Contact Us
             </a>
         </div>

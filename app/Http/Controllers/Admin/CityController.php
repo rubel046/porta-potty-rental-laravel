@@ -589,23 +589,26 @@ class CityController extends Controller
 
     public function getSampleJson(City $city)
     {
-        $domain = 'pottydirect.com';
-        $types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
+        $domain = Domain::current() ?? Domain::first();
+        $domainName = $domain?->domain ?? 'example.com';
+        $serviceLabel = $domain?->primary_service ?? 'Service';
+        $types = $domain?->getServiceTypes() ?: ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
 
         $samplePages = [];
         foreach ($types as $type) {
+            $typeLabel = $domain?->getServiceTypeLabel($type) ?: ucfirst($type).' '.$serviceLabel;
             $samplePages[] = [
                 'service_type' => $type,
                 'slug' => strtolower($city->name).'-'.strtolower($type).'-'.strtolower($city->state->code),
-                'h1_title' => ucfirst($type).' Porta Potty Rental in '.$city->name.', '.$city->state->code.' | Same-Day Delivery',
+                'h1_title' => $typeLabel.' in '.$city->name.', '.$city->state->code.' | Same-Day Delivery',
                 'h2_headings' => [
-                    'Why Choose Our '.ucfirst($type).' Porta Potty Rental Services in '.$city->name.'?',
-                    'Professional '.ucfirst($type).' Porta Potty Rental for All Your Needs',
+                    'Why Choose Our '.$typeLabel.' Services in '.$city->name.'?',
+                    'Professional '.$typeLabel.' for All Your Needs',
                     'Serving '.$city->name.' and Surrounding Areas',
                 ],
-                'meta_title' => ucfirst($type).' Porta Potty Rental '.$city->name.', '.$city->state->code.' | Free Quote & Same-Day Delivery',
-                'meta_description' => 'Looking for '.ucfirst($type).' Porta Potty Rental in '.$city->name.', '.$city->state->code.'? We offer fast delivery, competitive prices, and clean units. Get your free quote today! Servicing '.$city->name.', '.$city->state->name.' and nearby areas.',
-                'meta_keywords' => $type.' porta potty rental '.$city->name.', portable toilet '.$city->state->code.', cheap porta potty '.$city->name,
+                'meta_title' => $typeLabel.' '.$city->name.', '.$city->state->code.' | Free Quote & Same-Day Delivery',
+                'meta_description' => 'Looking for '.$typeLabel.' in '.$city->name.', '.$city->state->code.'? We offer fast delivery, competitive prices, and quality service. Get your free quote today! Serving '.$city->name.', '.$city->state->name.' and nearby areas.',
+                'meta_keywords' => $type.' '.$serviceLabel.' '.$city->name.', quality service '.$city->state->code.', reliable '.$city->name,
                 'og_title' => ucfirst($type).' Porta Potty Rental '.$city->name.' - Call Now for Free Quote',
                 'og_description' => 'Professional '.ucfirst($type).' Porta Potty Rental services in '.$city->name.', '.$city->state->code.'. Same-day delivery available. Call us today!',
                 'og_image' => '/images/'.$type.'-rental-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg',
@@ -642,22 +645,22 @@ class CityController extends Controller
                         '@type' => 'City',
                         'name' => $city->name,
                     ],
-                    'serviceType' => ucfirst($type).' Porta Potty Rental',
+                    'serviceType' => $typeLabel,
                     'hasOfferCatalog' => [
                         '@type' => 'OfferCatalog',
-                        'name' => 'Portable Restroom Services - '.$city->name,
+                        'name' => $serviceLabel.' Services - '.$city->name,
                         'itemListElement' => [
-                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Standard Portable Toilet', 'description' => 'Standard unit for construction and events']],
-                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Deluxe Flushable Unit', 'description' => 'Premium unit with flushing toilet and sink']],
-                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'ADA Accessible Unit', 'description' => 'Wheelchair accessible portable toilet']],
+                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Standard '.$serviceLabel, 'description' => 'Standard unit for construction and events']],
+                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Deluxe '.$serviceLabel, 'description' => 'Premium unit with enhanced features']],
+                            ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => 'Accessible Unit', 'description' => 'Wheelchair accessible '.$serviceLabel]],
                         ],
                     ],
-                    'review' => ['@type' => 'Review', 'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '4.8', 'bestRating' => '5'], 'author' => ['@type' => 'Organization', 'name' => 'Porta Potty Direct']],
+                    'review' => ['@type' => 'Review', 'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '4.8', 'bestRating' => '5'], 'author' => ['@type' => 'Organization', 'name' => $domain?->business_name ?? 'Our Company']],
                     'aggregateRating' => ['@type' => 'AggregateRating', 'ratingValue' => '4.8', 'reviewCount' => '127', 'bestRating' => '5'],
-                    'sameAs' => ['https://www.facebook.com/pottydirect', 'https://twitter.com/pottydirect', 'https://instagram.com/pottydirect'],
+                    'sameAs' => $domain?->google_business_url ? explode(',', $domain->google_business_url) : [],
                 ],
                 'faq_schema' => [
-                    ['@type' => 'Question', 'name' => 'How much does '.ucfirst($type).' Porta Potty Rental cost in '.$city->name.'?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Our '.ucfirst($type).' Porta Potty Rental prices in '.$city->name.' start at $150/week for standard units. We offer competitive pricing and free quotes. Contact us for exact pricing based on your needs.']],
+                    ['@type' => 'Question', 'name' => 'How much does '.$typeLabel.' cost in '.$city->name.'?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Our '.$typeLabel.' prices in '.$city->name.' start at competitive rates. We offer competitive pricing and free quotes. Contact us for exact pricing based on your needs.']],
                     ['@type' => 'Question', 'name' => 'Do you offer same-day delivery in '.$city->name.'?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Yes! We offer same-day delivery in '.$city->name.' for orders placed before noon. Weekend and emergency delivery available.']],
                 ],
                 'breadcrumb_schema' => [
@@ -704,20 +707,20 @@ class CityController extends Controller
                 <p>Call us now at [PHONE] or fill out our online form to request a quote. We look forward to serving you in '.$city->name.'!</p>',
                 'word_count' => 450,
                 'internal_links' => [
-                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code), 'anchor_text' => $city->name.' Porta Potty Rental'],
-                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code).'/construction', 'anchor_text' => 'Construction Site Toilets '.$city->name],
-                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code).'/wedding', 'anchor_text' => 'Wedding Restroom Rentals '.$city->name],
-                    ['url' => '/blog/porta-potty-guide-'.strtolower($city->name).'-'.strtolower($city->state->code), 'anchor_text' => 'Porta Potty Rental Guide for '.$city->name],
+                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code), 'anchor_text' => $city->name.' '.$serviceLabel],
+                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code).'/construction', 'anchor_text' => 'Construction Services '.$city->name],
+                    ['url' => '/'.strtolower($city->name).'-'.strtolower($city->state->code).'/wedding', 'anchor_text' => 'Wedding Services '.$city->name],
+                    ['url' => '/blog/'.strtolower($serviceLabel).'-guide-'.strtolower($city->name).'-'.strtolower($city->state->code), 'anchor_text' => $serviceLabel.' Guide for '.$city->name],
                 ],
                 'related_pages' => [
-                    ['slug' => strtolower($city->name).'-construction-'.strtolower($city->state->code), 'title' => 'Construction Site Rental'],
-                    ['slug' => strtolower($city->name).'-wedding-'.strtolower($city->state->code), 'title' => 'Wedding Rental'],
-                    ['slug' => strtolower($city->name).'-event-'.strtolower($city->state->code), 'title' => 'Event Rental'],
+                    ['slug' => strtolower($city->name).'-construction-'.strtolower($city->state->code), 'title' => 'Construction Services'],
+                    ['slug' => strtolower($city->name).'-wedding-'.strtolower($city->state->code), 'title' => 'Wedding Services'],
+                    ['slug' => strtolower($city->name).'-event-'.strtolower($city->state->code), 'title' => 'Event Services'],
                 ],
-                'featured_image' => '/storage/service-images/'.$type.'-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg',
+                'featured_image' => '/storage/'.$domain->domain.'/service-images/'.$type.'-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg',
                 'images' => [
-                    ['url' => '/storage/service-images/'.$type.'-1-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg', 'alt' => ucfirst($type).' Porta Potty Rental '.$city->name],
-                    ['url' => '/storage/service-images/'.$type.'-2-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg', 'alt' => 'Portable Toilet at '.$city->name.' Event'],
+                    ['url' => '/storage/'.$domain->domain.'/service-images/'.$type.'-1-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg', 'alt' => $typeLabel.' '.$city->name],
+                    ['url' => '/storage/'.$domain->domain.'/service-images/'.$type.'-2-'.strtolower($city->name).'-'.strtolower($city->state->code).'.jpg', 'alt' => $serviceLabel.' at '.$city->name.' Event'],
                 ],
                 'is_published' => true,
                 'published_at' => now()->toDateTimeString(),
@@ -736,22 +739,22 @@ class CityController extends Controller
 
         $sampleFaqs = [
             [
-                'question' => 'How much does porta potty rental cost in '.$city->name.'?',
-                'answer' => 'Our rental prices in '.$city->name.' start at $150/week for standard units. Deluxe units and luxury trailers cost more. Contact us for a custom quote based on your specific needs and duration.',
+                'question' => 'How much does '.$serviceLabel.' cost in '.$city->name.'?',
+                'answer' => 'Our '.$serviceLabel.' prices in '.$city->name.' start at competitive rates. We offer competitive pricing and free quotes. Contact us for a custom quote based on your specific needs and duration.',
                 'service_type' => 'general',
                 'sort_order' => 0,
                 'is_active' => true,
             ],
             [
                 'question' => 'Do you offer same-day delivery in '.$city->name.'?',
-                'answer' => 'Yes! We offer same-day delivery in '.$city->name.' for orders placed before noon. We also provide emergency delivery services for urgent needs.',
+                'answer' => 'Yes! We offer same-day delivery in '.$city->name.' for orders placed before noon. Weekend and emergency delivery available.',
                 'service_type' => 'general',
                 'sort_order' => 1,
                 'is_active' => true,
             ],
             [
                 'question' => 'What\'s included in the rental price in '.$city->name.'?',
-                'answer' => 'Our rental price in '.$city->name.' includes delivery, setup, weekly servicing, and pickup. Extra services like cleaning or longer rental periods may have additional costs.',
+                'answer' => 'Our rental price in '.$city->name.' includes delivery, setup, weekly servicing, and pickup. Extra services may have additional costs.',
                 'service_type' => 'general',
                 'sort_order' => 2,
                 'is_active' => true,
@@ -761,26 +764,19 @@ class CityController extends Controller
         $sampleTestimonials = [
             [
                 'customer_name' => 'Michael R.',
-                'customer_title' => 'Construction Project Manager',
-                'company' => 'ABC Construction',
+                'customer_title' => 'Project Manager',
+                'company' => 'ABC Company',
                 'location' => $city->name.', '.$city->state->code,
-                'content' => 'We\'ve been using this company for our construction site portable toilets in '.$city->name.' for over 2 years. Their service is exceptional - always on time, units are clean, and their customer service is outstanding. Highly recommend for any construction project in '.$city->name.'!',
+                'content' => 'We\'ve been using this company for our '.$serviceLabel.' in '.$city->name.' for over 2 years. Their service is exceptional - always on time, units are clean, and their customer service is outstanding. Highly recommend for any project in '.$city->name.'!',
                 'rating' => 5,
                 'service_type' => 'construction',
                 'is_featured' => true,
                 'is_active' => true,
-                'project_type' => 'Commercial Construction',
+                'project_type' => 'Commercial Project',
                 'project_duration' => '6 months',
                 'units_rented' => '15',
                 'verified' => true,
                 'review_date' => '2025-03-15',
-                'schema_markup' => [
-                    '@type' => 'Review',
-                    'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5', 'bestRating' => '5'],
-                    'author' => ['@type' => 'Person', 'name' => 'Michael R.', 'jobTitle' => 'Construction Project Manager'],
-                    'itemReviewed' => ['@type' => 'LocalBusiness', 'name' => 'Porta Potty Direct '.$city->name],
-                    'location' => ['@type' => 'Place', 'address' => ['@type' => 'PostalAddress', 'addressLocality' => $city->name]],
-                ],
             ],
         ];
 
@@ -816,9 +812,9 @@ class CityController extends Controller
                 ],
             ],
             'keywords' => [
-                'primary' => ['porta potty rental '.$city->name, 'portable toilet rental '.$city->name.' '.$city->state->code, 'porta potty '.$city->name, 'portable toilet '.$city->name],
-                'secondary' => ['construction site toilets '.$city->name, 'event restroom rental '.$city->name, 'wedding restroom trailer '.$city->name, 'cheap porta potty '.$city->name],
-                'long_tail' => ['same day porta potty delivery '.$city->name, 'emergency portable toilet rental '.$city->name, 'construction site portable toilets for rent', 'luxury restroom trailer rental '.$city->name],
+                'primary' => [$serviceLabel.' '.$city->name, $serviceLabel.' '.$city->state->code, $city->name.' '.$serviceLabel, 'quality '.$city->name],
+                'secondary' => ['professional '.$serviceLabel.' '.$city->name, $serviceLabel.' services '.$city->name, 'reliable '.$city->name, 'affordable '.$city->name],
+                'long_tail' => ['same day '.$serviceLabel.' delivery '.$city->name, 'emergency '.$serviceLabel.' '.$city->name, $serviceLabel.' for projects', 'premium '.$serviceLabel.' '.$city->name],
                 'geo_modifiers' => ['near '.$city->name, 'in '.$city->name.' '.$city->state->code, 'near me', 'local '.$city->name],
             ],
             'service_pages' => $samplePages,
@@ -848,7 +844,7 @@ class CityController extends Controller
                 ],
                 'blog' => 'https://'.$domain.'/blog',
                 'about' => 'https://'.$domain.'/about',
-                'contact' => 'https://'.$domain.'/contact',
+                'contact' => 'https://'.$domain.'/about',
             ],
             'content_guidelines' => [
                 'word_count' => ['minimum' => 1500, 'recommended' => 2500, 'ideal' => 3500],
