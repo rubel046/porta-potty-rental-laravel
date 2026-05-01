@@ -280,9 +280,29 @@ $breadcrumbSchema = [
                     @foreach($relatedPosts as $post)
                         <a href="{{ $post->url }}"
                            class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group border border-slate-200">
-                            <div class="h-32 bg-gradient-to-br from-blue-100 to-emerald-50 flex items-center justify-center text-4xl">
-                                🚽
+                            <div class="h-32 overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-50">
+                                @if($post->featured_image && Storage::disk('public')->exists($post->featured_image))
+                                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                                         alt="{{ $post->title }}"
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="h-full flex items-center justify-center text-4xl">
+                                        📰
+                                    </div>
+                                @endif
                             </div>
+                            <div class="p-5">
+                                <h3 class="font-bold text-slate-800 group-hover:text-emerald-600
+                                       transition mb-2 line-clamp-2">
+                                    {{ $post->title }}
+                                </h3>
+                                <p class="text-sm text-slate-500 flex items-center gap-1.5">
+                                    📖 {{ $post->reading_time_text }}
+                                </p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
                             <div class="p-5">
                                 <h3 class="font-bold text-slate-800 group-hover:text-emerald-600
                                    transition mb-2 line-clamp-2">
