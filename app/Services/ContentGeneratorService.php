@@ -334,10 +334,14 @@ PROMPT;
         return $content.$imageSection;
     }
 
-    public function generateStatePageContent(State $state): array
+    public function generateStatePageContent(State $state, ?Domain $domain = null): array
     {
         if (! $this->aiService) {
             throw new \RuntimeException('AI service not configured. Please set up MultiAiService to generate content.');
+        }
+
+        if ($domain) {
+            Domain::setCurrent($domain);
         }
 
         return $this->generateStateFromAI($state);

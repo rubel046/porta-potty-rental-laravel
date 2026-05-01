@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\GenerateCityContentJob;
 use App\Models\City;
 use App\Models\Domain;
@@ -32,8 +33,9 @@ class CityController extends Controller
 
         $cities = $query->orderBy('name')->paginate(30);
         $states = State::orderBy('name')->get();
+        $domain = Domain::current() ?? Domain::first();
 
-        return view('admin.cities.index', compact('cities', 'states'));
+        return view('admin.cities.index', compact('cities', 'states', 'domain'));
     }
 
     public function create()

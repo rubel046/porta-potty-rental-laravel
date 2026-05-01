@@ -36,7 +36,7 @@ class GenerateStateContentJob implements ShouldQueue
 
         foreach ($domains as $domain) {
             // Set the current domain for the generator service to use
-            Domain::current($domain);
+            Domain::setCurrent($domain);
 
             $cacheKey = "state_content_generation_{$this->state->id}_{$domain->id}";
 
@@ -112,6 +112,9 @@ class GenerateStateContentJob implements ShouldQueue
                     'domain' => $domain->name,
                     'word_count' => $data['word_count'],
                 ]);
+
+                // Clear cached state content so UI shows fresh data
+                Cache::forget("state_content_{$this->state->id}_{$domain->id}");
 
             } catch (\Throwable $e) {
                 Cache::put("{$cacheKey}_status", 'failed', now()->addMinutes(30));
