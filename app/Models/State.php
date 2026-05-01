@@ -67,60 +67,86 @@ class State extends Model
 
     public function getUrlAttribute(): string
     {
-        return url("/porta-potty-rental-{$this->slug}");
+        $domain = Domain::current() ?? Domain::first();
+        $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
+
+        return url("/{$slugPrefix}-rental-{$this->slug}");
     }
 
     public function getSeoTitleAttribute(): ?string
     {
-        $domain = Domain::current();
-        if (! $domain) {
-            return $this->meta_title ?? "Porta Potty Rental in {$this->name} | Same-Day Delivery";
+        $domain = Domain::current() ?? Domain::first();
+        $domainState = null;
+
+        if ($domain) {
+            $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
         }
 
-        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+        if ($domainState?->meta_title) {
+            return $domainState->meta_title;
+        }
 
-        return $domainState?->meta_title ?? $this->meta_title ?? "{$domain->primary_service} Rental in {$this->name}";
+        if ($this->meta_title) {
+            return $this->meta_title;
+        }
+
+        $keyword = $domain?->primary_keyword ?? 'service rental';
+
+        return "{$keyword} in {$this->name} | Same-Day Delivery";
     }
 
     public function getSeoDescriptionAttribute(): ?string
     {
-        $domain = Domain::current();
-        if (! $domain) {
-            return $this->meta_description ?? "Find affordable {$domain->primary_service} rental in {$this->name}.";
+        $domain = Domain::current() ?? Domain::first();
+        $domainState = null;
+
+        if ($domain) {
+            $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
         }
 
-        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+        if ($domainState?->meta_description) {
+            return $domainState->meta_description;
+        }
 
-        return $domainState?->meta_description ?? $this->meta_description ?? "Find affordable {$domain->primary_service} rental in {$this->name}. Same-day delivery available.";
+        if ($this->meta_description) {
+            return $this->meta_description;
+        }
+
+        $keyword = $domain?->primary_keyword ?? 'service rental';
+
+        return "Find affordable {$keyword} in {$this->name}. Same-day delivery available.";
     }
 
     public function hasContent(): bool
     {
         $domain = Domain::current();
-        if (! $domain) {
-            return ! empty($this->content);
+
+        if ($domain) {
+            $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+            return $domainState?->content || $this->content;
         }
 
-        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
-
-        return $domainState?->content || $this->content;
+        return ! empty($this->content);
     }
 
     public function getContentAttribute(): ?string
     {
         $domain = Domain::current();
-        if (! $domain) {
-            return $this->attributes['content'] ?? null;
+
+        if ($domain) {
+            $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
+
+            return $domainState?->content ?? $this->attributes['content'] ?? null;
         }
 
-        $domainState = $this->domainStates()->where('domain_id', $domain->id)->first();
-
-        return $domainState?->content ?? $this->attributes['content'] ?? null;
+        return $this->attributes['content'] ?? null;
     }
 
     public function getImagesAttribute(): ?array
     {
         $domain = Domain::current();
+
         if (! $domain) {
             return null;
         }

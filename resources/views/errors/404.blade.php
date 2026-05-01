@@ -23,7 +23,7 @@
             </a>
         </div>
         <div class="mt-8 text-sm text-gray-500">
-            <p>Need porta potty rental in your area?</p>
+            <p>Need service rental in your area?</p>
             <a href="/locations" class="text-emerald-600 hover:underline">View all locations →</a>
         </div>
     </div>

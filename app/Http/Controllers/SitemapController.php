@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\Domain;
 use App\Models\ServicePage;
 use App\Models\State;
 use Illuminate\Http\Response;
@@ -78,8 +79,10 @@ class SitemapController extends Controller
 
             State::active()->chunk(100, function ($states) use ($sitemap) {
                 foreach ($states as $state) {
+                    $domain = Domain::current() ?? Domain::first();
+                    $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
                     $sitemap->add(
-                        Url::create(url("/porta-potty-rental-{$state->slug}"))
+                        Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
                             ->setPriority(0.7)
                             ->setChangeFrequency('weekly')
                     );
@@ -208,13 +211,13 @@ class SitemapController extends Controller
     {
         $basePriority = 0.8;
 
-        if ($page->service_type === ServicePage::TYPE_GENERAL) {
+        // Use domain-aware priority: 'general' or first service type gets higher priority
+        $domain = $page->domain ?? Domain::current() ?? Domain::first();
+        $serviceTypes = $domain?->getServiceTypes() ?? [];
+
+        if (! empty($serviceTypes) && $page->service_type === $serviceTypes[0]) {
             $basePriority = 0.9;
-        } elseif (in_array($page->service_type, [
-            ServicePage::TYPE_WEDDING,
-            ServicePage::TYPE_EVENT,
-            ServicePage::TYPE_CONSTRUCTION,
-        ])) {
+        } elseif (in_array($page->service_type, array_slice($serviceTypes, 1, 3))) {
             $basePriority = 0.85;
         }
 

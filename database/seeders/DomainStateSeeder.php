@@ -15,15 +15,14 @@ class DomainStateSeeder extends Seeder
         $states = State::all();
 
         foreach ($domains as $domain) {
-            $status = $domain->id === 1 ? false : true;
             foreach ($states as $state) {
                 DomainState::firstOrCreate(
                     ['domain_id' => $domain->id, 'state_id' => $state->id],
-                    ['status' => $status]
+                    ['status' => true]
                 );
             }
         }
 
-        $this->command->info('✅ Seeded domain_states for '.count($domains).' domains and '.count($states).' states');
+        $this->command->info('✅ Seeded domain_states for '.$domains->count().' domains and '.$states->count().' states');
     }
 }

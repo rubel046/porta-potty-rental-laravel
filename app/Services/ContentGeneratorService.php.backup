@@ -68,7 +68,12 @@ class ContentGeneratorService
             '{nearby_cities}' => $nearbyCitiesText,
         ];
 
-        $prompt = $this->getDefaultServicePagePrompt($replacements);
+        try {
+            $prompt = $domain?->getContentPrompt('service_page', $replacements)
+                ?? $this->getDefaultServicePagePrompt($replacements);
+        } catch (\RuntimeException $e) {
+            $prompt = $this->getDefaultServicePagePrompt($replacements);
+        }
 
         $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Phone numbers: ONLY use {{PHONE_LINK}}. 3) Service links: ONLY use {{SERVICE_LINK:service-type}}. 4) Never output actual phone numbers or URLs. 5) Always return valid JSON. 6) If you fail to provide any required field, the system will reject your response.';
 
@@ -148,7 +153,7 @@ class ContentGeneratorService
 
     protected function getDefaultServicePagePrompt(array $replacements): string
     {
-        $prompt = <<<'PROMPT'
+        $prompt = <<<PROMPT
 Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {primary_keyword}). You understand Google's E-E-A-T requirements and always prioritize Experience, Expertise, Authoritativeness, and Trustworthiness.
 
 Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {business_name} in {city_name}, {state_code}.
@@ -289,6 +294,23 @@ PROMPT;
         return str_replace(array_keys($replacements), array_values($replacements), $prompt);
     }
 
+Requirements:
+1) Keyword Optimization: Use primary keyword: {service_label} {city_name}
+2) Local SEO: Mention {city_name} and {state_code} naturally 10-20 times
+3) Content Structure: H1, H2 sections, bullet points, local context
+4) FAQs: 8-15 questions about {service_label} in {city_name}
+5) Testimonials: 2-4 realistic testimonials
+6) PHONE: Use ONLY {{PHONE_LINK}} placeholder
+7) Service Links: Use ONLY {{SERVICE_LINK:service-type}} placeholders
+8) Pricing: No specific numbers - use "affordable", "competitive rates"
+9) Word count: 2000-3000 words minimum
+
+Self-check: h1_title present, content 2000+ words, all fields filled, phone uses {{PHONE_LINK}} only.
+PROMPT;
+
+        return str_replace(array_keys($replacements), array_values($replacements), $prompt);
+    }
+
     protected function getImagesForContent(): array
     {
         if (! $this->imageService) {
@@ -358,7 +380,12 @@ PROMPT;
             '{city_count}' => $cityCount,
         ];
 
-        $prompt = $this->getDefaultStatePagePrompt($replacements);
+        try {
+            $prompt = $domain?->getContentPrompt('state_page', $replacements)
+                ?? $this->getDefaultStatePagePrompt($replacements);
+        } catch (\RuntimeException $e) {
+            $prompt = $this->getDefaultStatePagePrompt($replacements);
+        }
 
         $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Use {{PHONE_LINK}} and {{SERVICE_LINK:type}}. 3) Return valid JSON only. 4) If you fail to provide any required field, the system will reject your response.';
 
@@ -428,126 +455,28 @@ PROMPT;
     protected function getDefaultStatePagePrompt(array $replacements): string
     {
         $prompt = <<<'PROMPT'
-Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {primary_keyword}). You understand Google's E-E-A-T requirements and always prioritize Experience, Expertise, Authoritativeness, and Trustworthiness.
+Act like a senior SEO strategist with 40+ years of experience ranking USA service-based websites on Google for {primary_keyword}.
 
-Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {primary_keyword} services across {state_name}, {state_code}.
+Generate a comprehensive state landing page for {primary_keyword} in {state_name}, {state_code}.
 
-TASK: Return a VALID JSON object with EXACTLY this structure:
-
-CRITICAL: ALL fields are MANDATORY. NONE can be empty or null. If you return empty or missing fields, the system will reject your response and you must retry.
-
+Return VALID JSON:
 {
-    "h1_title": "MANDATORY - SEO-optimized H1 title (max 80 chars) - must include service + state - NEVER EMPTY",
-    "meta_title": "MANDATORY - SEO title tag (50-60 chars) - include keyword, state + CTA/benefit - NEVER EMPTY",
-    "meta_description": "MANDATORY - Meta description (120-160 chars) - compelling, includes service, state, urgency + CTA - NEVER EMPTY",
-    "content": "MANDATORY - Write 1000-2000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. STRICT WORD COUNT: 1000-2000 words minimum. - NEVER EMPTY",
-    "faqs": [{"question": "...", "answer": "..."}, ...],
-    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
+    "h1_title": "SEO H1 title (max 80 chars)",
+    "meta_title": "Meta title (50-60 chars)",
+    "meta_description": "Meta description (120-160 chars)",
+    "content": "1000+ words markdown content. STRICT WORD COUNT: minimum 1000 words.",
+    "faqs": [{"question": "...", "answer": "..."}],
+    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}]
 }
 
-Step-by-step requirements:
-
-1) Keyword Optimization:
-- Use primary keyword: {primary_keyword} {state_name}
-- Include long-tail keywords (same-day delivery, emergency rental, near me, etc.)
-- Include geo modifiers naturally: "near me", "in {state_name}", "local {state_name}"
-- Maintain natural keyword density (1-2%)
-- Avoid keyword stuffing
-- Mention we serve {city_count} cities throughout {state_name}
-
-2) Local SEO Optimization:
-- Mention {state_name} and {state_code} naturally 10-20 times
-- Include geo phrases: "near me", "local {state_name}", "serving {state_name} and nearby areas"
-- Add local intent phrases (same-day delivery, fast service in {state_name})
-- Make content feel locally relevant (not generic)
-
-3) Content Structure (MANDATORY inside "content"):
-- Start with ## heading (include {state_name} + primary keyword)
-- Introduction (state-level + benefit-driven, include E-E-A-T signals like "serving {state_name} for 20+ years")
-- H2: Why Choose Us (trust signals: experience, licensing, state-wide presence)
-- H2: Our Services (with H3 for each service type)
-- H2: Cities We Serve in {state_name} (mention {city_count} cities)
-- H2: Use Cases & Applications (construction sites, events, weddings, emergency, residential)
-- H2: Call to Action section
-- INTERNAL LINKING: Naturally link to service types using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}
-- Voice search optimization: Include conversational phrases people speak
-
-4) FAQs (required - 8-12 questions):
-- Generate unique FAQ questions for {primary_keyword} in {state_name}, {state_code}
-- Cover: pricing, delivery, duration, unit types, booking process, permits, accessibility
-- Include voice search questions: "How much does... cost in {state_name}?", "Where to rent... near {state_name}?"
-- Use conversational/long-tail keywords
-- Answers: concise (40-60 words), include local context
-- MUST include {state_name} specifically in each FAQ
-
-5) Testimonials (required - 2-4 testimonials):
-- Generate realistic customer testimonials for {primary_keyword} services in {state_name}, {state_code}
-- Include: customer_name (realistic first name or initials), content (1-2 sentences), rating (4-5 stars)
-- Vary scenarios: construction supervisor, wedding planner, event organizer, homeowner, project manager
-- Include E-E-A-T in testimonials: "they've been serving {state_name} for years", "professional state-wide company"
-
-6) E-E-A-T & Trust Signals:
-- Emphasize local experience ({state_name} area)
-- Mention years in business, local team
-- Include trust badges, licensing, certifications
-- Add "serving {state_name} and surrounding areas for X+ years"
-- Include customer references from {city_count} cities we serve
-
-7) Conversion Optimization:
-- Include phone CTA at least 3-5 times using {{PHONE_LINK}}
-- Add urgency: same-day delivery, fast setup, limited availability
-- Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
-- Focus on benefits over features
-
-8) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
-- When including phone number in content, FAQs, or testimonials, use EXACTLY this placeholder: {{PHONE_LINK}}
-- DO NOT use any other phone number format
-- Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
-- Example WRONG: "Call us at (888) 555-0199 for a quote"
-- FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
-
-9) Pricing Rule (IMPORTANT):
-- DO NOT include any specific price numbers
-- Use soft pricing language: "affordable pricing", "competitive rates", "budget-friendly options", "custom quotes available"
-
-10) Writing Style:
-- 100% human-like (no robotic tone)
-- Conversational, persuasive, easy to read (Grade 6-8)
-- Avoid repeating patterns across outputs
-- Make each section feel natural and helpful
-- Include 3-5 internal links to other service types naturally throughout content
-
-11) SEO Constraints:
-- h1_title is REQUIRED - must be included in output, never null or empty
-- h1_title must be different from meta_title
-- meta_title ≤60 characters
-- meta_description ≤160 characters
-- Use power words (fast, affordable, reliable, same-day)
-
-12) Strict Output Rules:
-- Return ONLY valid JSON
-- Do NOT add explanations or markdown outside JSON
-- Do NOT add extra fields
-- Ensure all fields are filled
-- Ensure JSON is properly formatted
-
-Self-check before output:
-- h1_title is present and not empty
-- Content is 1000+ words
-- No pricing numbers used
-- Keywords included naturally
-- Strong CTAs present
-- State name clearly present throughout
-- Content is unique and conversion-focused
-- 8-12 FAQs included (each MUST mention {state_name})
-- 2-4 Testimonials included
-- 3-5 internal links included
-- ALL phone numbers use ONLY the placeholder: {{PHONE_LINK}}
-- ALL service links use ONLY placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
-
-IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY {{PHONE_LINK}} and service links use ONLY {{SERVICE_LINK:service-type}}
-
-Take a deep breath and work on this problem step-by-step.
+Requirements:
+- Focus on {primary_keyword} service in {state_name}, {state_code}
+- MUST include {state_name} specifically in FAQs
+- Mention {city_count} cities we serve throughout {state_name}
+- Each FAQ must be UNIQUE and specific to {state_name}
+- Use {{PHONE_LINK}} for phone numbers
+- Use {{SERVICE_LINK:type}} for internal links
+- No pricing numbers - use soft pricing language
 PROMPT;
 
         return str_replace(array_keys($replacements), array_values($replacements), $prompt);

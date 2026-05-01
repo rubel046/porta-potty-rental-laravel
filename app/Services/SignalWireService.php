@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
+use App\Models\Domain;
 use App\Models\PhoneNumber;
 use App\Models\ServicePage;
 use Illuminate\Support\Facades\Http;
@@ -217,12 +218,15 @@ class SignalWireService
         $statusUrl = url('/webhook/signalwire/status');
         $whisperUrl = url('/webhook/signalwire/whisper');
 
+        $domain = Domain::current() ?? Domain::first();
+        $serviceLabel = $domain->primary_service ?? 'service rental';
+
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Gather numDigits="1" timeout="5" action="{$gatherUrl}" method="POST">
         <Say voice="Polly.Joanna" language="en-US">
-            Thank you for calling about a porta potty rental.
+            Thank you for calling about a {$serviceLabel}.
             For a new rental quote, press 1.
             For existing rental support, press 2.
         </Say>
@@ -321,11 +325,14 @@ XML;
      */
     public function generateWhisperResponse(): string
     {
-        return <<<'XML'
+        $domain = Domain::current() ?? Domain::first();
+        $serviceLabel = $domain->primary_service ?? 'service rental';
+
+        return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Say voice="Polly.Joanna" language="en-US">
-        New porta potty rental lead. Press any key to accept.
+        New {$serviceLabel} lead. Press any key to accept.
     </Say>
     <Pause length="3"/>
 </Response>

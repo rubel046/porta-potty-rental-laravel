@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
-    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.phone_display().'!')">
+    <title>@yield('title', 'Service Rental | Same Day Delivery | Construction & Event Toilets')</title>
+    <meta name="description" content="@yield('meta_description', 'Need service rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.phone_display().'!')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Custom Open Graph Image (can be overridden per page) --}}

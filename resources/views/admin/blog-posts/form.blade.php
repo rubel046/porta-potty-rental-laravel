@@ -18,7 +18,7 @@
                         <label class="form-label">Title *</label>
                         <input type="text" name="title" class="form-input text-lg font-bold"
                                value="{{ old('title', $post->title ?? '') }}"
-                               placeholder="How Much Does Porta Potty Rental Cost in 2026?" required>
+                               placeholder="How Much Does Service Rental Cost in 2026?" required>
                     </div>
 
                     <div class="mb-6">
@@ -61,7 +61,7 @@
                         <label class="form-label">Focus Keyword</label>
                         <input type="text" name="focus_keyword" class="form-input"
                                value="{{ old('focus_keyword', $post->focus_keyword ?? '') }}"
-                               placeholder="e.g., porta potty rental cost">
+                               placeholder="e.g., service rental cost">
                     </div>
 
                     <div>

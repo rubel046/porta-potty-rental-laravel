@@ -122,13 +122,22 @@ class SyncIndexingUrlsCommand extends Command
             return 'static';
         }
 
-        // State pages: /porta-potty-rental-{state} (only state name, no city code)
-        if (preg_match('#^/porta-potty-rental-[a-z]+$#', $path)) {
-            return 'state';
+        // State pages: /{slug_prefix}-rental-{state}
+        $slugPrefixes = Domain::pluck('slug_prefix')->filter()->unique()->toArray();
+        foreach ($slugPrefixes as $prefix) {
+            if (preg_match('#^/'.$prefix.'-rental-[a-z]+$#', $path)) {
+                return 'state';
+            }
         }
 
         // Service pages: URLs with city codes like -pa, -tx, etc. OR service type paths
-        if (preg_match('#-[a-z]{2}$#', $path) || str_contains($url, '/construction') || str_contains($url, '/wedding') || str_contains($url, '/event') || str_contains($url, '/luxury') || str_contains($url, '/party') || str_contains($url, '/emergency') || str_contains($url, '/residential') || str_contains($url, '/general') || str_contains($url, '/portable')) {
+        $serviceTypes = [];
+        foreach (Domain::pluck('service_types')->filter() as $types) {
+            $serviceTypes = array_merge($serviceTypes, $types);
+        }
+        $serviceTypes = array_unique($serviceTypes);
+
+        if (preg_match('#-[a-z]{2}$#', $path) || collect($serviceTypes)->contains(fn ($type) => str_contains($url, '/'.$type))) {
             return 'service';
         }
 

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\City;
+use App\Models\Domain;
 use App\Models\ServicePage;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ServicePageController extends Controller
 {
@@ -67,8 +69,12 @@ class ServicePageController extends Controller
 
     public function update(Request $request, ServicePage $servicePage)
     {
+        $domain = $servicePage->domain ?? Domain::current();
+        $validTypes = $domain?->getServiceTypes() ?? [];
+
         $validated = $request->validate([
             'slug' => 'required|string|max:250|unique:service_pages,slug,'.$servicePage->id,
+            'service_type' => ['sometimes', Rule::in($validTypes)],
             'h1_title' => 'required|string|max:250',
             'meta_title' => 'required|string|max:200',
             'meta_description' => 'required|string|max:500',
@@ -78,7 +84,7 @@ class ServicePageController extends Controller
 
         // Transform phone numbers to clickable tel: links
         $content = $validated['content'];
-        $phonePattern = '/(\+?1?[\s\-.]?)?\(?[0-9]{3}\)?[\s\-.]?[0-9]{3}[\s\-.]?[0-9]{4}/';
+        $phonePattern = '/(\+?1?[\s\-\.]?)?\(?[0-9]{3}\)?[\s\-\.]?[0-9]{3}[\s\-\.]?[0-9]{4}/';
         $content = preg_replace_callback($phonePattern, function ($matches) {
             $phone = preg_replace('/[^0-9+]/', '', $matches[0]);
             if (strlen($phone) === 10) {

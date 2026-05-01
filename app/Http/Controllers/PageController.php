@@ -243,7 +243,7 @@ class PageController extends Controller
                 'name' => 'Hand Sanitizer Stations',
                 'short_name' => 'Sanitizer',
                 'icon' => '🧸',
-                'description' => 'Standalone hand sanitizer and hand washing stations to complement your porta potty rental.',
+                'description' => 'Standalone hand sanitizer and hand washing stations to complement your rental.',
                 'features' => [
                     'Touchless dispensers',
                     'Soap and water',
@@ -258,7 +258,7 @@ class PageController extends Controller
                 'name' => 'Dumpster Rental',
                 'short_name' => 'Dumpster',
                 'icon' => '🗑️',
-                'description' => 'Roll-off dumpsters for construction debris, event waste, and porta potty waste disposal. Available in multiple sizes.',
+                'description' => 'Roll-off dumpsters for construction debris, event waste, and sanitation waste disposal. Available in multiple sizes.',
                 'features' => [
                     'Various sizes (10-40 yard)',
                     'Same-day delivery',
@@ -340,7 +340,7 @@ class PageController extends Controller
         $pricingInfo = [
             [
                 'icon' => '🚻',
-                'title' => 'Standard Porta Potty',
+                'title' => 'Standard Rental',
                 'description' => 'Basic, functional units perfect for construction sites and work areas. OSHA compliant and budget-friendly.',
                 'best_for' => 'Construction Sites, Work Zones, Outdoor Projects',
                 'includes' => [

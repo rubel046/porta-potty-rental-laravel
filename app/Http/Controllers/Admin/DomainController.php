@@ -29,6 +29,8 @@ class DomainController extends Controller
             'business_name' => 'nullable|string|max:255',
             'primary_keyword' => 'nullable|string|max:255',
             'primary_service' => 'nullable|string|max:255',
+            'service_types' => 'nullable|string|max:500',
+            'slug_prefix' => 'nullable|string|max:255',
             'tagline' => 'nullable|string|max:255',
             'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
@@ -38,10 +40,11 @@ class DomainController extends Controller
 
         $validated['secondary_keywords'] = $this->parseCsvField($request->input('secondary_keywords_text'));
         $validated['service_types'] = $this->parseCsvField($request->input('service_types_text'));
+        $validated['is_active'] = $request->boolean('is_active');
 
         $domain = Domain::create($validated);
 
-        $this->syncDomainRelations($domain);
+        $this->syncDomainRelations($domain, $validated['is_active']);
 
         return redirect()
             ->route('admin.domains.index')
@@ -56,6 +59,8 @@ class DomainController extends Controller
             'business_name' => 'nullable|string|max:255',
             'primary_keyword' => 'nullable|string|max:255',
             'primary_service' => 'nullable|string|max:255',
+            'service_types' => 'nullable|string|max:500',
+            'slug_prefix' => 'nullable|string|max:255',
             'tagline' => 'nullable|string|max:255',
             'cta_phone' => 'nullable|string|max:20',
             'primary_color' => 'nullable|string|max:7',
@@ -65,8 +70,11 @@ class DomainController extends Controller
 
         $validated['secondary_keywords'] = $this->parseCsvField($request->input('secondary_keywords_text'));
         $validated['service_types'] = $this->parseCsvField($request->input('service_types_text'));
+        $validated['is_active'] = $request->boolean('is_active');
 
         $domain->update($validated);
+
+        $this->syncDomainRelations($domain, $validated['is_active']);
 
         return redirect()
             ->route('admin.domains.index')
@@ -96,14 +104,14 @@ class DomainController extends Controller
 
     public function sync(Domain $domain): RedirectResponse
     {
-        $this->syncDomainRelations($domain);
+        $this->syncDomainRelations($domain, false);
 
         return redirect()
             ->route('admin.domains.index')
             ->with('success', "Synced cities and states for {$domain->name}");
     }
 
-    private function syncDomainRelations(Domain $domain): void
+    private function syncDomainRelations(Domain $domain, bool $isActive): void
     {
         $states = State::all();
         $existingStateIds = DomainState::where('domain_id', $domain->id)->pluck('state_id')->toArray();
@@ -113,7 +121,7 @@ class DomainController extends Controller
                 DomainState::create([
                     'domain_id' => $domain->id,
                     'state_id' => $state->id,
-                    'status' => false,
+                    'status' => $isActive,
                 ]);
             }
         }
@@ -121,14 +129,14 @@ class DomainController extends Controller
         $cities = City::all();
         $existingCityIds = DomainCity::where('domain_id', $domain->id)->pluck('city_id')->toArray();
 
-        City::chunk(500, function ($citiesChunk) use ($domain, &$existingCityIds) {
+        City::chunk(500, function ($citiesChunk) use ($domain, $isActive, &$existingCityIds) {
             $records = [];
             foreach ($citiesChunk as $city) {
                 if (! in_array($city->id, $existingCityIds)) {
                     $records[] = [
                         'domain_id' => $domain->id,
                         'city_id' => $city->id,
-                        'status' => false,
+                        'status' => $isActive,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];

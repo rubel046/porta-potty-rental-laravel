@@ -10,28 +10,26 @@ use Illuminate\Support\Facades\Log;
 class Domain extends Model
 {
     protected $fillable = [
-        'name',
         'domain',
         'business_name',
+        'website_url',
         'primary_keyword',
-        'secondary_keywords',
         'primary_service',
+        'slug_prefix',
         'service_types',
-        'tagline',
-        'cta_phone',
-        'logo_url',
+        'service_labels',
+        'secondary_keywords',
         'primary_color',
+        'secondary_color',
         'is_active',
-        'layout',
-        'theme_color',
-        'logo_path',
-        'google_business_url',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'service_types' => 'array',
         'secondary_keywords' => 'array',
+        'content_prompts' => 'array',
+        'service_labels' => 'array',
     ];
 
     public function servicePages(): HasMany
@@ -54,11 +52,6 @@ class Domain extends Model
     public function domainCities(): HasMany
     {
         return $this->hasMany(DomainCity::class);
-    }
-
-    public function getCitiesCountAttribute(): int
-    {
-        return $this->domainCities()->count();
     }
 
     public function buyers(): HasMany
@@ -101,11 +94,6 @@ class Domain extends Model
         return $this->hasMany(DomainState::class);
     }
 
-    public function activeDomainStates(): HasMany
-    {
-        return $this->hasMany(DomainState::class)->where('status', true);
-    }
-
     public function getServiceTypes(): array
     {
         return $this->service_types ?? [];
@@ -125,24 +113,17 @@ class Domain extends Model
 
     public function getServiceTypeLabel(string $type): string
     {
-        $labels = [
-            'general' => "General {$this->primary_service} Rental",
-            'construction' => "Construction Site {$this->primary_service}",
-            'wedding' => "Wedding Event {$this->primary_service}",
-            'event' => "Event {$this->primary_service} Rental",
-            'luxury' => "Luxury {$this->primary_service} Trailer",
-            'party' => "Party {$this->primary_service} Rental",
-            'emergency' => "Emergency {$this->primary_service}",
-            'residential' => "Residential {$this->primary_service}",
-            'portable' => "Portable {$this->primary_service} Rental",
-        ];
-
-        return $labels[$type] ?? "{$type} {$this->primary_service}";
+        return $this->service_labels[$type] ?? ucfirst(str_replace('-', ' ', $type));
     }
 
     public function getServiceSlugPrefix(): string
     {
-        return str_replace(' ', '-', $this->primary_service);
+        // Use explicit slug_prefix if set, otherwise derive from primary_service
+        if (! empty($this->slug_prefix)) {
+            return $this->slug_prefix;
+        }
+
+        return $this->primary_service ? str_replace(' ', '-', $this->primary_service) : 'service';
     }
 
     public static function current(): ?self
@@ -182,20 +163,6 @@ class Domain extends Model
     }
 
     public function getLayoutPath(): string
-    {
-        $host = request()->getHost();
-        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
-
-        $layoutPath = "domains.{$prefix}.layout";
-
-        if (view()->exists($layoutPath)) {
-            return $layoutPath;
-        }
-
-        return 'domains.pottydirect.layout';
-    }
-
-    public static function getLayoutPathStatic(): string
     {
         $host = request()->getHost();
         $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);

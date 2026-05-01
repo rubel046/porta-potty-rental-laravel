@@ -36,7 +36,7 @@
                             <input type="text" name="h1_title" 
                                    value="{{ old('h1_title', $state->h1_title) }}"
                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Porta Potty Rental in {{ $state->name }}">
+                                   placeholder="Service Rental in {{ $state->name }}">
                         </div>
 
                         <div>
@@ -72,7 +72,7 @@
                                        value="{{ old('meta_title', $state->meta_title) }}"
                                        maxlength="60"
                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm pr-16 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                       placeholder="Porta Potty Rental {{ $state->name }} | Same-Day Delivery">
+                                       placeholder="Service Rental {{ $state->name }} | Same-Day Delivery">
                                 <span id="meta_title_count" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                                     {{ strlen($state->meta_title ?? '') }}/60
                                 </span>
@@ -86,7 +86,7 @@
                                 <textarea name="meta_description" id="meta_description" rows="3"
                                           maxlength="160"
                                           class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm resize-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                          placeholder="Find affordable porta potty rental in {{ $state->name }}...">{{ old('meta_description', $state->meta_description) }}</textarea>
+                                          placeholder="Find affordable service rental in {{ $state->name }}...">{{ old('meta_description', $state->meta_description) }}</textarea>
                                 <span id="meta_desc_count" class="absolute right-3 bottom-3 text-xs text-gray-400">
                                     {{ strlen($state->meta_description ?? '') }}/160
                                 </span>

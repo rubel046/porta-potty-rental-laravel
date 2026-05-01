@@ -200,7 +200,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Primary
                                         Keyword</label>
                                     <input type="text" name="primary_keyword" x-model="currentDomain.primary_keyword"
-                                           placeholder="porta potty rental"
+                                           placeholder="service rental"
                                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2.5 border">
                                     <p class="mt-1 text-xs text-gray-500">Main service keyword for SEO</p>
                                 </div>
@@ -220,7 +220,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Primary
                                         Service</label>
                                     <input type="text" name="primary_service" x-model="currentDomain.primary_service"
-                                           placeholder="porta potty"
+                                           placeholder="service"
                                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2.5 border">
                                     <p class="mt-1 text-xs text-gray-500">Used for service type labels</p>
                                 </div>
