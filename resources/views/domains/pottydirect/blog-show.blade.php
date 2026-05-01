@@ -1,7 +1,7 @@
 @extends('domains.pottydirect.layout')
 
 @section('title', $post->meta_title ?? $post->title)
-@section('meta_description', $post->meta_description ?? $post->excerpt)
+@section('meta_description', $post->seo_description ?? $post->excerpt)
 @section('canonical', $post->url)
 
 @push('schema')
@@ -10,7 +10,7 @@ $articleSchema = [
     "@context" => "https://schema.org",
     "@type" => "Article",
     "headline" => $post->title,
-    "description" => $post->meta_description ?? strip_tags($post->excerpt),
+    "description" => $post->seo_description ?? strip_tags($post->excerpt),
     "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),

@@ -104,7 +104,11 @@ class GlobalCityController extends Controller
 
     public function show(City $city): Response
     {
+        $domain = Domain::current();
         $city->load(['state', 'servicePages', 'phoneNumbers', 'callLogs', 'blogPosts']);
+
+        $domainCity = $city->domainCities->where('domain_id', $domain?->id)->first();
+        $isActive = $domainCity?->is_active ?? $city->is_active;
 
         $cacheKey = "city_content_generation_{$city->id}";
         $generationStatus = Cache::get("{$cacheKey}_status", 'idle');
@@ -124,7 +128,7 @@ class GlobalCityController extends Controller
             $generationErrors = [];
         }
 
-        return response(view('admin.global-cities.show', compact('city', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt')));
+        return response(view('admin.global-cities.show', compact('city', 'domainCity', 'isActive', 'generationStatus', 'generationProgress', 'currentType', 'generationErrors', 'startedAt')));
     }
 
     public function edit(City $city): Response
@@ -181,12 +185,13 @@ class GlobalCityController extends Controller
             ->with('success', "City '{$name}' deleted!");
     }
 
-    public function generatePages(City $city): void
+    public function generateContent(City $city): RedirectResponse
     {
+        $domain = Domain::current();
         $cacheKey = "city_content_generation_{$city->id}";
 
         if (Cache::get("{$cacheKey}_status") === 'processing') {
-            return;
+            return redirect()->back()->with('info', 'Content generation already in progress.');
         }
 
         Cache::put("{$cacheKey}_status", 'processing', now()->addMinutes(30));
@@ -194,7 +199,9 @@ class GlobalCityController extends Controller
         Cache::put("{$cacheKey}_current_type", null, now()->addMinutes(30));
         Cache::put("{$cacheKey}_started_at", now()->toIso8601String(), now()->addMinutes(60));
 
-        GenerateCityContentJob::dispatch($city);
+        GenerateCityContentJob::dispatch($city, $domain);
+
+        return redirect()->back()->with('success', 'Dispatched content generation job!');
     }
 
     public function generationProgress(City $city): JsonResponse

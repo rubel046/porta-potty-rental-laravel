@@ -12,17 +12,42 @@ class BlogController extends Controller
 {
     public function index(Request $request)
     {
+        $categories = BlogCategory::where('is_active', true)
+            ->withCount(['publishedPosts as posts_count'])
+            ->orderBy('sort_order')
+            ->get();
+
+        $selectedCategory = null;
+        if ($request->category) {
+            $selectedCategory = BlogCategory::where('slug', $request->category)->first();
+        }
+
+        $sort = $request->get('sort', 'latest');
+
+        $totalPostsCount = BlogPost::published()->count();
+
         $posts = BlogPost::published()
             ->with('category')
-            ->when($request->category, function ($query) use ($request) {
-                $category = BlogCategory::where('slug', $request->category)->first();
-                if ($category) {
-                    $query->where('blog_category_id', $category->id);
-                }
+            ->when($selectedCategory, function ($query) use ($selectedCategory) {
+                $query->where('blog_category_id', $selectedCategory->id);
             })
-            ->latest('published_at')
+            ->when($sort === 'popular', function ($query) {
+                $query->orderBy('views', 'desc');
+            }, function ($query) {
+                $query->latest('published_at');
+            })
             ->paginate(12)
             ->appends($request->query());
+
+        $featuredPosts = collect();
+        if (! $selectedCategory) {
+            $featuredPosts = BlogPost::published()
+                ->with('category')
+                ->featured()
+                ->latest('published_at')
+                ->limit(3)
+                ->get();
+        }
 
         $paginationHeaders = '';
         if ($posts->currentPage() > 1) {
@@ -32,7 +57,17 @@ class BlogController extends Controller
             $paginationHeaders .= '<link rel="next" href="'.$posts->nextPageUrl().'">'."\n";
         }
 
-        return view(DomainViewHelper::resolveForController('blog-index'), compact('posts', 'paginationHeaders'));
+        return view(DomainViewHelper::resolveForController('blog-index'), compact(
+            'posts', 'categories', 'selectedCategory', 'featuredPosts', 'paginationHeaders', 'totalPostsCount'
+        ));
+    }
+
+    public function indexByCategory(string $slug, Request $request)
+    {
+        $category = BlogCategory::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $request->merge(['category' => $slug]);
+
+        return $this->index($request);
     }
 
     public function show(string $slug, ContentGeneratorService $contentService)

@@ -1,7 +1,7 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
 @section('title', $post->meta_title ?? $post->title)
-@section('meta_description', $post->meta_description ?? $post->excerpt)
+@section('meta_description', $post->seo_description ?? $post->excerpt)
 @section('canonical', $post->url)
 
 @push('schema')
@@ -11,13 +11,14 @@ $phone = domain_phone_raw();
 $domain = \App\Models\Domain::current();
 $imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : $url . '/og-image.jpg';
 $bizName = $domain?->business_name ?? "Water Damage Pro";
+$seoDescription = $post->seo_description ?? strip_tags($post->excerpt);
 @endphp
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": "{{ $post->title }}",
-    "description": "{{ $post->meta_description ?? strip_tags($post->excerpt) }}",
+    "description": "{{ $seoDescription }}",
     "image": "{{ $imageUrl }}",
     "datePublished": "{{ $post->published_at?->toIso8601String() }}",
     "dateModified": "{{ $post->updated_at->toIso8601String() }}",

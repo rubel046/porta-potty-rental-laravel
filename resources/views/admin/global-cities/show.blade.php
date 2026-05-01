@@ -18,7 +18,7 @@
                 </button>
             </div>
             <div id="json-panel" class="{{ isset($showJsonPanel) && $showJsonPanel ? '' : 'hidden' }} p-6">
-                <form method="POST" action="{{ route('admin.cities.import-json', $city) }}">
+                <form method="POST" action="{{ route('admin.global.cities.import-json', $city) }}">
                     @csrf
                     <div class="mb-4 flex gap-2">
                         <button type="button" onclick="loadSampleJson()" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition flex items-center gap-1">
@@ -29,7 +29,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                             Copy JSON
                         </button>
-                        <a href="{{ route('admin.cities.sample-json', $city) }}" target="_blank" class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition flex items-center gap-1">
+                        <a href="{{ route('admin.global.cities.sample-json', $city) }}" target="_blank" class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                             View
                         </a>
@@ -127,7 +127,7 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-gray-800">Google Business Profile</h2>
             </div>
-            <form method="POST" action="{{ route('admin.cities.update-gmb', $city) }}" class="flex gap-3">
+            <form method="POST" action="{{ route('admin.global.cities.update-gmb', $city) }}" class="flex gap-3">
                 @csrf
                 <input type="url" name="gmb_url" value="{{ $domainCity?->gmb_url ?? '' }}" 
                        placeholder="https://business.google.com/sites/l/..." 
@@ -150,10 +150,10 @@
                             Delete Selected
                         </button>
                     @endif
-                    <form method="POST" action="{{ route('admin.cities.generate-pages', $city) }}" id="generate-form">
-                        @csrf
-                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700" id="generate-btn">Generate Content</button>
-                    </form>
+                <form method="POST" action="{{ route('admin.global.cities.generate-content', $city) }}" id="generate-form">
+                    @csrf
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700" id="generate-btn">Generate Content</button>
+                </form>
                 </div>
             </div>
 
@@ -260,7 +260,7 @@
 
     async function loadSampleJson() {
         try {
-            const response = await fetch('{{ route('admin.cities.sample-json', $city) }}');
+            const response = await fetch('{{ route('admin.global.cities.sample-json', $city) }}');
             const data = await response.json();
             document.getElementById('json-content').value = JSON.stringify(data, null, 2);
         } catch (error) {
@@ -270,7 +270,7 @@
 
     async function copySampleJson(event) {
         try {
-            const response = await fetch('{{ route('admin.cities.sample-json', $city) }}');
+            const response = await fetch('{{ route('admin.global.cities.sample-json', $city) }}');
             const data = await response.json();
             const jsonString = JSON.stringify(data, null, 2);
             
@@ -297,7 +297,7 @@
             
             // Fallback: Download as file
             try {
-                const response = await fetch('{{ route('admin.cities.sample-json', $city) }}');
+                const response = await fetch('{{ route('admin.global.cities.sample-json', $city) }}');
                 const data = await response.json();
                 const jsonString = JSON.stringify(data, null, 2);
                 
@@ -350,7 +350,7 @@
     });
 
     function checkGenerationProgress() {
-        fetch('{{ route('admin.cities.generation-progress', $city) }}')
+        fetch('{{ route('admin.global.cities.generation-progress', $city) }}')
             .then(res => res.json())
             .then(data => {
                 const progressBar = document.getElementById('progress-bar');

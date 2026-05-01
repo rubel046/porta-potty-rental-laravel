@@ -67,15 +67,19 @@ class GenerateCityContentJob implements ShouldQueue
 
                     $domainId = $this->domain?->id;
 
+                    $typeLabel = $this->domain?->getServiceTypeLabel($type) ?? ucfirst($type).' Rental';
+                    $stateCode = $this->city->state?->code ?? '';
+                    $cityName = $this->city->name;
+
                     $this->city->servicePages()->updateOrCreate(
                         ['slug' => $data['slug'], 'domain_id' => $domainId],
                         [
                             'domain_id' => $domainId,
                             'service_type' => $data['service_type'] ?? $type,
-                            'h1_title' => $data['h1_title'] ?? null,
-                            'meta_title' => $data['meta_title'] ?? '',
-                            'meta_description' => $data['meta_description'] ?? '',
-                            'content' => $data['content'] ?? '',
+                            'h1_title' => $data['h1_title'] ?? "{$typeLabel} in {$cityName}, {$stateCode} | Same-Day Delivery",
+                            'meta_title' => $data['meta_title'] ?? "{$typeLabel} {$cityName}, {$stateCode} | Free Quote & Same-Day Delivery",
+                            'meta_description' => $data['meta_description'] ?? "Looking for {$typeLabel} in {$cityName}, {$stateCode}? We offer fast delivery, competitive prices, and quality service. Get your free quote today!",
+                            'content' => $data['content'] ?? "<h2>Welcome to {$cityName}'s Premier {$typeLabel} Service</h2><p>Content generation in progress...</p>",
                             'images' => $data['images'] ?? null,
                             'word_count' => $data['word_count'] ?? 0,
                             'is_published' => true,

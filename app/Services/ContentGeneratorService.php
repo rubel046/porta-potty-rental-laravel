@@ -11,6 +11,7 @@ use App\Models\State;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ContentGeneratorService
 {
@@ -18,15 +19,10 @@ class ContentGeneratorService
 
     protected ?ImageService $imageService = null;
 
-    public function __construct()
+    public function __construct(?MultiAiService $aiService = null, ?ImageService $imageService = null)
     {
-        if (app()->bound(MultiAiService::class)) {
-            $this->aiService = app(MultiAiService::class);
-        }
-
-        if (app()->bound(ImageService::class)) {
-            $this->imageService = app(ImageService::class);
-        }
+        $this->aiService = $aiService;
+        $this->imageService = $imageService;
     }
 
     public function generateServicePageContent(City $city, string $serviceType = 'general'): array
@@ -114,6 +110,10 @@ class ContentGeneratorService
         $h1Title = $jsonResponse['h1_title'];
         $metaTitle = $jsonResponse['meta_title'];
         $metaDescription = str_replace('{{PHONE_LINK}}', domain_phone_display(), $jsonResponse['meta_description']);
+        // Replace [Company Name] with actual business name
+        $domain = Domain::current() ?? Domain::first();
+        $businessName = $domain?->business_name ?? 'Our Company';
+        $metaDescription = str_replace('[Company Name]', $businessName, $metaDescription);
         $content = $jsonResponse['content'];
         $faqs = $jsonResponse['faqs'] ?? [];
         $testimonials = $jsonResponse['testimonials'] ?? [];
@@ -593,8 +593,13 @@ PROMPT;
 
     protected function applyLinkConversions(string $text): string
     {
+        // Keep {SERVICE_LINK:type} format - will be converted to actual links in ensureServiceLinks()
         $text = preg_replace('/\{\{PHONE_LINK\}\}/', '{{PHONE_LINK}}', $text);
-        $text = preg_replace('/\{\{SERVICE_LINK:(\w+)\}\}/', '{{SERVICE_LINK:$1}}', $text);
+
+        // Replace [Company Name] with actual business name
+        $domain = Domain::current() ?? Domain::first();
+        $businessName = $domain?->business_name ?? 'Our Company';
+        $text = str_replace('[Company Name]', $businessName, $text);
 
         return $this->ensureCorrectPhoneLinks($text);
     }
@@ -605,21 +610,28 @@ PROMPT;
         $phoneRaw = domain_phone_raw();
         $styledLink = "<a href=\"tel:{$phoneRaw}\" class=\"text-blue-600 font-semibold hover:underline\">{$phoneDisplay}</a>";
 
-        return str_replace('{{PHONE_LINK}}', $styledLink, $content);
+        $content = str_replace('{{PHONE_LINK}}', $styledLink, $content);
+
+        // Replace [Company Name] with actual business name
+        $domain = Domain::current() ?? Domain::first();
+        $businessName = $domain?->business_name ?? 'Our Company';
+        $content = str_replace('[Company Name]', $businessName, $content);
+
+        return $content;
     }
 
     public function ensureServiceLinks(string $content, ?City $city = null): string
     {
         $domain = Domain::current() ?? Domain::first();
         $serviceTypes = $domain?->getServiceTypes() ?? ['general'];
-        $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
+        $domainUrl = $domain?->domain ? "https://{$domain->domain}" : url('/');
 
         foreach ($serviceTypes as $type) {
             $pattern = '/\{\{SERVICE_LINK:'.$type.'\}\}/i';
             if (preg_match($pattern, $content)) {
-                $slug = $city ? "{$type}-{$slugPrefix}-rental-{$city->slug}" : "/{$type}-service";
-                $label = $domain->getServiceTypeLabel($type);
-                $content = preg_replace($pattern, "<a href=\"{$slug}\" class=\"text-blue-600 font-semibold hover:underline\">{$label}</a>", $content);
+                $label = $domain?->getServiceTypeLabel($type) ?? ucfirst($type);
+                $url = "{$domainUrl}/services#{$type}";
+                $content = preg_replace($pattern, "<a href=\"{$url}\" class=\"text-blue-600 font-semold hover:underline\">{$label}</a>", $content);
             }
         }
 
@@ -805,7 +817,7 @@ Return a VALID JSON object with EXACTLY this structure:
 {
     "title": "SEO-optimized H1 title (max 80 chars)",
     "slug": "url-friendly-slug",
-    "excerpt": "Write a compelling blog excerpt (250-350 WORDS) that summarizes the blog post content. Include key benefits, local context, and a CTA. Do NOT include {{PHONE_LINK}} in excerpt.",
+    "excerpt": "Write a UNIQUE SEO-optimized excerpt (2-3 sentences, 250-350 characters). Include the primary keyword naturally, mention a specific benefit or pain point, and add local context ({$cityName}). MUST be different from the first paragraph of content. Write like a human, not AI. No fluff. Do NOT include {{PHONE_LINK}}.",
     "content": "Write 2000-3000 words of HIGH-QUALITY SEO blog content in markdown format. Include proper heading hierarchy (## H2, ### H3), bullet points, and structured content. Include CTAs with phone number {{PHONE_LINK}}.",
     "meta_title": "SEO title (50-60 chars)",
     "meta_description": "Meta description (120-160 chars)",
@@ -905,5 +917,67 @@ PROMPT;
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    public function generateExcerpt(BlogPost $post): string
+    {
+        if (! $this->aiService) {
+            return '';
+        }
+
+        $city = $post->city;
+        $category = $post->category;
+
+        $prompt = <<<PROMPT
+You are an SEO expert writing a unique blog excerpt.
+
+Context:
+- Blog Title: {$post->title}
+- Category: {$category?->name}
+- City: {$city?->name}
+- State: {$city?->state?->name}
+- Content Preview: {$this->getContentPreview($post->content)}
+
+Task: Write a UNIQUE SEO-optimized excerpt (2-3 sentences, 250-350 characters).
+
+Rules:
+- Include the primary keyword naturally
+- Mention a specific benefit or pain point
+- Add local context ({$city?->name})
+- MUST be different from the first paragraph of content
+- Write like a human, not AI
+- No fluff or repetitive phrasing
+- No pricing numbers
+- Do NOT include {{PHONE_LINK}}
+
+Output: Return ONLY the excerpt text, nothing else.
+PROMPT;
+
+        try {
+            $excerpt = $this->aiService->generateContent($prompt);
+
+            if (! $excerpt || strlen($excerpt) < 100) {
+                Log::warning('AI generated excerpt too short or empty', [
+                    'post_id' => $post->id,
+                    'excerpt' => $excerpt,
+                ]);
+
+                return '';
+            }
+
+            return $this->ensureServiceLinks($excerpt, $city);
+        } catch (\Exception $e) {
+            Log::error('Excerpt generation failed', [
+                'post_id' => $post->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return '';
+        }
+    }
+
+    protected function getContentPreview(string $content): string
+    {
+        return Str::limit(strip_tags($content), 500);
     }
 }

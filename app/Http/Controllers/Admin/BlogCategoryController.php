@@ -12,7 +12,7 @@ class BlogCategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $domain = Domain::current();
+        $domain = Domain::current() ?? Domain::first();
         $query = BlogCategory::query();
 
         if ($domain) {
@@ -34,7 +34,7 @@ class BlogCategoryController extends Controller
     public function create()
     {
         $domains = Domain::orderBy('name')->get();
-        $domain = Domain::current();
+        $domain = Domain::current() ?? Domain::first();
 
         $nextSortOrder = BlogCategory::where('domain_id', $domain?->id)
             ->max('sort_order') + 1;
@@ -46,57 +46,49 @@ class BlogCategoryController extends Controller
     {
         $domain = Domain::current();
         $validated = $request->validate([
+            'domain_id' => 'required|integer|exists:domains,id',
             'name' => 'required|string|max:100',
             'slug' => 'nullable|string|max:100|unique:blog_categories,slug',
-            'description' => 'nullable|string|max:500',
-            'icon' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
-
-        if ($domain) {
-            $validated['domain_id'] = $domain->id;
-        }
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['sort_order'] = $validated['sort_order'] ?? 0;
+        $validated['is_active'] = $request->boolean('is_active');
 
         BlogCategory::create($validated);
 
         return redirect()->route('admin.blog-categories.index')
-            ->with('success', 'Blog category created!');
+            ->with('success', 'Category created successfully!');
     }
 
     public function edit(BlogCategory $blogCategory)
     {
         $domains = Domain::orderBy('name')->get();
 
-        return view('admin.blog-categories.form', [
-            'category' => $blogCategory,
-            'domains' => $domains,
-        ]);
+        return view('admin.blog-categories.form', compact('blogCategory', 'domains'));
     }
 
     public function update(Request $request, BlogCategory $blogCategory)
     {
         $validated = $request->validate([
+            'domain_id' => 'required|integer|exists:domains,id',
             'name' => 'required|string|max:100',
             'slug' => 'nullable|string|max:100|unique:blog_categories,slug,'.$blogCategory->id,
-            'description' => 'nullable|string|max:500',
-            'icon' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['is_active'] = $request->boolean('is_active');
 
         $blogCategory->update($validated);
 
         return redirect()->route('admin.blog-categories.index')
-            ->with('success', 'Blog category updated!');
+            ->with('success', 'Category updated successfully!');
     }
 
     public function destroy(BlogCategory $blogCategory)
@@ -104,6 +96,6 @@ class BlogCategoryController extends Controller
         $blogCategory->delete();
 
         return redirect()->route('admin.blog-categories.index')
-            ->with('success', 'Blog category deleted!');
+            ->with('success', 'Category deleted successfully!');
     }
 }

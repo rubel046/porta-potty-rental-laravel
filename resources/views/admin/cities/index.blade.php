@@ -144,11 +144,12 @@
                             <span class="text-gray-900">{{ $city->service_pages_count ?? 0 }}</span>
                         </td>
                         <td class="px-6 py-4">
-                            @if($domain && isset($city->content_generated))
+                            @if($domain && $city->domainCities && $city->domainCities->first())
+                                @php $domainCity = $city->domainCities->first(); @endphp
                                 <form method="POST" action="{{ route('admin.cities.toggle-content-generated', $city) }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="text-left" @if($city->content_generated) title="Mark as not generated" @else title="Mark as generated" @endif>
-                                        @if($city->content_generated)
+                                    <button type="submit" class="text-left" @if($domainCity->content_generated) title="Mark as not generated" @else title="Mark as generated" @endif>
+                                        @if($domainCity->content_generated)
                                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
                                                 <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                                                 Generated

@@ -13,7 +13,7 @@ class ServicePageSeeder extends Seeder
 {
     public function run(): void
     {
-        $generator = new ContentGeneratorService;
+        $generator = app(ContentGeneratorService::class);
         $serviceTypes = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
 
         $cities = City::with('state')->where('is_active', true)->get();

@@ -11,6 +11,7 @@ use App\Models\ServicePage;
 use App\Models\State;
 use App\Services\ContentGeneratorService;
 use App\Services\ImageService;
+use App\Services\MultiAiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -31,9 +32,24 @@ class CityController extends Controller
             $query->where('is_active', $request->is_active);
         }
 
+        $domain = Domain::current() ?? Domain::first();
+
+        // Load service pages count and domain_city pivot data for current domain
+        if ($domain) {
+            $query->withCount(['servicePages' => function ($q) use ($domain) {
+                $q->where('domain_id', $domain->id);
+            }]);
+
+            // Load the domain_city relationship for the current domain
+            $query->with(['domainCities' => function ($q) use ($domain) {
+                $q->where('domain_id', $domain->id);
+            }]);
+        } else {
+            $query->withCount('servicePages');
+        }
+
         $cities = $query->orderBy('name')->paginate(30);
         $states = State::orderBy('name')->get();
-        $domain = Domain::current() ?? Domain::first();
 
         return view('admin.cities.index', compact('cities', 'states', 'domain'));
     }
@@ -95,9 +111,22 @@ class CityController extends Controller
 
     public function show(City $city)
     {
-        $city->load('state', 'servicePages', 'domainCities.domain');
+        $domain = Domain::current();
+        $city->load('state', 'servicePages', 'domainCities.domain', 'phoneNumbers', 'faqs', 'testimonials', 'callLogs');
 
-        return view('admin.cities.show', compact('city'));
+        $domainCity = $city->domainCities->where('domain_id', $domain?->id)->first();
+        $isActive = $domainCity?->is_active ?? $city->is_active;
+
+        $cacheKey = "city_content_progress_{$city->id}_".($domain?->id ?? 'default');
+        $progressData = Cache::get($cacheKey, ['status' => null, 'current_type' => null, 'progress' => 0, 'started_at' => null, 'errors' => []]);
+
+        $generationStatus = $progressData['status'] ?? null;
+        $currentType = $progressData['current_type'] ?? null;
+        $generationProgress = $progressData['progress'] ?? 0;
+        $startedAt = $progressData['started_at'] ?? null;
+        $generationErrors = $progressData['errors'] ?? [];
+
+        return view('admin.cities.show', compact('city', 'domainCity', 'isActive', 'generationStatus', 'currentType', 'generationProgress', 'startedAt', 'generationErrors'));
     }
 
     public function destroy(City $city)
@@ -134,45 +163,29 @@ class CityController extends Controller
     public function generatePages(City $city)
     {
         $domain = Domain::current();
-        $serviceTypes = $domain?->getServiceTypes() ?? [];
 
-        $dispatched = 0;
-        foreach ($serviceTypes as $type) {
-            $existingPage = ServicePage::where('city_id', $city->id)
-                ->where('domain_id', $domain?->id)
-                ->where('service_type', $type)
-                ->first();
-
-            if (! $existingPage) {
-                $page = ServicePage::create([
-                    'domain_id' => $domain?->id,
-                    'city_id' => $city->id,
-                    'service_type' => $type,
-                    'slug' => $type.'-rental-'.$city->slug,
-                    'is_published' => false,
-                ]);
-
-                if (app()->bound(ContentGeneratorService::class)) {
-                    GenerateCityContentJob::dispatch($city, $domain?->id, $type);
-                    $dispatched++;
-                }
-            }
+        if (! app()->bound(MultiAiService::class)) {
+            return redirect()->back()->with('info', 'AI service not configured. Please add API keys.');
         }
 
-        if ($dispatched > 0) {
-            return redirect()->back()->with('success', "Dispatched {$dispatched} content generation jobs!");
-        }
+        // Always dispatch the job to generate/re-generate content
+        GenerateCityContentJob::dispatch($city, $domain);
 
-        return redirect()->back()->with('info', 'All pages already exist or no content service available.');
+        return redirect()->back()->with('success', 'Dispatched content generation job for all service types!');
     }
 
     public function generationProgress(City $city)
     {
-        $domain = Domain::current();
-        $cacheKey = "city_content_progress_{$city->id}_".($domain?->id ?? 'default');
-        $progress = Cache::get($cacheKey, ['total' => 0, 'completed' => 0, 'percentage' => 0]);
+        $cacheKey = "city_content_generation_{$city->id}";
+        $data = [
+            'status' => Cache::get("{$cacheKey}_status"),
+            'current_type' => Cache::get("{$cacheKey}_current_type"),
+            'progress' => Cache::get("{$cacheKey}_progress", 0),
+            'started_at' => Cache::get("{$cacheKey}_started_at"),
+            'errors' => Cache::get("{$cacheKey}_errors", []),
+        ];
 
-        return response()->json($progress);
+        return response()->json($data);
     }
 
     public function deletePages(City $city)

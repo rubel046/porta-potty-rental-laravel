@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(GroqService::class);
         $this->app->singleton(ImageService::class);
         $this->app->singleton(MultiAiService::class);
+        $this->app->singleton(ContentGeneratorService::class);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\City;
+use App\Models\Domain;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Services\ContentGeneratorService;
@@ -60,10 +61,13 @@ class AddCityCommand extends Command
         if ($generatePages) {
             $this->info('Generating service pages...');
 
+            $domain = Domain::current() ?? Domain::first();
+
             foreach (ServicePage::SERVICE_TYPES as $type => $label) {
                 $pageData = $this->contentGenerator->generateServicePageContent($city, $type);
 
                 ServicePage::create([
+                    'domain_id' => $domain?->id,
                     'city_id' => $city->id,
                     'service_type' => $type,
                     'slug' => $pageData['slug'],

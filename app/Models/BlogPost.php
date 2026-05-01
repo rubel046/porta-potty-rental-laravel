@@ -75,10 +75,6 @@ class BlogPost extends Model
             $post->word_count = str_word_count(strip_tags($post->content));
             $post->reading_time = max(1, ceil($post->word_count / 200));
 
-            if (! $post->excerpt) {
-                $post->excerpt = Str::limit(strip_tags($post->content), 200);
-            }
-
             if (! $post->meta_title) {
                 $post->meta_title = Str::limit($post->title, 60);
             }

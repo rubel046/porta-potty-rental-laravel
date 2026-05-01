@@ -64,6 +64,9 @@ Route::get('/porta-potty-rental-{stateSlug}', [PageController::class, 'statePage
 Route::get('/blog', [BlogController::class, 'index'])
     ->name('blog.index');
 
+Route::get('/blog/category/{slug}', [BlogController::class, 'indexByCategory'])
+    ->name('blog.category');
+
 Route::get('/blog/{slug}', [BlogController::class, 'show'])
     ->name('blog.show')
     ->where('slug', '[a-z0-9\-]+');

@@ -10,7 +10,7 @@ class BlogCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $domains = Domain::get();
+        $domains = Domain::where('id', 1)->get();
 
         if ($domains->isEmpty()) {
             $this->seedDefaultCategories(null);
@@ -247,7 +247,7 @@ class BlogCategorySeeder extends Seeder
             }
 
             BlogCategory::updateOrCreate(
-                ['slug' => $category['slug']],
+                ['slug' => $category['slug'], 'domain_id' => $domainId],
                 array_merge($category, ['sort_order' => $i, 'domain_id' => $domainId])
             );
         }
