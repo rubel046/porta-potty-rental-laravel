@@ -175,4 +175,18 @@ class Domain extends Model
 
         return 'domains.pottydirect.layout';
     }
+
+    public static function getLayoutPathStatic(): string
+    {
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        $layoutPath = "domains.{$prefix}.layout";
+
+        if (view()->exists($layoutPath)) {
+            return $layoutPath;
+        }
+
+        return 'domains.pottydirect.layout';
+    }
 }
