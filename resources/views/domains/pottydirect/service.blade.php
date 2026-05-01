@@ -114,12 +114,12 @@ if ($testimonials->isNotEmpty()) {
                        class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                               text-lg sm:text-xl md:text-2xl md:text-3xl font-bold
                               py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-amber-500/30
-                              transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3">
+                              transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3 min-h-[44px]">
                         <span class="text-xl sm:text-2xl">📞</span>
                         {{ $servicePage->phone_display }}
                     </a>
                     <a href="{{ route('locations') }}"
-                       class="text-slate-300 hover:text-white text-sm font-medium transition flex items-center gap-2">
+                       class="text-slate-300 hover:text-white text-sm font-medium transition flex items-center gap-2 min-h-[44px]">
                         ← View All Locations
                     </a>
                 </div>
@@ -177,12 +177,14 @@ if ($testimonials->isNotEmpty()) {
                 <a href="tel:{{ $servicePage->phone_raw }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                           text-white font-bold text-base sm:text-xl py-3 sm:py-4 px-6 sm:px-10 rounded-full
-                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30">
+                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30 min-h-[44px]">
                     📞 {{ $servicePage->phone_display }}
                 </a>
-                <p class="text-xs sm:text-sm text-slate-400 mt-3 sm:mt-4">
-                    24/7 Emergency • Same-Day Delivery
-                </p>
+                <div class="flex flex-wrap justify-center gap-3 mt-4 text-xs sm:text-sm text-slate-400">
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> Licensed & Insured</span>
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> Same-Day Delivery</span>
+                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> No Hidden Fees</span>
+                </div>
             </div>
         </div>
     </article>
@@ -244,9 +246,9 @@ if ($testimonials->isNotEmpty()) {
                     @endforeach
                 </div>
                 <div class="mt-6 sm:mt-8 text-center">
-                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition text-sm sm:text-base">
-                        View our full pricing guide →
-                    </a>
+                <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition text-sm sm:text-base min-h-[44px] inline-flex items-center">
+                    View our full pricing guide →
+                </a>
                 </div>
             </div>
         </section>
@@ -261,14 +263,14 @@ if ($testimonials->isNotEmpty()) {
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     @foreach($otherServices as $service)
-                        <a href="{{ url($service->slug) }}"
-                           class="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300
-                          transition-all text-center group border border-slate-200">
-                            <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition text-sm sm:text-base">
-                                {{ $service->service_type_label }}
-                            </h3>
-                            <p class="text-xs sm:text-sm text-slate-400 mt-1">in {{ $city->name }}</p>
-                        </a>
+                <a href="{{ url($service->slug) }}"
+                   class="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300
+                          transition-all text-center group border border-slate-200 min-h-[44px] flex flex-col justify-center">
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition text-sm sm:text-base">
+                        {{ $service->service_type_label }}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">in {{ $city->name }}</p>
+                </a>
                     @endforeach
                 </div>
             </div>
@@ -286,12 +288,12 @@ if ($testimonials->isNotEmpty()) {
                     @foreach($nearbyCityPages as $nearbyCity)
                         @php $nearbyPage = $nearbyCity->getServicePage('general'); @endphp
                         @if($nearbyPage)
-                            <a href="{{ url($nearbyPage->slug) }}"
-                               class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
-                              px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700
-                              hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2">
-                                📍 {{ $nearbyCity->name }}, {{ $nearbyCity->state->code }}
-                            </a>
+                        <a href="{{ url($nearbyPage->slug) }}"
+                           class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
+                                  px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700
+                                  hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2 min-h-[44px]">
+                            📍 {{ $nearbyCity->name }}, {{ $nearbyCity->state->code }}
+                        </a>
                         @endif
                     @endforeach
                 </div>

@@ -9,7 +9,6 @@ use App\Models\Domain;
 use App\Models\DomainCity;
 use App\Models\ServicePage;
 use App\Models\State;
-use App\Services\ContentGeneratorService;
 use App\Services\ImageService;
 use App\Services\MultiAiService;
 use Illuminate\Http\Request;

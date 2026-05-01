@@ -18,7 +18,11 @@ class SignalWireWebhookController extends Controller
      */
     public function incoming(Request $request): Response
     {
-        Log::channel('calls')->info('Incoming call', $request->all());
+        $callData = $request->all();
+        // Capture referrer URL for call attribution
+        $callData['referrer_url'] = $request->header('referer', '');
+        $callData['user_agent'] = $request->header('User-Agent', '');
+        Log::channel('calls')->info('Incoming call', $callData);
 
         $xml = $this->signalWire->generateIncomingResponse(
             callerNumber: $request->input('From', ''),

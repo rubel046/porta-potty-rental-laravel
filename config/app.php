@@ -143,4 +143,14 @@ return [
     */
     'daily_city_page_generation' => (int) env('DAILY_CITY_PAGE_GENERATION', 5),
 
+    /*
+    |--------------------------------------------------------------------------
+    | CDN Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Set CDN_URL to use a CDN for asset delivery (e.g., Cloudflare)
+    | Leave empty to use local asset generation
+    |
+    */
+    'cdn_url' => env('CDN_URL', ''),
 ];

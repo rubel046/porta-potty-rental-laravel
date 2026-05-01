@@ -479,7 +479,12 @@ class PageController extends Controller
 
         $query = ServicePage::where('slug', $slug)
             ->where('is_published', true)
-            ->with(['city.state', 'city.phoneNumbers']);
+            ->with([
+                'city.state',
+                'city.phoneNumbers',
+                'city.faqs' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
+                'city.testimonials' => fn ($q) => $q->where('is_active', true),
+            ]);
 
         if ($domain) {
             $query->whereHas('city', function ($q) use ($domain) {
@@ -498,30 +503,33 @@ class PageController extends Controller
         // View count বাড়ান
         $servicePage->incrementViews();
 
-        // FAQs
-        $cityFaqs = $city->getActiveFaqs($servicePage->service_type);
+        // FAQs - use eager loaded collection
+        $cityFaqs = $city->faqs
+            ->where('is_active', true)
+            ->where('service_type', $servicePage->service_type)
+            ->sortBy('sort_order');
         if ($cityFaqs->isEmpty()) {
-            $faqs = $city->getActiveFaqs();
+            $faqs = $city->faqs
+                ->where('is_active', true)
+                ->sortBy('sort_order');
         } else {
             $faqs = $cityFaqs;
         }
 
-        // Testimonials - filter by service type
-        $testimonials = Testimonial::where('city_id', $city->id)
-            ->where('service_type', $servicePage->service_type)
+        // Testimonials - use eager loaded collection, filter by service type
+        $testimonials = $city->testimonials
             ->where('is_active', true)
-            ->inRandomOrder()
-            ->take(4)
-            ->get();
+            ->where('service_type', $servicePage->service_type)
+            ->shuffle()
+            ->take(4);
 
         // Fallback to general testimonials if none found for service type
         if ($testimonials->isEmpty()) {
-            $testimonials = Testimonial::where('city_id', $city->id)
-                ->where('service_type', 'general')
+            $testimonials = $city->testimonials
                 ->where('is_active', true)
-                ->inRandomOrder()
-                ->take(4)
-                ->get();
+                ->where('service_type', 'general')
+                ->shuffle()
+                ->take(4);
         }
 
         // Nearby cities with pages
@@ -548,31 +556,29 @@ class PageController extends Controller
             ->take(3)
             ->get();
 
-        // Schema markup
-        $schemaMarkup = [
-            '@context' => 'https://schema.org',
-            '@type' => 'LocalBusiness',
-            'name' => ($domain?->business_name ?? 'Potty Direct').' in '.$city->name,
-            'description' => $servicePage->seo_description,
-            'address' => [
-                '@type' => 'PostalAddress',
-                'addressLocality' => $city->name,
-                'addressRegion' => $city->state->code,
-                'addressCountry' => 'US',
-            ],
-            'telephone' => $servicePage->phone_raw,
-            'priceRange' => '$$',
-            'openingHoursSpecification' => [
-                [
-                    '@type' => 'OpeningHoursSpecification',
-                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    'opens' => '00:00',
-                    'closes' => '23:59',
+        // Schema markup - use model method and enhance
+        $schemaMarkup = $servicePage->generateSchemaMarkup();
+
+        // Add Service schema for the specific service type
+        $serviceLabel = $domain?->getServiceTypeLabel($servicePage->service_type) ?? 'Porta Potty Rental';
+        $schemaMarkup['makesOffer'] = [
+            '@type' => 'Offer',
+            'itemOffered' => [
+                '@type' => 'Service',
+                'name' => $serviceLabel.' in '.$city->name,
+                'description' => $servicePage->seo_description,
+                'provider' => [
+                    '@type' => 'LocalBusiness',
+                    'name' => $domain?->business_name ?? 'Potty Direct',
                 ],
-            ],
-            'areaServed' => [
-                '@type' => 'City',
-                'name' => $city->name,
+                'areaServed' => [
+                    '@type' => 'City',
+                    'name' => $city->name,
+                    'containedInPlace' => [
+                        '@type' => 'State',
+                        'name' => $city->state->name,
+                    ],
+                ],
             ],
         ];
 

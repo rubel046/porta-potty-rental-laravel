@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @php $domain = \App\Models\Domain::current(); @endphp
+    @php
+        $domain = \App\Models\Domain::current();
+    @endphp
+    @php
+        $phoneRaw = $globalPhoneRaw ?? domain_phone_raw();
+        $phoneDisplay = $globalPhoneDisplay ?? domain_phone_display();
+        if ($overrideRaw = trim(View::yieldContent('phone_raw'))) {
+            $phoneRaw = $overrideRaw;
+        }
+        if ($overrideDisplay = trim(View::yieldContent('phone_display'))) {
+            $phoneDisplay = $overrideDisplay;
+        }
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
-    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.domain_phone_display().'!')">
+    <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.$phoneDisplay.'!')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Custom Open Graph Image (can be overridden per page) --}}
@@ -78,7 +90,6 @@
     @stack('styles')
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
-@php $domain = \App\Models\Domain::current(); @endphp
 
 {{-- Announcement Banner - Enhanced Urgency --}}
 <div id="announcement-banner" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-2 px-3 sm:px-4">
@@ -86,8 +97,8 @@
         <span class="hidden sm:inline animate-pulse">🔥</span>
         <span class="font-semibold text-center sm:text-left">Same-Day Delivery: Order by 2PM</span>
         <span class="hidden md:inline text-amber-100">• Limited availability</span>
-        <a href="tel:{{ domain_phone_raw() }}" class="ml-0 sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center">
-            📞 {{ domain_phone_display() }}
+        <a href="tel:{{ $phoneRaw }}" class="ml-0 sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center min-h-[44px]">
+            📞 {{ $phoneDisplay }}
         </a>
     </div>
 </div>
@@ -229,7 +240,7 @@
 
             {{-- CTA --}}
 <div class="flex items-center gap-1 sm:gap-2">
-                <a href="tel:+18336529344" class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-4 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all hover:scale-105 ring-2 ring-amber-400/30">
+                <a href="tel:{{ $phoneRaw }}" class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white text-xs sm:text-sm font-bold py-2 px-2.5 sm:px-4 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all hover:scale-105 ring-2 ring-amber-400/30 min-h-[44px]">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
@@ -289,10 +300,10 @@
             <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white text-center">
                 <h3 class="text-lg font-bold mb-2">Ready to Rent?</h3>
                 <p class="text-emerald-100 text-sm mb-4">Call for instant pricing</p>
-                <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-bold text-lg py-3 px-8 rounded-full hover:scale-105 transition shadow-lg w-full">
+                <a href="tel:{{ $phoneRaw }}"
+                   class="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-bold text-lg py-3 px-8 rounded-full hover:scale-105 transition shadow-lg w-full min-h-[44px]">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    {{ domain_phone_display() }}
+                        {{ $phoneDisplay }}
                 </a>
             </div>
         </div>
@@ -377,12 +388,12 @@
             <div>
                 <h4 class="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Contact</h4>
                 <div class="space-y-4">
-                    <a href="tel:{{ domain_phone_raw() }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
+                    <a href="tel:{{ $phoneRaw }}" class="flex items-center gap-3 text-sm text-slate-400 hover:text-white transition group">
                         <div class="w-9 h-9 bg-slate-800 group-hover:bg-emerald-600/20 rounded-lg flex items-center justify-center transition">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         </div>
                         <div>
-                            <div class="text-white font-semibold">{{ domain_phone_display() }}</div>
+                            <div class="text-white font-semibold">{{ $phoneDisplay }}</div>
                             <div class="text-xs text-slate-500">Tap to call</div>
                         </div>
                     </a>
@@ -423,12 +434,12 @@
 
 {{-- Mobile Sticky CTA - Enhanced with pulse --}}
 <div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
-    <a href="tel:{{ domain_phone_raw() }}"
-       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+    <a href="tel:{{ $phoneRaw }}"
+       class="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition-all hover:scale-[1.02] active:scale-[0.98] min-h-[44px]">
         <svg class="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
         </svg>
-        <span>Call Now — Free Quote</span>
+        <span>Call Now — {{ $phoneDisplay }}</span>
     </a>
 </div>
 <div class="h-20 md:hidden"></div>

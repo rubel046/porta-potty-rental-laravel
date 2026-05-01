@@ -1,8 +1,14 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Porta Potty Rental | Same-Day Delivery USA | Call '.domain_phone_display().' for Free Quote')
-@section('meta_description', 'Need porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, events & weddings. Get your free quote today! Call '.domain_phone_display())
+@php
+    $phoneRaw = domain_phone_raw();
+    $phoneDisplay = domain_phone_display();
+@endphp
+@section('title', 'Porta Potty Rental | Same-Day Delivery USA | Call '.$phoneDisplay.' for Free Quote')
+@section('meta_description', 'Need porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, events & weddings. Get your free quote today! Call '.$phoneDisplay)
 @section('canonical', url('/'))
+@section('phone_raw', $phoneRaw)
+@section('phone_display', $phoneDisplay)
 
 @push('schema')
     @php
@@ -254,18 +260,18 @@
                 {{-- CTA Buttons - PHONE IS PRIMARY CTA --}}
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     {{-- PRIMARY CTA: Phone number as large button --}}
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                               text-white text-xl sm:text-2xl md:text-3xl font-bold
                               py-4 sm:py-5 px-8 sm:px-12 rounded-2xl shadow-2xl shadow-amber-500/40
                               transition-all hover:scale-[1.02] hover:shadow-amber-500/50
                               flex items-center justify-center gap-3 sm:gap-4
-                              ring-4 ring-amber-400/30 animate-pulse-slow">
+                              ring-4 ring-amber-400/30 animate-pulse-slow min-h-[44px]">
                         <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
-                        <span>{{ domain_phone_display() }}</span>
+                        <span>{{ $phoneDisplay ?? domain_phone_display() }}</span>
                     </a>
                     
                     {{-- SECONDARY CTA: Find city --}}
@@ -273,11 +279,11 @@
                        class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm
                               border-2 border-white/30 text-white text-base sm:text-lg font-semibold
                               py-3 sm:py-4 px-6 sm:px-8 rounded-xl
-                              transition-all hover:scale-[1.02]
+                              transition-all hover:scale-[1.02] min-h-[44px]
                               flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
                             <circle cx="12" cy="10" r="3"/>
                         </svg>
                         <span>Find Your City</span>
@@ -556,7 +562,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         Construction & Events
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -590,7 +596,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         Weddings & Events
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
                               text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-amber-500/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -622,7 +628,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         Wheelchair Friendly
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -652,7 +658,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         VIP Events
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-purple-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -683,7 +689,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         Construction & Events
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-amber-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -711,7 +717,7 @@
                     <p class="text-slate-500 text-sm mb-4">
                         Pumping & Maintenance
                     </p>
-                    <a href="tel:{{ domain_phone_raw() }}"
+                    <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                        class="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white
                               font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-teal-600/25
                               hover:scale-[1.02] active:scale-[0.98]">
@@ -890,7 +896,7 @@
                         </div>
 
                         <div class="mt-6 text-center">
-                            <a href="tel:{{ domain_phone_raw() }}"
+                            <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                                class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02]">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -954,7 +960,7 @@
                         </div>
 
                         <div class="mt-6 text-center">
-                            <a href="tel:{{ domain_phone_raw() }}"
+                            <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                                class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02]">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -1033,7 +1039,7 @@
                 <span class="font-bold">Need Urgent Delivery?</span>
             </div>
             <span class="text-red-100 hidden sm:inline">Same-day emergency service available in most areas.</span>
-            <a href="tel:{{ domain_phone_raw() }}"
+            <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-red-600 font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-red-50 transition text-xs sm:text-sm">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -1124,7 +1130,7 @@
                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
                             {{ $useCase['desc'] }}
                         </p>
-                        <a href="tel:{{ domain_phone_raw() }}"
+                        <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                            class="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition inline-flex items-center gap-1">
                             {{ $useCase['link_text'] }}
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1194,7 +1200,7 @@
             </div>
 
             <div class="mt-8 sm:mt-10 text-center">
-                <a href="tel:{{ domain_phone_raw() }}"
+                <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full transition-all text-sm sm:text-base shadow-lg shadow-emerald-500/25 hover:scale-105">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -1277,7 +1283,7 @@
 
             {{-- CTA --}}
             <div class="text-center mt-10 md:mt-14">
-                <a href="tel:{{ domain_phone_raw() }}"
+                <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                    class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
                           text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full
                           shadow-xl shadow-blue-500/20 transition-all hover:scale-105">
@@ -1503,7 +1509,7 @@
                         </div>
                     </div>
                     <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700">
-                        <a href="tel:{{ domain_phone_raw() }}"
+                        <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                            class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base">
                             📞 Call for Free Quote
                         </a>
@@ -1760,7 +1766,7 @@
                     Call now for immediate assistance
                 </p>
 
-                <a href="tel:{{ domain_phone_raw() }}"
+                <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                    class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
                           text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-amber-500/25
                           transition-all hover:scale-[1.02] active:scale-[0.98]
@@ -2095,7 +2101,7 @@
                 Serving construction sites, events, weddings, and more across the USA
             </p>
 
-            <a href="tel:{{ domain_phone_raw() }}"
+            <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
                class="inline-block bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
                       text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold
                       py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-14 rounded-full shadow-2xl
