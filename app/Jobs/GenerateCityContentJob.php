@@ -131,17 +131,7 @@ class GenerateCityContentJob implements ShouldQueue
 
             if (! $typeSuccess && $typeRetries >= $this->maxRetriesPerType) {
                 $errors[] = "{$type}: Max retries reached";
-
-                $domainId = $this->domain?->id;
-                $this->city->servicePages()->updateOrCreate(
-                    ['slug' => "{$type}-rental-{$this->city->slug}", 'domain_id' => $domainId],
-                    [
-                        'domain_id' => $domainId,
-                        'service_type' => $type,
-                        'generation_status' => 'failed',
-                        'generation_error' => "Max retries reached after {$this->maxRetriesPerType} attempts",
-                    ]
-                );
+                Log::error("Failed to generate {$type} content for {$this->city->name} after max retries");
             }
 
             // No extra sleep - already sleeping after success

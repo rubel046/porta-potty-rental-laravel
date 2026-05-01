@@ -63,13 +63,15 @@ Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized
 
 TASK: Return a VALID JSON object with EXACTLY this structure:
 
+CRITICAL: ALL fields are MANDATORY. NONE can be empty or null. If you return empty or missing fields, the system will reject your response and you must retry.
+
 DO NOT include FAQs in the main content - they will be generated separately.
 DO NOT include testimonials in the main content - they will be generated separately.
 {
-    "h1_title": "REQUIRED - SEO-optimized H1 title (max 80 chars) - must include service + city - DO NOT LEAVE EMPTY",
-    "meta_title": "SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit",
-    "meta_description": "Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA",
-    "content": "Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content. STRICT WORD COUNT: 2000-3000 words minimum.",
+    "h1_title": "MANDATORY - SEO-optimized H1 title (max 80 chars) - must include service + city - NEVER EMPTY",
+    "meta_title": "MANDATORY - SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit - NEVER EMPTY",
+    "meta_description": "MANDATORY - Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA - NEVER EMPTY",
+    "content": "MANDATORY - Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content. STRICT WORD COUNT: 2000-3000 words minimum. - NEVER EMPTY",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
@@ -192,17 +194,50 @@ IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY {{PHONE_LINK}}
 Take a deep breath and work on this problem step-by-step.
 PROMPT;
 
-        $systemPrompt = 'You are an SEO content writer. Phone numbers: ONLY use {{PHONE_LINK}}. Service links: ONLY use {{SERVICE_LINK:service-type}}. Never output actual phone numbers or URLs. Always return valid JSON.';
+        $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Phone numbers: ONLY use {{PHONE_LINK}}. 3) Service links: ONLY use {{SERVICE_LINK:service-type}}. 4) Never output actual phone numbers or URLs. 5) Always return valid JSON. 6) If you fail to provide any required field, the system will reject your response.';
 
-        $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+        $maxAttempts = 3;
+        $attempt = 0;
+        $jsonResponse = null;
 
-        if (! $jsonResponse || ! isset($jsonResponse['content'])) {
-            throw new \RuntimeException("AI JSON generation failed for {$city->name} ({$serviceType})");
+        while ($attempt < $maxAttempts) {
+            $attempt++;
+            $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+
+            if (! $jsonResponse || ! isset($jsonResponse['content'])) {
+                Log::warning("Service page generation attempt {$attempt} failed for {$city->name} ({$serviceType}): Invalid JSON");
+
+                continue;
+            }
+
+            // Force validation - all required fields must be non-empty strings
+            $requiredFields = ['h1_title', 'meta_title', 'meta_description', 'content'];
+            $missingFields = [];
+            foreach ($requiredFields as $field) {
+                if (empty($jsonResponse[$field]) || ! is_string($jsonResponse[$field])) {
+                    $missingFields[] = $field;
+                }
+            }
+
+            if (empty($missingFields)) {
+                break; // Success - all fields present
+            }
+
+            Log::warning("Service page generation attempt {$attempt} failed for {$city->name} ({$serviceType})", [
+                'missing_fields' => $missingFields,
+            ]);
+
+            // Strengthen prompt for retry
+            $prompt .= "\n\nWARNING: Previous attempt failed. You MUST provide ALL required fields including: ".implode(', ', $missingFields).'. All fields must be non-empty strings.';
         }
 
-        $h1Title = $jsonResponse['h1_title'] ?: "{$serviceLabel} in {$city->name}, {$state->code}";
-        $metaTitle = $jsonResponse['meta_title'] ?: "{$serviceLabel} in {$city->name}, {$state->code}";
-        $metaDescription = $jsonResponse['meta_description'] ?? "{$serviceLabel} in {$city->name}, {$state->code}. Call for quote!";
+        if ($attempt >= $maxAttempts || ! $jsonResponse || ! isset($jsonResponse['content'])) {
+            throw new \RuntimeException("AI failed to generate all required data for {$city->name} ({$serviceType}) after {$maxAttempts} attempts");
+        }
+
+        $h1Title = $jsonResponse['h1_title'];
+        $metaTitle = $jsonResponse['meta_title'];
+        $metaDescription = $jsonResponse['meta_description'];
         $content = $jsonResponse['content'];
         $faqs = $jsonResponse['faqs'] ?? [];
         $testimonials = $jsonResponse['testimonials'] ?? [];
@@ -324,23 +359,56 @@ Requirements:
 - Include 2-3 realistic testimonials from {$stateName} customers
 PROMPT;
 
-        $systemPrompt = 'You are an SEO writer. Use {{PHONE_LINK}} and {{SERVICE_LINK:type}}. Return valid JSON only.';
+        $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Use {{PHONE_LINK}} and {{SERVICE_LINK:type}}. 3) Return valid JSON only. 4) If you fail to provide any required field, the system will reject your response.';
 
-        $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+        $maxAttempts = 3;
+        $attempt = 0;
+        $jsonResponse = null;
 
-        if (! $jsonResponse || ! isset($jsonResponse['content'])) {
-            throw new \RuntimeException("AI generation failed for state {$stateName}");
+        while ($attempt < $maxAttempts) {
+            $attempt++;
+            $jsonResponse = $this->aiService->generateJsonContent($prompt, $systemPrompt);
+
+            if (! $jsonResponse || ! isset($jsonResponse['content'])) {
+                Log::warning("State page generation attempt {$attempt} failed for {$stateName}: Invalid JSON");
+
+                continue;
+            }
+
+            // Force validation - all required fields must be non-empty strings
+            $requiredFields = ['h1_title', 'meta_title', 'meta_description', 'content'];
+            $missingFields = [];
+            foreach ($requiredFields as $field) {
+                if (empty($jsonResponse[$field]) || ! is_string($jsonResponse[$field])) {
+                    $missingFields[] = $field;
+                }
+            }
+
+            if (empty($missingFields)) {
+                break; // Success - all fields present
+            }
+
+            Log::warning("State page generation attempt {$attempt} failed for {$stateName}", [
+                'missing_fields' => $missingFields,
+            ]);
+
+            // Strengthen prompt for retry
+            $prompt .= "\n\nWARNING: Previous attempt failed. You MUST provide ALL required fields including: ".implode(', ', $missingFields).'. All fields must be non-empty strings.';
         }
 
-        $content = $jsonResponse['content'] ?? '';
+        if ($attempt >= $maxAttempts || ! $jsonResponse || ! isset($jsonResponse['content'])) {
+            throw new \RuntimeException("AI failed to generate all required data for state {$stateName} after {$maxAttempts} attempts");
+        }
+
+        $content = $jsonResponse['content'];
         $contentCleaned = $this->applyLinkConversions($content);
         $wordCount = str_word_count($content);
         $images = $this->getImagesForContent();
 
         return [
-            'h1_title' => $jsonResponse['h1_title'] ?? "{$primaryKeyword} in {$stateName}, {$stateCode}",
-            'meta_title' => $jsonResponse['meta_title'] ?? "{$primaryKeyword} {$stateName} | Fast Delivery",
-            'meta_description' => $jsonResponse['meta_description'] ?? "{$primaryKeyword} in {$stateName}. Call now!",
+            'h1_title' => $jsonResponse['h1_title'],
+            'meta_title' => $jsonResponse['meta_title'],
+            'meta_description' => $jsonResponse['meta_description'],
             'content' => $this->ensureServiceLinks($contentCleaned),
             'word_count' => $wordCount,
             'faqs' => array_map(fn ($faq) => [
@@ -650,23 +718,51 @@ Self-check before output:
 PROMPT;
 
         try {
-            $data = $this->aiService->generateJsonContent($prompt);
+            $maxAttempts = 3;
+            $attempt = 0;
+            $lastError = null;
 
-            if ($data === null) {
-                return [
-                    'success' => false,
-                    'error' => 'AI returned empty or invalid response. Please check API configuration.',
-                ];
+            while ($attempt < $maxAttempts) {
+                $attempt++;
+                $data = $this->aiService->generateJsonContent($prompt);
+
+                if ($data === null) {
+                    $lastError = 'AI returned empty or invalid response. Please check API configuration.';
+                    Log::warning("Blog post generation attempt {$attempt} failed: AI returned null");
+
+                    continue;
+                }
+
+                // Validate required fields
+                $requiredFields = ['title', 'content', 'meta_title', 'meta_description', 'excerpt'];
+                $missingFields = [];
+                foreach ($requiredFields as $field) {
+                    if (empty($data[$field]) || ! is_string($data[$field])) {
+                        $missingFields[] = $field;
+                    }
+                }
+
+                if (! empty($missingFields)) {
+                    $lastError = 'AI failed to generate required fields: '.implode(', ', $missingFields);
+                    Log::warning("Blog post generation attempt {$attempt} failed", [
+                        'missing_fields' => $missingFields,
+                        'data_keys' => array_keys($data),
+                    ]);
+
+                    // Strengthen prompt for retry
+                    $prompt .= "\n\nWARNING: Previous attempt failed. You MUST provide ALL fields including: ".implode(', ', $missingFields).'. All fields must be non-empty strings.';
+
+                    continue;
+                }
+
+                // Success - all required fields present
+                break;
             }
 
-            if (! isset($data['content'])) {
-                Log::error('ContentGenerator: Missing content field', [
-                    'data_keys' => $data ? array_keys($data) : [],
-                ]);
-
+            if ($attempt >= $maxAttempts) {
                 return [
                     'success' => false,
-                    'error' => 'AI response missing content field.',
+                    'error' => $lastError ?? 'AI failed to generate all required data after {$maxAttempts} attempts.',
                 ];
             }
 
