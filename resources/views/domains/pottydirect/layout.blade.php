@@ -20,15 +20,23 @@
     <meta name="description" content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.$phoneDisplay.'!')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
-    {{-- Custom Open Graph Image (can be overridden per page) --}}
-    @section('og_image')
-    <meta property="og:image" content="{{ url('/og-image.jpg') }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Potty Direct - Portable Restroom Rental">
-    <meta name="twitter:image" content="{{ url('/og-image.jpg') }}">
-    <meta name="twitter:image:alt" content="Potty Direct - Portable Restroom Rental">
-    @show
+{{-- Custom Open Graph Image (can be overridden per page) --}}
+@section('og_image')
+<meta property="og:image" content="{{ url('/og-image.jpg') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Potty Direct - Portable Restroom Rental">
+<meta name="twitter:image" content="{{ url('/og-image.jpg') }}">
+<meta name="twitter:image:alt" content="Potty Direct - Portable Restroom Rental">
+@show
+
+{{-- OpenGraph Location Tags for Local SEO --}}
+<meta property="og:latitude" content="{{ $latitude ?? 32.7767 }}">
+<meta property="og:longitude" content="{{ $longitude ?? -96.7970 }}">
+<meta property="og:locality" content="{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}">
+<meta property="og:region" content="{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}">
+<meta property="og:postal-code" content="{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}">
+<meta property="og:country-name" content="USA">
 
     {{-- Schema.org JSON-LD --}}
     {{-- Site-wide Organization + WebSite schema (per-page schemas push to the stack below) --}}
@@ -506,7 +514,20 @@
 </header>
 
 {{-- Page Content --}}
-<main id="main" tabindex="-1" class="pt-0">
+<main id="main" tabindex="-1" class="pt-0" itemscope itemtype="https://schema.org/LocalBusiness">
+    <meta itemprop="name" content="{{ $domain?->business_name ?? 'Potty Direct' }}">
+    <meta itemprop="telephone" content="{{ $phoneRaw }}">
+    <meta itemprop="priceRange" content="$$-$$$">
+    <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+        <meta itemprop="addressLocality" content="{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}">
+        <meta itemprop="addressRegion" content="{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}">
+        <meta itemprop="postalCode" content="{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}">
+        <meta itemprop="addressCountry" content="US">
+    </div>
+    <div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">
+        <meta itemprop="latitude" content="{{ $latitude ?? 32.7767 }}">
+        <meta itemprop="longitude" content="{{ $longitude ?? -96.7970 }}">
+    </div>
     @yield('content')
 </main>
 
@@ -531,6 +552,12 @@
                 <p class="text-sm text-slate-400 leading-relaxed mb-6">
                     Your trusted partner for clean, affordable portable restroom rentals. Serving cities nationwide with same-day delivery available.
                 </p>
+                <div class="text-sm text-slate-400" itemscope itemtype="https://schema.org/PostalAddress">
+                    <div itemprop="name">{{ $domain?->business_name ?? 'Potty Direct' }}</div>
+                    <div itemprop="addressLocality">{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}</div>
+                    <div><span itemprop="addressRegion">{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}</span> <span itemprop="postalCode">{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}</span></div>
+                    <div itemprop="addressCountry">USA</div>
+                </div>
                 <div class="flex items-center gap-3">
                     @if($domain?->google_business_url)
                     <a href="{{ $domain->google_business_url }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 bg-slate-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition" aria-label="Google Business Profile">

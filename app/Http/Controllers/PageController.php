@@ -86,8 +86,17 @@ class PageController extends Controller
             ];
         });
 
+        // Primary city data for NAP/Geo schema
+        $primaryCity = !empty($topCities) ? $topCities[0] : null;
+        $latitude = $primaryCity['latitude'] ?? 32.7767;
+        $longitude = $primaryCity['longitude'] ?? -96.7970;
+        $cityAddress = $primaryCity['name'] ?? 'Dallas';
+        $stateCodeLocal = $primaryCity['state']['code'] ?? 'TX';
+        $postalCode = $primaryCity['zip_code'] ?? '75201';
+
         return view('domains.pottydirect.home', compact(
-            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats'
+            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats',
+            'latitude', 'longitude', 'cityAddress', 'stateCodeLocal', 'postalCode'
         ));
     }
 

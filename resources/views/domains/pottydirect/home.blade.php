@@ -4,8 +4,21 @@
     $phoneRaw = domain_phone_raw();
     $phoneDisplay = domain_phone_display();
 @endphp
-@section('title', 'Porta Potty Rental | Same-Day Delivery USA | Call '.$phoneDisplay.' for Free Quote')
-@section('meta_description', 'Need porta potty rental near you? Potty Direct offers same-day delivery of clean portable toilets for construction sites, events & weddings. Get your free quote today! Call '.$phoneDisplay)
+@php
+    $domain = \App\Models\Domain::current();
+    $cityName = $topCities[0]['name'] ?? 'your city';
+    $stateName = $topCities[0]['state']['name'] ?? 'your state';
+    $stateCode = $topCities[0]['state']['code'] ?? 'TX';
+    $zipCode = $topCities[0]['zip_code'] ?? '75001';
+    $nearbyCity1 = $topCities[1]['name'] ?? 'nearby city';
+    $nearbyCity2 = $topCities[2]['name'] ?? 'nearby city';
+    $nearbyCity3 = $topCities[3]['name'] ?? 'nearby city';
+    $county = $topCities[0]['county'] ?? 'County';
+    $nearbyZip1 = $topCities[1]['zip_code'] ?? '75002';
+@endphp
+
+@section('title', 'Porta Potty Rental '.$cityName.', '.$stateName.' | Same-Day Delivery | Call '.$phoneDisplay)
+@section('meta_description', 'Need porta potty rental in '.$cityName.', '.$stateName.'? Same-day delivery for construction, events & emergency sanitation. Call '.$phoneDisplay.' for instant quotes.')
 @section('canonical', url('/'))
 @section('phone_raw', $phoneRaw)
 @section('phone_display', $phoneDisplay)
@@ -25,18 +38,46 @@
             $areaServed = [["@type" => "Country", "name" => "United States"]];
         }
 
+        // Get primary city geo data for NAP consistency
+        $primaryCity = !empty($topCities) ? $topCities[0] : null;
+        $latitude = $primaryCity['latitude'] ?? 32.7767;
+        $longitude = $primaryCity['longitude'] ?? -96.7970;
+        $streetAddress = $domain?->address ?? ($primaryCity['name'] ?? 'Main Street');
+        $cityAddress = $primaryCity['name'] ?? 'Dallas';
+        $stateAddress = $primaryCity['state']['name'] ?? 'Texas';
+        $stateCodeLocal = $primaryCity['state']['code'] ?? 'TX';
+        $postalCode = $primaryCity['zip_code'] ?? '75201';
+
         $businessSchema = [
             "@context" => "https://schema.org",
-            "@type" => ["LocalBusiness", "HomeAndConstructionBusiness"],
+            "@type" => ["LocalBusiness", "HomeAndConstructionBusiness", "EmergencyService"],
             "@id" => $url . "#business",
             "name" => $domain?->business_name ?? "Potty Direct",
-            "alternateName" => $domain?->primary_service ?? "Portable Restroom Rental",
-            "description" => $domain?->tagline ?? "Portable restroom rental service across the USA. Same-day delivery available.",
+            "alternateName" => [$domain?->primary_service ?? "Portable Restroom Rental", "Porta Potty Rental " . $cityAddress, "Portable Toilet Rental Near Me"],
+            "description" => $domain?->tagline ?? "Portable restroom rental service across " . $stateAddress . ". Same-day delivery available in " . $cityAddress . " and surrounding areas.",
             "url" => $url,
             "telephone" => $phone,
-            "priceRange" => "$$",
-            "image" => $url . "/og-image.jpg",
-            "areaServed" => $areaServed,
+            "priceRange" => "$$-$$$",
+            "image" => [$url . "/og-image.jpg", $url . "/logo.png"],
+            "logo" => $url . "/logo.png",
+            "photograph" => $url . "/og-image.jpg",
+            "address" => [
+                "@type" => "PostalAddress",
+                "streetAddress" => $streetAddress,
+                "addressLocality" => $cityAddress,
+                "addressRegion" => $stateCodeLocal,
+                "postalCode" => $postalCode,
+                "addressCountry" => "US"
+            ],
+            "geo" => [
+                "@type" => "GeoCoordinates",
+                "latitude" => (float) $latitude,
+                "longitude" => (float) $longitude
+            ],
+            "areaServed" => array_merge($areaServed, [
+                ["@type" => "State", "name" => $stateAddress],
+                ["@type" => "Country", "name" => "United States"]
+            ]),
             "openingHoursSpecification" => [
                 [
                     "@type" => "OpeningHoursSpecification",
@@ -49,7 +90,8 @@
                 "@type" => "ContactPoint",
                 "telephone" => $phone,
                 "contactType" => "customer service",
-                "areaServed" => "US",
+                "contactOption" => ["TollFree", "HearingImpairedSupported"],
+                "areaServed" => ["US", $stateAddress],
                 "availableLanguage" => ["English"],
                 "hoursAvailable" => [[
                     "@type" => "OpeningHoursSpecification",
@@ -87,22 +129,11 @@
             "@context" => "https://schema.org",
             "@type" => "FAQPage",
             "mainEntity" => [
-                ["@type" => "Question", "name" => "How much does a porta potty rental cost?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100-175 per day, while deluxe or ADA-compliant units cost more. Call us for a personalized quote."]],
-                ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! We offer same-day delivery in most service areas when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance."]],
-                ["@type" => "Question", "name" => "What types of porta potty units do you offer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We offer standard portable toilets, deluxe flushable units with handwashing stations, ADA-compliant accessible units, high-rise units for multi-story construction, and luxury restroom trailers for weddings and upscale events."]],
-                ["@type" => "Question", "name" => "Do you offer restroom trailers for events?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Our luxury restroom trailers feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings. They include running water and daily servicing."]],
-                ["@type" => "Question", "name" => "How many porta potties do I need for my event?", "acceptedAnswer" => ["@type" => "Answer", "text" => "A general rule is 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more units. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number."]],
-                ["@type" => "Question", "name" => "What is included in the rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Our rental includes delivery, setup, pickup, and for weekly/monthly rentals, regular servicing (cleaning, sanitizing, and restocking of toilet paper). No hidden fees — the price we quote is the price you pay."]],
-                ["@type" => "Question", "name" => "Do units include hand sanitizer?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, all our standard units include hand sanitizer dispensers. Deluxe units come with handwashing stations with soap and paper towels. We can also provide standalone handwashing stations for any event or job site."]],
-                ["@type" => "Question", "name" => "How far in advance should I book?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For construction sites, book 1-2 weeks ahead. For events, we recommend booking 2-4 weeks in advance, especially during spring and fall peak season. Last-minute bookings may be possible — call us to check availability."]],
-                ["@type" => "Question", "name" => "How often are porta potties serviced?", "acceptedAnswer" => ["@type" => "Answer", "text" => "For weekly and monthly rentals, our standard service includes once-per-week cleaning, pumping, sanitizing, and restocking of supplies. For high-traffic locations or events, we offer twice-weekly or daily servicing."]],
-                ["@type" => "Question", "name" => "Do you provide ADA-accessible portable restrooms?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer fully ADA-compliant portable restrooms with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors. Public events may be required to include accessible units."]],
-                ["@type" => "Question", "name" => "What areas do you service?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We service cities and counties across the state. Enter your zip code or city on our locations page to see if we service your area, or call us for quick confirmation."]],
-                ["@type" => "Question", "name" => "Do portable toilets need water or electricity?", "acceptedAnswer" => ["@type" => "Answer", "text" => "No, our standard portable toilets are completely self-contained and require no water, electricity, or plumbing. They use a chemical solution in the holding tank that controls odors and breaks down waste. Deluxe flushable units need water for handwashing only."]],
-                ["@type" => "Question", "name" => "How do you dispose of waste responsibly?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All waste is collected by licensed professionals and transported to approved treatment facilities. We follow strict EPA and local regulations for disposal. Our company uses eco-friendly cleaning products and biodegradable chemicals whenever possible."]],
-                ["@type" => "Question", "name" => "Do you offer single-day rentals?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we offer single-day rentals for events and short-term needs. Pricing is based on the number of units and delivery distance. Extended rentals (weekly/monthly) offer better rates with servicing included."]],
-                ["@type" => "Question", "name" => "What if a unit needs servicing during my rental?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Simply call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, our regular servicing schedule ensures units stay clean and functional. Emergency service is available for critical situations."]],
-                ["@type" => "Question", "name" => "Is there a deposit or hidden fees?", "acceptedAnswer" => ["@type" => "Answer", "text" => "We believe in transparent pricing. Quotes include delivery, setup, servicing, and pickup — no hidden fees. Deposits vary by rental size and duration. We\'ll provide a full breakdown before you commit."]]
+                ["@type" => "Question", "name" => "How much does porta potty rental cost in {$cityName}?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Rates start at $100-175/day for standard units in {$cityName}, with discounts for long-term and bulk orders. Call {$phoneDisplay} for a no-obligation custom quote tailored to your specific needs."]],
+                ["@type" => "Question", "name" => "Do you offer same-day porta potty delivery in {$stateName}?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes! Order by 2PM for same-day delivery to {$cityName} and surrounding areas. Call {$phoneDisplay} to check real-time availability and secure your delivery slot."]],
+                ["@type" => "Question", "name" => "Are your portable toilets ADA-compliant?", "acceptedAnswer" => ["@type" => "Answer", "text" => "All ADA units meet federal accessibility standards, and we provide permit certification for {$stateName} projects. Call {$phoneDisplay} to order compliant units for your job site or event."]],
+                ["@type" => "Question", "name" => "Do you service construction sites in {$county} County?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Yes, we provide long-term construction rentals with weekly pumping, restocking, and 24/7 emergency service throughout {$county} County. Call {$phoneDisplay} for competitive jobsite rates."]],
+                ["@type" => "Question", "name" => "Can I rent porta potties for a one-day event in {$cityName}?", "acceptedAnswer" => ["@type" => "Answer", "text" => "Absolutely! We offer short-term event rentals with delivery, setup, and post-event removal in {$cityName}. Call {$phoneDisplay} to plan your event sanitation needs today."]]
             ]
         ];
 
@@ -241,17 +272,17 @@
                 <span>Same-day delivery · Order by 2&nbsp;PM</span>
             </div>
 
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 sm:mb-4 leading-[1.1] tracking-tight text-balance">
-                Need a Porta Potty Fast?
-                <span class="block text-emerald-400 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 font-bold">
-                    Clean units · Same-day · No hidden fees.
-                </span>
-            </h1>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 sm:mb-4 leading-[1.1] tracking-tight text-balance">
+                 Porta Potty Rental in {{ $cityName }}, {{ $stateName }}
+                 <span class="block text-emerald-400 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 font-bold">
+                     Fast, Clean, Reliable — Same-Day Delivery
+                 </span>
+             </h1>
 
-            <p class="text-base sm:text-lg text-slate-300 mb-5 sm:mb-7 max-w-xl leading-relaxed">
-                We deliver portable restrooms nationwide for construction sites, weddings,
-                outdoor events, and emergency jobs. Call now for an instant quote.
-            </p>
+             <p class="text-base sm:text-lg text-slate-300 mb-5 sm:mb-7 max-w-xl leading-relaxed">
+                 Portable toilet rental near me just got easier. We deliver sanitized, OSHA-compliant
+                 porta potties to {{ $cityName }} job sites, events, and residential projects in hours, not days.
+             </p>
 
             {{-- Primary CTA + subtle secondary --}}
             <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 mb-3">
@@ -307,14 +338,46 @@
                 <span class="inline-flex items-center gap-1.5"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-day delivery</span>
                 <span class="text-slate-600" aria-hidden="true">·</span>
                 <span class="inline-flex items-center gap-1.5"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" />No hidden fees</span>
+                <span class="text-slate-600" aria-hidden="true">·</span>
+                <span class="inline-flex items-center gap-1.5"><x-icon name="clock" class="w-4 h-4 text-emerald-400" />Open 7AM-8PM Daily</span>
                 @if(($reviewCount ?? 0) > 0)
                     <span class="text-slate-600" aria-hidden="true">·</span>
-                    <span class="inline-flex items-center gap-1.5"><x-icon name="star" class="w-4 h-4 text-amber-400" />{{ number_format($reviewRating ?? 4.9, 1) }}/5 ({{ $reviewCount }}+ reviews)</span>
+                    <span class="inline-flex items-center gap-1.5" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+                        <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                        <span itemprop="ratingValue">{{ number_format($reviewRating ?? 4.9, 1) }}</span>/<span itemprop="bestRating">5</span>
+                        (<span itemprop="reviewCount">{{ $reviewCount }}+</span> reviews)
+                    </span>
                 @endif
             </div>
         </div>
     </div>
 </section>
+
+{{-- ================================================================
+     NAP (Name, Address, Phone) - Visible for Local SEO
+     ================================================================ --}}
+<div class="bg-slate-100 border-y border-slate-200 py-4 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-slate-700">
+        <div class="flex items-center gap-2">
+            <x-icon name="building" class="w-4 h-4 text-emerald-600" />
+            <span class="font-semibold">{{ $domain?->business_name ?? 'Potty Direct' }}</span>
+        </div>
+        <div class="hidden sm:block text-slate-300">|</div>
+        <div class="flex items-center gap-2">
+            <x-icon name="map-pin" class="w-4 h-4 text-emerald-600" />
+            <span itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                <span itemprop="addressLocality">{{ $cityAddress ?? $cityName }}</span>,
+                <span itemprop="addressRegion">{{ $stateCodeLocal ?? $stateCode }}</span>
+                <span itemprop="postalCode">{{ $postalCode ?? $zipCode }}</span>
+            </span>
+        </div>
+        <div class="hidden sm:block text-slate-300">|</div>
+        <div class="flex items-center gap-2">
+            <x-icon name="phone" class="w-4 h-4 text-emerald-600" />
+            <a href="tel:{{ $phoneRaw }}" class="font-semibold text-emerald-700 hover:text-emerald-800" itemprop="telephone">{{ $phoneDisplay }}</a>
+        </div>
+    </div>
+</div>
 
 {{-- ================================================================
      SERVICES
@@ -329,40 +392,40 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-            @php
-                $homeServices = [
-                    ['key' => 'standard',     'icon' => 'building',       'name' => 'Standard',      'blurb' => 'OSHA-compliant basics for job sites.'],
-                    ['key' => 'deluxe',       'icon' => 'water-drop',     'name' => 'Deluxe Flush',  'blurb' => 'Flushing toilet + hand sink.'],
-                    ['key' => 'ada',          'icon' => 'accessibility',  'name' => 'ADA Accessible','blurb' => 'Wheelchair access, grab bars.'],
-                    ['key' => 'luxury',       'icon' => 'sparkles',       'name' => 'Luxury Trailer','blurb' => 'Climate-controlled, porcelain.'],
-                    ['key' => 'shower',       'icon' => 'shower',         'name' => 'Portable Shower','blurb' => 'Hot &amp; cold water stalls.'],
-                    ['key' => 'construction', 'icon' => 'users',          'name' => 'Construction',  'blurb' => 'Bulk site packages, weekly service.'],
-                    ['key' => 'dumpster',     'icon' => 'trash',          'name' => 'Dumpster',      'blurb' => 'Roll-off, 10–40 yard.'],
-                    ['key' => 'septic',       'icon' => 'wrench',         'name' => 'Septic Service','blurb' => 'Pump-outs, maintenance.'],
-                ];
-                $pricingEnabled = (bool) config('service_pricing.enabled', false);
-                $priceRanges = config('service_pricing.ranges', []);
-            @endphp
+             @php
+                 $homeServices = [
+                     ['key' => 'standard',     'icon' => 'building',       'name' => 'Standard Porta Potty Rentals',      'blurb' => 'Affordable single-unit portable toilets for small job sites, backyard events, and short-term needs in '.$cityName.'.'],
+                     ['key' => 'deluxe',       'icon' => 'water-drop',     'name' => 'Deluxe Portable Restrooms',  'blurb' => 'Flushable units with sinks, mirrors, and climate control for weddings and corporate events.'],
+                     ['key' => 'ada',          'icon' => 'accessibility',  'name' => 'ADA-Compliant Porta Potties','blurb' => 'Spacious wheelchair-accessible units meeting all federal ADA standards for '.$stateName.' projects.'],
+                     ['key' => 'construction', 'icon' => 'users',          'name' => 'Construction Site Toilets',  'blurb' => 'Heavy-duty graffiti-resistant units built for long-term '.$cityName.' job sites with weekly servicing.'],
+                     ['key' => 'luxury',       'icon' => 'sparkles',       'name' => 'Event Porta Potties','blurb' => 'High-capacity units for festivals and large gatherings in '.$county.' County.'],
+                     ['key' => 'shower',       'icon' => 'shower',         'name' => 'Portable Shower Units','blurb' => 'Hot & cold water stalls for construction sites and emergency response.'],
+                     ['key' => 'dumpster',     'icon' => 'trash',          'name' => 'Dumpster Rental',      'blurb' => 'Roll-off dumpsters 10-40 yard for '.$stateName.' construction debris.'],
+                     ['key' => 'septic',       'icon' => 'wrench',         'name' => 'Septic Service','blurb' => 'Professional pumping and maintenance for residential and commercial properties.'],
+                 ];
+                 $pricingEnabled = (bool) config('service_pricing.enabled', false);
+                 $priceRanges = config('service_pricing.ranges', []);
+             @endphp
 
-            @foreach($homeServices as $svc)
-                @php
-                    $range = $priceRanges[$svc['key']] ?? null;
-                @endphp
-                <a href="{{ route('services') }}#{{ $svc['key'] }}"
-                   class="group relative bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 hover:border-emerald-300 hover:shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
-                    <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-500 group-hover:text-white transition">
-                        <x-icon name="{{ $svc['icon'] }}" class="w-6 h-6" />
-                    </div>
-                    <h3 class="text-sm sm:text-base font-semibold text-slate-900 mb-1">{{ $svc['name'] }}</h3>
-                    <p class="text-xs sm:text-sm text-slate-500 leading-snug">{!! $svc['blurb'] !!}</p>
-                    @if($pricingEnabled && $range)
-                        <p class="mt-2 text-[11px] sm:text-xs font-semibold text-emerald-700">
-                            From ${{ $range['low'] }}/day
-                        </p>
-                    @endif
-                </a>
-            @endforeach
-        </div>
+             @foreach($homeServices as $svc)
+                 @php
+                     $range = $priceRanges[$svc['key']] ?? null;
+                 @endphp
+                 <a href="{{ route('services') }}#{{ $svc['key'] }}"
+                    class="group relative bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 hover:border-emerald-300 hover:shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
+                     <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-500 group-hover:text-white transition">
+                         <x-icon name="{{ $svc['icon'] }}" class="w-6 h-6" />
+                     </div>
+                     <h3 class="text-sm sm:text-base font-semibold text-slate-900 mb-1">{{ $svc['name'] }}</h3>
+                     <p class="text-xs sm:text-sm text-slate-500 leading-snug">{!! $svc['blurb'] !!}</p>
+                     @if($pricingEnabled && $range)
+                         <p class="mt-2 text-[11px] sm:text-xs font-semibold text-emerald-700">
+                             From ${{ $range['low'] }}/day
+                         </p>
+                     @endif
+                 </a>
+             @endforeach
+         </div>
 
         <div class="mt-10 text-center">
             <a href="{{ route('services') }}" class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold min-h-[44px]">
@@ -379,19 +442,19 @@
 <section class="py-14 sm:py-20 px-4 sm:px-6 bg-slate-50">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-10 sm:mb-14">
-            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">Why call us first</h2>
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">Why Choose {{ $domain?->business_name ?? 'Us' }} for Porta Potty Rentals</h2>
             <p class="text-slate-600 max-w-2xl mx-auto">
-                You get a straight answer, fast delivery, and a clean unit. That's it. No upsells, no hidden fees, no phone menus.
+                We prioritize speed, cleanliness, and transparency to get you sanitation without hassle.
             </p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @php
                 $pillars = [
-                    ['icon' => 'phone',        'title' => 'Real humans, fast',       'body' => 'Calls answered in under 30 seconds during business hours. Never voicemail first.'],
-                    ['icon' => 'truck',        'title' => 'Same-day when possible',  'body' => 'Order by 2 PM and we aim to deliver before end of day in most markets.'],
-                    ['icon' => 'shield-check', 'title' => 'Licensed & insured',      'body' => 'Proper permits, proper coverage, OSHA-compliant units. No liability surprises.'],
-                    ['icon' => 'currency-dollar','title' => 'Transparent pricing',   'body' => 'The price we quote is the price you pay. No fuel surcharge bait-and-switch.'],
+                    ['icon' => 'truck',        'title' => 'Same-Day Delivery',       'body' => 'Order by 2PM for delivery to '.$cityName.' addresses same day. Call '.$phoneDisplay.' to check availability.'],
+                    ['icon' => 'phone',        'title' => '24/7 Live Support',  'body' => 'Real people answer your call, no automated menus. Average answer time: 10 seconds.'],
+                    ['icon' => 'currency-dollar', 'title' => 'Transparent Pricing',      'body' => 'Flat rates, no hidden fees, no surprise charges. The quote we give is what you pay.'],
+                    ['icon' => 'shield-check','title' => 'Fully Sanitized',   'body' => 'Every unit is deep-cleaned, disinfected, and stocked pre-delivery. OSHA & ADA compliant.'],
                 ];
             @endphp
 
@@ -409,78 +472,97 @@
 </section>
 
 {{-- ================================================================
-     TYPICAL JOBS (honest use-cases — no invented reviews)
+     SERVING AREAS (location-based SEO)
      ================================================================ --}}
 <section class="py-14 sm:py-20 px-4 sm:px-6 bg-white">
     <div class="max-w-6xl mx-auto">
         <div class="text-center mb-10">
-            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">What a typical job looks like</h2>
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">Serving {{ $cityName }} & Surrounding {{ $stateName }} Areas</h2>
             <p class="text-slate-600 max-w-2xl mx-auto">
-                Not a testimonial — a snapshot of the kinds of rentals we handle every week.
+                We're a local porta potty rental company serving {{ $cityName }}, {{ $stateName }} and nearby communities.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            @php
-                $jobs = [
-                    [
-                        'icon' => 'building',
-                        'tag' => 'Construction',
-                        'title' => 'Long-term job site',
-                        'lines' => [
-                            'Commercial build, 6-month lease',
-                            '4 standard units + 1 ADA',
-                            'Weekly servicing included',
-                            'Invoiced monthly, net-30',
-                        ],
-                    ],
-                    [
-                        'icon' => 'sparkles',
-                        'tag' => 'Event',
-                        'title' => 'Weekend wedding',
-                        'lines' => [
-                            '150-guest outdoor venue',
-                            '2 deluxe flush + 1 luxury trailer',
-                            'Friday delivery, Sunday pickup',
-                            'Fully sanitized between uses',
-                        ],
-                    ],
-                    [
-                        'icon' => 'bolt',
-                        'tag' => 'Emergency',
-                        'title' => 'Same-day storm response',
-                        'lines' => [
-                            'Post-storm cleanup crew',
-                            '6 units delivered in under 4 hours',
-                            '24-hour initial rental, extensible',
-                            'Direct dispatch, no call menus',
-                        ],
-                    ],
-                ];
-            @endphp
-
-            @foreach($jobs as $job)
-                <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
-                            <x-icon name="{{ $job['icon'] }}" class="w-5 h-5" />
-                        </div>
-                        <span class="text-[11px] uppercase tracking-wider font-semibold text-emerald-700">{{ $job['tag'] }}</span>
+        <div class="bg-slate-50 rounded-2xl p-6 sm:p-8 border border-slate-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Communities We Serve</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $cityName }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity1 }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity2 }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity3 }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-sm">{{ $county }} County</span>
                     </div>
-                    <h3 class="font-semibold text-slate-900 mb-3">{{ $job['title'] }}</h3>
-                    <ul class="space-y-1.5 text-sm text-slate-600">
-                        @foreach($job['lines'] as $line)
-                            <li class="flex items-start gap-2">
-                                <x-icon name="check" class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                                <span>{{ $line }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
-                </article>
-            @endforeach
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Zip Codes Covered</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-sm">{{ $zipCode }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-sm">{{ $nearbyZip1 }}</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-sm">All {{ $stateCode }} zip codes</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-slate-600 mb-4">
+                    <strong>Portable toilet rental near me in {{ $zipCode }}?</strong> We've got you covered with same-day delivery to your exact location.
+                </p>
+                <a href="tel:{{ $phoneRaw }}"
+                   data-tracking-label="home-areas"
+                   class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-amber-500/30 transition hover:scale-[1.02] min-h-[44px]">
+                    <x-icon name="phone" class="w-5 h-5" />
+                    <span>Call {{ $phoneDisplay }} to confirm service to your area</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>
+
+{{-- ================================================================
+     TESTIMONIALS (What Customers Say)
+     ================================================================ --}}
+@if($testimonials && count($testimonials) > 0)
+<section class="py-14 sm:py-20 px-4 sm:px-6 bg-slate-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">What Customers Say About Our Porta Potty Rentals</h2>
+            <p class="text-slate-600">Real reviews from {{ $cityName }} area customers:</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            @foreach($testimonials as $testimonial)
+                <article class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition">
+                    <div class="flex items-center gap-1 mb-3">
+                        @for($i = 0; $i < ($testimonial['rating'] ?? 5); $i++)
+                            <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                        @endfor
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 italic">"{{ $testimonial['content'] ?? 'Great service and fast delivery!' }}"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                            {{ strtoupper(substr($testimonial['customer_name'] ?? 'J', 0, 1)) }}
+                        </div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-900">{{ $testimonial['customer_name'] ?? 'Customer' }}</div>
+                            <div class="text-xs text-slate-500">{{ $testimonial['location'] ?? $cityName.', '.$stateName }}</div>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="tel:{{ $phoneRaw }}"
+               data-tracking-label="home-testimonials"
+               class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-amber-500/30 transition hover:scale-[1.02] min-h-[44px]">
+                <x-icon name="phone" class="w-5 h-5" />
+                <span>Call {{ $phoneDisplay }} to Join Our Happy Customers</span>
+            </a>
+        </div>
+    </div>
+</section>
+@endif
 
 {{-- ================================================================
      HOW IT WORKS
@@ -519,9 +601,47 @@
 </section>
 
 {{-- ================================================================
-     LEAD FORM (secondary CTA — for visitors who won't call cold)
+     VIDEO CTA — Phone-Call Only Focus (form removed)
      ================================================================ --}}
-<x-lead-form source="homepage" />
+<section class="py-14 sm:py-20 px-4 sm:px-6 bg-slate-50">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 text-balance">See Why {{ $cityName }} Calls Us First</h2>
+        <p class="text-slate-600 mb-8 max-w-2xl mx-auto">Watch how we deliver clean, sanitized porta potties across {{ $stateName }} in hours, not days.</p>
+
+        <div class="mt-10 sm:mt-12">
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-3xl mx-auto">
+                    <div class="relative aspect-video bg-slate-900">
+                        <iframe
+                            src="https://www.youtube-nocookie.com/embed/qnmJ31rg118?rel=0"
+                            title="Porta Potty Rental - {{ $domain?->business_name ?? 'Potty Direct' }}"
+                            class="absolute inset-0 w-full h-full"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                    <div class="p-4 bg-slate-50 border-t border-slate-200">
+                        <p class="text-center text-sm text-slate-500">
+                            Learn about our <strong>same-day delivery</strong>, <strong>clean units</strong>, and
+                            <strong>transparent pricing</strong> in under a minute.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8">
+            <p class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Ready to order? Call now for same-day delivery in {{ $cityName }}.</p>
+            <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
+               data-tracking-label="home-video-cta"
+               class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-white text-xl sm:text-2xl font-bold py-4 px-8 rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30 transition hover:scale-[1.02] min-h-[44px]">
+                <x-icon name="phone" class="w-6 h-6" />
+                <span>{{ $phoneDisplay ?? domain_phone_display() }}</span>
+            </a>
+            <p class="text-sm text-slate-500 mt-3">Average answer time: 10 seconds | 24/7 live support</p>
+        </div>
+    </div>
+</section>
 
 {{-- ================================================================
      FAQ
@@ -535,22 +655,12 @@
 
         @php
             $homeFaqs = [
-                ['q' => 'How much does a porta potty rental cost?',                  'a' => 'Pricing varies by location, quantity, unit type, and rental duration. Standard units start around $100–175 per day, while deluxe or ADA-compliant units cost more. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">View our full pricing guide</a> or call us for a personalized quote.'],
-                ['q' => 'Do you offer same-day porta potty delivery?',                'a' => 'Yes — in most service areas, when you call before 2 PM. Subject to availability. For guaranteed delivery, we recommend booking at least 24 hours in advance.'],
-                ['q' => 'What types of porta potty units do you offer?',              'a' => 'Standard portable toilets, <a href="' . route('services') . '#deluxe" class="text-emerald-600 hover:underline">deluxe flushable units</a> with handwashing stations, <a href="' . route('services') . '#ada" class="text-emerald-600 hover:underline">ADA-compliant accessible units</a>, <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a>, and high-rise units for multi-story construction.'],
-                ['q' => 'Do you offer restroom trailers for events?',                 'a' => 'Yes. Our <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a> feature climate control, porcelain fixtures, mirrors, and elegant interiors — perfect for weddings, corporate events, and upscale gatherings.'],
-                ['q' => 'How many porta potties do I need for my event?',             'a' => 'A general rule: 1 standard unit per 50 guests for a 4-hour event, or 1 unit per 25 guests for an 8-hour event. If alcohol is served, add 20% more. For construction sites, OSHA requires 1 unit per 20 workers. Call us and we\'ll help you determine the right number.'],
-                ['q' => 'What is included in the rental?',                            'a' => 'Delivery, setup, pickup, and — for weekly/monthly rentals — regular servicing (cleaning, sanitizing, toilet-paper restock). <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">No hidden fees</a> — the price we quote is the price you pay.'],
-                ['q' => 'Do units include hand sanitizer?',                           'a' => 'Yes, all standard units include hand sanitizer dispensers. Deluxe units include handwashing stations with soap and paper towels. We also provide standalone <a href="' . route('services') . '#handwash" class="text-emerald-600 hover:underline">hand wash stations</a> for any event or job site.'],
-                ['q' => 'How far in advance should I book?',                          'a' => 'Construction sites: 1–2 weeks ahead. Events: 2–4 weeks, especially spring and fall peak season. Last-minute bookings may still be possible — call to check <a href="' . route('locations') . '" class="text-emerald-600 hover:underline">availability in your area</a>.'],
-                ['q' => 'How often are porta potties serviced?',                      'a' => 'Weekly and monthly rentals include once-per-week cleaning, pumping, sanitizing, and supply restock. For high-traffic sites or events, we offer twice-weekly or daily servicing.'],
-                ['q' => 'Do you provide ADA-accessible portable restrooms?',          'a' => 'Yes — fully <a href="' . route('services') . '#ada" class="text-emerald-600 hover:underline">ADA-compliant portable restrooms</a> with extra-wide doors for wheelchair access, interior grab bars, lowered seats, and spacious interiors.'],
-                ['q' => 'What areas do you service?',                                 'a' => 'Cities and counties across the state. <a href="' . route('locations') . '" class="text-emerald-600 hover:underline">Enter your zip or city</a> to confirm, or call us.'],
-                ['q' => 'Do portable toilets need water or electricity?',             'a' => 'No. Standard units are self-contained and need no water, electricity, or plumbing. A chemical solution in the tank controls odors and breaks down waste. Deluxe flushable units need water for handwashing only.'],
-                ['q' => 'How do you dispose of waste responsibly?',                   'a' => 'Waste is collected by licensed professionals and transported to approved treatment facilities. We follow EPA and local regulations and use eco-friendly cleaning products wherever possible.'],
-                ['q' => 'Do you offer single-day rentals?',                           'a' => 'Yes. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">Pricing depends on unit count and delivery distance</a>. Weekly and monthly rentals include servicing at better rates.'],
-                ['q' => 'What if a unit needs servicing during my rental?',           'a' => 'Call us and we\'ll send a technician to service or replace the unit. For weekly/monthly rentals, regular servicing keeps units clean and functional. Emergency service is available for critical situations.'],
-                ['q' => 'Is there a deposit or hidden fees?',                         'a' => 'Transparent pricing. <a href="' . route('pricing') . '" class="text-emerald-600 hover:underline">Quotes include delivery, setup, servicing, and pickup</a> — no hidden fees. Deposits vary by rental size and duration.'],
+                ['q' => 'How much does porta potty rental cost in '.$cityName.'?',                  'a' => 'Rates start at $100-175/day for standard units in '.$cityName.', with discounts for long-term and bulk orders. Call '.$phoneDisplay.' for a no-obligation custom quote.'],
+                ['q' => 'Do you offer same-day porta potty delivery in '.$stateName.'?',                'a' => 'Yes! Order by 2PM for same-day delivery to '.$cityName.' and surrounding areas. Call '.$phoneDisplay.' to check real-time availability.'],
+                ['q' => 'What types of porta potty units do you offer?',              'a' => 'Standard portable toilets, <a href="' . route('services') . '#deluxe" class="text-emerald-600 hover:underline">deluxe flushable units</a> with handwashing stations, <a href="' . route('services') . '#ada" class="text-emerald-600 hover:underline">ADA-compliant accessible units</a>, and <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a>. Call '.$phoneDisplay.' to discuss your needs.'],
+                ['q' => 'Do you offer restroom trailers for events?',                 'a' => 'Yes. Our <a href="' . route('services') . '#luxury" class="text-emerald-600 hover:underline">luxury restroom trailers</a> feature climate control, porcelain fixtures, and elegant interiors for weddings and corporate events in '.$cityName.'. Call '.$phoneDisplay.' to book.'],
+                ['q' => 'How many porta potties do I need for my event?',             'a' => '1 standard unit per 50 guests for a 4-hour event. If alcohol is served, add 20% more. For construction sites, OSHA requires 1 unit per 20 workers. Call '.$phoneDisplay.' and we\'ll help you determine the right number.'],
+                ['q' => 'What is included in the rental?',                            'a' => 'Delivery, setup, pickup, and — for weekly/monthly rentals — regular servicing. No hidden fees — the price we quote is the price you pay. Call '.$phoneDisplay.' for transparent pricing.'],
             ];
             $visibleFaqs = array_slice($homeFaqs, 0, 6);
             $hiddenFaqs = array_slice($homeFaqs, 6);
@@ -653,9 +763,9 @@
      ================================================================ --}}
 <section class="py-14 sm:py-20 px-4 sm:px-6 bg-slate-900 text-white">
     <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-3 text-balance">Ready when you are.</h2>
+        <h2 class="text-3xl sm:text-4xl font-bold mb-3 text-balance">Get Your Free Porta Potty Rental Quote Today</h2>
         <p class="text-slate-300 mb-7 max-w-xl mx-auto">
-            Pick up the phone. Tell us what you need. We'll quote a real number and deliver — often the same day.
+            Stop searching "porta potty rental near me" — we're the local experts serving {{ $cityName }}, {{ $stateName }}.
         </p>
         <a href="tel:{{ $phoneRaw ?? domain_phone_raw() }}"
            data-tracking-label="home-final"
@@ -667,7 +777,7 @@
         {{-- Trust microcopy (consistent with hero) --}}
         <p class="text-sm text-emerald-300 font-medium flex items-center justify-center gap-2 mt-5">
             <x-icon name="check-circle" class="w-4 h-4 flex-shrink-0" />
-            <span>Answered in under 30 seconds by a real person — no robocalls.</span>
+            <span>24/7 Emergency Line | Average Answer Time: 10 Seconds</span>
         </p>
         <p class="text-xs text-slate-400 mt-3">
             Or <a href="{{ route('locations') }}" class="text-emerald-400 hover:text-emerald-300 underline">find your city</a> for local pricing.
