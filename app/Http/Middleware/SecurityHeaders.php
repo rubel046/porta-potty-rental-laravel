@@ -27,7 +27,7 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set(
             'Permissions-Policy',
-            'geolocation=(), microphone=(), camera=(), payment=(), usb=()'
+            'geolocation=(), microphone=(), camera=(), payment=(), usb=(), unload=()'
         );
 
         // HSTS only in production over HTTPS — avoids local-dev breakage
@@ -47,6 +47,7 @@ class SecurityHeaders
             "img-src 'self' data: https: blob:",
             "font-src 'self' data:",
             "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com",
+            "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
             "frame-ancestors 'self'",
             "base-uri 'self'",
             "form-action 'self'",
