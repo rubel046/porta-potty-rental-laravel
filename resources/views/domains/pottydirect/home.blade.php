@@ -435,63 +435,112 @@
       </section>
 
      {{-- ================================================================
-          HOW TO RENT — 3 Simple Steps
+          HOW TO RENT — 3 Simple Steps (Rich Design)
           ================================================================ --}}
-     <section class="py-16 sm:py-20 px-4 sm:px-6 bg-white">
-         <div class="max-w-6xl mx-auto">
-             <div class="text-center mb-12">
-                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">How to Rent a Porta Potty in 3 Simple Steps</h2>
-                 <p class="text-gray-600 max-w-2xl mx-auto">Get clean, reliable restrooms delivered anywhere in {{ $stateName }} in under 15 minutes.</p>
+     <section class="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+         {{-- Background Decoration --}}
+         <div class="absolute inset-0 opacity-5">
+             <div class="absolute top-10 left-10 w-72 h-72 bg-amber-500 rounded-full blur-3xl"></div>
+             <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+         </div>
+
+         <div class="max-w-6xl mx-auto relative">
+             <div class="text-center mb-16">
+                 <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-bold px-4 py-2 rounded-full mb-4">
+                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                     SIMPLE PROCESS
+                 </div>
+                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+                     Rent a Porta Potty in <span class="text-amber-500">3 Simple Steps</span>
+                 </h2>
+                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">Get clean, reliable restrooms delivered anywhere in {{ $stateName }} in under 15 minutes. No forms, no waiting.</p>
              </div>
 
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-16">
                  {{-- Step 1 --}}
-                 <div class="relative text-center">
-                     <div class="w-20 h-20 bg-amber-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/30">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                             <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                         </svg>
+                 <div class="relative group">
+                     {{-- Connecting Line --}}
+                     <div class="hidden md:block absolute top-10 left-1/2 w-full h-1 bg-gradient-to-r from-amber-200 via-emerald-200 to-blue-200 -z-10"></div>
+
+                     <div class="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 border border-gray-100">
+                         <div class="w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/30 group-hover:scale-110 transition-transform">
+                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                             </svg>
+                         </div>
+                         <div class="absolute -top-4 -right-4 w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">1</div>
+                         <h3 class="text-2xl font-extrabold text-gray-900 mb-3">Call Our Team</h3>
+                         <p class="text-gray-600 leading-relaxed mb-4">Call <a href="tel:{{ $phoneRaw }}" class="text-amber-600 font-bold hover:underline">{{ $phoneDisplay }}</a> and tell us your event type, date, and location in {{ $cityName }}.</p>
+                         <div class="flex items-center gap-2 text-sm text-gray-500">
+                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                             <span>15-second average answer</span>
+                         </div>
                      </div>
-                     <div class="absolute -top-2 -right-2 w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
-                     <h3 class="text-xl font-bold text-gray-900 mb-2">Call Our Local Team</h3>
-                     <p class="text-gray-600 text-sm leading-relaxed">Call <a href="tel:{{ $phoneRaw }}" class="text-amber-600 font-bold hover:underline">{{ $phoneDisplay }}</a> and tell us your event type, date, and location in {{ $cityName }}.</p>
                  </div>
 
                  {{-- Step 2 --}}
-                 <div class="relative text-center">
-                     <div class="w-20 h-20 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/30">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                         </svg>
+                 <div class="relative group">
+                     <div class="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 border border-gray-100">
+                         <div class="w-24 h-24 bg-gradient-to-br from-emerald-400 to-teal-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                             </svg>
+                         </div>
+                         <div class="absolute -top-4 -right-4 w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">2</div>
+                         <h3 class="text-2xl font-extrabold text-gray-900 mb-3">Pick Your Units</h3>
+                         <p class="text-gray-600 leading-relaxed mb-4">Choose from standard, deluxe, ADA, or luxury restroom trailers. We'll recommend the right quantity.</p>
+                         <div class="flex items-center gap-2 text-sm text-gray-500">
+                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                             <span>Free expert consultation</span>
+                         </div>
                      </div>
-                     <div class="absolute -top-2 -right-2 w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
-                     <h3 class="text-xl font-bold text-gray-900 mb-2">Pick Your Units</h3>
-                     <p class="text-gray-600 text-sm leading-relaxed">Choose from standard, deluxe, ADA, or luxury restroom trailers. We'll recommend the right quantity for your crowd size.</p>
                  </div>
 
                  {{-- Step 3 --}}
-                 <div class="relative text-center">
-                     <div class="w-20 h-20 bg-blue-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                             <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                         </svg>
+                 <div class="relative group">
+                     <div class="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 border border-gray-100">
+                         <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                             </svg>
+                         </div>
+                         <div class="absolute -top-4 -right-4 w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">3</div>
+                         <h3 class="text-2xl font-extrabold text-gray-900 mb-3">Same-Day Delivery</h3>
+                         <p class="text-gray-600 leading-relaxed mb-4">We deliver, set up, and service your units. Order by 2PM for same-day across {{ $stateName }}.</p>
+                         <div class="flex items-center gap-2 text-sm text-gray-500">
+                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                             <span>98% on-time rate</span>
+                         </div>
                      </div>
-                     <div class="absolute -top-2 -right-2 w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
-                     <h3 class="text-xl font-bold text-gray-900 mb-2">Same-Day Delivery</h3>
-                     <p class="text-gray-600 text-sm leading-relaxed">We deliver, set up, and service your units. Order by 2PM for same-day delivery across {{ $stateName }}.</p>
+                 </div>
+             </div>
+
+             {{-- Trust Bar --}}
+             <div class="flex flex-wrap justify-center gap-8 mb-12">
+                 <div class="flex items-center gap-2 text-gray-600">
+                     <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                     <span class="font-bold text-gray-900">2,000+</span> Happy Customers
+                 </div>
+                 <div class="flex items-center gap-2 text-gray-600">
+                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                     <span class="font-bold text-gray-900">Licensed</span> & Insured
+                 </div>
+                 <div class="flex items-center gap-2 text-gray-600">
+                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                     <span class="font-bold text-gray-900">98%</span> On-Time Rate
                  </div>
              </div>
 
              <div class="text-center">
                  <a href="tel:{{ $phoneRaw }}"
                     data-tracking-label="home-3steps-cta"
-                    class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold py-4 px-10 rounded-full shadow-xl shadow-amber-500/30 transition hover:scale-[1.02] min-h-[44px] text-lg">
-                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold py-5 px-12 rounded-full shadow-2xl shadow-amber-500/40 transition hover:scale-[1.03] min-h-[44px] text-xl">
+                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                          <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                      </svg>
                      <span>Call {{ $phoneDisplay }} to Get Started</span>
                  </a>
-                 <p class="mt-3 text-sm text-gray-500">Average answer time: 15 seconds</p>
+                 <p class="mt-4 text-gray-500">No forms • No waiting • Real humans answer</p>
              </div>
          </div>
      </section>
@@ -619,10 +668,180 @@
                 </div>
             </div>
         </div>
-    </section>
+     </section>
 
-    {{-- ================================================================
-         TESTIMONIALS — 6 Attractive & Trustable
+     {{-- ================================================================
+          TRUSTED & CERTIFIED
+          ================================================================ --}}
+     <section class="py-16 sm:py-20 px-4 sm:px-6 bg-white relative overflow-hidden">
+         {{-- Background Pattern --}}
+         <div class="absolute inset-0 opacity-5">
+             <div class="absolute top-10 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
+             <div class="absolute bottom-10 right-10 w-40 h-40 bg-amber-500 rounded-full blur-3xl"></div>
+         </div>
+
+         <div class="max-w-6xl mx-auto relative">
+             <div class="text-center mb-12">
+                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4">
+                     Trused & <span class="text-blue-600">Certified</span> Across {{ $stateName }}
+                 </h2>
+                 <p class="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in the industry. Here's proof:</p>
+             </div>
+
+             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                 {{-- Certification 1 --}}
+                 <div class="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                         <svg class="w-8 h-8 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                         </svg>
+                     </div>
+                     <div class="font-black text-2xl text-blue-700 mb-1">A+</div>
+                     <div class="text-sm font-bold text-gray-900">BBB Rating</div>
+                     <div class="text-xs text-gray-500 mt-1">Accredited Business</div>
+                 </div>
+
+                 {{-- Certification 2 --}}
+                 <div class="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <div class="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                         <svg class="w-8 h-8 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                         </svg>
+                     </div>
+                     <div class="font-black text-2xl text-emerald-700 mb-1">OSHA</div>
+                     <div class="text-sm font-bold text-gray-900">Compliant</div>
+                     <div class="text-xs text-gray-500 mt-1">Job Site Standards</div>
+                 </div>
+
+                 {{-- Certification 3 --}}
+                 <div class="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                         <svg class="w-8 h-8 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                         </svg>
+                     </div>
+                     <div class="font-black text-2xl text-purple-700 mb-1">EPA</div>
+                     <div class="text-sm font-bold text-gray-900">Certified</div>
+                     <div class="text-xs text-gray-500 mt-1">Environmental Safety</div>
+                 </div>
+
+                 {{-- Certification 4 --}}
+                 <div class="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                         <svg class="w-8 h-8 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                         </svg>
+                     </div>
+                     <div class="font-black text-2xl text-amber-700 mb-1">ISO</div>
+                     <div class="text-sm font-bold text-gray-900">9001:2015</div>
+                     <div class="text-xs text-gray-500 mt-1">Quality Management</div>
+                 </div>
+             </div>
+
+             {{-- Insurance Bar --}}
+             <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 sm:p-8 shadow-xl">
+                 <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                     <div class="flex-1">
+                         <h3 class="text-xl font-bold text-white mb-2">Fully Licensed & Insured</h3>
+                         <p class="text-slate-300 text-sm">$2M General Liability • Workers' Comp • Bonded • All Local Permits</p>
+                     </div>
+                     <div class="flex gap-4">
+                         <div class="text-center">
+                             <div class="text-2xl font-black text-emerald-400">$2M+</div>
+                             <div class="text-xs text-slate-400">Liability Coverage</div>
+                         </div>
+                         <div class="text-center">
+                             <div class="text-2xl font-black text-blue-400">50+</div>
+                             <div class="text-xs text-slate-400">Trained Drivers</div>
+                         </div>
+                         <div class="text-center">
+                             <div class="text-2xl font-black text-amber-400">{{ $yearsInBusiness }}+</div>
+                             <div class="text-xs text-slate-400">Years in Business</div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </section>
+
+     {{-- ================================================================
+          OUR PROMISE TO YOU
+          ================================================================ --}}
+     <section class="py-16 sm:py-24 px-4 sm:px-6 bg-slate-900 relative overflow-hidden">
+         {{-- Background Pattern --}}
+         <div class="absolute inset-0 opacity-10">
+             <div class="absolute top-0 left-0 w-96 h-96 bg-amber-500 rounded-full blur-3xl"></div>
+             <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+         </div>
+
+         <div class="max-w-6xl mx-auto relative">
+             <div class="text-center mb-16">
+                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4">
+                     Our <span class="text-amber-400">Promise</span> to You
+                 </h2>
+                 <p class="text-slate-300 text-lg max-w-2xl mx-auto">We don't just rent porta potties. We deliver peace of mind, every single time.</p>
+             </div>
+
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                 {{-- Promise 1 --}}
+                 <div class="relative bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 border border-slate-700 hover:border-amber-500/50 transition group">
+                     <div class="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/20 group-hover:scale-110 transition-transform">
+                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                         </svg>
+                     </div>
+                     <div class="absolute -top-4 -right-4 w-10 h-10 bg-amber-500 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">1</div>
+                     <h3 class="text-2xl font-extrabold text-white mb-3 text-center">15-Second Answer</h3>
+                     <p class="text-slate-300 text-center leading-relaxed">Every call answered in 15 seconds or less. No bots, no menus — just real humans ready to help you.</p>
+                 </div>
+
+                 {{-- Promise 2 --}}
+                 <div class="relative bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 border border-slate-700 hover:border-emerald-500/50 transition group">
+                     <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20 group-hover:scale-110 transition-transform">
+                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                         </svg>
+                     </div>
+                     <div class="absolute -top-4 -right-4 w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">2</div>
+                     <h3 class="text-2xl font-extrabold text-white mb-3 text-center">Hospital-Grade Clean</h3>
+                     <p class="text-slate-300 text-center leading-relaxed">Every unit is deep-sanitized with hospital-grade disinfectants. We don't cut corners on cleanliness.</p>
+                 </div>
+
+                 {{-- Promise 3 --}}
+                 <div class="relative bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 border border-slate-700 hover:border-blue-500/50 transition group">
+                     <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20 group-hover:scale-110 transition-transform">
+                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                         </svg>
+                     </div>
+                     <div class="absolute -top-4 -right-4 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">3</div>
+                     <h3 class="text-2xl font-extrabold text-white mb-3 text-center">Same-Day or It's Free</h3>
+                     <p class="text-slate-300 text-center leading-relaxed">Order by 2PM for same-day delivery. If we're late, your rental is 100% free. No excuses.</p>
+                 </div>
+             </div>
+
+             {{-- Guarantee Banner --}}
+             <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 sm:p-8 shadow-2xl">
+                 <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                     <div class="flex-1">
+                         <h3 class="text-2xl font-black text-white mb-2">100% Satisfaction Guarantee</h3>
+                         <p class="text-amber-100">If you're not happy with your unit, we'll replace it free within 24 hours. That's our promise.</p>
+                     </div>
+                     <a href="tel:{{ $phoneRaw }}"
+                        data-tracking-label="home-promise-cta"
+                        class="inline-flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white font-black py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition hover:scale-[1.02] min-h-[44px] text-lg whitespace-nowrap">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                         </svg>
+                         <span>Call {{ $phoneDisplay }}</span>
+                     </a>
+                 </div>
+             </div>
+         </div>
+     </section>
+
+     {{-- ================================================================
+          TESTIMONIALS — 6 Attractive & Trustable
          ================================================================ --}}
     <section class="py-16 px-4 bg-gray-50">
         <div class="max-w-6xl mx-auto">
