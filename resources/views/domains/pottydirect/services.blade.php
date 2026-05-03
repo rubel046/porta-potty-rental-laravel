@@ -44,12 +44,14 @@ $serviceSchema = [
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Construction Site Package"]]
         ]
     ],
-    "aggregateRating" => [
+    "aggregateRating" => ($reviewCount ?? 0) > 0 ? [
         "@type" => "AggregateRating",
-        "ratingValue" => "4.9",
-        "reviewCount" => "500"
-    ]
+        "ratingValue" => (string) ($reviewRating ?? 4.9),
+        "reviewCount" => (string) ($reviewCount ?? 0),
+        "bestRating" => "5"
+    ] : null
 ];
+$serviceSchema = array_filter($serviceSchema);
 
 $faqSchema = [
     "@context" => "https://schema.org",
@@ -97,62 +99,61 @@ $faqSchema = [
 @section('content')
 
     {{-- Trust Banner --}}
-    <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
-            <div class="flex items-center gap-2">
-                <span class="text-amber-200">⭐</span>
-                <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
-            </div>
-            <span class="hidden md:inline text-amber-200">|</span>
-            <span>🏢 BBB A+ Rated</span>
-            <span class="hidden md:inline text-amber-200">|</span>
-            <span>🏗️ 25+ Years Experience</span>
-            <span class="hidden md:inline text-amber-200">|</span>
-            <span>🇺🇸 50,000+ Customers</span>
+    <div class="bg-slate-900 text-white py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5 text-center md:text-left text-xs sm:text-sm">
+            @if(($reviewCount ?? 0) > 0)
+                <div class="flex items-center gap-2">
+                    <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                    <span class="font-semibold">{{ number_format($reviewRating ?? 4.9, 1) }}/5 ({{ $reviewCount }}+ Reviews)</span>
+                </div>
+                <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+            @endif
+            <span class="inline-flex items-center gap-1.5"><x-icon name="shield-check" class="w-4 h-4 text-emerald-400" />Licensed &amp; Insured</span>
+            <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+            <span class="inline-flex items-center gap-1.5"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
+            <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+            <span class="inline-flex items-center gap-1.5"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" />No Hidden Fees</span>
         </div>
     </div>
 
     {{-- Hero --}}
-    <section class="relative py-16 md:py-20 overflow-hidden">
+    <section class="relative py-16 md:py-20 overflow-hidden bg-slate-900">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight text-balance">
                 Porta Potty Rental Services
             </h1>
-            <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-8">
-                From basic <strong class="text-white">construction site portable toilets</strong> to <strong class="text-white">luxury restroom trailers</strong>,
-                we have the perfect rental solution for every need and budget
+            <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-8">
+                From basic <strong class="text-white">construction site portable toilets</strong> to <strong class="text-white">luxury restroom trailers</strong> — a rental solution for every need and budget.
             </p>
-            <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-300">
-                <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">🚚 Same-Day Delivery</span>
-                <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">🧹 Weekly Servicing</span>
-                <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">✅ OSHA Compliant</span>
-                <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">🏢 BBB A+ Rated</span>
+            <div class="flex flex-wrap justify-center gap-3 text-sm text-slate-300">
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="sparkles" class="w-4 h-4 text-emerald-400" />Weekly Servicing</span>
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="shield-check" class="w-4 h-4 text-emerald-400" />OSHA Compliant</span>
             </div>
         </div>
     </section>
 
     {{-- Quick Navigation --}}
-    <section class="py-6 px-4 bg-slate-50 border-b border-slate-200">
+    <section class="py-5 px-4 bg-slate-50 border-b border-slate-200">
         <div class="max-w-6xl mx-auto">
-            <div class="flex flex-wrap justify-center gap-4 text-sm">
-                <a href="#standard" class="text-amber-600 hover:text-amber-700 font-medium">🚻 Standard Units</a>
-                <span class="text-slate-300">|</span>
-                <a href="#deluxe" class="text-amber-600 hover:text-amber-700 font-medium">🚿 Deluxe Flushable</a>
-                <span class="text-slate-300">|</span>
-                <a href="#ada" class="text-amber-600 hover:text-amber-700 font-medium">♿ ADA Accessible</a>
-                <span class="text-slate-300">|</span>
-                <a href="#luxury" class="text-amber-600 hover:text-amber-700 font-medium">✨ Luxury Trailers</a>
-                <span class="text-slate-300">|</span>
-                <a href="#shower" class="text-amber-600 hover:text-amber-700 font-medium">🚿 Portable Showers</a>
-                <span class="text-slate-300">|</span>
-                <a href="#mobile" class="text-amber-600 hover:text-amber-700 font-medium">🚐 Mobile Trailers</a>
-                <span class="text-slate-300">|</span>
-                <a href="#vip" class="text-amber-600 hover:text-amber-700 font-medium">👔 VIP Restrooms</a>
-                <span class="text-slate-300">|</span>
-                <a href="#construction" class="text-amber-600 hover:text-amber-700 font-medium">🏗️ Construction Packages</a>
+            <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+                <a href="#standard" class="text-slate-600 hover:text-emerald-600 font-medium transition">Standard</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#deluxe" class="text-slate-600 hover:text-emerald-600 font-medium transition">Deluxe Flushable</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#ada" class="text-slate-600 hover:text-emerald-600 font-medium transition">ADA Accessible</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#luxury" class="text-slate-600 hover:text-emerald-600 font-medium transition">Luxury Trailers</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#shower" class="text-slate-600 hover:text-emerald-600 font-medium transition">Portable Showers</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#mobile" class="text-slate-600 hover:text-emerald-600 font-medium transition">Mobile Trailers</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#vip" class="text-slate-600 hover:text-emerald-600 font-medium transition">VIP Restrooms</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#construction" class="text-slate-600 hover:text-emerald-600 font-medium transition">Construction Packages</a>
             </div>
         </div>
     </section>
@@ -184,18 +185,19 @@ $faqSchema = [
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
                     @php
                         $events = [
-                            '💒 Weddings', '🎉 Birthday Parties', '🎪 Festivals',
-                            '🎤 Concerts', '⚽ Sports Events', '🏛️ Corporate Events',
-                            '🎓 Graduations', '🏕️ Camping', '🎭 Fairs & Carnivals',
-                            '⛺ Trade Shows', '🏠 Home Renovation', '🛠️ Construction Sites',
-                            '🏖️ Beach Events', '🌲 Outdoor Gatherings', '🎰 Casino Events',
-                            '🏇 Race Tracks', '🎰 Movie Sets', '🚧 Road Work',
-                            '🌾 Agricultural Events', '🎪 Community Events'
+                            'Weddings', 'Birthday Parties', 'Festivals',
+                            'Concerts', 'Sports Events', 'Corporate Events',
+                            'Graduations', 'Camping', 'Fairs & Carnivals',
+                            'Trade Shows', 'Home Renovation', 'Construction Sites',
+                            'Beach Events', 'Outdoor Gatherings', 'Casino Events',
+                            'Race Tracks', 'Film Sets', 'Road Work',
+                            'Agricultural Events', 'Community Events',
                         ];
                     @endphp
 
                     @foreach($events as $event)
                         <div class="flex items-center gap-2 text-white font-medium">
+                            <x-icon name="check" class="w-4 h-4 text-emerald-400 flex-shrink-0" />
                             <span>{{ $event }}</span>
                         </div>
                     @endforeach
@@ -223,8 +225,8 @@ $faqSchema = [
                             <div class="flex items-start justify-between gap-4">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-4 mb-3">
-                                        <div class="text-4xl group-hover:scale-110 transition-transform duration-300">
-                                            {{ $type['icon'] }}
+                                        <div class="w-14 h-14 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
+                                            <x-icon name="{{ $type['icon'] }}" class="w-7 h-7" />
                                         </div>
                                         <div>
                                             <h2 class="text-xl font-bold">{{ $type['name'] }}</h2>
@@ -236,8 +238,10 @@ $faqSchema = [
                                 </div>
                                 <div class="flex-shrink-0">
                                     <a href="tel:{{ domain_phone_raw() }}"
-                                       class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
-                                        📞 Get Quote
+                                       data-tracking-label="services-card-inline"
+                                       class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-semibold py-2 px-4 rounded-lg transition-all whitespace-nowrap min-h-[44px]">
+                                        <x-icon name="phone" class="w-4 h-4" />
+                                        Get Quote
                                     </a>
                                 </div>
                             </div>
@@ -270,9 +274,10 @@ $faqSchema = [
 
                             {{-- CTA --}}
                             <a href="tel:{{ domain_phone_raw() }}"
-                               class="block w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
-                                      text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02]">
-                                📞 Get Quote for {{ $type['short_name'] }}
+                               data-tracking-label="services-card-cta"
+                               class="flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg shadow-amber-500/25 hover:scale-[1.02] min-h-[44px]">
+                                <x-icon name="phone" class="w-4 h-4" />
+                                Get Quote for {{ $type['short_name'] }}
                             </a>
                         </div>
                     </div>
@@ -291,11 +296,16 @@ $faqSchema = [
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($addOns as $addon)
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all">
-                        <div class="text-4xl mb-4">{{ $addon['icon'] }}</div>
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-emerald-300 transition-all">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                            <x-icon name="{{ $addon['icon'] }}" class="w-6 h-6" />
+                        </div>
                         <h3 class="font-bold text-slate-800 mb-2">{{ $addon['name'] }}</h3>
                         <p class="text-sm text-slate-500 mb-4 leading-relaxed">{{ $addon['description'] }}</p>
-                        <a href="tel:{{ domain_phone_raw() }}" class="text-amber-600 font-semibold hover:underline">📞 Call for pricing</a>
+                        <a href="tel:{{ domain_phone_raw() }}" data-tracking-label="services-addon" class="inline-flex items-center gap-1.5 text-emerald-600 font-semibold hover:text-emerald-700 min-h-[44px]">
+                            <x-icon name="phone" class="w-4 h-4" />
+                            Call for pricing
+                        </a>
                     </div>
                 @endforeach
             </div>
@@ -311,8 +321,10 @@ $faqSchema = [
             </div>
 
             <div class="space-y-4">
-                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-6 hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🚻</div>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-5 hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-icon name="building" class="w-7 h-7" />
+                    </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">Need basic facilities for workers?</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
@@ -321,8 +333,10 @@ $faqSchema = [
                     </div>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-6 hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🚿</div>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-5 hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-icon name="water-drop" class="w-7 h-7" />
+                    </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">Hosting an outdoor event or wedding?</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
@@ -331,8 +345,10 @@ $faqSchema = [
                     </div>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-6 hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">♿</div>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-5 hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-icon name="accessibility" class="w-7 h-7" />
+                    </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">Public event or need ADA compliance?</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
@@ -341,8 +357,10 @@ $faqSchema = [
                     </div>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-6 hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">✨</div>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-5 hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-icon name="sparkles" class="w-7 h-7" />
+                    </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">VIP event or high-profile gathering?</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
@@ -351,8 +369,10 @@ $faqSchema = [
                     </div>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-6 hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-cyan-100 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🏗️</div>
+                <div class="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-5 hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-icon name="building" class="w-7 h-7" />
+                    </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">Large construction project?</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
@@ -371,29 +391,47 @@ $faqSchema = [
                 <h2 class="text-2xl font-bold text-slate-800 mb-6">Why Choose Our Porta Potty Rental Service?</h2>
                 
                 <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">🚚 Fast Delivery</h3>
-                        <p class="text-slate-600 text-sm">Same-day porta potty delivery available in most areas when you call before 2 PM.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="truck" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Fast Delivery</h3>
+                            <p class="text-slate-600 text-sm">Same-day porta potty delivery available in most areas when you call before 2 PM.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">🧹 Reliable Servicing</h3>
-                        <p class="text-slate-600 text-sm">Weekly cleaning, pumping, and restocking included with every rental.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="sparkles" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Reliable Servicing</h3>
+                            <p class="text-slate-600 text-sm">Weekly cleaning, pumping, and restocking included with every rental.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">✅ OSHA Compliant</h3>
-                        <p class="text-slate-600 text-sm">All standard units meet OSHA requirements for construction sites.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="shield-check" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">OSHA Compliant</h3>
+                            <p class="text-slate-600 text-sm">All standard units meet OSHA requirements for construction sites.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">💰 Transparent Pricing</h3>
-                        <p class="text-slate-600 text-sm">No hidden fees. The price we quote is the price you pay.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="currency-dollar" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Transparent Pricing</h3>
+                            <p class="text-slate-600 text-sm">No hidden fees. The price we quote is the price you pay.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">🏢 Licensed & Insured</h3>
-                        <p class="text-slate-600 text-sm">Fully licensed and insured for your peace of mind.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="check-circle" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Licensed &amp; Insured</h3>
+                            <p class="text-slate-600 text-sm">Fully licensed and insured for your peace of mind.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 mb-2">🇺🇸 Nationwide Service</h3>
-                        <p class="text-slate-600 text-sm">Serving all 50 states with local delivery and service.</p>
+                    <div class="flex gap-3">
+                        <x-icon name="map-pin" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Nationwide Service</h3>
+                            <p class="text-slate-600 text-sm">Serving all 50 states with local delivery and service.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -409,41 +447,40 @@ $faqSchema = [
     </section>
 
     {{-- Get Custom Quote --}}
-    <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600">
+    <section class="py-14 md:py-20 px-4 bg-white border-t border-slate-100">
         <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-3xl font-bold text-white mb-4">Get Your Custom Quote</h2>
-            <p class="text-amber-100 mb-8">Every project is unique. Call us for personalized pricing based on your specific needs.</p>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">Get your custom quote</h2>
+            <p class="text-slate-600 mb-7">Every project is unique. Call for pricing based on your specific needs.</p>
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-flex items-center gap-3 bg-white text-amber-600 font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:scale-105 transition-all">
-                📞 {{ domain_phone_display() }}
+               data-tracking-label="services-custom-quote"
+               class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-white font-bold text-lg py-4 px-8 rounded-full shadow-xl shadow-amber-500/30 hover:scale-105 transition-all min-h-[44px]">
+                <x-icon name="phone" class="w-5 h-5" />
+                {{ domain_phone_display() }}
             </a>
-            <p class="text-amber-200 text-sm mt-4">No obligation • Same-day delivery available</p>
+            <p class="text-slate-500 text-sm mt-4">No obligation · Same-day delivery available</p>
         </div>
     </section>
 
     {{-- CTA --}}
-    <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 left-10 text-[200px]">🚽</div>
-        </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
-
+    <section class="py-16 md:py-20 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-            <p class="text-xl text-slate-400 mb-4">
-                Call us for a <strong class="text-white">free quote</strong> and we'll help you choose the right portable toilets for your needs
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Ready to get started?</h2>
+            <p class="text-lg text-slate-400 mb-3 max-w-xl mx-auto">
+                Call for a <strong class="text-white">free quote</strong> and we'll help you pick the right portable restrooms for your job.
             </p>
-            <p class="text-slate-300 mb-8">
-                Serving construction sites, events, weddings, and more across the USA
+            <p class="text-slate-400 mb-8 text-sm">
+                Serving construction sites, events, weddings, and more across the USA.
             </p>
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
-                      text-white text-3xl md:text-4xl font-bold py-5 px-14
-                      rounded-full shadow-2xl shadow-amber-500/40
-                      transition-all hover:scale-105 animate-pulse">
-                📞 {{ domain_phone_display() }}
+               data-tracking-label="services-final"
+               class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400
+                      text-white text-2xl md:text-3xl font-bold py-5 px-10
+                      rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30
+                      transition-all hover:scale-105 min-h-[44px]">
+                <x-icon name="phone" class="w-7 h-7 md:w-8 md:h-8" />
+                {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • No Obligation Quote</p>
+            <p class="mt-6 text-slate-400 text-sm">No obligation · Same-day delivery available</p>
         </div>
     </section>
 

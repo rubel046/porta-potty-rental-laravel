@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] { display: none !important; }
+
 @layer base {
     :root {
         --color-primary: #10b981;
@@ -61,6 +63,22 @@
 
     h1, h2, h3, h4, h5, h6 {
         @apply font-bold tracking-tight;
+    }
+
+    /* Typographic hierarchy: reserve font-extrabold for hero H1 only */
+    h1 {
+        @apply font-extrabold;
+    }
+    h2 {
+        @apply font-bold;
+    }
+    h3, h4 {
+        @apply font-semibold;
+    }
+
+    /* Body text reading width on long-form pages */
+    .prose-body {
+        max-width: 68ch;
     }
 }
 

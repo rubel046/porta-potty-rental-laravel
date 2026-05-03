@@ -23,8 +23,9 @@ class PageController extends Controller
     public function home()
     {
         $domain = Domain::current();
+        $domainId = $domain?->id ?? 'default';
 
-        $featuredCities = Cache::remember('featured_cities_'.($domain?->id ?? 'default'), 3600, function () use ($domain) {
+        $topCitiesPool = Cache::remember("home_top_cities_{$domainId}", 3600, function () use ($domain) {
             $query = City::active()->with(['state', 'servicePages' => function ($q) use ($domain) {
                 if ($domain) {
                     $q->where('domain_id', $domain->id);
@@ -41,24 +42,10 @@ class PageController extends Controller
                 ->toArray();
         });
 
-        $topCities = Cache::remember('top_cities_for_schema_'.($domain?->id ?? 'default'), 3600, function () use ($domain) {
-            $query = City::active()->with(['state', 'servicePages' => function ($q) use ($domain) {
-                if ($domain) {
-                    $q->where('domain_id', $domain->id);
-                }
-            }]);
+        $featuredCities = $topCitiesPool;
+        $topCities = array_slice($topCitiesPool, 0, 10);
 
-            if ($domain) {
-                $query->whereHas('domains', fn ($q) => $q->where('domain_id', $domain->id));
-            }
-
-            return $query->byPriority()
-                ->take(10)
-                ->get()
-                ->toArray();
-        });
-
-        $states = Cache::remember('active_states', 3600, function () {
+        $states = Cache::remember("home_active_states_{$domainId}", 3600, function () {
             return State::whereHas('domainStates', function ($q) {
                 $q->where('status', true);
             })
@@ -74,23 +61,30 @@ class PageController extends Controller
         $recentPosts = BlogPost::published()
             ->latest('published_at')
             ->take(6)
-            ->get();
+            ->get()
+            ->toArray();
 
-        $testimonials = Testimonial::where('is_featured', true)
-            ->where('is_active', true)
-            ->inRandomOrder()
-            ->take(3)
-            ->get();
+        // Cache a pool, shuffle in PHP — avoids ORDER BY RAND() on every request
+        $testimonialPool = Cache::remember("home_testimonial_pool_{$domainId}", 3600, function () {
+            return Testimonial::where('is_featured', true)
+                ->where('is_active', true)
+                ->take(30)
+                ->get()
+                ->toArray();
+        });
+        $testimonials = collect($testimonialPool)->shuffle()->take(3);
 
-        $stats = [
-            'generated_cities' => ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id'),
-            'total_cities' => DB::table('domain_cities')->distinct('city_id')->count('city_id'),
-            'generated_states' => ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
-                ->where('service_pages.generation_status', 'success')
-                ->distinct('cities.state_id')
-                ->count('cities.state_id'),
-            'total_states' => DB::table('domain_states')->count(),
-        ];
+        $stats = Cache::remember("home_stats_{$domainId}", 3600, function () {
+            return [
+                'generated_cities' => ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id'),
+                'total_cities' => DB::table('domain_cities')->distinct('city_id')->count('city_id'),
+                'generated_states' => ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
+                    ->where('service_pages.generation_status', 'success')
+                    ->distinct('cities.state_id')
+                    ->count('cities.state_id'),
+                'total_states' => DB::table('domain_states')->count(),
+            ];
+        });
 
         return view('domains.pottydirect.home', compact(
             'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats'
@@ -107,7 +101,7 @@ class PageController extends Controller
                 'key' => 'standard',
                 'name' => 'Standard Porta Potties',
                 'short_name' => 'Standard',
-                'icon' => '🚻',
+                'icon' => 'building',
                 'description' => 'The most common portable toilet for construction sites and outdoor events. Basic, functional, and OSHA compliant.',
                 'features' => [
                     'Non-splash urinal',
@@ -122,7 +116,7 @@ class PageController extends Controller
                 'key' => 'deluxe',
                 'name' => 'Deluxe Flushable Units',
                 'short_name' => 'Deluxe',
-                'icon' => '🚿',
+                'icon' => 'water-drop',
                 'description' => 'Premium portable toilet with flushing toilet and hand wash station. Ideal for weddings and upscale events.',
                 'features' => [
                     'Flushing toilet',
@@ -137,7 +131,7 @@ class PageController extends Controller
                 'key' => 'ada',
                 'name' => 'ADA Accessible Units',
                 'short_name' => 'ADA',
-                'icon' => '♿',
+                'icon' => 'accessibility',
                 'description' => 'Wheelchair-accessible portable restroom with extra-wide door, grab bars, and spacious interior.',
                 'features' => [
                     'Extra-wide door (60" wide)',
@@ -152,7 +146,7 @@ class PageController extends Controller
                 'key' => 'luxury',
                 'name' => 'Luxury Restroom Trailers',
                 'short_name' => 'Luxury',
-                'icon' => '✨',
+                'icon' => 'sparkles',
                 'description' => 'High-end restroom trailers with climate control, porcelain fixtures, and elegant interiors.',
                 'features' => [
                     'Climate controlled (A/C & heat)',
@@ -167,7 +161,7 @@ class PageController extends Controller
                 'key' => 'shower',
                 'name' => 'Portable Shower Units',
                 'short_name' => 'Showers',
-                'icon' => '🚿',
+                'icon' => 'water-drop',
                 'description' => 'Private portable shower stalls for construction sites, events, and disaster relief situations.',
                 'features' => [
                     'Hot and cold water',
@@ -182,7 +176,7 @@ class PageController extends Controller
                 'key' => 'mobile',
                 'name' => 'Mobile Restroom Trailers',
                 'short_name' => 'Mobile',
-                'icon' => '🚐',
+                'icon' => 'truck',
                 'description' => 'Self-contained mobile restroom units that can be transported to any location.',
                 'features' => [
                     'Multiple fixtures',
@@ -197,7 +191,7 @@ class PageController extends Controller
                 'key' => 'vip',
                 'name' => 'VIP Event Restrooms',
                 'short_name' => 'VIP',
-                'icon' => '👔',
+                'icon' => 'briefcase',
                 'description' => 'Premium restroom solutions for VIP events, executive gatherings, and high-profile occasions.',
                 'features' => [
                     'Upscale interiors',
@@ -212,7 +206,7 @@ class PageController extends Controller
                 'key' => 'construction',
                 'name' => 'Construction Site Packages',
                 'short_name' => 'Construction',
-                'icon' => '🏗️',
+                'icon' => 'building',
                 'description' => 'Complete sanitation packages designed for construction sites with OSHA compliance.',
                 'features' => [
                     'Multiple standard units',
@@ -227,7 +221,7 @@ class PageController extends Controller
                 'key' => 'holding',
                 'name' => 'Holding Tank Rentals',
                 'short_name' => 'Holding Tanks',
-                'icon' => '🛢️',
+                'icon' => 'cube',
                 'description' => 'Large capacity holding tanks for remote job sites and locations without access to sewage connections.',
                 'features' => [
                     'Large capacity (500-1000 gallon)',
@@ -242,7 +236,7 @@ class PageController extends Controller
                 'key' => 'sanitizer',
                 'name' => 'Hand Sanitizer Stations',
                 'short_name' => 'Sanitizer',
-                'icon' => '🧸',
+                'icon' => 'wash',
                 'description' => 'Standalone hand sanitizer and hand washing stations to complement your rental.',
                 'features' => [
                     'Touchless dispensers',
@@ -257,7 +251,7 @@ class PageController extends Controller
                 'key' => 'dumpster',
                 'name' => 'Dumpster Rental',
                 'short_name' => 'Dumpster',
-                'icon' => '🗑️',
+                'icon' => 'trash',
                 'description' => 'Roll-off dumpsters for construction debris, event waste, and sanitation waste disposal. Available in multiple sizes.',
                 'features' => [
                     'Various sizes (10-40 yard)',
@@ -272,7 +266,7 @@ class PageController extends Controller
                 'key' => 'septic',
                 'name' => 'Septic Service',
                 'short_name' => 'Septic',
-                'icon' => '🔧',
+                'icon' => 'wrench',
                 'description' => 'Professional septic tank pumping, inspection, and maintenance services for residential and commercial properties.',
                 'features' => [
                     'Septic tank pumping',
@@ -287,42 +281,42 @@ class PageController extends Controller
 
         $addOns = [
             [
-                'icon' => '🧼',
+                'icon' => 'wash',
                 'name' => 'Hand Wash Stations',
                 'description' => 'Standalone hand washing units with soap and paper towels.',
             ],
             [
-                'icon' => '💡',
+                'icon' => 'bolt',
                 'name' => 'Lighting Packages',
                 'description' => 'Solar-powered lights for nighttime events and construction sites.',
             ],
             [
-                'icon' => '🧹',
+                'icon' => 'sparkles',
                 'name' => 'Extra Servicing',
                 'description' => 'Additional weekly cleaning and restocking beyond standard service.',
             ],
             [
-                'icon' => '🚰',
+                'icon' => 'water-drop',
                 'name' => 'Fresh Water Delivery',
                 'description' => 'Fresh water delivery for luxury trailers and hand wash stations.',
             ],
             [
-                'icon' => '🔧',
+                'icon' => 'wrench',
                 'name' => '24/7 Emergency Service',
                 'description' => 'Emergency pumping, repairs, and additional units available 24/7.',
             ],
             [
-                'icon' => '📋',
+                'icon' => 'shield-check',
                 'name' => 'Compliance Documentation',
                 'description' => 'OSHA compliance paperwork, service logs, and audit support.',
             ],
             [
-                'icon' => '🧻',
+                'icon' => 'cube',
                 'name' => 'Extra Supplies',
                 'description' => 'Additional toilet paper, hand sanitizer, and deodorizer refills.',
             ],
             [
-                'icon' => '🏠',
+                'icon' => 'home',
                 'name' => 'Long-Term Rentals',
                 'description' => 'Discounted rates for monthly and long-term rental agreements.',
                 'price' => 'Up to 40% off',
@@ -339,7 +333,7 @@ class PageController extends Controller
     {
         $pricingInfo = [
             [
-                'icon' => '🚻',
+                'icon' => 'building',
                 'title' => 'Standard Rental',
                 'description' => 'Basic, functional units perfect for construction sites and work areas. OSHA compliant and budget-friendly.',
                 'best_for' => 'Construction Sites, Work Zones, Outdoor Projects',
@@ -352,7 +346,7 @@ class PageController extends Controller
                 'cta' => 'Get Quote for Standard Units',
             ],
             [
-                'icon' => '🚿',
+                'icon' => 'water-drop',
                 'title' => 'Deluxe Flushable Unit',
                 'description' => 'Premium units with flushing toilet and hand sink. Ideal for events where guests expect more comfort.',
                 'best_for' => 'Weddings, Private Events, Corporate Functions',
@@ -365,7 +359,7 @@ class PageController extends Controller
                 'cta' => 'Get Quote for Deluxe Units',
             ],
             [
-                'icon' => '♿',
+                'icon' => 'accessibility',
                 'title' => 'ADA Accessible Unit',
                 'description' => 'Wheelchair-accessible units that meet all federal accessibility requirements.',
                 'best_for' => 'Public Events, ADA Compliance, Venues',
@@ -378,7 +372,7 @@ class PageController extends Controller
                 'cta' => 'Get Quote for ADA Units',
             ],
             [
-                'icon' => '✨',
+                'icon' => 'sparkles',
                 'title' => 'Luxury Restroom Trailer',
                 'description' => 'High-end trailers with climate control, porcelain fixtures, and elegant interiors.',
                 'best_for' => 'VIP Events, Weddings, Film Productions',
@@ -391,7 +385,7 @@ class PageController extends Controller
                 'cta' => 'Get Quote for Luxury Trailers',
             ],
             [
-                'icon' => '🚿',
+                'icon' => 'water-drop',
                 'title' => 'Portable Shower Unit',
                 'description' => 'Private shower stalls for construction sites, events, and remote locations.',
                 'best_for' => 'Construction Sites, Camping, Events',
@@ -404,7 +398,7 @@ class PageController extends Controller
                 'cta' => 'Get Quote for Shower Units',
             ],
             [
-                'icon' => '🛢️',
+                'icon' => 'cube',
                 'title' => 'Holding Tank',
                 'description' => 'Large capacity tanks for remote job sites without sewage access.',
                 'best_for' => 'Remote Sites, Mining, Oil Fields',
@@ -476,6 +470,12 @@ class PageController extends Controller
     public function cityPage(string $slug)
     {
         $domain = Domain::current();
+        $domainId = $domain?->id ?? 'default';
+
+        // Negative cache: bots probe random slugs; skip the DB lookup for known-404s
+        if (Cache::has("slug_404_{$domainId}_{$slug}")) {
+            abort(404);
+        }
 
         $query = ServicePage::where('slug', $slug)
             ->where('is_published', true)
@@ -496,12 +496,17 @@ class PageController extends Controller
             $query->whereHas('city', fn ($q) => $q->where('is_active', true));
         }
 
-        $servicePage = $query->firstOrFail();
+        $servicePage = $query->first();
+
+        if (! $servicePage) {
+            Cache::put("slug_404_{$domainId}_{$slug}", true, 600);
+            abort(404);
+        }
 
         $city = $servicePage->city;
 
-        // View count বাড়ান
-        $servicePage->incrementViews();
+        // View count বাড়ান — run after response so the LCP isn't blocked by a DB write
+        defer(fn () => $servicePage->incrementViews());
 
         // FAQs - use eager loaded collection
         $cityFaqs = $city->faqs
@@ -532,55 +537,42 @@ class PageController extends Controller
                 ->take(4);
         }
 
-        // Nearby cities with pages
-        $nearbyNames = $city->getNearbyAreaNames();
-        $nearbyCityPages = City::active()
-            ->whereIn('name', $nearbyNames)
-            ->with('state')
-            ->has('servicePages')
-            ->take(8)
-            ->get();
+        // Related-content bundle (nearby cities, other services, blog posts, schema)
+        // rarely changes — cache hard, let observers flush on edit
+        $bundle = Cache::remember("service_data_{$servicePage->id}", 3600, function () use ($servicePage, $city) {
+            $nearbyNames = $city->getNearbyAreaNames();
+            $nearbyCityPages = City::active()
+                ->whereIn('name', $nearbyNames)
+                ->with('state')
+                ->has('servicePages')
+                ->take(8)
+                ->get();
 
-        // Other service types for this city
-        $otherServices = ServicePage::where('city_id', $city->id)
-            ->where('id', '!=', $servicePage->id)
-            ->where('is_published', true)
-            ->get();
+            $otherServices = ServicePage::where('city_id', $city->id)
+                ->where('id', '!=', $servicePage->id)
+                ->where('is_published', true)
+                ->get();
 
-        // Related blog posts
-        $relatedPosts = BlogPost::published()
-            ->where(function ($q) use ($city, $servicePage) {
-                $q->where('city_id', $city->id)
-                    ->orWhere('title', 'LIKE', "%{$servicePage->service_type}%");
-            })
-            ->take(3)
-            ->get();
+            $relatedPosts = BlogPost::published()
+                ->where(function ($q) use ($city, $servicePage) {
+                    $q->where('city_id', $city->id)
+                        ->orWhere('title', 'LIKE', "%{$servicePage->service_type}%");
+                })
+                ->take(3)
+                ->get();
 
-        // Schema markup - use model method and enhance
-        $schemaMarkup = $servicePage->generateSchemaMarkup();
+            return [
+                'nearbyCityPages' => $nearbyCityPages,
+                'otherServices' => $otherServices,
+                'relatedPosts' => $relatedPosts,
+                'schemaMarkup' => $servicePage->generateSchemaMarkup(),
+            ];
+        });
 
-        // Add Service schema for the specific service type
-        $serviceLabel = $domain?->getServiceTypeLabel($servicePage->service_type) ?? 'Porta Potty Rental';
-        $schemaMarkup['makesOffer'] = [
-            '@type' => 'Offer',
-            'itemOffered' => [
-                '@type' => 'Service',
-                'name' => $serviceLabel.' in '.$city->name,
-                'description' => $servicePage->seo_description,
-                'provider' => [
-                    '@type' => 'LocalBusiness',
-                    'name' => $domain?->business_name ?? 'Potty Direct',
-                ],
-                'areaServed' => [
-                    '@type' => 'City',
-                    'name' => $city->name,
-                    'containedInPlace' => [
-                        '@type' => 'State',
-                        'name' => $city->state->name,
-                    ],
-                ],
-            ],
-        ];
+        $nearbyCityPages = $bundle['nearbyCityPages'];
+        $otherServices = $bundle['otherServices'];
+        $relatedPosts = $bundle['relatedPosts'];
+        $schemaMarkup = $bundle['schemaMarkup'];
 
         $faqSchema = null;
         if ($faqs->isNotEmpty()) {
@@ -598,28 +590,11 @@ class PageController extends Controller
             ];
         }
 
-        // Add reviews to schema if testimonials exist
-        if ($testimonials->isNotEmpty()) {
-            $schemaMarkup['review'] = $testimonials->map(fn ($t) => [
-                '@type' => 'Review',
-                'reviewRating' => [
-                    '@type' => 'Rating',
-                    'ratingValue' => $t->rating ?? 5,
-                ],
-                'author' => [
-                    '@type' => 'Person',
-                    'name' => $t->customer_name,
-                ],
-                'reviewBody' => $t->content,
-            ])->toArray();
-
-            $schemaMarkup['aggregateRating'] = [
-                '@type' => 'AggregateRating',
-                'ratingValue' => round($testimonials->avg('rating'), 1),
-                'reviewCount' => $testimonials->count(),
-                'bestRating' => 5,
-            ];
-        }
+        // NOTE: we intentionally do NOT inject Review/AggregateRating schema here
+        // even though $testimonials exists. Those testimonials are AI-generated and
+        // marking them up would violate Google's Review Snippet policy. To re-enable,
+        // wire a real-reviews source (Google Business Profile sync) and gate on
+        // config('reviews.count') being set.
 
         return view(DomainViewHelper::resolveForController('service'), compact(
             'servicePage', 'city', 'faqs', 'testimonials',
@@ -638,7 +613,7 @@ class PageController extends Controller
             ->with('domainStates')
             ->firstOrFail();
 
-        $state->incrementViews();
+        defer(fn () => $state->incrementViews());
 
         $cities = $state->activeCities()
             ->has('servicePages')
@@ -646,9 +621,12 @@ class PageController extends Controller
             ->byPriority()
             ->paginate(30);
 
-        $stateContent = $contentService->getStatePageContent($state);
+        // getStatePageContent runs AI calls in the worst case — cache hard
+        $stateContent = Cache::remember("state_content_{$state->id}", 3600, fn () =>
+            $contentService->getStatePageContent($state)
+        );
         $faqs = collect($stateContent['faqs'] ?? []);
-        $images = $state->images ?? []; // Use the accessor to get images
+        $images = $state->images ?? [];
 
         return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images'));
     }
@@ -658,21 +636,29 @@ class PageController extends Controller
      */
     public function locations(Request $request)
     {
-        $search = $request->get('q', '');
+        $search = trim($request->get('q', ''));
+        $domain = Domain::current();
+        $domainId = $domain?->id ?? 'default';
 
-        $states = State::select(['id', 'name', 'slug', 'code'])
-            ->whereHas('domainStates', function ($q) {
-                $q->where('status', true);
-            })
-            ->with(['cities' => function ($q) use ($search) {
-                $q->select(['id', 'state_id', 'name', 'slug', 'latitude', 'longitude']);
-                $q->active()->orderBy('name');
-                if ($search) {
-                    $q->where('name', 'LIKE', '%'.$search.'%');
-                }
-            }])
-            ->orderBy('name')
-            ->get();
+        $fetchStates = function () use ($search) {
+            return State::select(['id', 'name', 'slug', 'code'])
+                ->whereHas('domainStates', function ($q) {
+                    $q->where('status', true);
+                })
+                ->with(['cities' => function ($q) use ($search) {
+                    $q->select(['id', 'state_id', 'name', 'slug', 'latitude', 'longitude']);
+                    $q->active()->orderBy('name');
+                    if ($search) {
+                        $q->where('name', 'LIKE', '%'.$search.'%');
+                    }
+                }])
+                ->orderBy('name')
+                ->get();
+        };
+
+        $states = $search === ''
+            ? Cache::remember("locations_states_{$domainId}", 3600, $fetchStates)
+            : $fetchStates();
 
         return view(DomainViewHelper::resolveForController('locations'), compact('states', 'search'));
     }

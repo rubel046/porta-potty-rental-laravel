@@ -16,7 +16,8 @@ class BlogPostController extends Controller
 {
     public function index(Request $request)
     {
-        $query = BlogPost::with('category', 'city');
+        $query = BlogPost::with('category', 'city')
+            ->where('domain_id', $this->currentDomainId());
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%'.$request->search.'%');
@@ -132,6 +133,8 @@ class BlogPostController extends Controller
 
     public function edit(BlogPost $blogPost)
     {
+        $this->authorizeDomain($blogPost);
+
         $domain = Domain::current();
         $query = BlogCategory::orderBy('name');
         if ($domain) {
@@ -149,6 +152,8 @@ class BlogPostController extends Controller
 
     public function update(Request $request, BlogPost $blogPost)
     {
+        $this->authorizeDomain($blogPost);
+
         $validated = $request->validate([
             'title' => 'required|string|max:300',
             'slug' => 'nullable|string|max:300|unique:blog_posts,slug,'.$blogPost->id,
@@ -176,10 +181,25 @@ class BlogPostController extends Controller
 
     public function destroy(BlogPost $blogPost)
     {
+        $this->authorizeDomain($blogPost);
         $blogPost->delete();
 
         return redirect()->route('admin.blog-posts.index')
             ->with('success', 'Blog post deleted!');
+    }
+
+    protected function authorizeDomain(BlogPost $post): void
+    {
+        $domainId = $this->currentDomainId();
+
+        if ($domainId && $post->domain_id !== $domainId) {
+            abort(404);
+        }
+    }
+
+    protected function currentDomainId(): ?int
+    {
+        return Domain::current()?->id;
     }
 
     public function generateForm()

@@ -21,6 +21,7 @@ class Domain extends Model
         'secondary_keywords',
         'primary_color',
         'secondary_color',
+        'twitter_handle',
         'is_active',
     ];
 

@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Call click tracking (from frontend JS)
+// Call click tracking (from frontend JS). 60/min per IP — generous, but prevents
+// a single page's JS bug from becoming an endless loop against this endpoint.
 Route::post('/track-call-click', function (Request $request) {
     Log::channel('calls')->info('Call click tracked', [
         'phone' => $request->input('phone'),
         'page' => $request->input('page'),
+        'label' => $request->input('label'),
         'source' => $request->input('source'),
         'utm_source' => $request->input('utm_source'),
         'utm_medium' => $request->input('utm_medium'),
@@ -28,7 +30,7 @@ Route::post('/track-call-click', function (Request $request) {
     ]);
 
     return response()->json(['status' => 'ok']);
-})->name('api.track-call');
+})->middleware('throttle:60,1')->name('api.track-call');
 
 // Health check
 Route::get('/health', function () {

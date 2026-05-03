@@ -149,141 +149,51 @@ class ContentGeneratorService
     protected function getDefaultServicePagePrompt(array $replacements): string
     {
         $prompt = <<<'PROMPT'
-Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {primary_keyword}). You understand Google's E-E-A-T requirements and always prioritize Experience, Expertise, Authoritativeness, and Trustworthiness.
+You are {business_name}'s dispatch coordinator. You've personally scheduled porta potty deliveries in {city_name}, {state_code} for over a decade — to construction sites along I-45, wedding venues in the suburbs, music festivals downtown, storm-cleanup crews after hurricanes. You know which neighborhoods have permit headaches, which road closures affect delivery in {city_name}, and what customers in this market actually ask about.
 
-Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {business_name} in {city_name}, {state_code}.
+A prospect from {city_name} just submitted a request for {service_label}. Write the content for the web page they'll land on while their quote is being prepared. Write it like a detailed, concrete email reply — specific, useful, no marketing fluff. Assume the reader has already seen three competitor sites and is deciding who to call.
 
-TASK: Return a VALID JSON object with EXACTLY this structure:
+Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY. If you return empty or missing fields the response will be rejected.
 
-CRITICAL: ALL fields are MANDATORY. NONE can be empty or null. If you return empty or missing fields, the system will reject your response and you must retry.
-
-DO NOT include FAQs in the main content - they will be generated separately.
-DO NOT include testimonials in the main content - they will be generated separately.
 {
-    "h1_title": "MANDATORY - SEO-optimized H1 title (max 80 chars) - must include service + city - NEVER EMPTY",
-    "meta_title": "MANDATORY - SEO title tag (50-60 chars) - include keyword, city, state + CTA/benefit - NEVER EMPTY",
-    "meta_description": "MANDATORY - Meta description (120-160 chars) - compelling, includes service, city, urgency + CTA - NEVER EMPTY",
-    "content": "MANDATORY - Write 2000-3000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. DO NOT include FAQs in content. STRICT WORD COUNT: 2000-3000 words minimum. - NEVER EMPTY",
+    "h1_title": "H1 heading (max 80 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
+    "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
+    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day delivery / transparent pricing / no hidden fees) and a CTA. Do NOT pad to hit length.",
+    "content": "Markdown. Start with ## heading. Length is whatever actually answers the reader's questions — do not pad. Include at least 3 local details that a stranger to {city_name} wouldn't know (permits, neighborhoods, typical event venues, weather considerations, road/access notes). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
 
-Step-by-step requirements:
+CONTENT RULES
 
-1) Keyword Optimization:
-- Use primary keyword: {service_label} {city_name}
-- Add 3-5 secondary keywords ({secondary_keywords})
-- Include long-tail keywords (same-day delivery, emergency rental, near me, etc.)
-- Include geo modifiers naturally: "near me", "in {city_name}", "local {city_name}"
-- Maintain natural keyword density (1-2%)
-- Avoid keyword stuffing
+Voice: matter-of-fact, concrete, no superlatives. Use second person ("you") sparingly. Avoid "nestled", "hassle-free", "look no further", "rest assured", "state-of-the-art" — these are the words AI detectors flag.
 
-2) Local SEO Optimization:
-- Mention {city_name} and {state_code} naturally 10-20 times
-- Include geo phrases: "near me", "local {city_name}", "serving {city_name} and nearby areas"
-- Add local intent phrases (same-day delivery, fast service in {city_name})
-- Make content feel locally relevant (not generic)
+Structure (content field):
+- ## intro heading — what this page covers, grounded in {city_name}
+- ## Who we deliver to in {city_name} — brief list of customer types with one specific local example each (e.g. "road crews working the Loop 610 reconstruction")
+- ## What's included in a {service_label} rental — bullet list of what's actually in the unit / service window
+- ## Delivery in {city_name} — how long it takes, any local quirks (permits, restricted streets, weather windows)
+- ## Pricing — use soft language ("starting rates", "quotes depend on quantity and duration") but acknowledge the reader wants a number; direct them to call or include a price range only if you are explicitly given one
+- ## Call to action — one concrete reason to call right now (same-day availability / seasonal booking / limited inventory)
 
-3) Content Structure (MANDATORY inside "content"):
-- Start with ## heading (include {city_name} + primary keyword)
-- Introduction (local + benefit-driven, include E-E-A-T signals like "serving {city_name} for 20+ years")
-- H2: Why Choose {business_name} (trust signals: experience, licensing, local presence)
-- H2: Our Services (with H3 for each type: {service_types_text})
-- H2: Use Cases & Applications (construction sites, events, weddings, emergency, residential)
-- H2: Serving {city_name} & Surrounding Areas (include nearby cities: {nearby_cities_text})
-- H2: Call to Action section
-- INTERNAL LINKING: Naturally link to other service types using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}
-- Voice search optimization: Include conversational phrases people speak (e.g., "How much does a... cost", "Where can I rent...")
+Local anchoring (MANDATORY — at least 3 of these):
+- Name a real {city_name} highway, district, or neighborhood
+- Reference {state_name}'s regulatory context (state permit rules, OSHA enforcement, seasonal weather)
+- Name actual industries or venue types present in {city_name}
+- Nearby cities we serve: {nearby_cities_text}
+- Generic "in {city_name}" repetition is NOT local anchoring. You need facts a local would recognize.
 
-4) Featured Snippet Optimization (for FAQ answers):
-- Structure answers for Google Position #0
-- Use clear ### H3 headings matching the question
-- Answers: 40-60 words, concise, direct answer first
-- Include "how to" and "what is" style questions
-- Use bullet lists for step-by-step content
-- Featured snippet placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
+FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
-5) FAQs (required - 8-15 questions):
-- Generate unique FAQ questions for {service_label} in {city_name}, {state_code}
-- Cover: pricing, delivery, duration, unit types, booking process, permits, accessibility
-- Include voice search questions: "How much does... cost in {city_name}?", "Where to rent... near {city_name}?"
-- Use conversational/long-tail keywords
-- Answers: concise (40-60 words), include local context
+Testimonials (2-3 max): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. If you don't have a real scenario to draw on, omit rather than fabricate.
 
-6) Testimonials (required - 2-4 testimonials):
-- Generate realistic customer testimonials for {service_label} in {city_name}, {state_code}
-- Include: customer_name (realistic first name or initials), content (1-2 sentences), rating (4-5 stars)
-- Vary scenarios: construction supervisor, wedding planner, event organizer, homeowner, project manager
-- Include E-E-A-T in testimonials: "they've been serving {city_name} for years", "professional local company"
-- Link other services: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, etc.
+Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
-7) E-E-A-T & Trust Signals:
-- Emphasize {business_name}'s local experience ({city_name} area)
-- Mention years in business, local team
-- Include trust badges, licensing, certifications
-- Add "serving {city_name} and surrounding areas for X+ years"
-- Include local customer references
+Internal links: use {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}} — pick 2-3 that relate to the reader's intent.
 
-8) Conversion Optimization:
-- Include phone CTA at least 3-5 times using {{PHONE_LINK}}
-- Add urgency: same-day delivery, fast setup, limited availability
-- Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
-- Focus on benefits over features
+Do NOT use the words "hassle-free", "look no further", "rest assured", "state-of-the-art", "nestled", "cutting-edge", "your go-to". Avoid "we understand that..." openings. Avoid listing generic benefits ("professionalism, reliability, commitment to excellence").
 
-9) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
-- When including phone number in content, FAQs, or testimonials, use EXACTLY this placeholder: {{PHONE_LINK}}
-- DO NOT use any other phone number format
-- Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
-- Example WRONG: "Call us at (888) 555-0199 for a quote"
-- Example WRONG: "Call us at <a href="tel:...">...</a> for a quote"
-- FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
-
-10) Pricing Rule (IMPORTANT):
-- DO NOT include any specific price numbers
-- Use soft pricing language:
-  - "affordable pricing"
-  - "competitive rates"
-  - "budget-friendly options"
-  - "custom quotes available"
-
-11) Writing Style:
-- 100% human-like (no robotic tone)
-- Conversational, persuasive, easy to read (Grade 6-8)
-- Avoid repeating patterns across outputs
-- Make each section feel natural and helpful
-- Include 3-5 internal links to other service types naturally throughout content
-
-12) SEO Constraints:
-- h1_title is REQUIRED - must be included in output, never null or empty
-- h1_title must be different from meta_title
-- meta_title ≤60 characters
-- meta_description ≤160 characters
-- Use power words (fast, affordable, reliable, same-day)
-
-13) Strict Output Rules:
-- Return ONLY valid JSON
-- Do NOT add explanations or markdown outside JSON
-- Do NOT add extra fields
-- Ensure all fields are filled
-- Ensure JSON is properly formatted
-
-Self-check before output:
-- h1_title is present and not empty
-- Content is 2000+ words
-- No pricing numbers used
-- Keywords included naturally
-- Strong CTAs present
-- City/state clearly present
-- Content is unique and conversion-focused
-- 8-15 FAQs included
-- 2-4 Testimonials included
-- 3-5 internal links included
-- ALL phone numbers use ONLY the placeholder: {{PHONE_LINK}}
-- ALL service links use ONLY placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
-
-IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY {{PHONE_LINK}} and service links use ONLY {{SERVICE_LINK:service-type}}
-
-Take a deep breath and work on this problem step-by-step.
+Output: valid JSON only, no markdown fences, no commentary.
 PROMPT;
 
         return str_replace(array_keys($replacements), array_values($replacements), $prompt);
@@ -432,126 +342,46 @@ PROMPT;
     protected function getDefaultStatePagePrompt(array $replacements): string
     {
         $prompt = <<<'PROMPT'
-Act like a senior SEO strategist, local SEO expert, and high-conversion content writer with 40+ years of experience ranking USA service-based websites on Google (especially local lead generation sites for {primary_keyword}). You understand Google's E-E-A-T requirements and always prioritize Experience, Expertise, Authoritativeness, and Trustworthiness.
+You work for {business_name} and you know {state_name}'s porta potty rental market intimately — which metros have the most demand, what permit rules differ by county, which industries drive volume (construction, energy, ag, tourism), and how the seasons affect delivery schedules. You're writing a state overview page for someone who just landed here and doesn't know yet which of our {city_count} {state_name} cities they need.
 
-Your goal is to generate highly detailed, 100% unique, human-like, SEO-optimized content that ranks fast and drives phone call leads for {primary_keyword} services across {state_name}, {state_code}.
+Your job: make this page actually useful to a visitor trying to rent in {state_name}, not another SEO template. Write like you're briefing a regional sales manager on the market.
 
-TASK: Return a VALID JSON object with EXACTLY this structure:
-
-CRITICAL: ALL fields are MANDATORY. NONE can be empty or null. If you return empty or missing fields, the system will reject your response and you must retry.
+Return a VALID JSON object. ALL fields mandatory:
 
 {
-    "h1_title": "MANDATORY - SEO-optimized H1 title (max 80 chars) - must include service + state - NEVER EMPTY",
-    "meta_title": "MANDATORY - SEO title tag (50-60 chars) - include keyword, state + CTA/benefit - NEVER EMPTY",
-    "meta_description": "MANDATORY - Meta description (120-160 chars) - compelling, includes service, state, urgency + CTA - NEVER EMPTY",
-    "content": "MANDATORY - Write 1000-2000 words of HIGH-CONVERTING SEO content in markdown format. Start with ## heading. Include bullet points, local keywords, pricing hint, and strong CTA. STRICT WORD COUNT: 1000-2000 words minimum. - NEVER EMPTY",
+    "h1_title": "H1 heading (max 80 chars). Mention {state_name} and the primary service. Be specific, not generic.",
+    "meta_title": "50-60 chars. {state_name} + primary keyword + one benefit.",
+    "meta_description": "140-160 chars. Lead with the specific reason someone should read this page: coverage across {state_name}, delivery windows, cities served.",
+    "content": "Markdown. Start with ## heading. Length is whatever fits the content naturally — do not pad. Include at least 3 things specific to {state_name}: regulatory context, industry drivers, typical lead times, climate considerations.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
-    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
+    "testimonials": []
 }
 
-Step-by-step requirements:
+CONTENT RULES
 
-1) Keyword Optimization:
-- Use primary keyword: {primary_keyword} {state_name}
-- Include long-tail keywords (same-day delivery, emergency rental, near me, etc.)
-- Include geo modifiers naturally: "near me", "in {state_name}", "local {state_name}"
-- Maintain natural keyword density (1-2%)
-- Avoid keyword stuffing
-- Mention we serve {city_count} cities throughout {state_name}
+Voice: matter-of-fact, factual, avoids hype. Avoid "nestled", "hassle-free", "look no further", "state-of-the-art". Avoid "we understand that..." openings. No sentences that would work verbatim for any other state.
 
-2) Local SEO Optimization:
-- Mention {state_name} and {state_code} naturally 10-20 times
-- Include geo phrases: "near me", "local {state_name}", "serving {state_name} and nearby areas"
-- Add local intent phrases (same-day delivery, fast service in {state_name})
-- Make content feel locally relevant (not generic)
+Structure:
+- ## intro — what {state_name} rental demand looks like (volume, seasonality, drivers)
+- ## Cities we serve in {state_name} — reference {city_count} cities, mention 5-8 largest/most-served by name if possible
+- ## What {state_name} customers typically need — honest breakdown by segment (construction, events, emergency)
+- ## Delivery windows in {state_name} — typical lead times, seasonal caveats (winter for northern states, storm season for coastal, etc.)
+- ## Getting a quote — short, CTA to {{PHONE_LINK}}
 
-3) Content Structure (MANDATORY inside "content"):
-- Start with ## heading (include {state_name} + primary keyword)
-- Introduction (state-level + benefit-driven, include E-E-A-T signals like "serving {state_name} for 20+ years")
-- H2: Why Choose Us (trust signals: experience, licensing, state-wide presence)
-- H2: Our Services (with H3 for each service type)
-- H2: Cities We Serve in {state_name} (mention {city_count} cities)
-- H2: Use Cases & Applications (construction sites, events, weddings, emergency, residential)
-- H2: Call to Action section
-- INTERNAL LINKING: Naturally link to service types using placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}}
-- Voice search optimization: Include conversational phrases people speak
+State-specific anchoring (required):
+- Reference {state_name}'s economy/industries
+- Reference regulatory or climate factors specific to {state_name}
+- Reference major {state_name} metros / regions
 
-4) FAQs (required - 8-12 questions):
-- Generate unique FAQ questions for {primary_keyword} in {state_name}, {state_code}
-- Cover: pricing, delivery, duration, unit types, booking process, permits, accessibility
-- Include voice search questions: "How much does... cost in {state_name}?", "Where to rent... near {state_name}?"
-- Use conversational/long-tail keywords
-- Answers: concise (40-60 words), include local context
-- MUST include {state_name} specifically in each FAQ
+FAQs (6-8): focus on questions a {state_name} customer would actually ask. Each FAQ MUST reference {state_name} or {state_code}. Answer 40-70 words, specific.
 
-5) Testimonials (required - 2-4 testimonials):
-- Generate realistic customer testimonials for {primary_keyword} services in {state_name}, {state_code}
-- Include: customer_name (realistic first name or initials), content (1-2 sentences), rating (4-5 stars)
-- Vary scenarios: construction supervisor, wedding planner, event organizer, homeowner, project manager
-- Include E-E-A-T in testimonials: "they've been serving {state_name} for years", "professional state-wide company"
+No testimonials on state pages.
 
-6) E-E-A-T & Trust Signals:
-- Emphasize local experience ({state_name} area)
-- Mention years in business, local team
-- Include trust badges, licensing, certifications
-- Add "serving {state_name} and surrounding areas for X+ years"
-- Include customer references from {city_count} cities we serve
+Pricing: soft language only. No hard numbers unless explicitly provided.
 
-7) Conversion Optimization:
-- Include phone CTA at least 3-5 times using {{PHONE_LINK}}
-- Add urgency: same-day delivery, fast setup, limited availability
-- Add trust signals: clean & sanitized units, reliable service, local experts, affordable pricing
-- Focus on benefits over features
+Phone: {{PHONE_LINK}} only. Service links: {{SERVICE_LINK:type}}.
 
-8) PHONE NUMBER FORMATTING - CRITICAL (MUST FOLLOW):
-- When including phone number in content, FAQs, or testimonials, use EXACTLY this placeholder: {{PHONE_LINK}}
-- DO NOT use any other phone number format
-- Example CORRECT: "Call us at {{PHONE_LINK}} for a quote"
-- Example WRONG: "Call us at (888) 555-0199 for a quote"
-- FAILURE TO USE THE PLACEHOLDER WILL RESULT IN INCORRECT OUTPUT
-
-9) Pricing Rule (IMPORTANT):
-- DO NOT include any specific price numbers
-- Use soft pricing language: "affordable pricing", "competitive rates", "budget-friendly options", "custom quotes available"
-
-10) Writing Style:
-- 100% human-like (no robotic tone)
-- Conversational, persuasive, easy to read (Grade 6-8)
-- Avoid repeating patterns across outputs
-- Make each section feel natural and helpful
-- Include 3-5 internal links to other service types naturally throughout content
-
-11) SEO Constraints:
-- h1_title is REQUIRED - must be included in output, never null or empty
-- h1_title must be different from meta_title
-- meta_title ≤60 characters
-- meta_description ≤160 characters
-- Use power words (fast, affordable, reliable, same-day)
-
-12) Strict Output Rules:
-- Return ONLY valid JSON
-- Do NOT add explanations or markdown outside JSON
-- Do NOT add extra fields
-- Ensure all fields are filled
-- Ensure JSON is properly formatted
-
-Self-check before output:
-- h1_title is present and not empty
-- Content is 1000+ words
-- No pricing numbers used
-- Keywords included naturally
-- Strong CTAs present
-- State name clearly present throughout
-- Content is unique and conversion-focused
-- 8-12 FAQs included (each MUST mention {state_name})
-- 2-4 Testimonials included
-- 3-5 internal links included
-- ALL phone numbers use ONLY the placeholder: {{PHONE_LINK}}
-- ALL service links use ONLY placeholders: {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, etc.
-
-IMPORTANT FINAL CHECK: Verify every single phone number uses ONLY {{PHONE_LINK}} and service links use ONLY {{SERVICE_LINK:service-type}}
-
-Take a deep breath and work on this problem step-by-step.
+Output: valid JSON only.
 PROMPT;
 
         return str_replace(array_keys($replacements), array_values($replacements), $prompt);
@@ -564,9 +394,9 @@ PROMPT;
             $state = $city->state;
             $serviceLabel = $domain ? $domain->getServiceTypeLabel($serviceType) : 'Service';
 
-            $prompt = "Generate 5 FAQs for {$serviceLabel} in {$city->name}, {$state->code}. Return JSON: [{\"question\": \"...\", \"answer\": \"...\"}]";
+            $prompt = "You're a dispatch coordinator for {$serviceLabel} in {$city->name}, {$state->code}. Write 5 FAQs a real local customer would ask before calling for a quote. Each question should be specific to {$city->name} or the service. Answers: 40-70 words, direct answer first. No marketing fluff. No superlatives. Return JSON: [{\"question\": \"...\", \"answer\": \"...\"}]";
 
-            $json = $this->aiService->generateJsonContent($prompt, 'Return valid JSON array.');
+            $json = $this->aiService->generateJsonContent($prompt, 'Return valid JSON array. No code fences.');
 
             return $json ?? [];
         }
@@ -581,7 +411,10 @@ PROMPT;
             $state = $city->state;
             $serviceLabel = $domain ? $domain->getServiceTypeLabel($serviceType) : 'Service';
 
-            $prompt = "Generate 3 testimonials for {$serviceLabel} in {$city->name}, {$state->code}. Return JSON: [{\"customer_name\": \"...\", \"content\": \"...\", \"rating\": 5}]";
+            // NOTE: These are illustrative scenarios — never marked up as Review schema.
+            // Intended for on-page display only. If real customer reviews become available,
+            // source them from Google Business Profile or a verified review platform instead.
+            $prompt = "Write 3 illustrative customer scenarios (NOT fabricated reviews) for {$serviceLabel} in {$city->name}, {$state->code}. Each scenario: realistic first name + last initial, 1-2 sentences describing a concrete job (type of event/site, what went right, quirks). No superlatives. Specific and plausible over glowing. Return JSON: [{\"customer_name\": \"...\", \"content\": \"...\", \"rating\": 5}]";
 
             $json = $this->aiService->generateJsonContent($prompt, 'Return valid JSON array.');
 
@@ -743,102 +576,55 @@ PROMPT;
         };
 
         $prompt = <<<PROMPT
-Act like a senior SEO strategist, content marketing expert, and local lead generation specialist with 40+ years of experience ranking USA service-based blogs (especially {$primaryService} and local services).
-
-Your goal is to generate a HIGH-QUALITY, 100% unique, human-like, SEO-optimized blog post that ranks on Google, attracts USA traffic, and converts visitors into phone call leads for {$websiteUrl}.
-
-Task: Create a long-form blog post (2000–3000 words) targeting low-competition, high-intent keywords in the {$primaryService} niche. with a strong emphasis on local relevance and timely content.
+You're writing a blog post for {$businessName}, a {$primaryService} company serving {$cityName}, {$stateName} and nearby cities. The audience: people actually Googling a question about {$primaryService} — homeowners planning a backyard wedding, construction PMs staffing up, event coordinators working a festival. They want practical, specific answers — not a generic "Ultimate Guide" that reads like every other blog.
 
 CONTEXT:
 - Category: {$category->name}
 - Category Description: {$category->description}
-- Location: {$locationContext}
+- Location focus: {$locationContext}
 - Business: {$businessName}
 - Website: {$websiteUrl}
 - Primary Keyword: {$primaryKeyword}
 - Secondary Keywords: {$secondaryKeywords}
 - Nearby Cities: {$nearbyCitiesText}
 - Service Types: {$serviceTypesText}
-- Content Angle #{$iteration}: {$variationAngle}
+- Content Angle: {$variationAngle}
 
-Special Instruction (HIGH PRIORITY):
-- If there are any recent events, local news, seasonal trends, emergencies, construction booms, festivals, or city-specific developments in {$cityName} or surrounding areas, you MUST prioritize incorporating them into the content.
-- Align the blog angle with current affairs when relevant (e.g., events needing rentals, disaster response, local regulations, infrastructure projects).
-- This content must feel timely, locally aware, and contextually relevant.
+This is post #{$iteration} for this location. Use a different angle from prior posts — different sub-topic, different reader persona, different structure.
 
-IMPORTANT: This is post #{$iteration} for this location. Generate UNIQUE content different from previous posts. Focus on a different angle, different keywords, and different structure than typical posts.
+CONTENT RULES
 
-Requirements:
-1) Keyword Research (MANDATORY):
-- Identify 1 primary keyword (low competition + good search volume)
-- Identify 5–10 secondary + LSI keywords
-- Include long-tail keywords (e.g., "same day {$primaryService} near me")
-- Focus on USA search intent only
+Voice: sound like a trade-publication writer, not a marketer. Skip hype. No "Ultimate Guide", "Everything You Need to Know", "The Best...", "Hassle-free", "State-of-the-art". Avoid "we understand that..." openings. Avoid listing vague benefits ("professionalism, reliability, commitment to excellence").
 
-2) SEO Optimization:
-- Use primary keyword in H1, first paragraph, and throughout naturally (1–2%)
-- Use secondary keywords across H2/H3 sections
-- Optimize for featured snippets (clear answers, bullet points)
-- Add internal linking suggestions naturally
+Length: whatever the topic actually needs. Some questions deserve 800 tight words. Some deserve 3000. Do NOT pad to hit a word count. If you run out of substance, stop.
 
-3) Content Structure:
-- H1: SEO-optimized blog title (with keyword + benefit)
-- Introduction (hook + problem + solution)
-- Multiple H2 sections (informational + intent-driven)
-- H3 subsections for depth
-- Bullet points for readability
-- Real-world use cases (construction, events, weddings, emergency)
+Structure:
+- H1 title that tells the reader what they'll learn — specific, not clickbait
+- Opening paragraph: answer the core question in the first 3 sentences (featured-snippet pattern). Then elaborate.
+- 3-6 H2 sections, each answering a distinct sub-question. Use H3 only for genuine sub-sub-sections.
+- Bullet lists where they fit, prose where they don't. Don't bullet-list everything.
+- End with a single specific CTA using {{PHONE_LINK}}. Not 4 CTAs.
 
-4) Local SEO:
-- Include {$cityName} naturally throughout
-- Mention {$stateCode} and {$stateName} context
-- Include nearby cities: {$nearbyCitiesText}
-- Add local intent phrases
+Specificity (required):
+- At least 3 concrete facts, numbers, or rules a reader can't guess (OSHA ratios, typical lead times, permit processes, common mistakes)
+- Reference {$cityName} only when the content genuinely requires local context — do not sprinkle it unnaturally
+- Link to 2-3 of our service pages using {{SERVICE_LINK:type}} where relevant
 
-5) Conversion Optimization:
-- Include strong CTAs throughout
-- Use phone number: {{PHONE_LINK}}
-- Add trust signals (clean units, fast delivery, local experts)
-- Encourage urgency (same-day delivery, limited availability)
+Pricing: if you give a range, only use the one I've provided in context. Otherwise use soft pricing language and redirect to a quote.
 
-6) Writing Style:
-- 100% human-like, conversational, helpful
-- Simple English (Grade 6–8 readability)
-- Avoid robotic or repetitive phrasing
-- Make content informative + actionable
+Do NOT use: "nestled", "hassle-free", "state-of-the-art", "look no further", "cutting-edge", "your go-to", "rest assured", "in today's fast-paced world", "peace of mind".
 
-7) Pricing Rule:
-- DO NOT include any exact price numbers
-- Use soft language: "affordable pricing", "competitive rates", "custom quotes"
-
-8) Output Format:
-Return a VALID JSON object with EXACTLY this structure:
-
+OUTPUT (valid JSON only, no code fences):
 {
-    "title": "SEO-optimized H1 title (max 80 chars)",
+    "title": "H1 (max 80 chars) — specific and curiosity-driven",
     "slug": "url-friendly-slug",
-    "excerpt": "Write a UNIQUE SEO-optimized excerpt (2-3 sentences, 250-350 characters). Include the primary keyword naturally, mention a specific benefit or pain point, and add local context ({$cityName}). MUST be different from the first paragraph of content. Write like a human, not AI. No fluff. Do NOT include {{PHONE_LINK}}.",
-    "content": "Write 2000-3000 words of HIGH-QUALITY SEO blog content in markdown format. Include proper heading hierarchy (## H2, ### H3), bullet points, and structured content. Include CTAs with phone number {{PHONE_LINK}}.",
-    "meta_title": "SEO title (50-60 chars)",
-    "meta_description": "Meta description (120-160 chars)",
+    "excerpt": "2-3 sentences, 200-300 chars. State what the post covers and who it's for. No CTA, no phone placeholder.",
+    "content": "Markdown. Length as needed, not padded. Includes one {{PHONE_LINK}} near the end and 2-3 {{SERVICE_LINK:type}} links.",
+    "meta_title": "50-60 chars",
+    "meta_description": "140-160 chars, concrete",
     "focus_keyword": "primary focus keyword",
-    "secondary_keywords": ["keyword1", "keyword2", "keyword3"],
+    "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
 }
-
-Constraints:
-- Focus ONLY on USA audience
-- Content must be 100% unique
-- Avoid fluff — provide real value
-- Optimize for ranking + conversions
-- Do NOT output anything outside the defined JSON structure
-- Do NOT use markdown code fences
-
-Self-check before output:
-- [ ] Keyword strategy applied correctly
-- [ ] Content is 2000+ words
-- [ ] CTAs included with phone number {{PHONE_LINK}}
-- [ ] Local SEO optimized
-- [ ] JSON is complete and valid
 PROMPT;
 
         try {

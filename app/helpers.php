@@ -9,6 +9,46 @@ if (! function_exists('phone_raw')) {
     }
 }
 
+if (! function_exists('business_is_open_now')) {
+    /**
+     * Whether the business is currently open according to config/contact.php
+     * hours (server-side evaluation in the configured business timezone).
+     */
+    function business_is_open_now(): bool
+    {
+        try {
+            $tz = config('contact.timezone', 'America/Chicago');
+            $now = \Carbon\Carbon::now($tz);
+
+            [$openH, $openM] = array_pad(explode(':', (string) config('contact.hours_open', '07:00')), 2, '0');
+            [$closeH, $closeM] = array_pad(explode(':', (string) config('contact.hours_close', '20:00')), 2, '0');
+
+            $openAt = $now->copy()->setTime((int) $openH, (int) $openM, 0);
+            $closeAt = $now->copy()->setTime((int) $closeH, (int) $closeM, 0);
+
+            return $now->greaterThanOrEqualTo($openAt) && $now->lessThan($closeAt);
+        } catch (\Throwable $e) {
+            return true; // fail open — better to say "we're open" than block a would-be caller
+        }
+    }
+}
+
+if (! function_exists('business_opens_at_label')) {
+    /**
+     * Human label like "7 AM" for the configured opening time.
+     * Used in the after-hours announcement banner.
+     */
+    function business_opens_at_label(): string
+    {
+        try {
+            $open = config('contact.hours_open', '07:00');
+            return \Carbon\Carbon::createFromFormat('H:i', $open)->format('g A');
+        } catch (\Throwable $e) {
+            return '7 AM';
+        }
+    }
+}
+
 if (! function_exists('phone_display')) {
     function phone_display(): string
     {

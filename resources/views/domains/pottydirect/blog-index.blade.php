@@ -89,7 +89,7 @@
                             <a href="{{ route('blog.show', $post->slug) }}" class="block">
                                 @if($post->featured_image)
                                     <div class="relative aspect-[16/9] overflow-hidden">
-                                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                         @if($post->category)
                                             <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-white bg-emerald-600 rounded-full">{{ $post->category->name }}</span>
                                         @endif

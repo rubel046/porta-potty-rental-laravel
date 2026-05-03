@@ -15,7 +15,14 @@ class LeadController extends Controller
             'phone' => 'required|string|max:20',
             'zip' => 'nullable|string|max:10',
             'service_type' => 'nullable|string|max:50',
+            'source' => 'nullable|string|max:100',
+            'website' => 'nullable|max:0', // honeypot — bots fill visible-hidden fields
         ]);
+
+        // Silently accept and drop honeypot hits so scrapers can't detect the filter
+        if (! empty($request->input('website'))) {
+            return back()->with('success', 'thanks');
+        }
 
         $lead = Lead::create([
             'name' => $validated['name'],
@@ -23,10 +30,14 @@ class LeadController extends Controller
             'zip' => $validated['zip'] ?? null,
             'service_type' => $validated['service_type'] ?? null,
             'status' => Lead::STATUS_PENDING,
-            'source' => 'homepage',
+            'source' => $validated['source'] ?? 'web-form',
         ]);
 
-        Log::info('New lead created from homepage', ['lead_id' => $lead->id, 'phone' => $lead->phone]);
+        Log::info('New lead captured', [
+            'lead_id' => $lead->id,
+            'source' => $lead->source,
+            'phone' => $lead->phone,
+        ]);
 
         return back()
             ->with('success', $lead->phone)

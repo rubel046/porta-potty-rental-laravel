@@ -4,6 +4,7 @@
 
 use App\Http\Middleware\DomainMiddleware;
 use App\Http\Middleware\RedirectToCity;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TrackTrafficSource;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             DomainMiddleware::class,
             TrackTrafficSource::class,
             RedirectToCity::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->trustProxies(at: '*');

@@ -13,7 +13,8 @@ class ServicePageController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ServicePage::with('city.state');
+        $query = ServicePage::with('city.state')
+            ->where('domain_id', $this->currentDomainId());
 
         if ($request->filled('search')) {
             $query->where('slug', 'like', '%'.$request->search.'%');
@@ -42,6 +43,7 @@ class ServicePageController extends Controller
 
     public function edit(ServicePage $servicePage)
     {
+        $this->authorizeDomain($servicePage);
         $servicePage->load('city.state');
 
         return view('admin.service-pages.edit', ['page' => $servicePage]);
@@ -49,6 +51,7 @@ class ServicePageController extends Controller
 
     public function show(ServicePage $servicePage)
     {
+        $this->authorizeDomain($servicePage);
         $servicePage->load('city.state');
 
         return view('admin.service-pages.show', ['servicePage' => $servicePage]);
@@ -56,6 +59,8 @@ class ServicePageController extends Controller
 
     public function quickView(ServicePage $servicePage)
     {
+        $this->authorizeDomain($servicePage);
+
         return response()->json([
             'h1_title' => $servicePage->h1_title,
             'meta_title' => $servicePage->meta_title,
@@ -69,6 +74,8 @@ class ServicePageController extends Controller
 
     public function update(Request $request, ServicePage $servicePage)
     {
+        $this->authorizeDomain($servicePage);
+
         $domain = $servicePage->domain ?? Domain::current();
         $validTypes = $domain?->getServiceTypes() ?? [];
 
@@ -110,6 +117,8 @@ class ServicePageController extends Controller
 
     public function destroy(ServicePage $servicePage)
     {
+        $this->authorizeDomain($servicePage);
+
         $cityName = $servicePage->city->name;
         $type = $servicePage->service_type;
         $servicePage->delete();
@@ -126,8 +135,29 @@ class ServicePageController extends Controller
             return redirect()->back()->with('error', 'No pages selected');
         }
 
-        $count = ServicePage::whereIn('id', $pageIds)->delete();
+        // Scope to current domain — don't allow bulk-deleting another tenant's pages.
+        $count = ServicePage::whereIn('id', $pageIds)
+            ->where('domain_id', $this->currentDomainId())
+            ->delete();
 
         return redirect()->back()->with('success', "Deleted {$count} pages!");
+    }
+
+    /**
+     * Abort 404 if the ServicePage doesn't belong to the currently selected domain.
+     * Uses 404 (not 403) to avoid leaking the existence of another tenant's IDs.
+     */
+    protected function authorizeDomain(ServicePage $page): void
+    {
+        $domainId = $this->currentDomainId();
+
+        if ($domainId && $page->domain_id !== $domainId) {
+            abort(404);
+        }
+    }
+
+    protected function currentDomainId(): ?int
+    {
+        return Domain::current()?->id;
     }
 }

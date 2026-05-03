@@ -7,12 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class CityObserver
 {
-    public function created(City $city): void
-    {
-        $this->clearCache($city);
-    }
-
-    public function updated(City $city): void
+    public function saved(City $city): void
     {
         $this->clearCache($city);
     }
@@ -24,10 +19,21 @@ class CityObserver
 
     protected function clearCache(City $city): void
     {
-        $domainId = $city->domains->first()?->id ?? 'default';
-        Cache::forget("featured_cities_{$domainId}");
-        Cache::forget("top_cities_for_schema_{$domainId}");
-        Cache::forget('active_states');
-        Cache::forget("page_{$city->slug}");
+        // Forget homepage aggregates across all domains this city belongs to
+        foreach ($city->domains as $domain) {
+            Cache::forget("home_top_cities_{$domain->id}");
+            Cache::forget("home_stats_{$domain->id}");
+            Cache::forget("locations_states_{$domain->id}");
+        }
+
+        Cache::forget('home_top_cities_default');
+        Cache::forget('home_stats_default');
+        Cache::forget('locations_states_default');
+        Cache::forget('home_active_states_default');
+
+        // Flush per-service-page data caches for every page belonging to this city
+        foreach ($city->servicePages as $page) {
+            Cache::forget("service_data_{$page->id}");
+        }
     }
 }

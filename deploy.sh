@@ -8,6 +8,7 @@ php artisan optimize:clear
 git pull origin main
 composer install --optimize-autoloader --no-dev
 rm -rf public/build
+npm ci
 npm run build
 php artisan migrate --force
 
@@ -20,6 +21,7 @@ php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan event:cache
 php artisan queue:restart
 
 php artisan up

@@ -37,6 +37,32 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PageController::class, 'home'])
     ->name('home');
 
+// Dynamic robots.txt — sitemap URL adapts to current host (multi-tenant safe)
+Route::get('/robots.txt', function () {
+    $sitemap = url('/sitemap.xml');
+    $body = <<<TXT
+User-agent: *
+Allow: /
+
+# Disallow admin paths
+Disallow: /admin/
+Disallow: /_debugbar/
+Disallow: /telescope/
+
+# Disallow API/webhook endpoints
+Disallow: /api/
+Disallow: /webhook/
+Disallow: /login
+Disallow: /register
+Disallow: /password/reset
+
+Sitemap: {$sitemap}
+
+TXT;
+
+    return response($body, 200, ['Content-Type' => 'text/plain']);
+})->name('robots');
+
 // Near Me redirects for SEO
 Route::get('/porta-potty-near-me', fn () => redirect('/', 301));
 Route::get('/porta-potty-rental-near-me', fn () => redirect('/', 301));
@@ -94,8 +120,9 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('terms');
 
-// Lead Form Submission (public)
+// Lead Form Submission (public) — 5 POSTs per minute per IP to deter spam
 Route::post('/lead', [LeadController::class, 'store'])
+    ->middleware('throttle:5,1')
     ->name('lead.store');
 
 /*

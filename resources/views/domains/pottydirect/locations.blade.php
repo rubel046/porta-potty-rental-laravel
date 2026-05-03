@@ -54,8 +54,8 @@ $websiteSchema = [
     <section class="relative py-12 sm:py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         <div class="absolute inset-0 opacity-10 desktop-only">
-            <div class="absolute top-10 right-10 sm:right-20 text-[100px] sm:text-[150px] md:text-[180px]">📍</div>
-            <div class="absolute bottom-10 left-10 text-[80px] sm:text-[100px] md:text-[120px]">🚽</div>
+            
+            
         </div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] sm:w-[350px] md:w-[500px] h-[250px] sm:h-[350px] md:h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
@@ -66,10 +66,10 @@ $websiteSchema = [
             <p class="text-base sm:text-lg md:text-xl text-slate-300 max-w-xl mx-auto mb-5 sm:mb-6">
                 Find porta potty rental in your city across the United States
             </p>
-            <div class="mt-5 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-400">
-                <span class="bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">🚚 Same-Day</span>
-                <span class="bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">💰 No Fees</span>
-                <span class="bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">✅ Licensed</span>
+            <div class="mt-5 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-300">
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"><x-icon name="truck" class="w-3.5 h-3.5 text-emerald-400" />Same-Day</span>
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"><x-icon name="currency-dollar" class="w-3.5 h-3.5 text-emerald-400" />No Fees</span>
+                <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"><x-icon name="shield-check" class="w-3.5 h-3.5 text-emerald-400" />Licensed</span>
             </div>
         </div>
     </section>
@@ -88,7 +88,7 @@ $websiteSchema = [
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-5 sm:mb-6">
                     <span class="inline-flex items-center gap-2 bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-3">
-                        ⭐ Most Popular
+                        Most Popular
                     </span>
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Top Requested Locations</h2>
                     <p class="text-sm text-slate-500">These cities have the highest demand for porta potty rentals</p>
@@ -100,7 +100,7 @@ $websiteSchema = [
                             <a href="{{ url($cityPage->slug) }}"
                                class="bg-white hover:bg-amber-50 border border-slate-200 hover:border-amber-300
                                       rounded-xl p-3 sm:p-4 text-center transition-all hover:shadow-lg group">
-                                <div class="text-2xl sm:text-3xl mb-1 sm:mb-2">📍</div>
+                                
                                 <div class="font-semibold text-slate-800 text-sm sm:text-base group-hover:text-amber-700">{{ $city->name }}</div>
                                 <div class="text-xs text-slate-400">{{ $city->state->code ?? '' }}</div>
                             </a>
@@ -234,15 +234,15 @@ $websiteSchema = [
             {{-- Stats --}}
             <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-12 text-xs sm:text-sm">
                 <div class="flex items-center gap-2 text-slate-600">
-                    <span class="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm sm:text-base">🏛️</span>
+                    <span class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg></span>
                     <span><strong class="text-slate-800">{{ $states->count() }}</strong> States</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
-                    <span class="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm sm:text-base">🏙️</span>
+                    <span class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18"/></svg></span>
                     <span><strong class="text-slate-800">{{ $states->sum(fn($s) => $s->cities->count()) }}</strong> Cities</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-600">
-                    <span class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">🚚</span>
+                    <span class="w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0"/></svg></span>
                     <span>Same-Day Delivery</span>
                 </div>
             </div>
@@ -279,7 +279,7 @@ $websiteSchema = [
                                        data-zip="{{ $city->zip_codes ?? '' }}">
                                         <span class="flex items-center gap-1.5 sm:gap-2">
                                             <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 group-hover:bg-amber-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs">
-                                                📍
+
                                             </span>
                                             <span>{{ $city->name }}</span>
                                         </span>
@@ -290,7 +290,7 @@ $websiteSchema = [
                                 @else
                                     <div class="bg-slate-50 border border-slate-100 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm text-slate-400 flex flex-col">
                                         <span class="flex items-center gap-1.5 sm:gap-2">
-                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs">📍</span>
+                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg></span>
                                             {{ $city->name }}
                                         </span>
                                         @if($city->population)
@@ -366,7 +366,7 @@ $websiteSchema = [
     {{-- CTA --}}
     <section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
         <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 left-10 text-[200px]">🚽</div>
+            
         </div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-3xl"></div>
 
@@ -376,13 +376,15 @@ $websiteSchema = [
                 We're expanding! Call us — we may still serve your area.
             </p>
             <a href="tel:{{ domain_phone_raw() }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
+               data-tracking-label="locations-final"
+               class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400
                       text-white text-2xl md:text-3xl font-bold
-                      py-4 px-12 rounded-full shadow-2xl shadow-amber-500/30
-                      transition-all hover:scale-105 animate-pulse">
-                📞 {{ domain_phone_display() }}
+                      py-4 px-10 rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30
+                      transition-all hover:scale-[1.02] min-h-[44px]">
+                <x-icon name="phone" class="w-7 h-7" />
+                {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Free Quote</p>
+            <p class="mt-6 text-slate-400 text-sm">Answered in under 30 seconds · Free quote</p>
         </div>
     </section>
 
@@ -402,7 +404,7 @@ $websiteSchema = [
     <section class="py-10 sm:py-12 px-3 sm:px-4 bg-slate-50 border-t border-slate-200">
         <div class="max-w-4xl mx-auto text-center">
             <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-4 sm:mb-6 flex items-center justify-center gap-2">
-                <span>🗺️</span> Our Service Coverage
+                Our Service Coverage
             </h3>
             <div class="relative bg-white rounded-2xl shadow-lg border border-slate-200 p-4 sm:p-6">
                 <svg viewBox="0 0 960 600" class="w-full h-auto max-h-[300px]" preserveAspectRatio="xMidYMid meet">

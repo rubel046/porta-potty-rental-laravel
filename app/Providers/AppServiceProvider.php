@@ -11,8 +11,10 @@ use App\Models\Faq;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Models\Testimonial;
+use App\Observers\BlogPostObserver;
 use App\Observers\CityObserver;
 use App\Observers\FaqObserver;
+use App\Observers\ServicePageObserver;
 use App\Observers\TestimonialObserver;
 use App\Services\AnthropicService;
 use App\Services\GeminiService;
@@ -58,7 +60,26 @@ class AppServiceProvider extends ServiceProvider
 
         $this->sharePhoneVariables();
         $this->shareDomainData();
+        $this->shareReviewData();
         $this->registerSitemapObservers();
+    }
+
+    protected function shareReviewData(): void
+    {
+        try {
+            // Only share a review count when explicitly configured.
+            // See config/reviews.php — falling back to on-site testimonial count
+            // would treat AI-generated testimonials as real reviews (policy risk).
+            $rating = config('reviews.rating', 4.9);
+            $count = config('reviews.count'); // explicit env value or null
+
+            View::share([
+                'reviewRating' => $rating,
+                'reviewCount' => $count, // null = do not emit Review/AggregateRating schema
+            ]);
+        } catch (Throwable $e) {
+            // Skip during migrations
+        }
     }
 
     protected function sharePhoneVariables(): void
@@ -110,13 +131,9 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerSitemapObservers(): void
     {
-        ServicePage::observe(function () {
-            SitemapController::invalidateCache();
-        });
-
-        BlogPost::observe(function () {
-            SitemapController::invalidateCache();
-        });
+        // ServicePage and BlogPost observers invalidate the sitemap themselves.
+        ServicePage::observe(ServicePageObserver::class);
+        BlogPost::observe(BlogPostObserver::class);
 
         BlogCategory::observe(function () {
             SitemapController::invalidateCache();

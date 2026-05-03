@@ -92,6 +92,12 @@ class GenerateDailyBlogPost extends Command
                 $counter++;
             }
 
+            // Auto-publish is controlled by env flag. Default: save as DRAFT so a human
+            // reviews before the post goes live. Google's helpful-content guidance and
+            // review/scaled-content policies penalize unattended AI publishing at scale.
+            // Set BLOG_AUTO_PUBLISH=true in .env to restore auto-publish behavior.
+            $autoPublish = filter_var(env('BLOG_AUTO_PUBLISH', false), FILTER_VALIDATE_BOOLEAN);
+
             // Create blog post
             $post = BlogPost::create([
                 'title' => $result['title'] ?? '',
@@ -105,11 +111,16 @@ class GenerateDailyBlogPost extends Command
                 'blog_category_id' => $category->id,
                 'city_id' => $city->id,
                 'domain_id' => $domain->id,
-                'is_published' => true,
-                'published_at' => now(),
+                'is_published' => $autoPublish,
+                'published_at' => $autoPublish ? now() : null,
             ]);
 
-            $this->info("  Created post: {$post->title} (ID: {$post->id})");
+            $this->info(sprintf(
+                '  Created post: %s (ID: %d, status: %s)',
+                $post->title,
+                $post->id,
+                $autoPublish ? 'PUBLISHED' : 'DRAFT — review in /admin before publishing'
+            ));
 
             // Sleep for 30 seconds before next domain post (avoid rate limiting)
             sleep(30);

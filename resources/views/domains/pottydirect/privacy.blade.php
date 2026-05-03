@@ -33,7 +33,7 @@ $organizationSchema = [
     <section class="relative py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 right-20 text-[180px]">🔒</div>
+            
         </div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
 
@@ -149,10 +149,12 @@ $organizationSchema = [
                     If you have questions about this privacy policy, please call us.
                 </p>
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
-                          text-white font-bold text-xl py-3 px-8 rounded-full
-                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30">
-                    📞 {{ domain_phone_display() }}
+                   data-tracking-label="privacy-cta"
+                   class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400
+                          text-white font-bold text-xl py-3 px-7 rounded-full
+                          transition hover:scale-[1.02] shadow-xl shadow-amber-500/30 ring-4 ring-amber-400/30 min-h-[44px]">
+                    <x-icon name="phone" class="w-5 h-5" />
+                    {{ domain_phone_display() }}
                 </a>
             </div>
         </div>

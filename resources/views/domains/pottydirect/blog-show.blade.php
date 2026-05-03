@@ -8,20 +8,30 @@
 @php
 $articleSchema = [
     "@context" => "https://schema.org",
-    "@type" => "Article",
+    "@type" => "BlogPosting",
     "headline" => $post->title,
     "description" => $post->seo_description ?? strip_tags($post->excerpt),
     "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),
-    "author" => ["@type" => "Organization", "name" => ($domain?->business_name ?? 'Potty Direct')],
+    "wordCount" => str_word_count(strip_tags($post->content ?? '')),
+    "articleSection" => $post->category?->name,
+    "keywords" => $post->focus_keyword,
+    "author" => [
+        "@type" => "Organization",
+        "name" => ($domain?->business_name ?? 'Potty Direct'),
+        "url" => url('/'),
+    ],
     "publisher" => [
         "@type" => "Organization",
         "name" => ($domain?->business_name ?? 'Potty Direct'),
         "logo" => ["@type" => "ImageObject", "url" => url('/logo.png')]
     ],
-    "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $post->url]
+    "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $post->url],
+    "inLanguage" => "en-US",
 ];
+// Drop any null values cleanly
+$articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== '');
 @endphp
 <script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
@@ -29,16 +39,18 @@ $articleSchema = [
 @section('content')
 
     {{-- Trust Banner --}}
-    <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
-            <div class="flex items-center gap-2">
-                <span class="text-amber-200">⭐</span>
-                <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
-            </div>
-            <span class="hidden md:inline text-amber-200">|</span>
-            <span>🏢 BBB A+ Rated</span>
-            <span class="hidden md:inline text-amber-200">|</span>
-            <span>🏗️ 25+ Years Experience</span>
+    <div class="bg-slate-900 text-white py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5 text-center md:text-left text-xs sm:text-sm">
+            @if(($reviewCount ?? 0) > 0)
+                <div class="flex items-center gap-2">
+                    <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                    <span class="font-semibold">{{ number_format($reviewRating ?? 4.9, 1) }}/5 ({{ $reviewCount }}+ Reviews)</span>
+                </div>
+                <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+            @endif
+            <span class="inline-flex items-center gap-1.5"><x-icon name="shield-check" class="w-4 h-4 text-emerald-400" />Licensed &amp; Insured</span>
+            <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+            <span class="inline-flex items-center gap-1.5"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
         </div>
     </div>
 
@@ -47,7 +59,7 @@ $articleSchema = [
         <header class="relative py-16 md:py-20 overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
             <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-10 right-10 text-[200px]">📝</div>
+                
             </div>
             <div class="absolute top-1/2 right-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl"></div>
 
@@ -107,11 +119,14 @@ $articleSchema = [
                 @if($post->featured_image)
                     <img src="{{ asset('storage/' . $post->featured_image) }}"
                          alt="{{ $post->title }}"
+                         loading="eager"
+                         fetchpriority="high"
+                         decoding="async"
                          class="w-full h-64 md:h-80 object-cover rounded-2xl mb-10 shadow-lg">
                 @else
-                    <div class="h-64 md:h-80 bg-gradient-to-br from-blue-100 via-emerald-50 to-blue-50
-                                rounded-2xl flex items-center justify-center text-8xl mb-10 shadow-inner">
-                        🚽
+                    <div class="h-64 md:h-80 bg-gradient-to-br from-emerald-50 to-emerald-100
+                                rounded-2xl flex items-center justify-center mb-10 shadow-inner">
+                        <x-icon name="home" class="w-16 h-16 text-emerald-400" />
                     </div>
                 @endif
 
@@ -134,33 +149,41 @@ $articleSchema = [
                 </div>
 
                 {{-- CTA Box --}}
-                <div class="mt-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-center">
-                    <h3 class="text-2xl font-bold text-white mb-3">Need a Quote?</h3>
+                <div class="mt-12 bg-slate-900 rounded-2xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-3">Need a quote?</h3>
                     <p class="text-slate-400 mb-6">Get same-day delivery on porta potty rentals.</p>
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-xl
-                              py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg">
-                        📞 {{ domain_phone_display() }}
+                       data-tracking-label="blog-cta"
+                       class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold text-lg
+                              py-3 px-7 rounded-full hover:scale-[1.02] transition shadow-lg shadow-amber-500/30 ring-4 ring-amber-400/30 min-h-[44px]">
+                        <x-icon name="phone" class="w-5 h-5" />
+                        {{ domain_phone_display() }}
                     </a>
                 </div>
 
                 {{-- Related Services --}}
                 <div class="mt-12 grid sm:grid-cols-3 gap-4">
                     <a href="{{ route('services') }}"
-                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
-                        <div class="text-3xl mb-2">🚽</div>
+                       class="bg-white hover:bg-slate-50 p-6 rounded-xl text-center transition border border-slate-200 hover:border-emerald-300 hover:shadow-md">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-3">
+                            <x-icon name="shield-check" class="w-6 h-6" />
+                        </div>
                         <h4 class="font-bold text-slate-800">Our Services</h4>
-                        <p class="text-sm text-slate-600 mt-1">Standard, Deluxe, ADA & more</p>
+                        <p class="text-sm text-slate-600 mt-1">Standard, Deluxe, ADA &amp; more</p>
                     </a>
                     <a href="{{ route('locations') }}"
-                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
-                        <div class="text-3xl mb-2">📍</div>
+                       class="bg-white hover:bg-slate-50 p-6 rounded-xl text-center transition border border-slate-200 hover:border-emerald-300 hover:shadow-md">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-3">
+                            <x-icon name="map-pin" class="w-6 h-6" />
+                        </div>
                         <h4 class="font-bold text-slate-800">Find Locations</h4>
                         <p class="text-sm text-slate-600 mt-1">Browse cities we serve</p>
                     </a>
                     <a href="{{ route('pricing') }}"
-                       class="bg-amber-50 hover:bg-amber-100 p-6 rounded-xl text-center transition border border-amber-100">
-                        <div class="text-3xl mb-2">💰</div>
+                       class="bg-white hover:bg-slate-50 p-6 rounded-xl text-center transition border border-slate-200 hover:border-emerald-300 hover:shadow-md">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-3">
+                            <x-icon name="currency-dollar" class="w-6 h-6" />
+                        </div>
                         <h4 class="font-bold text-slate-800">View Pricing</h4>
                         <p class="text-sm text-slate-600 mt-1">Transparent rates</p>
                     </a>

@@ -7,12 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class FaqObserver
 {
-    public function created(Faq $faq): void
-    {
-        $this->clearCache($faq);
-    }
-
-    public function updated(Faq $faq): void
+    public function saved(Faq $faq): void
     {
         $this->clearCache($faq);
     }
@@ -24,13 +19,18 @@ class FaqObserver
 
     protected function clearCache(Faq $faq): void
     {
-        if ($faq->city_id) {
-            $city = $faq->city;
-            if ($city) {
-                Cache::forget("faqs_{$city->id}_{$faq->service_type}");
-                Cache::forget("faqs_{$city->id}_general");
-                Cache::forget("page_{$city->slug}");
-            }
+        if (! $faq->city_id) {
+            return;
+        }
+
+        $city = $faq->city;
+        if (! $city) {
+            return;
+        }
+
+        // Flush all service-page data bundles for this city (they include schema referencing FAQs via view)
+        foreach ($city->servicePages as $page) {
+            Cache::forget("service_data_{$page->id}");
         }
     }
 }

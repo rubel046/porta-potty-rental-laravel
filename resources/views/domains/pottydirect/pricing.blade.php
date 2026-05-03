@@ -68,18 +68,20 @@ $faqSchema = [
 @section('content')
 
 {{-- Trust Banner --}}
-<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-amber-200">⭐</span>
-            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
-        </div>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>🏢 BBB A+ Rated</span>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>🏗️ 25+ Years Experience</span>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>🚚 Same-Day Delivery</span>
+<div class="bg-slate-900 text-white py-3">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5 text-center md:text-left text-xs sm:text-sm">
+        @if(($reviewCount ?? 0) > 0)
+            <div class="flex items-center gap-2">
+                <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                <span class="font-semibold">{{ number_format($reviewRating ?? 4.9, 1) }}/5 ({{ $reviewCount }}+ Reviews)</span>
+            </div>
+            <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+        @endif
+        <span class="inline-flex items-center gap-1.5"><x-icon name="shield-check" class="w-4 h-4 text-emerald-400" />Licensed &amp; Insured</span>
+        <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
+        <span class="hidden md:inline text-slate-600" aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" />No Hidden Fees</span>
     </div>
 </div>
 
@@ -96,11 +98,11 @@ $faqSchema = [
             Transparent pricing with <strong class="text-white">no hidden fees</strong>. 
             Get competitive rates on all portable toilet rental options. Call for your personalized quote.
         </p>
-        <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-300">
-            <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">💰 No Hidden Fees</span>
-            <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">📞 Free Quotes</span>
-            <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">🚚 Same-Day Delivery</span>
-            <span class="bg-white/10 backdrop-blur px-4 py-2 rounded-full">📦 Volume Discounts</span>
+        <div class="flex flex-wrap justify-center gap-3 text-sm text-slate-300">
+            <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" />No Hidden Fees</span>
+            <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="phone" class="w-4 h-4 text-emerald-400" />Free Quotes</span>
+            <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="truck" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
+            <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="cube" class="w-4 h-4 text-emerald-400" />Volume Discounts</span>
         </div>
     </div>
 </section>
@@ -131,12 +133,13 @@ $faqSchema = [
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($pricingInfo as $info)
-                <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-amber-300 hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-amber-50 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-4xl mb-4">{{ $info['icon'] }}</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 group relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <x-icon name="{{ $info['icon'] }}" class="w-6 h-6" />
+                    </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $info['title'] }}</h3>
                     <p class="text-slate-600 text-sm mb-4 leading-relaxed">{{ $info['description'] }}</p>
-                    
+
                     <div class="mb-4">
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Best For</span>
                         <p class="text-sm text-slate-600">{{ $info['best_for'] }}</p>
@@ -146,17 +149,19 @@ $faqSchema = [
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Includes</span>
                         <ul class="mt-2 space-y-1">
                             @foreach($info['includes'] as $include)
-                                <li class="flex items-center gap-2 text-sm text-slate-600">
-                                    <span class="text-amber-500">✓</span> {{ $include }}
+                                <li class="flex items-start gap-2 text-sm text-slate-600">
+                                    <x-icon name="check" class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                    <span>{{ $include }}</span>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
 
                     <a href="tel:{{ domain_phone_raw() }}"
-                       class="block w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-700
-                              text-white text-center font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02]">
-                        📞 {{ $info['cta'] }}
+                       data-tracking-label="pricing-card"
+                       class="flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg shadow-amber-500/25 hover:scale-[1.02] min-h-[44px]">
+                        <x-icon name="phone" class="w-4 h-4" />
+                        {{ $info['cta'] }}
                     </a>
                 </div>
             @endforeach
@@ -184,30 +189,48 @@ $faqSchema = [
 </section>
 
 {{-- Why Choose Us --}}
-<section class="py-12 md:py-16 px-4 bg-gradient-to-r from-amber-500 to-amber-600">
-    <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-white mb-4">Why Our Pricing Stands Out</h2>
-        
-        <div class="grid md:grid-cols-2 gap-6 mt-8">
-            <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
-                <div class="text-3xl mb-3">💰</div>
-                <h3 class="font-bold text-white mb-2">No Hidden Fees</h3>
-                <p class="text-amber-100 text-sm">The price we quote is the price you pay. No surprise charges on your final bill.</p>
+<section class="py-14 md:py-20 px-4 bg-slate-50">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-slate-900 mb-3 text-balance">Why our pricing stands out</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5">
+            <div class="bg-white rounded-xl p-6 border border-slate-200 flex gap-4">
+                <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <x-icon name="currency-dollar" class="w-6 h-6" />
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-1">No hidden fees</h3>
+                    <p class="text-slate-600 text-sm">The price we quote is the price you pay. No surprise charges on your final bill.</p>
+                </div>
             </div>
-            <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
-                <div class="text-3xl mb-3">📦</div>
-                <h3 class="font-bold text-white mb-2">Volume Discounts</h3>
-                <p class="text-amber-100 text-sm">Rent more and save more. We offer competitive pricing for large orders.</p>
+            <div class="bg-white rounded-xl p-6 border border-slate-200 flex gap-4">
+                <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <x-icon name="cube" class="w-6 h-6" />
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-1">Volume discounts</h3>
+                    <p class="text-slate-600 text-sm">Rent more and save more. Competitive pricing for large orders.</p>
+                </div>
             </div>
-            <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
-                <div class="text-3xl mb-3">📅</div>
-                <h3 class="font-bold text-white mb-2">Flexible Terms</h3>
-                <p class="text-amber-100 text-sm">Daily, weekly, monthly options. Choose what works best for your project.</p>
+            <div class="bg-white rounded-xl p-6 border border-slate-200 flex gap-4">
+                <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <x-icon name="calendar" class="w-6 h-6" />
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-1">Flexible terms</h3>
+                    <p class="text-slate-600 text-sm">Daily, weekly, monthly options. Pick what works best for your project.</p>
+                </div>
             </div>
-            <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-left">
-                <div class="text-3xl mb-3">🧹</div>
-                <h3 class="font-bold text-white mb-2">Servicing Included</h3>
-                <p class="text-amber-100 text-sm">Weekly cleaning, pumping, and restocking at no extra cost.</p>
+            <div class="bg-white rounded-xl p-6 border border-slate-200 flex gap-4">
+                <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <x-icon name="sparkles" class="w-6 h-6" />
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-1">Servicing included</h3>
+                    <p class="text-slate-600 text-sm">Weekly cleaning, pumping, and restocking at no extra cost.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -263,29 +286,25 @@ $faqSchema = [
 </section>
 
 {{-- CTA --}}
-<section class="py-16 md:py-20 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute top-10 left-10 text-[200px]">📞</div>
-    </div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
-
-    <div class="relative max-w-3xl mx-auto">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">Get Your Free Quote Today</h2>
-        <p class="text-xl text-slate-400 mb-4">
-            Call us for a <strong class="text-white">free, no-obligation quote</strong>. 
-            We'll help you find the best pricing for your needs.
+<section class="py-16 md:py-20 px-4 bg-slate-900 text-white text-center">
+    <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Get your free quote today</h2>
+        <p class="text-lg text-slate-400 mb-3">
+            Call us for a <strong class="text-white">free, no-obligation quote</strong>. We'll help you find the best pricing for your needs.
         </p>
-        <p class="text-slate-300 mb-8">
-            Serving construction sites, events, weddings, and more across the USA
+        <p class="text-slate-400 mb-8 text-sm">
+            Serving construction sites, events, weddings, and more across the USA.
         </p>
         <a href="tel:{{ domain_phone_raw() }}"
-           class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
-                  text-white text-3xl md:text-4xl font-bold py-5 px-14
-                  rounded-full shadow-2xl shadow-amber-500/40
-                  transition-all hover:scale-105 animate-pulse">
-            📞 {{ domain_phone_display() }}
+           data-tracking-label="pricing-final"
+           class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400
+                  text-white text-2xl md:text-3xl font-bold py-5 px-10
+                  rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30
+                  transition-all hover:scale-[1.02] min-h-[44px]">
+            <x-icon name="phone" class="w-7 h-7 md:w-8 md:h-8" />
+            {{ domain_phone_display() }}
         </a>
-        <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • No Obligation • No Hidden Fees</p>
+        <p class="mt-6 text-slate-400 text-sm">No obligation · No hidden fees · Answered in under 30 seconds</p>
     </div>
 </section>
 

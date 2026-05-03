@@ -9,6 +9,11 @@
 @push('schema')
 @php
 $domain = \App\Models\Domain::current();
+$serviceLabel = $domain?->getServiceTypeLabel($servicePage->service_type) ?? 'Porta Potty Rental';
+$priceRanges = config('service_pricing.ranges', []);
+$priceRange = $priceRanges[$servicePage->service_type] ?? config('service_pricing.fallback');
+$pricingEnabled = (bool) config('service_pricing.enabled', false);
+
 $breadcrumbSchema = [
     "@context" => "https://schema.org",
     "@type" => "BreadcrumbList",
@@ -19,32 +24,60 @@ $breadcrumbSchema = [
     ]
 ];
 
-$reviewSchema = null;
-if ($testimonials->isNotEmpty()) {
-    $reviewSchema = [
-        "@context" => "https://schema.org",
-        "@type" => "AggregateRating",
-        "itemReviewed" => [
-            "@type" => "LocalBusiness",
-            "name" => $domain?->business_name ?? "Potty Direct",
-            "address" => [
-                "@type" => "PostalAddress",
-                "addressLocality" => $city->name,
-                "addressRegion" => $city->state->code,
-                "addressCountry" => "US"
-            ]
+$serviceSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "Service",
+    "serviceType" => $serviceLabel,
+    "name" => "{$serviceLabel} in {$city->name}, {$city->state->code}",
+    "description" => $servicePage->seo_description,
+    "dateModified" => optional($servicePage->updated_at)->toIso8601String(),
+    "provider" => [
+        "@type" => "LocalBusiness",
+        "name" => $domain?->business_name ?? "Potty Direct",
+        "telephone" => $servicePage->phone_raw,
+    ],
+    "areaServed" => [
+        "@type" => "City",
+        "name" => $city->name,
+        "containedInPlace" => [
+            "@type" => "State",
+            "name" => $city->state->name,
         ],
-        "ratingValue" => round($testimonials->avg('rating'), 1),
-        "reviewCount" => $testimonials->count(),
-        "bestRating" => 5
-    ];
-}
+    ],
+    "offers" => $pricingEnabled ? [
+        "@type" => "AggregateOffer",
+        "priceCurrency" => config('service_pricing.unit', 'USD'),
+        "lowPrice" => (string) $priceRange['low'],
+        "highPrice" => (string) $priceRange['high'],
+        "availability" => "https://schema.org/InStock",
+    ] : null,
+];
+$serviceSchema = array_filter($serviceSchema);
+
+// Speakable: tells voice assistants which parts of the page to read for
+// queries like "porta potty rental near me". Points at H1 and the FAQ section.
+$speakableSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "WebPage",
+    "url" => url($servicePage->slug),
+    "speakable" => [
+        "@type" => "SpeakableSpecification",
+        "cssSelector" => ["h1", "#faq"],
+    ],
+];
+
+// Review schema intentionally omitted. Testimonials displayed on the page are
+// AI-generated examples and must not be marked up as Review/AggregateRating
+// until a real-reviews pipeline (GBP sync, verified on-site reviews) exists.
+$reviewSchema = null;
 @endphp
 <script type="application/ld+json">{!! json_encode($schemaMarkup, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @if(!empty($faqSchema))
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endif
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($speakableSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @if($reviewSchema)
 <script type="application/ld+json">{!! json_encode($reviewSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endif
@@ -63,9 +96,12 @@ if ($testimonials->isNotEmpty()) {
             $prefix = 'pottydirect';
         }
 
-        $heroImages = collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
-            ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
-            ->toArray();
+        $heroImages = Cache::remember("hero_images_{$prefix}", 3600, function () use ($prefix) {
+            return collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
+                ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
+                ->values()
+                ->all();
+        });
         $randomHero = !empty($heroImages) ? $heroImages[array_rand($heroImages)] : $prefix . '/hero-banner-images/default.webp';
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
@@ -75,7 +111,7 @@ if ($testimonials->isNotEmpty()) {
         <div class="absolute inset-0">
             <img src="{{ $heroUrl }}" alt="Porta potty rental in {{ $city->name }}"
                  class="w-full h-full object-cover"
-                 width="1920" height="1080" loading="eager" decoding="async">
+                 width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async">
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60"></div>
         </div>
 
@@ -103,19 +139,26 @@ if ($testimonials->isNotEmpty()) {
                     {{ $servicePage->h1_title }}
                 </h1>
 
-                <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-5 sm:mb-8 max-w-xl">
+                <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-3 sm:mb-4 max-w-xl">
                     Clean, affordable portable toilets delivered to your
                     {{ $city->name }} location. Same-day delivery available.
                 </p>
 
+                <p class="text-xs text-slate-400 mb-5 sm:mb-7">
+                    <time datetime="{{ $servicePage->updated_at?->toIso8601String() }}">
+                        Last updated {{ $servicePage->updated_at?->format('F j, Y') }}
+                    </time>
+                </p>
+
                 {{-- CTA --}}
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                     <a href="tel:{{ $servicePage->phone_raw }}"
-                       class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
-                              text-lg sm:text-xl md:text-2xl md:text-3xl font-bold
-                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-amber-500/30
-                              transition-all hover:scale-105 flex items-center justify-center gap-2 sm:gap-3 min-h-[44px]">
-                        <span class="text-xl sm:text-2xl">📞</span>
+                       data-tracking-label="service-hero"
+                       class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400
+                              text-lg sm:text-xl md:text-2xl font-bold
+                              py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30
+                              transition-all hover:scale-[1.02] flex items-center justify-center gap-2 sm:gap-3 min-h-[44px]">
+                        <x-icon name="phone" class="w-5 h-5 sm:w-6 sm:h-6" />
                         {{ $servicePage->phone_display }}
                     </a>
                     <a href="{{ route('locations') }}"
@@ -124,24 +167,28 @@ if ($testimonials->isNotEmpty()) {
                     </a>
                 </div>
 
+                {{-- Trust microcopy directly under the phone CTA --}}
+                <p class="text-sm sm:text-base text-emerald-300 font-semibold mb-5 sm:mb-7 flex items-center gap-2">
+                    <x-icon name="check-circle" class="w-4 h-4 flex-shrink-0" />
+                    Answered in under 30 seconds by a real person &mdash; no robocalls, no call menu.
+                </p>
+
                 {{-- Trust Badges - Simplified on mobile --}}
-                <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-300">
-                    <span class="flex items-center gap-1"><span class="text-yellow-400 text-sm">⭐⭐⭐⭐⭐</span> <span class="hidden sm:inline">500+</span> Reviews</span>
-                    <span class="text-slate-600 hidden xsm:block">•</span>
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">Licensed & Insured</span><span class="sm:hidden">Licensed</span></span>
-                    <span class="text-slate-600 hidden xsm:block">•</span>
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">Same-Day Delivery</span><span class="sm:hidden">Same-Day</span></span>
-                    <span class="text-slate-600 hidden xsm:block">•</span>
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> <span class="hidden sm:inline">No Hidden Fees</span><span class="sm:hidden">No Fees</span></span>
+                <div class="flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-300">
+                    @if(($reviewCount ?? 0) > 0)
+                        <span class="flex items-center gap-1.5">
+                            <x-icon name="star" class="w-4 h-4 text-amber-400" />
+                            {{ number_format($reviewRating ?? 4.9, 1) }}/5 ({{ $reviewCount }}+ Reviews)
+                        </span>
+                        <span class="text-slate-600 hidden xsm:block" aria-hidden="true">·</span>
+                    @endif
+                    <span class="flex items-center gap-1.5"><x-icon name="shield-check" class="w-4 h-4 text-emerald-400" /><span class="hidden sm:inline">Licensed &amp; Insured</span><span class="sm:hidden">Licensed</span></span>
+                    <span class="text-slate-600 hidden xsm:block" aria-hidden="true">·</span>
+                    <span class="flex items-center gap-1.5"><x-icon name="truck" class="w-4 h-4 text-emerald-400" /><span class="hidden sm:inline">Same-Day Delivery</span><span class="sm:hidden">Same-Day</span></span>
+                    <span class="text-slate-600 hidden xsm:block" aria-hidden="true">·</span>
+                    <span class="flex items-center gap-1.5"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" /><span class="hidden sm:inline">No Hidden Fees</span><span class="sm:hidden">No Fees</span></span>
                 </div>
             </div>
-        </div>
-
-        {{-- Wave --}}
-        <div class="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
-                <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z" fill="white"/>
-            </svg>
         </div>
     </section>
 
@@ -175,15 +222,17 @@ if ($testimonials->isNotEmpty()) {
                     Call now for instant pricing on porta potty rental in {{ $city->name }}
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
-                   class="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
+                   data-tracking-label="service-midpage"
+                   class="inline-flex items-center gap-2 sm:gap-3 bg-amber-500 hover:bg-amber-400
                           text-white font-bold text-base sm:text-xl py-3 sm:py-4 px-6 sm:px-10 rounded-full
-                          transition-all hover:scale-105 shadow-xl shadow-amber-500/30 min-h-[44px]">
-                    📞 {{ $servicePage->phone_display }}
+                          transition-all hover:scale-[1.02] shadow-xl shadow-amber-500/30 ring-4 ring-amber-400/30 min-h-[44px]">
+                    <x-icon name="phone" class="w-5 h-5 sm:w-6 sm:h-6" />
+                    {{ $servicePage->phone_display }}
                 </a>
-                <div class="flex flex-wrap justify-center gap-3 mt-4 text-xs sm:text-sm text-slate-400">
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> Licensed & Insured</span>
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> Same-Day Delivery</span>
-                    <span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> No Hidden Fees</span>
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-5 text-xs sm:text-sm text-slate-400">
+                    <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-emerald-400" />Licensed &amp; Insured</span>
+                    <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-emerald-400" />Same-Day Delivery</span>
+                    <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-emerald-400" />No Hidden Fees</span>
                 </div>
             </div>
         </div>
@@ -199,8 +248,10 @@ if ($testimonials->isNotEmpty()) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     @foreach($testimonials as $testimonial)
                         <div class="bg-white border border-slate-200 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-lg transition-all">
-                            <div class="text-yellow-400 mb-3 sm:mb-4 text-sm sm:text-base">
-                                @for($i = 0; $i < $testimonial->rating; $i++)⭐@endfor
+                            <div class="flex items-center gap-0.5 text-amber-400 mb-3 sm:mb-4" aria-label="{{ $testimonial->rating }} out of 5 stars">
+                                @for($i = 0; $i < $testimonial->rating; $i++)
+                                    <x-icon name="star" class="w-4 h-4 fill-current" />
+                                @endfor
                             </div>
                             <p class="text-slate-700 mb-4 italic leading-relaxed text-sm sm:text-base">
                                 {!! $testimonial->content !!}
@@ -223,6 +274,11 @@ if ($testimonials->isNotEmpty()) {
         </section>
     @endif
 
+    {{-- Lead form — fallback for visitors who won't call cold --}}
+    <x-lead-form source="city-{{ $city->slug }}"
+                 :serviceType="$servicePage->service_type"
+                 :zipDefault="$city->zip_codes[0] ?? null" />
+
     {{-- FAQs --}}
     @if($faqs->isNotEmpty())
         <section id="faq" class="py-10 sm:py-12 md:py-16 px-3 sm:px-4">
@@ -232,11 +288,14 @@ if ($testimonials->isNotEmpty()) {
                 </h2>
                 <div class="space-y-3">
                     @foreach($faqs as $faq)
-                        <details class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
+                        @php
+                            $faqId = 'faq-' . ($faq->id ?? \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($faq->question, 50, '')));
+                        @endphp
+                        <details id="{{ $faqId }}" class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all group scroll-mt-24">
                             <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer
                                     font-semibold text-slate-800 hover:text-emerald-600 transition list-none text-sm sm:text-base">
-                                <span>{{ $faq->question }}</span>
-                                <span class="text-xl sm:text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
+                                <h3 class="text-sm sm:text-base font-semibold m-0 flex-1">{{ $faq->question }}</h3>
+                                <span aria-hidden="true" class="text-xl sm:text-2xl text-slate-400 group-open:rotate-45 group-open:text-emerald-500
                                      transition-all duration-300 ml-2 sm:ml-4 flex-shrink-0 bg-slate-100 group-hover:bg-emerald-100 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">+</span>
                             </summary>
                             <div class="px-4 sm:px-5 pb-4 sm:pb-5 text-slate-600 leading-relaxed text-sm sm:text-base">
@@ -292,7 +351,8 @@ if ($testimonials->isNotEmpty()) {
                            class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
                                   px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700
                                   hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2 min-h-[44px]">
-                            📍 {{ $nearbyCity->name }}, {{ $nearbyCity->state->code }}
+                            <x-icon name="map-pin" class="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                            {{ $nearbyCity->name }}, {{ $nearbyCity->state->code }}
                         </a>
                         @endif
                     @endforeach
@@ -312,15 +372,15 @@ if ($testimonials->isNotEmpty()) {
                     @foreach($relatedPosts as $post)
                         <a href="{{ $post->url }}"
                            class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group border border-slate-200">
-                            <div class="h-32 overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-50">
-                                @if($post->featured_image && Storage::disk('public')->exists($post->featured_image))
+                            <div class="h-32 overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
+                                @if($post->featured_image)
                                     <img src="{{ asset('storage/' . $post->featured_image) }}"
                                          alt="{{ $post->title }}"
+                                         loading="lazy"
+                                         decoding="async"
                                          class="w-full h-full object-cover">
                                 @else
-                                    <div class="h-full flex items-center justify-center text-4xl">
-                                        🚽
-                                    </div>
+                                    <x-icon name="home" class="w-10 h-10 text-emerald-400" />
                                 @endif
                             </div>
                             <div class="p-5">
@@ -340,27 +400,24 @@ if ($testimonials->isNotEmpty()) {
     @endif
 
     {{-- Final CTA --}}
-    <section class="py-16 md:py-24 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 left-10 text-[200px]">🚽</div>
-        </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl"></div>
-
+    <section class="py-16 md:py-24 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
-            <h2 class="text-3xl md:text-5xl font-extrabold mb-5">
-                Get Your Porta Potty Delivered in {{ $city->name }} Today
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-balance">
+                Get your porta potty delivered in {{ $city->name }} today
             </h2>
-            <p class="text-xl text-slate-400 mb-10">
-                Free quote • No hidden fees • Same-day delivery available
+            <p class="text-lg text-slate-400 mb-8 max-w-xl mx-auto">
+                Free quote · No hidden fees · Same-day delivery available
             </p>
             <a href="tel:{{ $servicePage->phone_raw }}"
-               class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500
-                      text-white text-3xl md:text-4xl font-bold py-5 px-14
-                      rounded-full shadow-2xl shadow-amber-500/40
-                      transition-all hover:scale-105 animate-pulse">
-                📞 {{ $servicePage->phone_display }}
+               data-tracking-label="service-final"
+               class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400
+                      text-white text-2xl md:text-3xl font-bold py-5 px-10
+                      rounded-full shadow-2xl shadow-amber-500/40 ring-4 ring-amber-400/30
+                      transition-all hover:scale-[1.02] min-h-[44px]">
+                <x-icon name="phone" class="w-7 h-7 md:w-8 md:h-8" />
+                {{ $servicePage->phone_display }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">24/7 Emergency • Operators Standing By</p>
+            <p class="mt-6 text-slate-400 text-sm">Answered in under 30 seconds by a real person.</p>
         </div>
     </section>
 @endsection

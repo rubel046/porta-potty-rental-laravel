@@ -69,6 +69,8 @@
                             @if($post->featured_image)
                                 <img src="{{ asset('storage/' . $post->featured_image) }}"
                                      alt="{{ $post->title }}"
+                                     loading="lazy"
+                                     decoding="async"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-xl opacity-50">&#x1FABD;</div>

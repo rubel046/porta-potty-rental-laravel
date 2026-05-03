@@ -100,7 +100,17 @@ class ServicePage extends Model
         $domain = $this->domain ?? Domain::current() ?? Domain::first();
         $serviceLabel = $domain ? $domain->getServiceTypeLabel($this->service_type) : 'Service Rental';
 
-        return "{$serviceLabel} in {$city->name}, {$state} | Same-Day Delivery";
+        // Phone in the title consistently lifts SERP CTR for local-service queries.
+        // Target length 55-60 chars — Google truncates ~60 on desktop.
+        $phone = $this->phone_display;
+        $base = "{$serviceLabel} {$city->name} {$state} · Same-Day · {$phone}";
+
+        // If that's too long, drop "Same-Day" before dropping the phone.
+        if (strlen($base) > 62) {
+            $base = "{$serviceLabel} {$city->name} {$state} · {$phone}";
+        }
+
+        return $base;
     }
 
     public function getSeoDescriptionAttribute(): string
@@ -114,7 +124,29 @@ class ServicePage extends Model
         $cityName = $this->city->name;
         $stateCode = $this->city->state->code;
 
-        return "{$serviceLabel} in {$cityName}, {$stateCode}. Same-day delivery available.";
+        // Price hint only when you've published real, verified price ranges.
+        // See config/service_pricing.php for the master switch.
+        $pricePhrase = '';
+        if (config('service_pricing.enabled', false)) {
+            $range = config('service_pricing.ranges.'.$this->service_type)
+                ?? config('service_pricing.fallback');
+            if ($range) {
+                $pricePhrase = "From \${$range['low']}/day. ";
+            }
+        }
+
+        $phone = domain_phone_display();
+
+        // Target 140-160 chars — fills SERP width without truncation.
+        $desc = "{$serviceLabel} in {$cityName}, {$stateCode}. {$pricePhrase}Same-day delivery, weekly service, no hidden fees. Call {$phone} — answered in 30 seconds.";
+
+        // Hard cap at 160, cut cleanly at last word
+        if (strlen($desc) > 160) {
+            $desc = rtrim(substr($desc, 0, 157)).'…';
+            $desc = preg_replace('/\s\S*?…$/', '…', $desc);
+        }
+
+        return $desc;
     }
 
     public function getH1TitleAttribute($value): string
@@ -158,9 +190,27 @@ class ServicePage extends Model
         $description = "Professional, reliable {$serviceLabel} in {$city->name}, {$state->code}. Same-day delivery available.";
         $description = str_replace('{{PHONE_LINK}}', domain_phone_display(), $description);
 
+        $opensAt = config('contact.hours_open', '07:00');
+        $closesAt = config('contact.hours_close', '20:00');
+
+        // Precise areaServed: GeoCircle ranks better in local pack than a City label
+        // when the service business travels to customers (vs. customers visiting a storefront).
+        $areaServed = $city->latitude && $city->longitude ? [
+            '@type' => 'GeoCircle',
+            'geoMidpoint' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => (float) $city->latitude,
+                'longitude' => (float) $city->longitude,
+            ],
+            'geoRadius' => '40000', // 40km — typical service-area truck range
+        ] : [
+            '@type' => 'City',
+            'name' => $city->name,
+        ];
+
         return [
             '@context' => 'https://schema.org',
-            '@type' => 'LocalBusiness',
+            '@type' => ['LocalBusiness', 'HomeAndConstructionBusiness'],
             'name' => "{$serviceLabel} {$city->name}",
             'description' => $description,
             'telephone' => $this->phone_raw,
@@ -170,12 +220,27 @@ class ServicePage extends Model
                 'addressRegion' => $state->code,
                 'addressCountry' => 'US',
             ],
-            'areaServed' => [
-                '@type' => 'City',
-                'name' => $city->name,
-            ],
+            'areaServed' => $areaServed,
             'priceRange' => '$$',
-            'openingHours' => 'Mo-Sa 07:00-20:00',
+            'openingHoursSpecification' => [[
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'opens' => $opensAt,
+                'closes' => $closesAt,
+            ]],
+            'contactPoint' => [[
+                '@type' => 'ContactPoint',
+                'telephone' => $this->phone_raw,
+                'contactType' => 'customer service',
+                'areaServed' => 'US',
+                'availableLanguage' => ['English'],
+                'hoursAvailable' => [[
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    'opens' => $opensAt,
+                    'closes' => $closesAt,
+                ]],
+            ]],
             'hasOfferCatalog' => [
                 '@type' => 'OfferCatalog',
                 'name' => "{$serviceLabel} Services - {$city->name}",

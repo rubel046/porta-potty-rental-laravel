@@ -29,12 +29,14 @@ $localBusinessSchema = [
             "closes" => "23:59"
         ]
     ],
-    "aggregateRating" => [
+    "aggregateRating" => ($reviewCount ?? 0) > 0 ? [
         "@type" => "AggregateRating",
-        "ratingValue" => "4.9",
-        "reviewCount" => "500"
-    ]
+        "ratingValue" => (string) ($reviewRating ?? 4.9),
+        "reviewCount" => (string) ($reviewCount ?? 0),
+        "bestRating" => "5"
+    ] : null
 ];
+$localBusinessSchema = array_filter($localBusinessSchema);
 
 $organizationSchema = [
     "@context" => "https://schema.org",
@@ -66,7 +68,7 @@ $organizationSchema = [
     <section class="relative py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 right-20 text-[180px]">ℹ️</div>
+            
         </div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl"></div>
 
@@ -86,44 +88,52 @@ $organizationSchema = [
             {{-- Who We Are --}}
             <div class="mb-12">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">🏢</div>
-                    <h2 class="text-2xl font-bold text-slate-800">Who We Are</h2>
+                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                        <x-icon name="building" class="w-5 h-5" />
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Who we are</h2>
                 </div>
                 <p class="text-slate-600 leading-relaxed text-lg">
-                    We are a nationwide portable toilet rental service dedicated to providing clean, affordable, and reliable sanitation solutions for construction sites, outdoor events, weddings, and more.
+                    We're a nationwide portable toilet rental service dedicated to clean, affordable, reliable sanitation solutions for construction sites, outdoor events, weddings, and more.
                 </p>
             </div>
 
             {{-- Our Mission --}}
             <div class="mb-12">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">🎯</div>
-                    <h2 class="text-2xl font-bold text-slate-800">Our Mission</h2>
+                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                        <x-icon name="shield-check" class="w-5 h-5" />
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Our mission</h2>
                 </div>
                 <p class="text-slate-600 leading-relaxed text-lg">
-                    To make portable sanitation simple, affordable, and hassle-free for every customer. Whether you need one unit for a backyard party or fifty for a music festival, we deliver the same level of quality and service.
+                    Make portable sanitation simple, affordable, and hassle-free. Whether you need one unit for a backyard party or fifty for a music festival, you get the same quality and service.
                 </p>
             </div>
 
             {{-- What Sets Us Apart --}}
             <div class="mb-12">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">⭐</div>
-                    <h2 class="text-2xl font-bold text-slate-800">What Sets Us Apart</h2>
+                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                        <x-icon name="sparkles" class="w-5 h-5" />
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">What sets us apart</h2>
                 </div>
                 <div class="grid gap-4">
                     @php
                         $features = [
-                            ['icon' => '🚚', 'title' => 'Same-Day Delivery', 'desc' => 'Call before 2 PM, get delivery today. We understand urgency.'],
-                            ['icon' => '✨', 'title' => 'Spotlessly Clean Units', 'desc' => 'Every unit is professionally sanitized and inspected before delivery.'],
-                            ['icon' => '💰', 'title' => 'No Hidden Fees', 'desc' => 'Transparent pricing you can trust. The price we quote is the price you pay.'],
-                            ['icon' => '🕐', 'title' => 'Flexible Rental Terms', 'desc' => 'Daily, weekly, monthly options. No long-term contracts required.'],
-                            ['icon' => '🌎', 'title' => 'Nationwide Coverage', 'desc' => 'Serving cities across the USA with the same great service.'],
+                            ['icon' => 'truck',            'title' => 'Same-day delivery',       'desc' => 'Call before 2 PM, get delivery today. We understand urgency.'],
+                            ['icon' => 'sparkles',         'title' => 'Spotlessly clean units',  'desc' => 'Every unit is professionally sanitized and inspected before delivery.'],
+                            ['icon' => 'currency-dollar',  'title' => 'No hidden fees',          'desc' => 'Transparent pricing you can trust. The price we quote is the price you pay.'],
+                            ['icon' => 'clock',            'title' => 'Flexible rental terms',   'desc' => 'Daily, weekly, monthly. No long-term contracts required.'],
+                            ['icon' => 'map-pin',          'title' => 'Nationwide coverage',     'desc' => 'Serving cities across the USA with the same great service.'],
                         ];
                     @endphp
                     @foreach($features as $feature)
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
-                            <div class="text-2xl">{{ $feature['icon'] }}</div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 flex items-start gap-4 hover:shadow-md transition">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <x-icon name="{{ $feature['icon'] }}" class="w-5 h-5" />
+                            </div>
                             <div>
                                 <h3 class="font-bold text-slate-800">{{ $feature['title'] }}</h3>
                                 <p class="text-slate-600 text-sm">{{ $feature['desc'] }}</p>
@@ -156,25 +166,26 @@ $organizationSchema = [
             </div>
 
             {{-- CTA --}}
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-8 md:p-10 text-center text-white">
-                <h2 class="text-2xl font-bold mb-3">Ready to Rent?</h2>
-                <p class="text-amber-100 mb-6">Call us for a free, no-obligation quote</p>
+            <div class="bg-slate-900 rounded-2xl p-8 md:p-10 text-center text-white">
+                <h2 class="text-2xl font-bold mb-3">Ready to rent?</h2>
+                <p class="text-slate-400 mb-6">Call us for a free, no-obligation quote.</p>
                 <a href="tel:{{ domain_phone_raw() }}"
-                   class="inline-flex items-center gap-3 bg-white text-amber-600 font-bold text-2xl
-                          py-4 px-10 rounded-full hover:scale-105 transition-all shadow-xl">
-                    📞 {{ domain_phone_display() }}
+                   data-tracking-label="about-cta"
+                   class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-white font-bold text-xl md:text-2xl py-4 px-8 rounded-full shadow-xl shadow-amber-500/30 ring-4 ring-amber-400/30 hover:scale-105 transition-all min-h-[44px]">
+                    <x-icon name="phone" class="w-6 h-6" />
+                    {{ domain_phone_display() }}
                 </a>
             </div>
 
             {{-- Quick Links --}}
             <div class="mt-10 pt-8 border-t border-slate-200">
-                <div class="flex flex-wrap justify-center gap-6 text-sm">
-                    <a href="{{ route('services') }}" class="text-amber-600 hover:text-amber-700 font-medium">View All Services</a>
-                    <span class="text-slate-300">|</span>
-                    <a href="{{ route('pricing') }}" class="text-amber-600 hover:text-amber-700 font-medium">View Pricing</a>
-                    <span class="text-slate-300">|</span>
-                    <a href="{{ route('locations') }}" class="text-amber-600 hover:text-amber-700 font-medium">Find Your City</a>
-                    <span class="text-slate-300">|</span>
+                <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm">
+                    <a href="{{ route('services') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View All Services</a>
+                    <span class="text-slate-300" aria-hidden="true">·</span>
+                    <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">View Pricing</a>
+                    <span class="text-slate-300" aria-hidden="true">·</span>
+                    <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium">Find Your City</a>
+                    <span class="text-slate-300" aria-hidden="true">·</span>
                     <a href="{{ route('blog.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">Blog</a>
                 </div>
             </div>

@@ -299,22 +299,32 @@ $breadcrumbSchema = [
     {{-- Trust Badges --}}
     <section class="py-12 bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-start">
                 <div class="text-center">
-                    <div class="text-4xl mb-2">🏆</div>
-                    <div class="text-white font-semibold">Licensed & Insured</div>
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <x-icon name="shield-check" class="w-6 h-6" />
+                    </div>
+                    <div class="text-white font-semibold">Licensed &amp; Insured</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl mb-2">⭐</div>
-                    <div class="text-white font-semibold">4.9/5 Customer Rating</div>
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                        <x-icon name="star" class="w-6 h-6" />
+                    </div>
+                    <div class="text-white font-semibold">
+                        @if(($reviewCount ?? 0) > 0){{ number_format($reviewRating ?? 4.9, 1) }}/5 Rating@else Trusted Service @endif
+                    </div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl mb-2">🔒</div>
-                    <div class="text-white font-semibold">Secure Booking</div>
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <x-icon name="truck" class="w-6 h-6" />
+                    </div>
+                    <div class="text-white font-semibold">Same-Day Delivery</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl mb-2">💯</div>
-                    <div class="text-white font-semibold">Satisfaction Guaranteed</div>
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <x-icon name="check-circle" class="w-6 h-6" />
+                    </div>
+                    <div class="text-white font-semibold">No Hidden Fees</div>
                 </div>
             </div>
         </div>
