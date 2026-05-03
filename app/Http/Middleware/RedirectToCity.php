@@ -69,6 +69,7 @@ class RedirectToCity
                 ->first();
 
             if ($servicePage) {
+                session(['geo_detected' => true]);
                 return redirect()->to($servicePage->slug, 302);
             }
         } catch (\Throwable $e) {

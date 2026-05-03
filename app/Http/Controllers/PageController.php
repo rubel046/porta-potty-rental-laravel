@@ -25,25 +25,10 @@ class PageController extends Controller
         $domain = Domain::current();
         $domainId = $domain?->id ?? 'default';
 
-        $topCitiesPool = Cache::remember("home_top_cities_{$domainId}", 3600, function () use ($domain) {
-            $query = City::active()->with(['state', 'servicePages' => function ($q) use ($domain) {
-                if ($domain) {
-                    $q->where('domain_id', $domain->id);
-                }
-            }]);
-
-            if ($domain) {
-                $query->whereHas('domains', fn ($q) => $q->where('domain_id', $domain->id));
-            }
-
-            return $query->byPriority()
-                ->take(20)
-                ->get()
-                ->toArray();
-        });
-
-        $featuredCities = $topCitiesPool;
-        $topCities = array_slice($topCitiesPool, 0, 10);
+        // Homepage is USA-wide - no city-specific data
+        // City pages (/city-slug) handle city-specific content
+        $topCities = [];
+        $featuredCities = [];
 
         $states = Cache::remember("home_active_states_{$domainId}", 3600, function () {
             return State::whereHas('domainStates', function ($q) {
@@ -87,12 +72,14 @@ class PageController extends Controller
         });
 
         // Primary city data for NAP/Geo schema
-        $primaryCity = !empty($topCities) ? $topCities[0] : null;
-        $latitude = $primaryCity['latitude'] ?? 32.7767;
-        $longitude = $primaryCity['longitude'] ?? -96.7970;
-        $cityAddress = $primaryCity['name'] ?? 'Dallas';
-        $stateCodeLocal = $primaryCity['state']['code'] ?? 'TX';
-        $postalCode = $primaryCity['zip_code'] ?? '75201';
+        // Homepage is USA-wide by default - city-specific content is on city pages
+        // Geo-redirect middleware handles redirecting to city pages when detection works
+        $primaryCity = null;
+        $latitude = $primaryCity['latitude'] ?? null;
+        $longitude = $primaryCity['longitude'] ?? null;
+        $cityAddress = $primaryCity['name'] ?? null;
+        $stateCodeLocal = $primaryCity['state']['code'] ?? null;
+        $postalCode = $primaryCity['zip_code'] ?? null;
 
         return view('domains.pottydirect.home', compact(
             'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats',
@@ -631,8 +618,7 @@ class PageController extends Controller
             ->paginate(30);
 
         // getStatePageContent runs AI calls in the worst case — cache hard
-        $stateContent = Cache::remember("state_content_{$state->id}", 3600, fn () =>
-            $contentService->getStatePageContent($state)
+        $stateContent = Cache::remember("state_content_{$state->id}", 3600, fn () => $contentService->getStatePageContent($state)
         );
         $faqs = collect($stateContent['faqs'] ?? []);
         $images = $state->images ?? [];
@@ -665,9 +651,8 @@ class PageController extends Controller
                 ->get();
         };
 
-        $states = $search === ''
-            ? Cache::remember("locations_states_{$domainId}", 3600, $fetchStates)
-            : $fetchStates();
+        // Do NOT cache to avoid serialization issues with Eloquent Collections
+        $states = $fetchStates();
 
         return view(DomainViewHelper::resolveForController('locations'), compact('states', 'search'));
     }

@@ -16,23 +16,9 @@
 @endsection
 
 @section('content')
-
-<div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 text-center md:text-left text-xs sm:text-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-amber-200">&#x2B50;</span>
-            <span class="font-semibold">4.9/5 Rating (500+ Reviews)</span>
-        </div>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>&#x1F3EB; BBB A+ Rated</span>
-        <span class="hidden md:inline text-amber-200">|</span>
-        <span>&#x1F3D7;&#xFE0F; 25+ Years Experience</span>
-    </div>
-</div>
-
 <section class="bg-white border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Portable Restroom Rental Blog</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Portable Toilet Rental Blog</h1>
         <p class="text-slate-500 text-lg max-w-2xl">
             Expert guides on porta potty rental, event planning, construction site requirements, and more.
         </p>

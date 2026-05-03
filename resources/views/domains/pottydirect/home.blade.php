@@ -6,15 +6,19 @@
 @endphp
 @php
     $domain = \App\Models\Domain::current();
-    $cityName = $topCities[0]['name'] ?? 'your city';
-    $stateName = $topCities[0]['state']['name'] ?? 'your state';
-    $stateCode = $topCities[0]['state']['code'] ?? 'TX';
-    $zipCode = $topCities[0]['zip_code'] ?? '75001';
-    $nearbyCity1 = $topCities[1]['name'] ?? 'nearby city';
-    $nearbyCity2 = $topCities[2]['name'] ?? 'nearby city';
-    $nearbyCity3 = $topCities[3]['name'] ?? 'nearby city';
-    $county = $topCities[0]['county'] ?? 'County';
-    $nearbyZip1 = $topCities[1]['zip_code'] ?? '75002';
+     // Only show city-specific data if geo-location was successful (middleware sets session)
+     $geoDetected = session('geo_detected', false);
+     $showCitySpecific = $geoDetected && !empty($topCities);
+
+     $cityName = $showCitySpecific ? $topCities[0]['name'] : 'your area';
+     $stateName = $showCitySpecific ? $topCities[0]['state']['name'] : 'the USA';
+     $stateCode = $showCitySpecific ? $topCities[0]['state']['code'] : 'US';
+     $zipCode = $showCitySpecific ? $topCities[0]['zip_code'] : '';
+     $nearbyCity1 = $showCitySpecific ? ($topCities[1]['name'] ?? '') : '';
+     $nearbyCity2 = $showCitySpecific ? ($topCities[2]['name'] ?? '') : '';
+     $nearbyCity3 = $showCitySpecific ? ($topCities[3]['name'] ?? '') : '';
+     $county = $showCitySpecific ? $topCities[0]['county'] ?? '' : '';
+     $nearbyZip1 = $showCitySpecific ? ($topCities[1]['zip_code'] ?? '') : '';
 
     $rating = config('reviews.rating', 4.9);
     $reviewCount = config('reviews.count') ?? \App\Models\Testimonial::where('is_active', true)->count();
@@ -44,13 +48,13 @@
         }
 
         $primaryCity = !empty($topCities) ? $topCities[0] : null;
-        $latitude = $primaryCity['latitude'] ?? 32.7767;
-        $longitude = $primaryCity['longitude'] ?? -96.7970;
-        $streetAddress = $domain?->address ?? ($primaryCity['name'] ?? 'Main Street');
-        $cityAddress = $primaryCity['name'] ?? 'Dallas';
-        $stateAddress = $primaryCity['state']['name'] ?? 'Texas';
-        $stateCodeLocal = $primaryCity['state']['code'] ?? 'TX';
-        $postalCode = $primaryCity['zip_code'] ?? '75201';
+        $latitude = $primaryCity['latitude'] ?? null;
+        $longitude = $primaryCity['longitude'] ?? null;
+        $streetAddress = $domain?->address ?? ($primaryCity['name'] ?? null);
+        $cityAddress = $primaryCity['name'] ?? null;
+        $stateAddress = $primaryCity['state']['name'] ?? null;
+        $stateCodeLocal = $primaryCity['state']['code'] ?? null;
+        $postalCode = $primaryCity['zip_code'] ?? null;
 
         $businessSchema = [
             '@context' => 'https://schema.org',
@@ -852,14 +856,28 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @php
-                    $testimonials6 = [
-                        ['name' => 'John D.', 'location' => $cityName . ', ' . $stateName, 'rating' => 5, 'content' => 'Called at 10 AM for a construction site, had two units delivered by 1 PM. Drivers were professional, units were spotless. Will use every time.'],
-                        ['name' => 'Sarah M.', 'location' => $nearbyCity1 . ', ' . $stateName, 'rating' => 5, 'content' => 'Used the luxury restroom trailer for our daughters wedding. Guests kept asking who provided it - looked like a permanent restroom. 10/10.'],
-                        ['name' => 'Mike R.', 'location' => $cityName . ', ' . $stateName, 'rating' => 5, 'content' => 'Had a pipe burst, called at 11 PM, had emergency units delivered by 2 AM. Saved our home from water damage. Forever grateful.'],
-                        ['name' => 'Lisa T.', 'location' => $nearbyCity2 . ', ' . $stateName, 'rating' => 5, 'content' => 'Best porta potty company in ' . $stateName . '. Called 5 companies, they were the only ones who answered at 7 AM on Saturday. Same-day delivery too!'],
-                        ['name' => 'Robert K.', 'location' => $cityName . ', ' . $stateName, 'rating' => 5, 'content' => 'We\'ve been using them for 3 years on all our construction sites. Never once had a complaint. Units are always clean, drivers are always on time.'],
-                        ['name' => 'Amanda S.', 'location' => $nearbyCity3 . ', ' . $stateName, 'rating' => 5, 'content' => 'Rented 8 units for our corporate event. Setup was clean, breakdown was fast, and the units looked brand new. Highly recommend!'],
-                    ];
+                // Always use static city names from DB for consistent testimonials
+                // Query DB directly since $topCities is empty for USA-wide homepage
+                $staticCities = \App\Models\City::active()->with('state')->orderBy('priority', 'desc')->take(4)->get();
+                $staticCity = $staticCities[0]->name ?? 'Aaronsburg';
+                $staticState = $staticCities[0]->state->name ?? 'Pennsylvania';
+                $staticCity2 = $staticCities[1]->name ?? 'Harrisburg';
+                $staticCity3 = $staticCities[2]->name ?? 'Lancaster';
+                $staticCity4 = $staticCities[3]->name ?? 'York';
+
+                $location1 = $staticCity . ', ' . $staticState;
+                $location2 = $staticCity2 . ', ' . $staticState;
+                $location3 = $staticCity3 . ', ' . $staticState;
+                $location4 = $staticCity4 . ', ' . $staticState;
+
+                $testimonials6 = [
+                    ['name' => 'John D.', 'location' => $location1, 'rating' => 5, 'content' => 'Called at 10 AM for a construction site, had two units delivered by 1 PM. Drivers were professional, units were spotless. Will use every time.'],
+                    ['name' => 'Sarah M.', 'location' => $location2, 'rating' => 5, 'content' => 'Used the luxury restroom trailer for our daughters wedding. Guests kept asking who provided it - looked like a permanent restroom. 10/10.'],
+                    ['name' => 'Mike R.', 'location' => $location1, 'rating' => 5, 'content' => 'Had a pipe burst, called at 11 PM, had emergency units delivered by 2 AM. Saved our home from water damage. Forever grateful.'],
+                    ['name' => 'Lisa T.', 'location' => $location3, 'rating' => 5, 'content' => 'Best porta potty company in ' . $stateName . '. Called 5 companies, they were the only ones who answered at 7 AM on Saturday. Same-day delivery too!'],
+                    ['name' => 'Robert K.', 'location' => $location1, 'rating' => 5, 'content' => 'We\'ve been using them for 3 years on all our construction sites. Never once had a complaint. Units are always clean, drivers are always on time.'],
+                    ['name' => 'Amanda S.', 'location' => $location4, 'rating' => 5, 'content' => 'Rented 8 units for our corporate event. Setup was clean, breakdown was fast, and the units looked brand new. Highly recommend!'],
+                ];
                 @endphp
 
                 @foreach($testimonials6 as $t)
@@ -1051,49 +1069,85 @@
         </div>
      </section>
      
-     {{-- ================================================================
-          SERVING AREAS
+      {{-- ================================================================
+           SERVING AREAS — Rich Modern Design
           ================================================================ --}}
-     <section class="py-16 px-4 bg-gray-50">
-         <div class="max-w-6xl mx-auto">
-             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 text-gray-900">
-                 Serving {{ $stateName }} & Surrounding Areas
-             </h2>
-             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-                 We deliver to 50+ ZIP codes across {{ $stateName }}, including {{ $cityName }} and all surrounding suburbs. Call {{ $phoneDisplay }} to confirm service to your exact location.
-             </p>
-             <div class="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm mb-8">
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                     <div>
-                         <h3 class="font-semibold text-gray-900 mb-3">Communities We Serve</h3>
-                         <div class="flex flex-wrap gap-2">
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $cityName }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity1 }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity2 }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">{{ $nearbyCity3 }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm">{{ $county }} County</span>
-                         </div>
+     <section class="py-16 sm:py-20 px-4 sm:px-6 bg-white relative overflow-hidden">
+         {{-- Background Decoration --}}
+         <div class="absolute inset-0 opacity-5">
+             <div class="absolute top-20 left-10 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+             <div class="absolute bottom-20 right-10 w-80 h-80 bg-amber-500 rounded-full blur-3xl"></div>
+         </div>
+
+         <div class="max-w-6xl mx-auto relative">
+             <div class="text-center mb-12">
+                 <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-sm font-bold px-4 py-2 rounded-full mb-4">
+                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 8a1 1 0 100-2 0 1 1 0 002 0zm8-1a1 1 0 100-2 0 1 1 0 002 0zm2 1a1 1 0 100-2 0 1 1 0 002 0zM2 8a1 1 0 100-2 0 1 1 0 002 0zm14 0a1 1 0 100-2 0 1 1 0 002 0zM5.657 4.343a1 1 0 111.414 1.414L5.657 7.172a1 1 0 01-1.414-1.414l1.414-1.415zm8.828 8.828a1 1 0 111.414 1.414l-1.414 1.415a1 1 0 01-1.414-1.414l1.414-1.415zm-7.414-4a1 1 0 011.414 0l1.415 1.414a1 1 0 01-1.414 1.414L5.657 8.343a1 1 0 010-1.414z"/></svg>
+                     NATIONWIDE SERVICE
+                 </div>
+                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+                     We Serve <span class="text-blue-600">{{ $stateName }}</span> & Beyond
+                 </h2>
+                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">From major cities to rural communities, we deliver clean, reliable porta potties anywhere in {{ $stateName }}. Same-day delivery available.</p>
+             </div>
+
+             {{-- Interactive Map/Grid --}}
+             <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 sm:p-10 shadow-2xl mb-12 relative overflow-hidden">
+                 <div class="absolute inset-0 opacity-10">
+                     <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;><g fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.05&quot;><path d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/></g></g></svg>')"></div>
+                 </div>
+
+                 <div class="relative">
+                     <h3 class="text-xl sm:text-2xl font-black text-white mb-6 text-center">Communities We Serve in {{ $stateName }}</h3>
+
+                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8">
+                         @if(!empty($topCities))
+                             @foreach(array_slice($topCities, 0, 10) as $c)
+                                 <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center hover:bg-white/20 transition group cursor-default">
+                                     <div class="w-3 h-3 bg-emerald-400 rounded-full mx-auto mb-2 group-hover:scale-150 transition-transform"></div>
+                                     <div class="text-sm font-bold text-white">{{ $c['name'] }}</div>
+                                     <div class="text-xs text-slate-400">{{ $c['state']['code'] ?? '' }}</div>
+                                 </div>
+                             @endforeach
+                         @else
+                             <div class="col-span-full text-center text-slate-400 py-8">
+                                 <div class="text-4xl mb-2">📍</div>
+                                 <div class="text-lg font-bold text-white">All Major Cities</div>
+                                 <div class="text-sm">Call {{ $phoneDisplay }} for availability</div>
+                             </div>
+                         @endif
                      </div>
-                     <div>
-                         <h3 class="font-semibold text-gray-900 mb-3">Zip Codes Covered</h3>
-                         <div class="flex flex-wrap gap-2">
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm">{{ $zipCode }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm">{{ $nearbyZip1 }}</span>
-                             <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm">All {{ $stateCode }} zip codes</span>
+
+                     <div class="text-center">
+                         <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                             <div class="flex items-center gap-2 text-emerald-400">
+                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                             </div>
+                             <span class="text-white font-bold">50+ ZIP Codes Covered</span>
                          </div>
                      </div>
                  </div>
-                 <div class="text-center">
-                     <p class="text-sm text-gray-600 mb-4">
-                         <strong>Portable toilet rental near me in {{ $zipCode }}?</strong> We've got you covered with same-day delivery to your exact location.
-                     </p>
-                     <a href="tel:{{ $phoneRaw }}"
-                        data-tracking-label="home-areas"
-                        class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-amber-500/30 transition hover:scale-[1.02] min-h-[44px]">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" fill="none" stroke="currentColor"/></svg>
-                         <span>Call {{ $phoneDisplay }} to confirm service to your area</span>
+             </div>
+
+             {{-- CTA --}}
+             <div class="text-center">
+                 <a href="tel:{{ $phoneRaw }}"
+                    data-tracking-label="home-areas-cta"
+                    class="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold py-4 px-10 rounded-full shadow-2xl shadow-amber-500/30 transition hover:scale-[1.03] min-h-[44px] text-lg">
+                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                     </svg>
+                     <span>Call {{ $phoneDisplay }} to Confirm Service Area</span>
+                 </a>
+                 <p class="mt-4 text-gray-500">Average answer time: 15 seconds • Real humans answer</p>
+                 <div class="mt-6">
+                     <a href="/locations"
+                        class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold min-h-[44px]">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                         </svg>
+                         <span>View All Locations</span>
                      </a>
-                     <p class="mt-3 text-sm text-gray-500">Average answer time: 15 seconds</p>
                  </div>
              </div>
          </div>
