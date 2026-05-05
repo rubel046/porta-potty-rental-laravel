@@ -512,8 +512,8 @@
         -webkit-tap-highlight-color: rgba(16, 185, 129, 0.2);
     }
     
-    /* Prevent horizontal scroll */
-    html, body {
+    /* Prevent horizontal scroll - only apply to body to avoid breaking sticky positioning */
+    body {
         overflow-x: hidden;
     }
     
