@@ -1,5 +1,12 @@
 #!/bin/bash
 echo "Starting deployment..."
+
+# Fix storage permissions
+echo "Fixing storage permissions..."
+chmod -R 755 storage
+chmod -R 755 bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || chown -R nginx:nginx storage bootstrap/cache 2>/dev/null || chown -R apache:apache storage bootstrap/cache 2>/dev/null || echo "Warning: Could not change ownership. You may need to run this script with sudo or fix permissions manually."
+
 php artisan down
 
 # Clear caches BEFORE modifying packages
