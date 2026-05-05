@@ -1,13 +1,15 @@
 #!/bin/bash
 echo "Starting deployment..."
 
-# Fix storage permissions
-echo "Fixing storage permissions..."
-chmod -R 755 storage
-chmod -R 755 bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || chown -R nginx:nginx storage bootstrap/cache 2>/dev/null || chown -R apache:apache storage bootstrap/cache 2>/dev/null || echo "Warning: Could not change ownership. You may need to run this script with sudo or fix permissions manually."
+# Clear cached files that may have stale references
+echo "Clearing bootstrap cache..."
+rm -f bootstrap/cache/*.php
 
-php artisan down
+# Note: If you see permission errors, run these commands on the server once:
+# sudo chown -R www-data:www-data storage bootstrap/cache
+# sudo chmod -R 755 storage bootstrap/cache
+
+php artisan down 2>/dev/null || true
 
 # Clear caches BEFORE modifying packages
 php artisan optimize:clear
