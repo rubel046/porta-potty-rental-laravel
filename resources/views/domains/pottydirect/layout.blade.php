@@ -177,7 +177,7 @@
             <span class="font-semibold text-center sm:text-left">We open at {{ $opensAtLabel }} — leave a message or call for emergency service</span>
         @endif
         <a href="tel:{{ $phoneRaw }}" data-tracking-label="banner"
-           class="ml-0 sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm inline-flex items-center gap-1.5 min-h-[44px]">
+           class="hidden sm:inline-flex sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm items-center gap-1.5 min-h-[44px]">
             <x-icon name="phone" class="w-4 h-4"/>
             {{ $phoneDisplay }}
         </a>
