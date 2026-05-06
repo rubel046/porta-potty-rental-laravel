@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Domain;
 use App\Models\IndexingUrl;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
