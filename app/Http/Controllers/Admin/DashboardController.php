@@ -7,10 +7,10 @@ use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
 use App\Models\Domain;
+use App\Models\DomainState;
 use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
 use App\Models\ServicePage;
-use App\Models\State;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -115,8 +115,8 @@ class DashboardController extends Controller
             ->distinct('cities.state_id')
             ->count('cities.state_id');
         $totalStates = $domain
-            ? State::where('domain_id', $domainId)->count()
-            : State::count();
+            ? DomainState::where('domain_id', $domainId)->distinct('state_id')->count('state_id')
+            : DomainState::distinct('state_id')->count('state_id');
 
         $domainHost = $domain?->domain;
         if ($domainHost) {
