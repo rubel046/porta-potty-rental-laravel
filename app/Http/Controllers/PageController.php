@@ -93,7 +93,7 @@ class PageController extends Controller
                 })
                 ->count();
 
-            return compact('generated_cities', 'total_cities', 'generated_states', 'total_states');
+            return compact('generatedCities', 'totalCities', 'generatedStates', 'totalStates');
         });
 
         // Primary city data for NAP/Geo schema
