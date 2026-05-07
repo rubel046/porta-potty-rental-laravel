@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
-use App\Models\Domain;
 use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
+use App\Models\ServicePage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -102,26 +101,23 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
-        // Active Resources (scoped to domain)
-        $generatedCities = DB::table('domain_cities')
-            ->where('domain_id', $domainId)
-            ->whereNotNull('content_generated')
-            ->where('content_generated', true)
-            ->where('status', true)
+        // Active Resources — count cities/states that actually have service pages
+        $generatedCities = ServicePage::where('generation_status', 'success')
+            ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
             ->distinct('city_id')
             ->count('city_id');
-        $totalCities = DB::table('domain_cities')
-            ->where('domain_id', $domainId)
+        $totalCities = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
             ->distinct('city_id')
             ->count('city_id');
-        $generatedStates = DB::table('domain_states')
-            ->where('domain_id', $domainId)
-            ->where('generation_status', 'success')
-            ->where('status', true)
-            ->count();
-        $totalStates = DB::table('domain_states')
-            ->where('domain_id', $domainId)
-            ->count();
+        $generatedStates = ServicePage::where('generation_status', 'success')
+            ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+            ->join('cities', 'service_pages.city_id', '=', 'cities.id')
+            ->distinct('cities.state_id')
+            ->count('cities.state_id');
+        $totalStates = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+            ->join('cities', 'service_pages.city_id', '=', 'cities.id')
+            ->distinct('cities.state_id')
+            ->count('cities.state_id');
 
         $domainHost = $domain?->domain;
         if ($domainHost) {

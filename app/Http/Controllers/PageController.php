@@ -59,15 +59,24 @@ class PageController extends Controller
         });
         $testimonials = collect($testimonialPool)->shuffle()->take(3);
 
-        $stats = Cache::remember("home_stats_{$domainId}", 3600, function () {
+        $stats = Cache::remember("home_stats_{$domainId}", 3600, function () use ($domainId) {
             return [
-                'generated_cities' => ServicePage::where('generation_status', 'success')->distinct('city_id')->count('city_id'),
-                'total_cities' => DB::table('domain_cities')->distinct('city_id')->count('city_id'),
-                'generated_states' => ServicePage::join('cities', 'service_pages.city_id', '=', 'cities.id')
-                    ->where('service_pages.generation_status', 'success')
+                'generated_cities' => ServicePage::where('generation_status', 'success')
+                    ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+                    ->distinct('city_id')
+                    ->count('city_id'),
+                'total_cities' => ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+                    ->distinct('city_id')
+                    ->count('city_id'),
+                'generated_states' => ServicePage::where('generation_status', 'success')
+                    ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+                    ->join('cities', 'service_pages.city_id', '=', 'cities.id')
                     ->distinct('cities.state_id')
                     ->count('cities.state_id'),
-                'total_states' => DB::table('domain_states')->count(),
+                'total_states' => ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+                    ->join('cities', 'service_pages.city_id', '=', 'cities.id')
+                    ->distinct('cities.state_id')
+                    ->count('cities.state_id'),
             ];
         });
 
