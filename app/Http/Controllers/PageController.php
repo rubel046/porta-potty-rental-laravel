@@ -60,24 +60,40 @@ class PageController extends Controller
         $testimonials = collect($testimonialPool)->shuffle()->take(3);
 
         $stats = Cache::remember("home_stats_{$domainId}", 3600, function () use ($domainId) {
-            return [
-                'generated_cities' => ServicePage::where('generation_status', 'success')
-                    ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-                    ->distinct('city_id')
-                    ->count('city_id'),
-                'total_cities' => ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-                    ->distinct('city_id')
-                    ->count('city_id'),
-                'generated_states' => ServicePage::where('generation_status', 'success')
-                    ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-                    ->join('cities', 'service_pages.city_id', '=', 'cities.id')
-                    ->distinct('cities.state_id')
-                    ->count('cities.state_id'),
-                'total_states' => ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-                    ->join('cities', 'service_pages.city_id', '=', 'cities.id')
-                    ->distinct('cities.state_id')
-                    ->count('cities.state_id'),
-            ];
+            $totalCities = DB::table('domain_cities')
+                ->where('domain_id', $domainId)
+                ->distinct('city_id')
+                ->count('city_id');
+
+            $generatedCities = DB::table('domain_cities')
+                ->where('domain_id', $domainId)
+                ->whereExists(function ($q) use ($domainId) {
+                    $q->select(DB::raw(1))
+                        ->from('service_pages')
+                        ->whereColumn('service_pages.city_id', 'domain_cities.city_id')
+                        ->where('service_pages.generation_status', 'success')
+                        ->where('service_pages.domain_id', $domainId);
+                })
+                ->distinct('city_id')
+                ->count('city_id');
+
+            $totalStates = DB::table('domain_states')
+                ->where('domain_id', $domainId)
+                ->count();
+
+            $generatedStates = DB::table('domain_states')
+                ->where('domain_id', $domainId)
+                ->whereExists(function ($q) use ($domainId) {
+                    $q->select(DB::raw(1))
+                        ->from('service_pages')
+                        ->join('cities', 'service_pages.city_id', '=', 'cities.id')
+                        ->whereColumn('cities.state_id', 'domain_states.state_id')
+                        ->where('service_pages.generation_status', 'success')
+                        ->where('service_pages.domain_id', $domainId);
+                })
+                ->count();
+
+            return compact('generated_cities', 'total_cities', 'generated_states', 'total_states');
         });
 
         // Primary city data for NAP/Geo schema
