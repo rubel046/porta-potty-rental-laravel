@@ -22,11 +22,11 @@ class GenerateCityContentJob implements ShouldQueue
 
     public int $backoff = 60;
 
-    public int $timeout = 1800;
+    public int $timeout = 3600;
 
     protected int $retryDelaySeconds = 30;
 
-    protected int $maxRetriesPerType = 5;
+    protected int $maxRetriesPerType = 2;
 
     public function __construct(
         public City $city,
@@ -60,6 +60,7 @@ class GenerateCityContentJob implements ShouldQueue
 
             $typeSuccess = false;
             $typeRetries = 0;
+            $exhaustedDuringType = false;
 
             while (! $typeSuccess && $typeRetries < $this->maxRetriesPerType) {
                 try {
@@ -109,12 +110,12 @@ class GenerateCityContentJob implements ShouldQueue
 
                     $typeSuccess = true;
 
-                    // Sleep for 15 sec before next service type (avoid rate limiting)
                     sleep(15);
                 } catch (\Throwable $e) {
                     $typeRetries++;
 
                     if ($this->isApiKeyExhausted($e)) {
+                        $exhaustedDuringType = true;
                         Log::warning("API keys exhausted, waiting {$this->retryDelaySeconds}s before retry", [
                             'city' => $this->city->name,
                             'type' => $type,
@@ -128,7 +129,6 @@ class GenerateCityContentJob implements ShouldQueue
                             'type' => $type,
                             'error' => $e->getMessage(),
                         ]);
-                        // Continue to next type instead of breaking
                     }
                 }
             }
@@ -136,10 +136,18 @@ class GenerateCityContentJob implements ShouldQueue
             if (! $typeSuccess && $typeRetries >= $this->maxRetriesPerType) {
                 $errors[] = "{$type}: Max retries reached";
                 Log::error("Failed to generate {$type} content for {$this->city->name} after max retries");
+
+                if ($exhaustedDuringType) {
+                    Log::info('API keys exhausted — releasing job back to queue', [
+                        'city' => $this->city->name,
+                    ]);
+                    $this->release($this->retryDelaySeconds * 2);
+
+                    return;
+                }
             }
 
-            // No extra sleep - already sleeping after success
-            sleep(30);
+            sleep(15);
         }
 
         if (! empty($errors)) {

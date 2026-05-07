@@ -533,42 +533,28 @@ class PageController extends Controller
                 ->take(4);
         }
 
-        // Related-content bundle (nearby cities, other services, blog posts, schema)
-        // rarely changes — cache hard, let observers flush on edit
-        $bundle = Cache::remember("service_data_{$servicePage->id}", 3600, function () use ($servicePage, $city) {
-            $nearbyNames = $city->getNearbyAreaNames();
-            $nearbyCityPages = City::active()
-                ->whereIn('name', $nearbyNames)
-                ->with('state')
-                ->has('servicePages')
-                ->take(8)
-                ->get();
+        $nearbyNames = $city->getNearbyAreaNames();
+        $nearbyCityPages = City::active()
+            ->whereIn('name', $nearbyNames)
+            ->with('state')
+            ->has('servicePages')
+            ->take(8)
+            ->get();
 
-            $otherServices = ServicePage::where('city_id', $city->id)
-                ->where('id', '!=', $servicePage->id)
-                ->where('is_published', true)
-                ->get();
+        $otherServices = ServicePage::where('city_id', $city->id)
+            ->where('id', '!=', $servicePage->id)
+            ->where('is_published', true)
+            ->get();
 
-            $relatedPosts = BlogPost::published()
-                ->where(function ($q) use ($city, $servicePage) {
-                    $q->where('city_id', $city->id)
-                        ->orWhere('title', 'LIKE', "%{$servicePage->service_type}%");
-                })
-                ->take(3)
-                ->get();
+        $relatedPosts = BlogPost::published()
+            ->where(function ($q) use ($city, $servicePage) {
+                $q->where('city_id', $city->id)
+                    ->orWhere('title', 'LIKE', "%{$servicePage->service_type}%");
+            })
+            ->take(3)
+            ->get();
 
-            return [
-                'nearbyCityPages' => $nearbyCityPages,
-                'otherServices' => $otherServices,
-                'relatedPosts' => $relatedPosts,
-                'schemaMarkup' => $servicePage->generateSchemaMarkup(),
-            ];
-        });
-
-        $nearbyCityPages = $bundle['nearbyCityPages'];
-        $otherServices = $bundle['otherServices'];
-        $relatedPosts = $bundle['relatedPosts'];
-        $schemaMarkup = $bundle['schemaMarkup'];
+        $schemaMarkup = $servicePage->generateSchemaMarkup();
 
         $faqSchema = null;
         if ($faqs->isNotEmpty()) {

@@ -104,6 +104,9 @@ class ContentGeneratorService
         }
 
         if ($attempt >= $maxAttempts || ! $jsonResponse || ! isset($jsonResponse['content'])) {
+            if ($jsonResponse === null) {
+                throw new \RuntimeException("AI generation failed: all API keys exhausted for {$city->name} ({$serviceType}) after {$maxAttempts} attempts");
+            }
             throw new \RuntimeException("AI failed to generate all required data for {$city->name} ({$serviceType}) after {$maxAttempts} attempts");
         }
 
@@ -312,6 +315,9 @@ PROMPT;
         }
 
         if ($attempt >= $maxAttempts || ! $jsonResponse || ! isset($jsonResponse['content'])) {
+            if ($jsonResponse === null) {
+                throw new \RuntimeException("AI generation failed: all API keys exhausted for state {$stateName} after {$maxAttempts} attempts");
+            }
             throw new \RuntimeException("AI failed to generate all required data for state {$stateName} after {$maxAttempts} attempts");
         }
 

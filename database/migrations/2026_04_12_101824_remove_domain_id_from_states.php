@@ -14,13 +14,13 @@ return new class extends Migration
                 // when an index still references the column.
                 try {
                     $table->dropIndex('states_domain_id_index');
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     // Index may not exist on all installations — ignore.
                 }
 
                 try {
                     $table->dropForeign(['domain_id']);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     // Same — some databases auto-drop the FK with the column.
                 }
 

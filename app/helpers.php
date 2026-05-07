@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Domain;
+use Carbon\Carbon;
 
 if (! function_exists('phone_raw')) {
     function phone_raw(): string
@@ -18,7 +19,7 @@ if (! function_exists('business_is_open_now')) {
     {
         try {
             $tz = config('contact.timezone', 'America/Chicago');
-            $now = \Carbon\Carbon::now($tz);
+            $now = Carbon::now($tz);
 
             [$openH, $openM] = array_pad(explode(':', (string) config('contact.hours_open', '07:00')), 2, '0');
             [$closeH, $closeM] = array_pad(explode(':', (string) config('contact.hours_close', '20:00')), 2, '0');
@@ -27,7 +28,7 @@ if (! function_exists('business_is_open_now')) {
             $closeAt = $now->copy()->setTime((int) $closeH, (int) $closeM, 0);
 
             return $now->greaterThanOrEqualTo($openAt) && $now->lessThan($closeAt);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return true; // fail open — better to say "we're open" than block a would-be caller
         }
     }
@@ -42,8 +43,9 @@ if (! function_exists('business_opens_at_label')) {
     {
         try {
             $open = config('contact.hours_open', '07:00');
-            return \Carbon\Carbon::createFromFormat('H:i', $open)->format('g A');
-        } catch (\Throwable $e) {
+
+            return Carbon::createFromFormat('H:i', $open)->format('g A');
+        } catch (Throwable $e) {
             return '7 AM';
         }
     }

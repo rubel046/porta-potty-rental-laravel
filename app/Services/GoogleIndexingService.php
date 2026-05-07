@@ -320,8 +320,19 @@ class GoogleIndexingService
                 ];
             }
         } catch (\Throwable $e) {
+            $statusCode = $e instanceof RequestException && $e->hasResponse() ? $e->getResponse()->getStatusCode() : null;
+
+            if ($statusCode === 404) {
+                return [
+                    'url' => $url,
+                    'latest_update' => null,
+                    'indexed' => false,
+                ];
+            }
+
             Log::error('Google Indexing status check error', [
                 'url' => $url,
+                'status' => $statusCode,
                 'error' => $e->getMessage(),
             ]);
         }
