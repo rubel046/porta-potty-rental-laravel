@@ -54,7 +54,7 @@ class CityController extends Controller
             $query->withCount('servicePages');
         }
 
-        $cities = $query->orderBy('name')->paginate(30);
+        $cities = $query->orderBy('name')->paginate(30)->withQueryString();
         $states = State::orderBy('name')->get();
 
         return view('admin.cities.index', compact('cities', 'states', 'domain'));
