@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use App\Models\CallLog;
+use App\Models\City;
 use App\Models\Domain;
 use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
 use App\Models\ServicePage;
+use App\Models\State;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -101,23 +103,20 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
-        // Active Resources — count cities/states that actually have service pages
-        $generatedCities = ServicePage::where('generation_status', 'success')
-            ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+        // Active Resources — cities/states with service pages / total in domain
+        $generatedCities = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
             ->distinct('city_id')
             ->count('city_id');
-        $totalCities = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-            ->distinct('city_id')
-            ->count('city_id');
-        $generatedStates = ServicePage::where('generation_status', 'success')
-            ->when($domainId, fn ($q) => $q->where('domain_id', $domainId))
+        $totalCities = $domain
+            ? $domain->cities()->count()
+            : City::count();
+        $generatedStates = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
             ->join('cities', 'service_pages.city_id', '=', 'cities.id')
             ->distinct('cities.state_id')
             ->count('cities.state_id');
-        $totalStates = ServicePage::when($domainId, fn ($q) => $q->where('domain_id', $domainId))
-            ->join('cities', 'service_pages.city_id', '=', 'cities.id')
-            ->distinct('cities.state_id')
-            ->count('cities.state_id');
+        $totalStates = $domain
+            ? State::where('domain_id', $domainId)->count()
+            : State::count();
 
         $domainHost = $domain?->domain;
         if ($domainHost) {
