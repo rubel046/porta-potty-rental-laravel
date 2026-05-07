@@ -84,7 +84,7 @@
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
                 Filter
             </button>
-            @if(request()->anyFilled(['search', 'state_id', 'is_active']))
+            @if(request()->anyFilled(['search', 'state_id', 'is_active', 'service_pages_count']))
                 <a href="{{ route('admin.cities.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                     Clear
                 </a>
@@ -167,8 +167,9 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            @if($domain && isset($city->domain_status))
-                                @if($city->domain_status)
+                            @php $domainCityStatus = $domain && $city->domainCities->first() ? $city->domainCities->first()->status : null; @endphp
+                            @if($domainCityStatus !== null)
+                                @if($domainCityStatus)
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                                         Active
@@ -197,8 +198,9 @@
                             <div class="flex items-center justify-end gap-2">
                                 <form method="POST" action="{{ route('admin.cities.toggle-status', $city) }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="p-1.5 rounded-lg transition {{ ($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active) ? 'text-gray-400 hover:text-yellow-600 hover:bg-yellow-50' : 'text-gray-400 hover:text-green-600 hover:bg-green-50' }}" title="{{ ($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active) ? 'Deactivate' : 'Activate' }}">
-                                        @if(($domain && isset($city->domain_status) && $city->domain_status) || (!isset($city->domain_status) && $city->is_active))
+                                    @php $isActiveStatus = $domainCityStatus ?? $city->is_active; @endphp
+                                    <button type="submit" class="p-1.5 rounded-lg transition {{ $isActiveStatus ? 'text-gray-400 hover:text-yellow-600 hover:bg-yellow-50' : 'text-gray-400 hover:text-green-600 hover:bg-green-50' }}" title="{{ $isActiveStatus ? 'Deactivate' : 'Activate' }}">
+                                        @if($isActiveStatus)
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                                         @else
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

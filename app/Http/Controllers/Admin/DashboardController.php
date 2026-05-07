@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use App\Models\CallLog;
 use App\Models\City;
+use App\Models\Domain;
 use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
 use Illuminate\Http\Request;
@@ -15,47 +16,64 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $domain = Domain::current();
+        $domainId = $domain?->id;
+
+        $todayQuery = CallLog::today();
+        $weekQuery = CallLog::thisWeek();
+        $monthQuery = CallLog::thisMonth();
+
+        if ($domainId) {
+            $todayQuery->where('domain_id', $domainId);
+            $weekQuery->where('domain_id', $domainId);
+            $monthQuery->where('domain_id', $domainId);
+        }
+
         // Today's Stats
         $todayStats = [
-            'total_calls' => CallLog::today()->count(),
-            'qualified_calls' => CallLog::today()->qualified()->count(),
-            'billable_calls' => CallLog::today()->billable()->count(),
-            'revenue' => CallLog::today()->billable()->sum('payout'),
-            'cost' => CallLog::today()->sum('cost'),
-            'profit' => CallLog::today()->billable()->sum('payout') - CallLog::today()->sum('cost'),
-            'avg_duration' => CallLog::today()->where('duration_seconds', '>', 0)->avg('duration_seconds') ?? 0,
+            'total_calls' => (clone $todayQuery)->count(),
+            'qualified_calls' => (clone $todayQuery)->qualified()->count(),
+            'billable_calls' => (clone $todayQuery)->billable()->count(),
+            'revenue' => (clone $todayQuery)->billable()->sum('payout'),
+            'cost' => (clone $todayQuery)->sum('cost'),
+            'profit' => (clone $todayQuery)->billable()->sum('payout') - (clone $todayQuery)->sum('cost'),
+            'avg_duration' => (clone $todayQuery)->where('duration_seconds', '>', 0)->avg('duration_seconds') ?? 0,
             'qualification_rate' => $this->calcRate(
-                CallLog::today()->qualified()->count(),
-                CallLog::today()->count()
+                (clone $todayQuery)->qualified()->count(),
+                (clone $todayQuery)->count()
             ),
         ];
 
         // This Week Stats
         $weekStats = [
-            'total_calls' => CallLog::thisWeek()->count(),
-            'qualified_calls' => CallLog::thisWeek()->qualified()->count(),
-            'revenue' => CallLog::thisWeek()->billable()->sum('payout'),
-            'profit' => CallLog::thisWeek()->billable()->sum('payout') - CallLog::thisWeek()->sum('cost'),
+            'total_calls' => (clone $weekQuery)->count(),
+            'qualified_calls' => (clone $weekQuery)->qualified()->count(),
+            'revenue' => (clone $weekQuery)->billable()->sum('payout'),
+            'profit' => (clone $weekQuery)->billable()->sum('payout') - (clone $weekQuery)->sum('cost'),
         ];
 
         // This Month Stats
         $monthStats = [
-            'total_calls' => CallLog::thisMonth()->count(),
-            'qualified_calls' => CallLog::thisMonth()->qualified()->count(),
-            'revenue' => CallLog::thisMonth()->billable()->sum('payout'),
-            'cost' => CallLog::thisMonth()->sum('cost'),
-            'profit' => CallLog::thisMonth()->billable()->sum('payout') - CallLog::thisMonth()->sum('cost'),
+            'total_calls' => (clone $monthQuery)->count(),
+            'qualified_calls' => (clone $monthQuery)->qualified()->count(),
+            'revenue' => (clone $monthQuery)->billable()->sum('payout'),
+            'cost' => (clone $monthQuery)->sum('cost'),
+            'profit' => (clone $monthQuery)->billable()->sum('payout') - (clone $monthQuery)->sum('cost'),
         ];
 
         // Recent Calls
-        $recentCalls = CallLog::with(['city', 'buyer'])
-            ->latest()
-            ->take(20)
-            ->get();
+        $recentCallsQuery = CallLog::with(['city', 'buyer']);
+        if ($domainId) {
+            $recentCallsQuery->where('domain_id', $domainId);
+        }
+        $recentCalls = $recentCallsQuery->latest()->take(20)->get();
 
-        // Top Cities by Calls
-        $topCities = CallLog::thisMonth()
-            ->qualified()
+        // Top Cities by Calls (this month, qualified)
+        $topCitiesQuery = CallLog::thisMonth()->qualified();
+        if ($domainId) {
+            $topCitiesQuery->where('domain_id', $domainId);
+        }
+        $topCities = $topCitiesQuery
             ->selectRaw('city_id, COUNT(*) as call_count, SUM(payout) as total_revenue')
             ->groupBy('city_id')
             ->orderByDesc('call_count')
@@ -64,41 +82,65 @@ class DashboardController extends Controller
             ->get();
 
         // Traffic Source Breakdown
-        $trafficSources = CallLog::thisMonth()
+        $trafficSourcesQuery = CallLog::thisMonth();
+        if ($domainId) {
+            $trafficSourcesQuery->where('domain_id', $domainId);
+        }
+        $trafficSources = $trafficSourcesQuery
             ->selectRaw('traffic_source, COUNT(*) as total, SUM(CASE WHEN is_qualified = 1 THEN 1 ELSE 0 END) as qualified')
             ->groupBy('traffic_source')
             ->get();
 
         // Daily Call Chart (last 30 days)
-        $dailyCalls = CallLog::selectRaw('DATE(created_at) as date, COUNT(*) as total, SUM(CASE WHEN is_billable = 1 THEN 1 ELSE 0 END) as billable')
-            ->where('created_at', '>=', now()->subDays(30))
+        $dailyCallsQuery = CallLog::where('created_at', '>=', now()->subDays(30));
+        if ($domainId) {
+            $dailyCallsQuery->where('domain_id', $domainId);
+        }
+        $dailyCalls = $dailyCallsQuery
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as total, SUM(CASE WHEN is_billable = 1 THEN 1 ELSE 0 END) as billable')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        // Active Resources
+        // Active Resources (scoped to domain)
         $generatedCities = DB::table('domain_cities')
+            ->where('domain_id', $domainId)
             ->whereNotNull('content_generated')
             ->where('content_generated', true)
             ->where('status', true)
             ->distinct('city_id')
             ->count('city_id');
-        $totalCities = DB::table('domain_cities')->distinct('city_id')->count('city_id');
+        $totalCities = DB::table('domain_cities')
+            ->where('domain_id', $domainId)
+            ->distinct('city_id')
+            ->count('city_id');
         $generatedStates = DB::table('domain_states')
+            ->where('domain_id', $domainId)
             ->where('generation_status', 'success')
             ->where('status', true)
             ->count();
-        $totalStates = DB::table('domain_states')->count();
+        $totalStates = DB::table('domain_states')
+            ->where('domain_id', $domainId)
+            ->count();
 
-        $indexedLinks = IndexingUrl::where('indexed', true)->count();
-        $totalIndexedCandidates = IndexingUrl::count();
+        $domainHost = $domain?->domain;
+        if ($domainHost) {
+            $indexedLinks = IndexingUrl::where('indexed', true)
+                ->where(fn ($q) => $q->where('url', 'like', "https://{$domainHost}/%")->orWhere('url', 'like', "http://{$domainHost}/%"))
+                ->count();
+            $totalIndexedCandidates = IndexingUrl::where(fn ($q) => $q->where('url', 'like', "https://{$domainHost}/%")->orWhere('url', 'like', "http://{$domainHost}/%"))
+                ->count();
+        } else {
+            $indexedLinks = IndexingUrl::where('indexed', true)->count();
+            $totalIndexedCandidates = IndexingUrl::count();
+        }
 
         $resourceStats = [
             'published_pages' => $generatedCities.' / '.$totalCities,
             'generated_states' => $generatedStates.' / '.$totalStates,
             'indexed_links' => $indexedLinks.' / '.$totalIndexedCandidates,
-            'active_numbers' => PhoneNumber::where('is_active', true)->count(),
-            'active_buyers' => Buyer::active()->count(),
+            'active_numbers' => PhoneNumber::where('is_active', true)->when($domainId, fn ($q) => $q->where('domain_id', $domainId))->count(),
+            'active_buyers' => Buyer::active()->when($domainId, fn ($q) => $q->where('domain_id', $domainId))->count(),
         ];
 
         return view('admin.dashboard', compact(

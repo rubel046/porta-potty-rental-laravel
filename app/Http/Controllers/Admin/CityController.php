@@ -19,6 +19,7 @@ class CityController extends Controller
 {
     public function index(Request $request)
     {
+        $domain = Domain::current() ?? Domain::first();
         $query = City::with('state');
 
         if ($request->filled('search')) {
@@ -30,16 +31,22 @@ class CityController extends Controller
         if ($request->filled('is_active')) {
             $query->where('is_active', $request->is_active);
         }
+        if ($request->filled('service_pages_count')) {
+            if ($request->service_pages_count === 'has') {
+                $domain ? $query->whereHas('servicePages', fn ($q) => $q->where('domain_id', $domain->id)) : $query->has('servicePages');
+            } elseif ($request->service_pages_count === '0') {
+                $domain ? $query->whereDoesntHave('servicePages', fn ($q) => $q->where('domain_id', $domain->id)) : $query->doesntHave('servicePages');
+            }
+        }
 
-        $domain = Domain::current() ?? Domain::first();
-
-        // Load service pages count and domain_city pivot data for current domain
+        // Scope to domain: only show cities linked via domain_cities
         if ($domain) {
+            $query->whereHas('domainCities', fn ($q) => $q->where('domain_id', $domain->id));
+
             $query->withCount(['servicePages' => function ($q) use ($domain) {
                 $q->where('domain_id', $domain->id);
             }]);
 
-            // Load the domain_city relationship for the current domain
             $query->with(['domainCities' => function ($q) use ($domain) {
                 $q->where('domain_id', $domain->id);
             }]);
