@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use App\Models\CallLog;
-use App\Models\City;
+use App\Models\Domain;
 use App\Models\IndexingUrl;
 use App\Models\PhoneNumber;
 use App\Models\ServicePage;
