@@ -19,6 +19,11 @@ class DomainMiddleware
 
         if (! isset($domain) || ! $domain) {
             $host = $request->getHost();
+
+            if (app()->isLocal() && str_ends_with($host, '.test')) {
+                $host = str_replace('.test', '.com', $host);
+            }
+
             $domain = Domain::where('domain', $host)->first();
         }
 

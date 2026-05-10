@@ -10,16 +10,16 @@ class BlogCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $domains = Domain::where('id', 1)->get();
-
-        if ($domains->isEmpty()) {
-            $this->seedDefaultCategories(null);
-
-            return;
+        // Porta potty domain (id: 1)
+        $pottyDomain = Domain::find(1);
+        if ($pottyDomain) {
+            $this->seedDefaultCategories($pottyDomain->id);
         }
 
-        foreach ($domains as $domain) {
-            $this->seedDefaultCategories($domain->id);
+        // Plumbing domain (id: 2)
+        $plumbingDomain = Domain::find(2);
+        if ($plumbingDomain) {
+            $this->seedPlumbingCategories($plumbingDomain->id);
         }
     }
 
@@ -236,6 +236,350 @@ class BlogCategorySeeder extends Seeder
             ['name' => 'Climate Controlled', 'slug' => 'climate-controlled', 'description' => 'Temperature control options', 'icon' => '🌡️'],
             ['name' => 'Lighting Units', 'slug' => 'lighting-units', 'description' => 'Event lighting systems', 'icon' => '💡'],
             ['name' => 'Generator Rentals', 'slug' => 'generator-rentals', 'description' => 'Power generator options', 'icon' => '⚡'],
+        ];
+
+        foreach ($categories as $i => $category) {
+            if (BlogCategory::where('slug', $category['slug'])
+                ->where('domain_id', $domainId)
+                ->exists()) {
+                continue;
+            }
+
+            BlogCategory::updateOrCreate(
+                ['slug' => $category['slug'], 'domain_id' => $domainId],
+                array_merge($category, ['sort_order' => $i, 'domain_id' => $domainId])
+            );
+        }
+    }
+
+    private function seedPlumbingCategories(int $domainId): void
+    {
+        $categories = [
+            // === EMERGENCY PLUMBING (25) ===
+            ['name' => 'Emergency Plumbing', 'slug' => 'emergency-plumbing', 'description' => '24/7 emergency plumbing services and tips', 'icon' => '🚨'],
+            ['name' => 'Emergency Plumber Near Me', 'slug' => 'emergency-plumber-near-me', 'description' => 'Finding emergency plumbers in your area', 'icon' => '📍'],
+            ['name' => '24 Hour Plumber', 'slug' => '24-hour-plumber', 'description' => 'Around-the-clock plumbing services', 'icon' => '🕐'],
+            ['name' => 'Same Day Plumber', 'slug' => 'same-day-plumber', 'description' => 'Same-day plumbing service options', 'icon' => '⚡'],
+            ['name' => 'Weekend Plumber', 'slug' => 'weekend-plumber', 'description' => 'Weekend plumbing service availability', 'icon' => '📅'],
+            ['name' => 'Holiday Plumbing', 'slug' => 'holiday-plumbing', 'description' => 'Holiday plumbing emergencies', 'icon' => '🎄'],
+            ['name' => 'After Hours Plumbing', 'slug' => 'after-hours-plumbing', 'description' => 'Late night plumbing services', 'icon' => '🌙'],
+            ['name' => 'Emergency Pipe Repair', 'slug' => 'emergency-pipe-repair', 'description' => 'Urgent pipe repair services', 'icon' => '🔧'],
+            ['name' => 'Burst Pipe Emergency', 'slug' => 'burst-pipe-emergency', 'description' => 'What to do when a pipe bursts', 'icon' => '💥'],
+            ['name' => 'Frozen Pipe Emergency', 'slug' => 'frozen-pipe-emergency', 'description' => 'Dealing with frozen pipes', 'icon' => '❄️'],
+            ['name' => 'Gas Leak Emergency', 'slug' => 'gas-leak-emergency', 'description' => 'Gas leak detection and response', 'icon' => '🔥'],
+            ['name' => 'Sewage Backup Emergency', 'slug' => 'sewage-backup-emergency', 'description' => 'Sewage backup cleanup and repair', 'icon' => '💩'],
+            ['name' => 'Flood Emergency', 'slug' => 'flood-emergency', 'description' => 'Plumbing flood response', 'icon' => '🌊'],
+            ['name' => 'Water Damage Repair', 'slug' => 'water-damage-repair', 'description' => 'Water damage restoration', 'icon' => '💧'],
+            ['name' => 'Emergency Shut-Off', 'slug' => 'emergency-shut-off', 'description' => 'How to shut off your water', 'icon' => '🔴'],
+            ['name' => 'No Water Emergency', 'slug' => 'no-water-emergency', 'description' => 'Loss of water supply', 'icon' => '🚱'],
+            ['name' => 'Plumbing Disaster Prep', 'slug' => 'plumbing-disaster-prep', 'description' => 'Preparing for plumbing disasters', 'icon' => '⚠️'],
+            ['name' => 'Emergency Contact Guide', 'slug' => 'emergency-contact-guide', 'description' => 'Who to call in a plumbing emergency', 'icon' => '📞'],
+            ['name' => 'Emergency Plumbing Costs', 'slug' => 'emergency-plumbing-costs', 'description' => 'Cost of emergency plumbing services', 'icon' => '💰'],
+            ['name' => 'Insurance Claims', 'slug' => 'insurance-claims', 'description' => 'Plumbing damage insurance claims', 'icon' => '📋'],
+            ['name' => 'Disaster Response Team', 'slug' => 'disaster-response-team', 'description' => 'Rapid response plumbing teams', 'icon' => '👨‍🔧'],
+            ['name' => 'Emergency Kit Prep', 'slug' => 'emergency-kit-prep', 'description' => 'Plumbing emergency kit essentials', 'icon' => '🧰'],
+            ['name' => 'Winter Emergency Prep', 'slug' => 'winter-emergency-prep', 'description' => 'Winter plumbing emergency preparation', 'icon' => '☃️'],
+            ['name' => 'Summer Emergency Prep', 'slug' => 'summer-emergency-prep', 'description' => 'Summer plumbing emergency tips', 'icon' => '☀️'],
+            ['name' => 'Commercial Emergencies', 'slug' => 'commercial-emergencies', 'description' => 'Emergency plumbing for businesses', 'icon' => '🏢'],
+
+            // === DRAIN CLEANING (20) ===
+            ['name' => 'Drain Cleaning', 'slug' => 'drain-cleaning', 'description' => 'Professional drain cleaning services', 'icon' => '🧹'],
+            ['name' => 'Clogged Drains', 'slug' => 'clogged-drains', 'description' => 'Fixing clogged drains', 'icon' => '🚫'],
+            ['name' => 'Slow Drains', 'slug' => 'slow-drains', 'description' => 'Diagnosing slow drain issues', 'icon' => '🐌'],
+            ['name' => 'Kitchen Drain Clogs', 'slug' => 'kitchen-drain-clogs', 'description' => 'Kitchen sink drain solutions', 'icon' => '🍳'],
+            ['name' => 'Bathroom Drain Clogs', 'slug' => 'bathroom-drain-clogs', 'description' => 'Bathroom drain cleaning', 'icon' => '🚿'],
+            ['name' => 'Shower Drain Cleaning', 'slug' => 'shower-drain-cleaning', 'description' => 'Shower drain unclogging', 'icon' => '🚿'],
+            ['name' => 'Bathtub Drains', 'slug' => 'bathtub-drains', 'description' => 'Bathtub drain repair', 'icon' => '🛁'],
+            ['name' => 'Main Line Drain Cleaning', 'slug' => 'main-line-drain-cleaning', 'description' => 'Main sewer line cleaning', 'icon' => '🏠'],
+            ['name' => 'Floor Drain Cleaning', 'slug' => 'floor-drain-cleaning', 'description' => 'Floor drain maintenance', 'icon' => '🚪'],
+            ['name' => 'Outdoor Drain Cleaning', 'slug' => 'outdoor-drain-cleaning', 'description' => 'Outdoor drain solutions', 'icon' => '🌳'],
+            ['name' => 'Drain Snaking', 'slug' => 'drain-snaking', 'description' => 'Motorized drain snaking services', 'icon' => '🐍'],
+            ['name' => 'Drain Auger Service', 'slug' => 'drain-auger-service', 'description' => 'Drain auger cleaning', 'icon' => '🔧'],
+            ['name' => 'Drain Cleaning Cost', 'slug' => 'drain-cleaning-cost', 'description' => 'Cost of drain cleaning', 'icon' => '💰'],
+            ['name' => 'DIY Drain Cleaning', 'slug' => 'diy-drain-cleaning', 'description' => 'Do-it-yourself drain cleaning', 'icon' => '🔧'],
+            ['name' => 'Natural Drain Cleaners', 'slug' => 'natural-drain-cleaners', 'description' => 'Eco-friendly drain cleaning', 'icon' => '🌿'],
+            ['name' => 'Chemical Drain Cleaners', 'slug' => 'chemical-drain-cleaners', 'description' => 'Chemical drain cleaner safety', 'icon' => '☣️'],
+            ['name' => 'Drain Maintenance Tips', 'slug' => 'drain-maintenance-tips', 'description' => 'Preventing drain clogs', 'icon' => '✅'],
+            ['name' => 'Commercial Drain Cleaning', 'slug' => 'commercial-drain-cleaning', 'description' => 'Drain cleaning for businesses', 'icon' => '🏢'],
+            ['name' => 'Restaurant Drain Cleaning', 'slug' => 'restaurant-drain-cleaning', 'description' => 'Restaurant grease drain cleaning', 'icon' => '🍔'],
+            ['name' => 'Drain Cleaning Equipment', 'slug' => 'drain-cleaning-equipment', 'description' => 'Professional drain cleaning tools', 'icon' => '🛠️'],
+
+            // === HYDRO JETTING (10) ===
+            ['name' => 'Hydro Jetting', 'slug' => 'hydro-jetting', 'description' => 'High-pressure water jetting services', 'icon' => '💦'],
+            ['name' => 'Hydro Jetting Cost', 'slug' => 'hydro-jetting-cost', 'description' => 'Cost of hydro jetting services', 'icon' => '💰'],
+            ['name' => 'Hydro Jetting vs Snaking', 'slug' => 'hydro-jetting-vs-snaking', 'description' => 'Comparing drain cleaning methods', 'icon' => '⚖️'],
+            ['name' => 'Grease Removal Jetting', 'slug' => 'grease-removal-jetting', 'description' => 'Grease removal with hydro jetting', 'icon' => '🛢️'],
+            ['name' => 'Root Removal Jetting', 'slug' => 'root-removal-jetting', 'description' => 'Tree root removal with jetting', 'icon' => '🌳'],
+            ['name' => 'Commercial Hydro Jetting', 'slug' => 'commercial-hydro-jetting', 'description' => 'Commercial hydro jetting', 'icon' => '🏢'],
+            ['name' => 'Residential Hydro Jetting', 'slug' => 'residential-hydro-jetting', 'description' => 'Residential hydro jetting', 'icon' => '🏠'],
+            ['name' => 'Hydro Jetting Safety', 'slug' => 'hydro-jetting-safety', 'description' => 'Safe hydro jetting practices', 'icon' => '⚠️'],
+            ['name' => 'Sewer Jetting Service', 'slug' => 'sewer-jetting-service', 'description' => 'Sewer line hydro jetting', 'icon' => '🔧'],
+            ['name' => 'Hydro Jetting Equipment', 'slug' => 'hydro-jetting-equipment', 'description' => 'Hydro jetting machines', 'icon' => '⚙️'],
+
+            // === PIPE REPAIR (25) ===
+            ['name' => 'Pipe Repair', 'slug' => 'pipe-repair', 'description' => 'Professional pipe repair services', 'icon' => '🔧'],
+            ['name' => 'Leaking Pipes', 'slug' => 'leaking-pipes', 'description' => 'Fixing leaking pipes', 'icon' => '💧'],
+            ['name' => 'Pipe Replacement', 'slug' => 'pipe-replacement', 'description' => 'Full pipe replacement services', 'icon' => '🔩'],
+            ['name' => 'Corroded Pipes', 'slug' => 'corroded-pipes', 'description' => 'Dealing with pipe corrosion', 'icon' => '🔴'],
+            ['name' => 'Galvanized Pipe Repair', 'slug' => 'galvanized-pipe-repair', 'description' => 'Galvanized steel pipe issues', 'icon' => '⚙️'],
+            ['name' => 'Copper Pipe Repair', 'slug' => 'copper-pipe-repair', 'description' => 'Copper pipe repair and soldering', 'icon' => '🔴'],
+            ['name' => 'PVC Pipe Repair', 'slug' => 'pvc-pipe-repair', 'description' => 'PVC pipe repair techniques', 'icon' => '🔵'],
+            ['name' => 'PEX Pipe Repair', 'slug' => 'pex-pipe-repair', 'description' => 'PEX pipe repair and installation', 'icon' => '🟡'],
+            ['name' => 'Cast Iron Pipe Repair', 'slug' => 'cast-iron-pipe-repair', 'description' => 'Cast iron pipe restoration', 'icon' => '⚫'],
+            ['name' => 'Pipe Insulation', 'slug' => 'pipe-insulation', 'description' => 'Insulating pipes for protection', 'icon' => '🧊'],
+            ['name' => 'Pipe Corrosion Prevention', 'slug' => 'pipe-corrosion-prevention', 'description' => 'Preventing pipe corrosion', 'icon' => '🛡️'],
+            ['name' => 'Pipe Repair Costs', 'slug' => 'pipe-repair-costs', 'description' => 'Cost of pipe repair', 'icon' => '💰'],
+            ['name' => 'DIY Pipe Repair', 'slug' => 'diy-pipe-repair', 'description' => 'Do-it-yourself pipe fixes', 'icon' => '🔧'],
+            ['name' => 'Pipe Repair Tips', 'slug' => 'pipe-repair-tips', 'description' => 'Pipe maintenance and care', 'icon' => '💡'],
+            ['name' => 'Outdoor Pipe Repair', 'slug' => 'outdoor-pipe-repair', 'description' => 'Outdoor plumbing pipe repair', 'icon' => '🌳'],
+            ['name' => 'Underground Pipe Repair', 'slug' => 'underground-pipe-repair', 'description' => 'Buried pipe repair solutions', 'icon' => '⛏️'],
+            ['name' => 'Wall Pipe Repair', 'slug' => 'wall-pipe-repair', 'description' => 'Pipe repair inside walls', 'icon' => '🧱'],
+            ['name' => 'Ceiling Pipe Repair', 'slug' => 'ceiling-pipe-repair', 'description' => 'Ceiling pipe leak repair', 'icon' => '🔝'],
+            ['name' => 'Pipe Patching', 'slug' => 'pipe-patching', 'description' => 'Pipe patch repair methods', 'icon' => '🩹'],
+            ['name' => 'Pipe Coupling Repair', 'slug' => 'pipe-coupling-repair', 'description' => 'Coupling and joint repair', 'icon' => '🔗'],
+            ['name' => 'Pipe Thread Repair', 'slug' => 'pipe-thread-repair', 'description' => 'Repairing damaged pipe threads', 'icon' => '🔩'],
+            ['name' => 'Compression Fitting Repair', 'slug' => 'compression-fitting-repair', 'description' => 'Compression fitting fixes', 'icon' => '🔧'],
+            ['name' => 'Sweat Soldering Guide', 'slug' => 'sweat-soldering-guide', 'description' => 'Copper pipe soldering guide', 'icon' => '🔥'],
+            ['name' => 'Pipe Hanger Installation', 'slug' => 'pipe-hanger-installation', 'description' => 'Installing pipe supports', 'icon' => '🔨'],
+            ['name' => 'Commercial Pipe Repair', 'slug' => 'commercial-pipe-repair', 'description' => 'Industrial pipe repair', 'icon' => '🏭'],
+
+            // === LEAK DETECTION (15) ===
+            ['name' => 'Leak Detection', 'slug' => 'leak-detection', 'description' => 'Professional leak detection services', 'icon' => '🔍'],
+            ['name' => 'Hidden Leak Detection', 'slug' => 'hidden-leak-detection', 'description' => 'Finding hidden water leaks', 'icon' => '🕵️'],
+            ['name' => 'Slab Leak Detection', 'slug' => 'slab-leak-detection', 'description' => 'Detecting foundation slab leaks', 'icon' => '🏗️'],
+            ['name' => 'Thermal Imaging Leaks', 'slug' => 'thermal-imaging-leaks', 'description' => 'Infrared leak detection', 'icon' => '📷'],
+            ['name' => 'Electronic Leak Detection', 'slug' => 'electronic-leak-detection', 'description' => 'Electronic leak finding equipment', 'icon' => '📡'],
+            ['name' => 'Water Meter Leak Check', 'slug' => 'water-meter-leak-check', 'description' => 'Using water meters for leak detection', 'icon' => '📊'],
+            ['name' => 'Leak Detection Cost', 'slug' => 'leak-detection-cost', 'description' => 'Cost of professional leak detection', 'icon' => '💰'],
+            ['name' => 'DIY Leak Detection', 'slug' => 'diy-leak-detection', 'description' => 'Finding leaks yourself', 'icon' => '🔧'],
+            ['name' => 'Water Bill Leak Check', 'slug' => 'water-bill-leak-check', 'description' => 'Detecting leaks from high water bills', 'icon' => '📄'],
+            ['name' => 'Ceiling Leak Detection', 'slug' => 'ceiling-leak-detection', 'description' => 'Finding ceiling water leaks', 'icon' => '🔝'],
+            ['name' => 'Wall Leak Detection', 'slug' => 'wall-leak-detection', 'description' => 'Finding wall water leaks', 'icon' => '🧱'],
+            ['name' => 'Underground Leak Detection', 'slug' => 'underground-leak-detection', 'description' => 'Finding buried pipe leaks', 'icon' => '⛏️'],
+            ['name' => 'Pool Leak Detection', 'slug' => 'pool-leak-detection', 'description' => 'Swimming pool leak finding', 'icon' => '🏊'],
+            ['name' => 'Irrigation Leak Detection', 'slug' => 'irrigation-leak-detection', 'description' => 'Sprinkler system leak detection', 'icon' => '💧'],
+            ['name' => 'Commercial Leak Detection', 'slug' => 'commercial-leak-detection', 'description' => 'Industrial leak detection', 'icon' => '🏭'],
+
+            // === SLAB LEAK (12) ===
+            ['name' => 'Slab Leak Repair', 'slug' => 'slab-leak-repair', 'description' => 'Foundation slab leak repair', 'icon' => '🏗️'],
+            ['name' => 'Slab Leak Signs', 'slug' => 'slab-leak-signs', 'description' => 'Signs of a slab leak', 'icon' => '⚠️'],
+            ['name' => 'Slab Leak Cost', 'slug' => 'slab-leak-cost', 'description' => 'Cost of slab leak repair', 'icon' => '💰'],
+            ['name' => 'Trenchless Slab Repair', 'slug' => 'trenchless-slab-repair', 'description' => 'No-dig slab leak repair', 'icon' => '🔧'],
+            ['name' => 'Slab Leak Prevention', 'slug' => 'slab-leak-prevention', 'description' => 'Preventing foundation leaks', 'icon' => '🛡️'],
+            ['name' => 'Hot Water Slab Leak', 'slug' => 'hot-water-slab-leak', 'description' => 'Hot water line slab leaks', 'icon' => '🔥'],
+            ['name' => 'Slab Leak Insurance', 'slug' => 'slab-leak-insurance', 'description' => 'Insurance coverage for slab leaks', 'icon' => '📋'],
+            ['name' => 'Foundation Damage Repair', 'slug' => 'foundation-damage-repair', 'description' => 'Repairing slab leak foundation damage', 'icon' => '🏠'],
+            ['name' => 'Concrete Cutting Repair', 'slug' => 'concrete-cutting-repair', 'description' => 'Concrete cutting for slab repair', 'icon' => '🔨'],
+            ['name' => 'Slab Leak Detection Methods', 'slug' => 'slab-leak-detection-methods', 'description' => 'Methods for finding slab leaks', 'icon' => '🔍'],
+            ['name' => 'Slab Leak Warranty', 'slug' => 'slab-leak-warranty', 'description' => 'Warranty on slab leak repairs', 'icon' => '📜'],
+            ['name' => 'Slab Leak Emergency', 'slug' => 'slab-leak-emergency', 'description' => 'Emergency slab leak response', 'icon' => '🚨'],
+
+            // === WATER HEATER (20) ===
+            ['name' => 'Water Heater', 'slug' => 'water-heater', 'description' => 'Water heater installation and repair', 'icon' => '🔥'],
+            ['name' => 'Water Heater Repair', 'slug' => 'water-heater-repair', 'description' => 'Fixing water heater issues', 'icon' => '🔧'],
+            ['name' => 'Water Heater Installation', 'slug' => 'water-heater-installation', 'description' => 'New water heater installation', 'icon' => '🛠️'],
+            ['name' => 'Water Heater Replacement', 'slug' => 'water-heater-replacement', 'description' => 'Water heater replacement guide', 'icon' => '🔄'],
+            ['name' => 'No Hot Water', 'slug' => 'no-hot-water', 'description' => 'Troubleshooting no hot water', 'icon' => '❄️'],
+            ['name' => 'Water Heater Leaking', 'slug' => 'water-heater-leaking', 'description' => 'Fixing a leaking water heater', 'icon' => '💧'],
+            ['name' => 'Water Heater Noises', 'slug' => 'water-heater-noises', 'description' => 'Banging and popping water heater noises', 'icon' => '🔊'],
+            ['name' => 'Rusty Water Heater', 'slug' => 'rusty-water-heater', 'description' => 'Rusty water from water heater', 'icon' => '🔴'],
+            ['name' => 'Water Heater Pilot Light', 'slug' => 'water-heater-pilot-light', 'description' => 'Pilot light troubleshooting', 'icon' => '🔥'],
+            ['name' => 'Gas Water Heater', 'slug' => 'gas-water-heater', 'description' => 'Gas water heater repair', 'icon' => '🔥'],
+            ['name' => 'Electric Water Heater', 'slug' => 'electric-water-heater', 'description' => 'Electric water heater repair', 'icon' => '⚡'],
+            ['name' => 'Hybrid Water Heater', 'slug' => 'hybrid-water-heater', 'description' => 'Hybrid heat pump water heaters', 'icon' => '🌡️'],
+            ['name' => 'Solar Water Heater', 'slug' => 'solar-water-heater', 'description' => 'Solar water heating systems', 'icon' => '☀️'],
+            ['name' => 'Water Heater Maintenance', 'slug' => 'water-heater-maintenance', 'description' => 'Annual water heater maintenance', 'icon' => '✅'],
+            ['name' => 'Water Heater Flushing', 'slug' => 'water-heater-flushing', 'description' => 'Flushing your water heater', 'icon' => '💦'],
+            ['name' => 'Anode Rod Replacement', 'slug' => 'anode-rod-replacement', 'description' => 'Replacing water heater anode rod', 'icon' => '🔩'],
+            ['name' => 'Water Heater Thermostat', 'slug' => 'water-heater-thermostat', 'description' => 'Thermostat setting and replacement', 'icon' => '🌡️'],
+            ['name' => 'Water Heater Pressure Valve', 'slug' => 'water-heater-pressure-valve', 'description' => 'T&P valve replacement', 'icon' => '🔧'],
+            ['name' => 'Water Heater Size Guide', 'slug' => 'water-heater-size-guide', 'description' => 'Choosing the right water heater size', 'icon' => '📏'],
+            ['name' => 'Water Heater Energy Savings', 'slug' => 'water-heater-energy-savings', 'description' => 'Energy efficient water heating', 'icon' => '💡'],
+
+            // === TANKLESS WATER HEATER (12) ===
+            ['name' => 'Tankless Water Heater', 'slug' => 'tankless-water-heater', 'description' => 'On-demand tankless water heaters', 'icon' => '🔥'],
+            ['name' => 'Tankless Installation', 'slug' => 'tankless-installation', 'description' => 'Tankless water heater installation', 'icon' => '🛠️'],
+            ['name' => 'Tankless Repair', 'slug' => 'tankless-repair', 'description' => 'Tankless water heater repair', 'icon' => '🔧'],
+            ['name' => 'Tankless vs Tank', 'slug' => 'tankless-vs-tank', 'description' => 'Comparing tankless and tank heaters', 'icon' => '⚖️'],
+            ['name' => 'Tankless Descaling', 'slug' => 'tankless-descaling', 'description' => 'Descaling tankless water heaters', 'icon' => '🧹'],
+            ['name' => 'Tankless Error Codes', 'slug' => 'tankless-error-codes', 'description' => 'Tankless water heater error codes', 'icon' => '⚠️'],
+            ['name' => 'Tankless Gas Line', 'slug' => 'tankless-gas-line', 'description' => 'Gas line requirements for tankless', 'icon' => '🔥'],
+            ['name' => 'Tankless Venting', 'slug' => 'tankless-venting', 'description' => 'Tankless water heater venting', 'icon' => '💨'],
+            ['name' => 'Electric Tankless', 'slug' => 'electric-tankless', 'description' => 'Electric tankless water heaters', 'icon' => '⚡'],
+            ['name' => 'Tankless Flow Rate', 'slug' => 'tankless-flow-rate', 'description' => 'Understanding tankless flow rates', 'icon' => '💧'],
+            ['name' => 'Tankless Efficiency', 'slug' => 'tankless-efficiency', 'description' => 'Tankless energy efficiency ratings', 'icon' => '⭐'],
+            ['name' => 'Tankless Maintenance', 'slug' => 'tankless-maintenance', 'description' => 'Tankless water heater maintenance', 'icon' => '✅'],
+
+            // === SEWER LINE (15) ===
+            ['name' => 'Sewer Line', 'slug' => 'sewer-line', 'description' => 'Sewer line repair and replacement', 'icon' => '🚽'],
+            ['name' => 'Sewer Line Repair', 'slug' => 'sewer-line-repair', 'description' => 'Sewer line repair services', 'icon' => '🔧'],
+            ['name' => 'Sewer Line Replacement', 'slug' => 'sewer-line-replacement', 'description' => 'Full sewer line replacement', 'icon' => '🔩'],
+            ['name' => 'Sewer Line Inspection', 'slug' => 'sewer-line-inspection', 'description' => 'Video camera sewer inspection', 'icon' => '📹'],
+            ['name' => 'Sewer Backup Cleanup', 'slug' => 'sewer-backup-cleanup', 'description' => 'Cleaning up sewer backups', 'icon' => '💩'],
+            ['name' => 'Tree Root Intrusion', 'slug' => 'tree-root-intrusion', 'description' => 'Roots in sewer line repair', 'icon' => '🌳'],
+            ['name' => 'Sewer Line Cleaning', 'slug' => 'sewer-line-cleaning', 'description' => 'Sewer line hydro jetting', 'icon' => '💦'],
+            ['name' => 'Sewer Line Odors', 'slug' => 'sewer-line-odors', 'description' => 'Sewer gas smell solutions', 'icon' => '👃'],
+            ['name' => 'Sewer Line Cost', 'slug' => 'sewer-line-cost', 'description' => 'Cost of sewer line repair', 'icon' => '💰'],
+            ['name' => 'Sewer Line Permit', 'slug' => 'sewer-line-permit', 'description' => 'Permits for sewer work', 'icon' => '📋'],
+            ['name' => 'Sewer Line Insurance', 'slug' => 'sewer-line-insurance', 'description' => 'Insurance for sewer line repair', 'icon' => '🛡️'],
+            ['name' => 'Old Sewer Line Repair', 'slug' => 'old-sewer-line-repair', 'description' => 'Repairing aging sewer lines', 'icon' => '⏳'],
+            ['name' => 'Clay Sewer Pipe Repair', 'slug' => 'clay-sewer-pipe-repair', 'description' => 'Clay pipe sewer repair', 'icon' => '🏺'],
+            ['name' => 'Orangeburg Pipe Repair', 'slug' => 'orangeburg-pipe-repair', 'description' => 'Orangeburg sewer pipe replacement', 'icon' => '📦'],
+            ['name' => 'Sewer Line Warranty', 'slug' => 'sewer-line-warranty', 'description' => 'Warranty on sewer repairs', 'icon' => '📜'],
+
+            // === TRENCHLESS SEWER (8) ===
+            ['name' => 'Trenchless Sewer', 'slug' => 'trenchless-sewer', 'description' => 'No-dig sewer repair methods', 'icon' => '🚧'],
+            ['name' => 'Pipe Lining', 'slug' => 'pipe-lining', 'description' => 'Cured-in-place pipe lining', 'icon' => '🔄'],
+            ['name' => 'Pipe Bursting', 'slug' => 'pipe-bursting', 'description' => 'Trenchless pipe bursting', 'icon' => '💥'],
+            ['name' => 'Trenchless Technology', 'slug' => 'trenchless-technology', 'description' => 'Modern trenchless repair methods', 'icon' => '⚙️'],
+            ['name' => 'Trenchless Cost', 'slug' => 'trenchless-cost', 'description' => 'Cost of trenchless sewer repair', 'icon' => '💰'],
+            ['name' => 'Trenchless vs Traditional', 'slug' => 'trenchless-vs-traditional', 'description' => 'Comparing repair methods', 'icon' => '⚖️'],
+            ['name' => 'Trenchless Warranty', 'slug' => 'trenchless-warranty', 'description' => 'Warranty on trenchless repairs', 'icon' => '📜'],
+            ['name' => 'CIPP Lining Process', 'slug' => 'cipp-lining-process', 'description' => 'Cured-in-place pipe process', 'icon' => '🔧'],
+
+            // === TOILET REPAIR (14) ===
+            ['name' => 'Toilet Repair', 'slug' => 'toilet-repair', 'description' => 'Toilet repair and installation', 'icon' => '🚽'],
+            ['name' => 'Running Toilet', 'slug' => 'running-toilet', 'description' => 'Fixing a running toilet', 'icon' => '🔊'],
+            ['name' => 'Clogged Toilet', 'slug' => 'clogged-toilet', 'description' => 'Unclogging a toilet', 'icon' => '💩'],
+            ['name' => 'Toilet Leaking', 'slug' => 'toilet-leaking', 'description' => 'Fixing a leaking toilet', 'icon' => '💧'],
+            ['name' => 'Toilet Installation', 'slug' => 'toilet-installation', 'description' => 'New toilet installation', 'icon' => '🛠️'],
+            ['name' => 'Toilet Replacement', 'slug' => 'toilet-replacement', 'description' => 'Replacing an old toilet', 'icon' => '🔄'],
+            ['name' => 'Toilet Wax Ring', 'slug' => 'toilet-wax-ring', 'description' => 'Wax ring replacement', 'icon' => '🔧'],
+            ['name' => 'Toilet Flapper Repair', 'slug' => 'toilet-flapper-repair', 'description' => 'Replacing toilet flapper', 'icon' => '🔩'],
+            ['name' => 'Toilet Fill Valve', 'slug' => 'toilet-fill-valve', 'description' => 'Fill valve replacement', 'icon' => '🔧'],
+            ['name' => 'Toilet Flush Handle', 'slug' => 'toilet-flush-handle', 'description' => 'Flush handle repair', 'icon' => '🔩'],
+            ['name' => 'Toilet Tank Repair', 'slug' => 'toilet-tank-repair', 'description' => 'Toilet tank components', 'icon' => '🔧'],
+            ['name' => 'Toilet Bowl Repair', 'slug' => 'toilet-bowl-repair', 'description' => 'Toilet bowl crack repair', 'icon' => '🔨'],
+            ['name' => 'Low Flow Toilet', 'slug' => 'low-flow-toilet', 'description' => 'Water efficient toilets', 'icon' => '💧'],
+            ['name' => 'Bidet Installation', 'slug' => 'bidet-installation', 'description' => 'Bidet seat and attachment installation', 'icon' => '🚿'],
+
+            // === FAUCET & FIXTURE (16) ===
+            ['name' => 'Faucet Repair', 'slug' => 'faucet-repair', 'description' => 'Faucet repair and replacement', 'icon' => '🚰'],
+            ['name' => 'Dripping Faucet', 'slug' => 'dripping-faucet', 'description' => 'Fixing a dripping faucet', 'icon' => '💧'],
+            ['name' => 'Kitchen Faucet Repair', 'slug' => 'kitchen-faucet-repair', 'description' => 'Kitchen faucet repair', 'icon' => '🍳'],
+            ['name' => 'Bathroom Faucet Repair', 'slug' => 'bathroom-faucet-repair', 'description' => 'Bathroom faucet repair', 'icon' => '🚿'],
+            ['name' => 'Outdoor Faucet Repair', 'slug' => 'outdoor-faucet-repair', 'description' => 'Hose bib and outdoor faucet repair', 'icon' => '🌳'],
+            ['name' => 'Fixture Installation', 'slug' => 'fixture-installation', 'description' => 'Plumbing fixture installation', 'icon' => '🛠️'],
+            ['name' => 'Sink Installation', 'slug' => 'sink-installation', 'description' => 'Sink replacement and installation', 'icon' => '🚰'],
+            ['name' => 'Shower Head Installation', 'slug' => 'shower-head-installation', 'description' => 'Shower head replacement', 'icon' => '🚿'],
+            ['name' => 'Cartridge Replacement', 'slug' => 'cartridge-replacement', 'description' => 'Faucet cartridge replacement', 'icon' => '🔧'],
+            ['name' => 'Faucet Aerator Repair', 'slug' => 'faucet-aerator-repair', 'description' => 'Cleaning and replacing aerators', 'icon' => '🔩'],
+            ['name' => 'Water Pressure Issues', 'slug' => 'water-pressure-issues', 'description' => 'Low water pressure solutions', 'icon' => '💧'],
+            ['name' => 'Fixture Upgrades', 'slug' => 'fixture-upgrades', 'description' => 'Modern fixture replacements', 'icon' => '⬆️'],
+            ['name' => 'Water Efficient Fixtures', 'slug' => 'water-efficient-fixtures', 'description' => 'Water saving plumbing fixtures', 'icon' => '💚'],
+            ['name' => 'Touchless Faucets', 'slug' => 'touchless-faucets', 'description' => 'Motion sensor faucet installation', 'icon' => '✋'],
+            ['name' => 'Commercial Fixtures', 'slug' => 'commercial-fixtures', 'description' => 'Commercial plumbing fixtures', 'icon' => '🏢'],
+            ['name' => 'Fixture Warranty Guide', 'slug' => 'fixture-warranty-guide', 'description' => 'Understanding fixture warranties', 'icon' => '📜'],
+
+            // === GAS LINE (10) ===
+            ['name' => 'Gas Line', 'slug' => 'gas-line', 'description' => 'Gas line installation and repair', 'icon' => '🔥'],
+            ['name' => 'Gas Line Installation', 'slug' => 'gas-line-installation', 'description' => 'New gas line installation', 'icon' => '🛠️'],
+            ['name' => 'Gas Line Repair', 'slug' => 'gas-line-repair', 'description' => 'Gas line repair services', 'icon' => '🔧'],
+            ['name' => 'Gas Leak Detection', 'slug' => 'gas-leak-detection', 'description' => 'Finding gas leaks', 'icon' => '🔍'],
+            ['name' => 'Gas Appliance Hookup', 'slug' => 'gas-appliance-hookup', 'description' => 'Connecting gas appliances', 'icon' => '🔌'],
+            ['name' => 'Gas Line Inspection', 'slug' => 'gas-line-inspection', 'description' => 'Gas line safety inspection', 'icon' => '📋'],
+            ['name' => 'Gas Line Permits', 'slug' => 'gas-line-permits', 'description' => 'Permits for gas line work', 'icon' => '📄'],
+            ['name' => 'Gas Line Sizing', 'slug' => 'gas-line-sizing', 'description' => 'Proper gas line sizing guide', 'icon' => '📏'],
+            ['name' => 'Outdoor Gas Line', 'slug' => 'outdoor-gas-line', 'description' => 'Outdoor gas line installation', 'icon' => '🌳'],
+            ['name' => 'Gas Line Safety', 'slug' => 'gas-line-safety', 'description' => 'Gas line safety tips', 'icon' => '⚠️'],
+
+            // === BACKFLOW & WATER QUALITY (12) ===
+            ['name' => 'Backflow Prevention', 'slug' => 'backflow-prevention', 'description' => 'Backflow prevention and testing', 'icon' => '🛡️'],
+            ['name' => 'Backflow Testing', 'slug' => 'backflow-testing', 'description' => 'Annual backflow testing service', 'icon' => '🔧'],
+            ['name' => 'Backflow Installation', 'slug' => 'backflow-installation', 'description' => 'Backflow preventer installation', 'icon' => '🛠️'],
+            ['name' => 'Backflow Repair', 'slug' => 'backflow-repair', 'description' => 'Backflow device repair', 'icon' => '🔧'],
+            ['name' => 'Water Filtration', 'slug' => 'water-filtration', 'description' => 'Whole house water filtration', 'icon' => '💧'],
+            ['name' => 'Water Softener', 'slug' => 'water-softener', 'description' => 'Water softener installation and repair', 'icon' => '🧂'],
+            ['name' => 'Reverse Osmosis', 'slug' => 'reverse-osmosis', 'description' => 'RO system installation', 'icon' => '💧'],
+            ['name' => 'Water Testing', 'slug' => 'water-testing', 'description' => 'Home water quality testing', 'icon' => '🧪'],
+            ['name' => 'Hard Water Solutions', 'slug' => 'hard-water-solutions', 'description' => 'Treating hard water problems', 'icon' => '🪨'],
+            ['name' => 'Well Water Treatment', 'slug' => 'well-water-treatment', 'description' => 'Well water filtration systems', 'icon' => '⛰️'],
+            ['name' => 'City Water Treatment', 'slug' => 'city-water-treatment', 'description' => 'Municipal water treatment', 'icon' => '🏙️'],
+            ['name' => 'Water Quality Guide', 'slug' => 'water-quality-guide', 'description' => 'Understanding water quality', 'icon' => '📖'],
+
+            // === SUMP PUMP (10) ===
+            ['name' => 'Sump Pump', 'slug' => 'sump-pump', 'description' => 'Sump pump installation and repair', 'icon' => '💧'],
+            ['name' => 'Sump Pump Installation', 'slug' => 'sump-pump-installation', 'description' => 'Installing a sump pump', 'icon' => '🛠️'],
+            ['name' => 'Sump Pump Repair', 'slug' => 'sump-pump-repair', 'description' => 'Fixing sump pump issues', 'icon' => '🔧'],
+            ['name' => 'Sump Pump Replacement', 'slug' => 'sump-pump-replacement', 'description' => 'Replacing old sump pumps', 'icon' => '🔄'],
+            ['name' => 'Battery Backup Sump', 'slug' => 'battery-backup-sump', 'description' => 'Sump pump battery backup', 'icon' => '🔋'],
+            ['name' => 'Basement Flooding', 'slug' => 'basement-flooding', 'description' => 'Preventing basement floods', 'icon' => '🌊'],
+            ['name' => 'Sump Pump Maintenance', 'slug' => 'sump-pump-maintenance', 'description' => 'Maintaining your sump pump', 'icon' => '✅'],
+            ['name' => 'Sump Pump Sizing', 'slug' => 'sump-pump-sizing', 'description' => 'Choosing the right sump pump', 'icon' => '📏'],
+            ['name' => 'Sump Pump Alarm', 'slug' => 'sump-pump-alarm', 'description' => 'Sump pump alarm systems', 'icon' => '🔔'],
+            ['name' => 'French Drain Systems', 'slug' => 'french-drain-systems', 'description' => 'French drain installation', 'icon' => '🔧'],
+
+            // === BATHROOM & KITCHEN (14) ===
+            ['name' => 'Bathroom Plumbing', 'slug' => 'bathroom-plumbing', 'description' => 'Bathroom plumbing services', 'icon' => '🚿'],
+            ['name' => 'Bathroom Remodel', 'slug' => 'bathroom-remodel', 'description' => 'Bathroom remodeling plumbing', 'icon' => '🔨'],
+            ['name' => 'Shower Installation', 'slug' => 'shower-installation', 'description' => 'New shower installation', 'icon' => '🚿'],
+            ['name' => 'Bathtub Installation', 'slug' => 'bathtub-installation', 'description' => 'Bathtub replacement', 'icon' => '🛁'],
+            ['name' => 'Walk-In Tub', 'slug' => 'walk-in-tub', 'description' => 'Walk-in bathtub installation', 'icon' => '🚿'],
+            ['name' => 'Kitchen Plumbing', 'slug' => 'kitchen-plumbing', 'description' => 'Kitchen plumbing services', 'icon' => '🍳'],
+            ['name' => 'Dishwasher Installation', 'slug' => 'dishwasher-installation', 'description' => 'Dishwasher hookup and installation', 'icon' => '🍽️'],
+            ['name' => 'Garbage Disposal', 'slug' => 'garbage-disposal', 'description' => 'Garbage disposal repair and installation', 'icon' => '🗑️'],
+            ['name' => 'Ice Maker Line', 'slug' => 'ice-maker-line', 'description' => 'Ice maker water line installation', 'icon' => '🧊'],
+            ['name' => 'Kitchen Remodel Plumbing', 'slug' => 'kitchen-remodel-plumbing', 'description' => 'Kitchen remodel plumbing work', 'icon' => '🔨'],
+            ['name' => 'Laundry Room Plumbing', 'slug' => 'laundry-room-plumbing', 'description' => 'Laundry room plumbing setup', 'icon' => '🧺'],
+            ['name' => 'Washing Machine Hookup', 'slug' => 'washing-machine-hookup', 'description' => 'Washing machine installation', 'icon' => '👕'],
+            ['name' => 'Utility Sink Installation', 'slug' => 'utility-sink-installation', 'description' => 'Utility sink plumbing', 'icon' => '🔧'],
+            ['name' => 'Water Line for Fridge', 'slug' => 'water-line-for-fridge', 'description' => 'Refrigerator water line installation', 'icon' => '🧊'],
+
+            // === NEW CONSTRUCTION (10) ===
+            ['name' => 'New Construction Plumbing', 'slug' => 'new-construction-plumbing', 'description' => 'Plumbing for new construction', 'icon' => '🏗️'],
+            ['name' => 'Rough-In Plumbing', 'slug' => 'rough-in-plumbing', 'description' => 'Rough-in plumbing installation', 'icon' => '🔧'],
+            ['name' => 'Underground Plumbing', 'slug' => 'underground-plumbing', 'description' => 'Underground plumbing work', 'icon' => '⛏️'],
+            ['name' => 'Above Ground Plumbing', 'slug' => 'above-ground-plumbing', 'description' => 'Above ground plumbing installation', 'icon' => '🔩'],
+            ['name' => 'Trim-Out Plumbing', 'slug' => 'trim-out-plumbing', 'description' => 'Trim-out plumbing installation', 'icon' => '🔧'],
+            ['name' => 'Multi-Unit Plumbing', 'slug' => 'multi-unit-plumbing', 'description' => 'Apartment and condo plumbing', 'icon' => '🏢'],
+            ['name' => 'Custom Home Plumbing', 'slug' => 'custom-home-plumbing', 'description' => 'Custom home plumbing design', 'icon' => '🏠'],
+            ['name' => 'New Home Plumbing Checklist', 'slug' => 'new-home-plumbing-checklist', 'description' => 'Plumbing checklist for new homes', 'icon' => '📋'],
+            ['name' => 'Plumbing Blueprint Guide', 'slug' => 'plumbing-blueprint-guide', 'description' => 'Reading plumbing blueprints', 'icon' => '📐'],
+            ['name' => 'Construction Phase Plumbing', 'slug' => 'construction-phase-plumbing', 'description' => 'Plumbing during construction phases', 'icon' => '🏗️'],
+
+            // === COMMERCIAL PLUMBING (12) ===
+            ['name' => 'Commercial Plumbing', 'slug' => 'commercial-plumbing', 'description' => 'Commercial plumbing services', 'icon' => '🏢'],
+            ['name' => 'Restaurant Plumbing', 'slug' => 'restaurant-plumbing', 'description' => 'Restaurant plumbing maintenance', 'icon' => '🍔'],
+            ['name' => 'Office Building Plumbing', 'slug' => 'office-building-plumbing', 'description' => 'Office plumbing services', 'icon' => '🏢'],
+            ['name' => 'Retail Plumbing', 'slug' => 'retail-plumbing', 'description' => 'Retail store plumbing', 'icon' => '🛍️'],
+            ['name' => 'Industrial Plumbing', 'slug' => 'industrial-plumbing', 'description' => 'Industrial plumbing systems', 'icon' => '🏭'],
+            ['name' => 'Apartment Plumbing', 'slug' => 'apartment-plumbing', 'description' => 'Multi-family plumbing', 'icon' => '🏢'],
+            ['name' => 'Hotel Plumbing', 'slug' => 'hotel-plumbing', 'description' => 'Hotel plumbing maintenance', 'icon' => '🏨'],
+            ['name' => 'School Plumbing', 'slug' => 'school-plumbing', 'description' => 'Educational facility plumbing', 'icon' => '🏫'],
+            ['name' => 'Hospital Plumbing', 'slug' => 'hospital-plumbing', 'description' => 'Healthcare facility plumbing', 'icon' => '🏥'],
+            ['name' => 'Grease Trap Service', 'slug' => 'grease-trap-service', 'description' => 'Grease trap cleaning and repair', 'icon' => '🛢️'],
+            ['name' => 'Commercial Water Heater', 'slug' => 'commercial-water-heater', 'description' => 'Commercial water heater systems', 'icon' => '🔥'],
+            ['name' => 'Commercial Backflow', 'slug' => 'commercial-backflow', 'description' => 'Commercial backflow prevention', 'icon' => '🛡️'],
+
+            // === SEPTIC & WELL (10) ===
+            ['name' => 'Septic System', 'slug' => 'septic-system', 'description' => 'Septic tank services', 'icon' => '🛢️'],
+            ['name' => 'Septic Tank Pumping', 'slug' => 'septic-tank-pumping', 'description' => 'Septic tank pumping service', 'icon' => '💧'],
+            ['name' => 'Septic Tank Installation', 'slug' => 'septic-tank-installation', 'description' => 'New septic system installation', 'icon' => '🛠️'],
+            ['name' => 'Septic Tank Repair', 'slug' => 'septic-tank-repair', 'description' => 'Septic system repair', 'icon' => '🔧'],
+            ['name' => 'Septic System Inspection', 'slug' => 'septic-system-inspection', 'description' => 'Septic inspection for home buyers', 'icon' => '📋'],
+            ['name' => 'Drain Field Repair', 'slug' => 'drain-field-repair', 'description' => 'Leach field replacement', 'icon' => '🌱'],
+            ['name' => 'Well Pump Service', 'slug' => 'well-pump-service', 'description' => 'Well pump repair and installation', 'icon' => '⛰️'],
+            ['name' => 'Well Pump Replacement', 'slug' => 'well-pump-replacement', 'description' => 'Replacing a well pump', 'icon' => '🔄'],
+            ['name' => 'Well Water System', 'slug' => 'well-water-system', 'description' => 'Well water system maintenance', 'icon' => '💧'],
+            ['name' => 'Well Pressure Tank', 'slug' => 'well-pressure-tank', 'description' => 'Well pressure tank repair', 'icon' => '🔧'],
+
+            // === PIPE THAWING & FREEZE (8) ===
+            ['name' => 'Pipe Thawing', 'slug' => 'pipe-thawing', 'description' => 'Frozen pipe thawing service', 'icon' => '❄️'],
+            ['name' => 'Frozen Pipe Prevention', 'slug' => 'frozen-pipe-prevention', 'description' => 'Preventing frozen pipes', 'icon' => '🛡️'],
+            ['name' => 'Thawing Tools', 'slug' => 'thawing-tools', 'description' => 'Professional pipe thawing equipment', 'icon' => '🔧'],
+            ['name' => 'Winter Plumbing Tips', 'slug' => 'winter-plumbing-tips', 'description' => 'Winterizing your plumbing', 'icon' => '☃️'],
+            ['name' => 'Pipe Freeze Protection', 'slug' => 'pipe-freeze-protection', 'description' => 'Protecting pipes from freezing', 'icon' => '🧊'],
+            ['name' => 'Heat Tape Installation', 'slug' => 'heat-tape-installation', 'description' => 'Installing heat tape on pipes', 'icon' => '🔥'],
+            ['name' => 'Unheated Property Prep', 'slug' => 'unheated-property-prep', 'description' => 'Winterizing vacant properties', 'icon' => '🏚️'],
+            ['name' => 'Cold Weather Emergency', 'slug' => 'cold-weather-emergency', 'description' => 'Cold weather plumbing emergencies', 'icon' => '🥶'],
+
+            // === RADIANT HEATING (6) ===
+            ['name' => 'Radiant Heating', 'slug' => 'radiant-heating', 'description' => 'In-floor radiant heating systems', 'icon' => '🔥'],
+            ['name' => 'Radiant Floor Installation', 'slug' => 'radiant-floor-installation', 'description' => 'Installing radiant floor heat', 'icon' => '🛠️'],
+            ['name' => 'Radiant Heating Repair', 'slug' => 'radiant-heating-repair', 'description' => 'Radiant heat system repair', 'icon' => '🔧'],
+            ['name' => 'Boiler Service', 'slug' => 'boiler-service', 'description' => 'Boiler repair and maintenance', 'icon' => '🔥'],
+            ['name' => 'Hydronic Heating', 'slug' => 'hydronic-heating', 'description' => 'Hydronic heating systems', 'icon' => '💧'],
+            ['name' => 'Zone Control Systems', 'slug' => 'zone-control-systems', 'description' => 'Heating zone control installation', 'icon' => '🌡️'],
         ];
 
         foreach ($categories as $i => $category) {

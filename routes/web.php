@@ -68,6 +68,10 @@ Route::get('/porta-potty-near-me', fn () => redirect('/', 301));
 Route::get('/porta-potty-rental-near-me', fn () => redirect('/', 301));
 Route::get('/porta-potty-rentals-near-me', fn () => redirect('/', 301));
 Route::get('/rent-a-porta-potty-near-me', fn () => redirect('/', 301));
+Route::get('/plumber-near-me', fn () => redirect('/', 301));
+Route::get('/plumbing-services-near-me', fn () => redirect('/', 301));
+Route::get('/emergency-plumber-near-me', fn () => redirect('/', 301));
+Route::get('/plumbing-repair-near-me', fn () => redirect('/', 301));
 
 // All Locations Page
 Route::get('/locations', [PageController::class, 'locations'])
@@ -81,9 +85,10 @@ Route::get('/services', [PageController::class, 'services'])
 Route::get('/pricing', [PageController::class, 'pricing'])
     ->name('pricing');
 
-// State Page (e.g., /porta-potty-rental-texas)
-Route::get('/porta-potty-rental-{stateSlug}', [PageController::class, 'statePage'])
+// State Page (works for any domain: /porta-potty-rental-texas, /plumbing-texas, etc.)
+Route::get('/{slug}-{stateSlug}', [PageController::class, 'statePage'])
     ->name('state.page')
+    ->where('slug', '[a-z0-9][a-z0-9\-]*')
     ->where('stateSlug', 'alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|montana|nebraska|nevada|new-hampshire|new-jersey|new-mexico|new-york|north-carolina|north-dakota|ohio|oklahoma|oregon|pennsylvania|rhode-island|south-carolina|south-dakota|tennessee|texas|utah|vermont|virginia|washington|west-virginia|wisconsin|wyoming');
 
 // Blog (must come before catch-all)

@@ -14,17 +14,6 @@
       0 => 'Artesaos\\SEOTools\\Providers\\SEOToolsServiceProvider',
     ),
   ),
-  'barryvdh/laravel-debugbar' => 
-  array (
-    'aliases' => 
-    array (
-      'Debugbar' => 'Fruitcake\\LaravelDebugbar\\Facades\\Debugbar',
-    ),
-    'providers' => 
-    array (
-      0 => 'Fruitcake\\LaravelDebugbar\\ServiceProvider',
-    ),
-  ),
   'laravel/breeze' => 
   array (
     'providers' => 

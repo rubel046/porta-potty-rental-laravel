@@ -37,7 +37,7 @@ class GenerateCityContentJob implements ShouldQueue
             $this->types = $this->domain->getServiceTypes();
         }
         if (empty($this->types)) {
-            $this->types = ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential', 'portable'];
+            $this->types = $this->domain?->getServiceTypes() ?? ['general'];
         }
     }
 
@@ -64,7 +64,7 @@ class GenerateCityContentJob implements ShouldQueue
 
             while (! $typeSuccess && $typeRetries < $this->maxRetriesPerType) {
                 try {
-                    $data = $generator->generateServicePageContent($this->city, $type);
+                    $data = $generator->generateServicePageContent($this->city, $type, $this->domain);
 
                     $domainId = $this->domain?->id;
 

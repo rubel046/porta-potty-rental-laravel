@@ -140,6 +140,20 @@ if (! function_exists('website_name')) {
     }
 }
 
+if (! function_exists('state_page_url')) {
+    function state_page_url(string $stateSlug): string
+    {
+        $domain = Domain::current();
+        $prefix = $domain?->getServiceSlugPrefix() ?? 'porta-potty-rental';
+
+        if ($prefix === 'porta-potty') {
+            $prefix = 'porta-potty-rental';
+        }
+
+        return url($prefix.'-'.$stateSlug);
+    }
+}
+
 if (! function_exists('phone_link')) {
     function phone_link(?string $display = null, array $attributes = []): string
     {

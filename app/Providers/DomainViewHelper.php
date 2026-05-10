@@ -9,15 +9,19 @@ class DomainViewHelper
         $host = request()->getHost();
         $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
 
-        // In local/development mode, check APP_DOMAIN env
-        if (app()->isLocal() || app()->environment('local', 'development')) {
+        if (view()->exists("domains.{$prefix}.layout")) {
+            return $prefix;
+        }
+
+        // Fall back to APP_DOMAIN env when serving a single domain (e.g. artisan serve)
+        if (app()->isLocal()) {
             $envDomain = env('APP_DOMAIN');
-            if ($envDomain) {
+            if ($envDomain && view()->exists("domains.{$envDomain}.layout")) {
                 return $envDomain;
             }
         }
 
-        return $prefix;
+        return 'pottydirect';
     }
 
     public static function resolve(string $view): string
@@ -30,7 +34,7 @@ class DomainViewHelper
             return $domainView;
         }
 
-        return "domains.pottydirect.{$view}";
+        throw new \RuntimeException("View [{$domainView}] not found for domain [{$prefix}]. Each domain must have its own views.");
     }
 
     public static function resolveForController(string $page): string
@@ -43,6 +47,6 @@ class DomainViewHelper
             return $domainView;
         }
 
-        return "domains.pottydirect.{$page}";
+        throw new \RuntimeException("View [{$domainView}] not found for domain [{$prefix}]. Each domain must have its own views.");
     }
 }

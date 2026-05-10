@@ -11,6 +11,7 @@ class Domain extends Model
 {
     protected $fillable = [
         'domain',
+        'email',
         'business_name',
         'website_url',
         'primary_keyword',
@@ -127,6 +128,26 @@ class Domain extends Model
         return $this->primary_service ? str_replace(' ', '-', $this->primary_service) : 'service';
     }
 
+    public function getServiceSlugSuffix(): string
+    {
+        return $this->isRentalDomain() ? 'rental' : '';
+    }
+
+    public function isRentalDomain(): bool
+    {
+        $rentalIndicators = ['porta potty', 'portable', 'rental'];
+        $primaryService = strtolower($this->primary_service ?? '');
+        $prefix = strtolower($this->slug_prefix ?? '');
+
+        foreach ($rentalIndicators as $indicator) {
+            if (str_contains($primaryService, $indicator) || str_contains($prefix, $indicator)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function current(): ?self
     {
         if ($id = session('current_domain_id')) {
@@ -134,6 +155,11 @@ class Domain extends Model
         }
 
         $host = request()->getHost();
+
+        if (app()->isLocal() && str_ends_with($host, '.test')) {
+            $host = str_replace('.test', '.com', $host);
+        }
+
         $cacheKey = "domain_id_{$host}";
         $domainId = cache($cacheKey);
 

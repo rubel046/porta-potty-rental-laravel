@@ -13,8 +13,8 @@ $localBusinessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
     "@id" => $url . "#business",
-    "name" => "Potty Direct",
-    "description" => "Porta potty rental in " . $state->name . ". Same-day delivery available.",
+    "name" => $domain?->business_name ?? "Potty Direct",
+    "description" => ($domain?->primary_service ?? "Porta potty rental") . " in " . $state->name . ". " . ($domain?->tagline ?? "Same-day delivery available."),
     "url" => $url,
     "telephone" => $phone,
     "priceRange" => "$$",
@@ -64,11 +64,11 @@ $breadcrumbSchema = [
                 </div>
                 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                    {{ $state->h1_title ?? 'Porta Potty Rental' }}
+                    {{ $state->h1_title ?? ($domain?->primary_service ?? 'Porta Potty Rental') }}
                 </h1>
                 
                 <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-8">
-                    Professional portable sanitation solutions for construction sites, events, weddings, and more across {{ $state->name }}.
+                    Professional {{ $domain?->primary_service ?? 'porta potty rental' }} solutions for {{ $state->name }}. {{ $domain?->tagline ?? 'Same-day delivery available.' }}
                 </p>
                 
                 <div class="flex flex-wrap justify-center gap-4 mb-10">
@@ -76,13 +76,13 @@ $breadcrumbSchema = [
                         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <span class="text-white text-sm font-medium">Same-Day Delivery</span>
+                        <span class="text-white text-sm font-medium">Same-Day Service</span>
                     </div>
                     <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2.5 rounded-full">
                         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <span class="text-white text-sm font-medium">Clean & Sanitized</span>
+                        <span class="text-white text-sm font-medium">Professional & Reliable</span>
                     </div>
                     <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2.5 rounded-full">
                         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,10 +117,10 @@ $breadcrumbSchema = [
                 </div>
                 <div class="text-center">
                     <div class="text-3xl font-bold text-emerald-600">Same Day</div>
-                    <div class="text-sm text-slate-500 mt-1">Delivery Available</div>
+                    <div class="text-sm text-slate-500 mt-1">Service Available</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-emerald-600">15+</div>
+                    <div class="text-3xl font-bold text-emerald-600">20+</div>
                     <div class="text-sm text-slate-500 mt-1">Years Experience</div>
                 </div>
             </div>
@@ -136,10 +136,10 @@ $breadcrumbSchema = [
                     <div class="sticky top-8">
                         <span class="inline-block text-emerald-600 font-semibold text-sm tracking-wider uppercase mb-4">About Our Service</span>
                         <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-6">
-                            Professional Porta Potty Solutions in {{ $state->name }}
+                            Professional {{ $domain?->primary_service ? ucfirst($domain->primary_service) : 'Porta Potty' }} Solutions in {{ $state->name }}
                         </h2>
                         <p class="text-lg text-slate-600 mb-8">
-                            We provide reliable, clean, and affordable portable restroom solutions for projects and events throughout {{ $state->name }}.
+                            We provide reliable, clean, and affordable {{ $domain?->primary_service ?? 'portable restroom' }} solutions for projects and events throughout {{ $state->name }}.
                         </p>
                         <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,10 +245,10 @@ $breadcrumbSchema = [
             <div class="text-center mb-12">
                 <span class="inline-block text-emerald-600 font-semibold text-sm tracking-wider uppercase mb-4">What We Offer</span>
                 <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-                    Portable Restroom Solutions
+                    {{ $domain?->business_name ?? 'Portable Restroom' }} Solutions
                 </h2>
                 <p class="text-lg text-slate-600 max-w-2xl mx-auto">
-                    From standard units to luxury trailers, we have the perfect solution for your needs
+                    We have the perfect solution for your needs
                 </p>
             </div>
 
@@ -407,7 +407,7 @@ $breadcrumbSchema = [
                 Ready to Get Started?
             </h2>
             <p class="text-xl text-amber-100 mb-10 max-w-2xl mx-auto">
-                Get a free, no-obligation quote for your porta potty rental in {{ $state->name }}. Same-day delivery available!
+                Get a free, no-obligation quote for {{ $domain?->primary_service ?? 'porta potty rental' }} in {{ $state->name }}. {{ $domain?->tagline ?? 'Same-day delivery available!' }}
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="tel:{{ domain_phone_raw() }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-amber-600 font-bold text-xl px-10 py-4 rounded-full hover:bg-amber-50 transition-all shadow-2xl shadow-black/20 hover:scale-105">

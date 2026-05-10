@@ -106,7 +106,7 @@ class PageController extends Controller
         $stateCodeLocal = $primaryCity['state']['code'] ?? null;
         $postalCode = $primaryCity['zip_code'] ?? null;
 
-        return view('domains.pottydirect.home', compact(
+        return view(DomainViewHelper::resolveForController('home'), compact(
             'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats',
             'latitude', 'longitude', 'cityAddress', 'stateCodeLocal', 'postalCode'
         ));
@@ -613,8 +613,9 @@ class PageController extends Controller
     /**
      * State Page — সেই রাজ্যের সব শহর দেখাবে
      */
-    public function statePage(string $stateSlug, ContentGeneratorService $contentService)
+    public function statePage(string $slug, string $stateSlug, ContentGeneratorService $contentService)
     {
+        $domain = Domain::current();
         $state = State::where('slug', $stateSlug)
             ->where('is_active', true)
             ->with('domainStates')
@@ -634,7 +635,7 @@ class PageController extends Controller
         $faqs = collect($stateContent['faqs'] ?? []);
         $images = $state->images ?? [];
 
-        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images'));
+        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images', 'domain'));
     }
 
     /**
@@ -646,16 +647,25 @@ class PageController extends Controller
         $domain = Domain::current();
         $domainId = $domain?->id ?? 'default';
 
-        $fetchStates = function () use ($search) {
+        $fetchStates = function () use ($search, $domain) {
             return State::select(['id', 'name', 'slug', 'code'])
-                ->whereHas('domainStates', function ($q) {
+                ->whereHas('domainStates', function ($q) use ($domain) {
                     $q->where('status', true);
+                    if ($domain) {
+                        $q->where('domain_id', $domain->id);
+                    }
                 })
-                ->with(['cities' => function ($q) use ($search) {
-                    $q->select(['id', 'state_id', 'name', 'slug', 'latitude', 'longitude']);
-                    $q->active()->orderBy('name');
-                    if ($search) {
-                        $q->where('name', 'LIKE', '%'.$search.'%');
+                ->with(['cities' => function ($q) use ($search, $domain) {
+                    $q->select(['id', 'state_id', 'name', 'slug', 'latitude', 'longitude', 'priority']);
+                    $q->active();
+                    $q->whereHas('servicePages', fn ($sp) => $sp->where('is_published', true)->when($domain, fn ($q) => $q->where('domain_id', $domain->id)));
+                    if ($domain) {
+                        $q->whereIn('id', fn ($sub) => $sub->select('city_id')->from('domain_cities')->where('domain_id', $domain->id)->where('status', true));
+                    }
+                    if (! $search) {
+                        $q->orderBy('priority', 'desc')->orderBy('name')->limit(200);
+                    } else {
+                        $q->orderBy('name');
                     }
                 }])
                 ->orderBy('name')
@@ -665,7 +675,7 @@ class PageController extends Controller
         // Do NOT cache to avoid serialization issues with Eloquent Collections
         $states = $fetchStates();
 
-        return view(DomainViewHelper::resolveForController('locations'), compact('states', 'search'));
+        return view(DomainViewHelper::resolveForController('locations'), compact('states', 'search', 'domain'));
     }
 
     /**

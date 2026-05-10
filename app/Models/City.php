@@ -124,10 +124,16 @@ class City extends Model
     // Helper Methods
     public function getServicePage(string $type = 'general'): ?ServicePage
     {
-        return $this->servicePages()
+        $query = $this->servicePages()
             ->where('service_type', $type)
-            ->where('is_published', true)
-            ->first();
+            ->where('is_published', true);
+
+        $domain = Domain::current();
+        if ($domain) {
+            $query->where('domain_id', $domain->id);
+        }
+
+        return $query->first();
     }
 
     public function getActiveFaqs(?string $serviceType = null): Collection

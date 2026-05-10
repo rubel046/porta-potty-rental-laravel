@@ -39,17 +39,20 @@ Alpine.start();
 // (Autocomplete removed — it was faking API results client-side.)
 // ---------------------------------------------------------------------------
 (function initHeaderSearch() {
-    const input = document.getElementById('header-search');
-    if (!input) return;
+    const inputs = ['header-search', 'mobile-header-search'];
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
 
-    const locationsUrl = input.dataset.locationsUrl || '/locations';
+        const locationsUrl = input.dataset.locationsUrl || '/locations';
 
-    input.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter') return;
-        const q = input.value.trim();
-        window.location.href = q
-            ? `${locationsUrl}?q=${encodeURIComponent(q)}`
-            : locationsUrl;
+        input.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const q = input.value.trim();
+            window.location.href = q
+                ? `${locationsUrl}?q=${encodeURIComponent(q)}`
+                : locationsUrl;
+        });
     });
 })();
 

@@ -109,7 +109,7 @@ $websiteSchema = [
 @foreach($states->sortBy('name') as $state)
                 <div class=mb-8 sm:mb-10 state-group data-state={{ strtolower($state->name) }}>
                     <div class=flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5>
-                        <a href={{ route('state.page', $state->slug) }} class=text-xl sm:text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group>
+                        <a href={{ state_page_url($state->slug) }} class=text-xl sm:text-2xl font-bold text-slate-800 hover:text-emerald-600 transition flex items-center gap-2 group>
                             <span class=w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white text-sm sm:text-lg>{{ $state->code }}</span>
                             <span>{{ $state->name }}</span>
                             <span class=sm:hidden>{{ $state->code }}</span>

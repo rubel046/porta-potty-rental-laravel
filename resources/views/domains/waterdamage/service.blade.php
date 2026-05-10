@@ -13,7 +13,7 @@ $breadcrumbSchema = [
     "@type" => "BreadcrumbList",
     "itemListElement" => [
         ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => route('home')],
-        ["@type" => "ListItem", "position" => 2, "name" => $city->state->name, "item" => route('state.page', $city->state->slug)],
+        ["@type" => "ListItem", "position" => 2, "name" => $city->state->name, "item" => state_page_url($city->state->slug)],
         ["@type" => "ListItem", "position" => 3, "name" => $city->name, "item" => url($servicePage->slug)]
     ]
 ];
@@ -60,7 +60,7 @@ $breadcrumbSchema = [
                     <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
-                    <a href="{{ route('state.page', $city->state->slug) }}" class="hover:text-white transition">
+                    <a href="{{ state_page_url($city->state->slug) }}" class="hover:text-white transition">
                         {{ $city->state->name }}
                     </a>
                     <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

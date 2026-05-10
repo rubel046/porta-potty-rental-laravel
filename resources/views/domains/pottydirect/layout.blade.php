@@ -18,7 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Porta Potty Rental | Same Day Delivery | Construction & Event Toilets')</title>
     <meta name="description"
-          content="@yield('meta_description', 'Need porta potty rental? Potty Direct offers same-day delivery of clean portable toilets for construction, events & weddings. Get your personalized quote today. Call '.$phoneDisplay.'!')">
+          content="@yield('meta_description', 'Need '.($domain?->primary_service ?? 'porta potty rental').'? '.($domain?->business_name ?? 'Potty Direct').' offers professional service. Get your personalized quote today. Call '.$phoneDisplay.'!')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Custom Open Graph Image (can be overridden per page) --}}
@@ -26,9 +26,9 @@
         <meta property="og:image" content="{{ url('/og-image.jpg') }}">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
-        <meta property="og:image:alt" content="Potty Direct - Portable Restroom Rental">
+        <meta property="og:image:alt" content="{{ $domain?->business_name ?? 'Potty Direct' }} - {{ $domain?->primary_service ?? 'Portable Restroom Rental' }}">
         <meta name="twitter:image" content="{{ url('/og-image.jpg') }}">
-        <meta name="twitter:image:alt" content="Potty Direct - Portable Restroom Rental">
+        <meta name="twitter:image:alt" content="{{ $domain?->business_name ?? 'Potty Direct' }} - {{ $domain?->primary_service ?? 'Portable Restroom Rental' }}">
     @show
 
     {{-- OpenGraph Location Tags for Local SEO --}}
@@ -713,7 +713,7 @@
                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                             </svg>
                         </div>
-                        <div>{{ config('contact.email') }}</div>
+                        <div>info@pottydirect.com</div>
                     </div>
                 </div>
             </div>
@@ -722,7 +722,7 @@
         {{-- Bottom Bar --}}
         <div class="pt-6 md:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
             <p class="text-xs sm:text-sm text-slate-500 text-center sm:text-left">
-                &copy; {{ date('Y') }} Potty Direct. All rights reserved.
+                &copy; {{ date('Y') }} {{ $domain?->business_name ?? 'Potty Direct' }}. All rights reserved.
             </p>
             <div class="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm text-slate-500">
                 <a href="/sitemap.xml" class="hover:text-white transition">Sitemap</a>

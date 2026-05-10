@@ -25,18 +25,18 @@ class ContentGeneratorService
         $this->imageService = $imageService;
     }
 
-    public function generateServicePageContent(City $city, string $serviceType = 'general'): array
+    public function generateServicePageContent(City $city, string $serviceType = 'general', ?Domain $domain = null): array
     {
         if (! $this->aiService) {
             throw new \RuntimeException('AI service not configured. Please set up MultiAiService to generate content.');
         }
 
-        return $this->generateFromAI($city, $serviceType);
+        return $this->generateFromAI($city, $serviceType, $domain);
     }
 
-    protected function generateFromAI(City $city, string $serviceType): array
+    protected function generateFromAI(City $city, string $serviceType, ?Domain $domain = null): array
     {
-        $domain = Domain::current() ?? Domain::first();
+        $domain ??= Domain::current() ?? Domain::first();
         $state = $city->state;
 
         $serviceLabel = $domain
@@ -52,19 +52,36 @@ class ContentGeneratorService
         $nearbyCitiesList = $this->getNearbyCities($city);
         $nearbyCitiesText = implode(', ', $nearbyCitiesList);
 
-        // Use domain-specific prompt if available, otherwise use default
+        $isRental = $domain?->isRentalDomain() ?? false;
+        $serviceVerb = $isRental ? 'rental' : 'service appointment';
+        $serviceActivity = $isRental ? 'porta potty deliveries' : ($domain?->primary_service ?? 'service').' calls';
+        $serviceNoun = $isRental ? 'unit' : 'job';
+        $deliveryHeading = $isRental ? 'Delivery' : 'Service Area';
+
+        $serviceTypesForLinks = collect($serviceTypesList)
+            ->take(7)
+            ->map(fn ($t) => "{{SERVICE_LINK:{$t}}}")
+            ->implode(', ');
+
         $replacements = [
             '{service_label}' => $serviceLabel,
             '{city_name}' => $city->name,
             '{state_code}' => $state->code,
+            '{state_name}' => $state->name,
             '{primary_keyword}' => $primaryKeyword,
             '{secondary_keywords}' => $secondaryKeywords,
             '{business_name}' => $businessName,
             '{service_types_text}' => $serviceTypesText,
+            '{service_types_for_links}' => $serviceTypesForLinks,
             '{nearby_cities}' => $nearbyCitiesText,
+            '{nearby_cities_text}' => $nearbyCitiesText,
+            '{service_verb}' => $serviceVerb,
+            '{service_activity}' => $serviceActivity,
+            '{service_noun}' => $serviceNoun,
+            '{delivery_heading}' => $deliveryHeading,
         ];
 
-        $prompt = $this->getDefaultServicePagePrompt($replacements);
+        $prompt = $this->getDomainServicePagePrompt($domain, $replacements);
 
         $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Phone numbers: ONLY use {{PHONE_LINK}}. 3) Service links: ONLY use {{SERVICE_LINK:service-type}}. 4) Never output actual phone numbers or URLs. 5) Always return valid JSON. 6) If you fail to provide any required field, the system will reject your response.';
 
@@ -112,11 +129,11 @@ class ContentGeneratorService
 
         $h1Title = $jsonResponse['h1_title'];
         $metaTitle = $jsonResponse['meta_title'];
-        $metaDescription = str_replace('{{PHONE_LINK}}', domain_phone_display(), $jsonResponse['meta_description']);
-        // Replace [Company Name] with actual business name
-        $domain = Domain::current() ?? Domain::first();
-        $businessName = $domain?->business_name ?? 'Our Company';
-        $metaDescription = str_replace('[Company Name]', $businessName, $metaDescription);
+        $metaDescription = str_replace(
+            ['{{PHONE_LINK}}', '[Company Name]'],
+            [domain_phone_display(), $domain->business_name ?? 'Our Company'],
+            $jsonResponse['meta_description']
+        );
         $content = $jsonResponse['content'];
         $faqs = $jsonResponse['faqs'] ?? [];
         $testimonials = $jsonResponse['testimonials'] ?? [];
@@ -127,9 +144,11 @@ class ContentGeneratorService
         $contentWithServiceLinks = $this->ensureServiceLinks($contentCleaned, $city);
 
         $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
+        $slugSuffix = $domain?->getServiceSlugSuffix() ?? '';
+        $slugSuffixPart = $slugSuffix ? "-{$slugSuffix}" : '';
 
         return [
-            'slug' => "{$serviceType}-{$slugPrefix}-rental-{$city->slug}",
+            'slug' => "{$serviceType}-{$slugPrefix}{$slugSuffixPart}-{$city->slug}",
             'service_type' => $serviceType,
             'h1_title' => $h1Title,
             'meta_title' => $metaTitle,
@@ -149,10 +168,19 @@ class ContentGeneratorService
         ];
     }
 
-    protected function getDefaultServicePagePrompt(array $replacements): string
+    protected function getDomainServicePagePrompt(?Domain $domain, array $replacements): string
+    {
+        if ($domain && ! $domain->isRentalDomain()) {
+            return $this->getServiceDomainPrompt($replacements);
+        }
+
+        return $this->getRentalDomainPrompt($replacements);
+    }
+
+    protected function getRentalDomainPrompt(array $replacements): string
     {
         $prompt = <<<'PROMPT'
-You are {business_name}'s dispatch coordinator. You've personally scheduled porta potty deliveries in {city_name}, {state_code} for over a decade — to construction sites along I-45, wedding venues in the suburbs, music festivals downtown, storm-cleanup crews after hurricanes. You know which neighborhoods have permit headaches, which road closures affect delivery in {city_name}, and what customers in this market actually ask about.
+You are {business_name}'s dispatch coordinator. You've personally scheduled {service_activity} in {city_name}, {state_code} for over a decade — to construction sites along I-45, wedding venues in the suburbs, music festivals downtown, storm-cleanup crews after hurricanes. You know which neighborhoods have permit headaches, which road closures affect delivery in {city_name}, and what customers in this market actually ask about.
 
 A prospect from {city_name} just submitted a request for {service_label}. Write the content for the web page they'll land on while their quote is being prepared. Write it like a detailed, concrete email reply — specific, useful, no marketing fluff. Assume the reader has already seen three competitor sites and is deciding who to call.
 
@@ -174,8 +202,8 @@ Voice: matter-of-fact, concrete, no superlatives. Use second person ("you") spar
 Structure (content field):
 - ## intro heading — what this page covers, grounded in {city_name}
 - ## Who we deliver to in {city_name} — brief list of customer types with one specific local example each (e.g. "road crews working the Loop 610 reconstruction")
-- ## What's included in a {service_label} rental — bullet list of what's actually in the unit / service window
-- ## Delivery in {city_name} — how long it takes, any local quirks (permits, restricted streets, weather windows)
+- ## What's included in a {service_label} {service_verb} — bullet list of what's actually in the {service_noun} / service window
+- ## {delivery_heading} in {city_name} — how long it takes, any local quirks (permits, restricted streets, weather windows)
 - ## Pricing — use soft language ("starting rates", "quotes depend on quantity and duration") but acknowledge the reader wants a number; direct them to call or include a price range only if you are explicitly given one
 - ## Call to action — one concrete reason to call right now (same-day availability / seasonal booking / limited inventory)
 
@@ -192,7 +220,60 @@ Testimonials (2-3 max): write as illustrative scenarios, not claimed real custom
 
 Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
-Internal links: use {{SERVICE_LINK:construction}}, {{SERVICE_LINK:wedding}}, {{SERVICE_LINK:event}}, {{SERVICE_LINK:luxury}}, {{SERVICE_LINK:party}}, {{SERVICE_LINK:emergency}}, {{SERVICE_LINK:residential}} — pick 2-3 that relate to the reader's intent.
+Internal links: use {service_types_for_links} — pick 2-3 that relate to the reader's intent.
+
+Do NOT use the words "hassle-free", "look no further", "rest assured", "state-of-the-art", "nestled", "cutting-edge", "your go-to". Avoid "we understand that..." openings. Avoid listing generic benefits ("professionalism, reliability, commitment to excellence").
+
+Output: valid JSON only, no markdown fences, no commentary.
+PROMPT;
+
+        return str_replace(array_keys($replacements), array_values($replacements), $prompt);
+    }
+
+    protected function getServiceDomainPrompt(array $replacements): string
+    {
+        $prompt = <<<'PROMPT'
+You are {business_name}'s lead technician. You've been handling {service_activity} in {city_name}, {state_code} for over a decade — from emergency pipe bursts in the historic district to water heater replacements for new construction, from slab leak repairs under foundation slabs to sewer line camera inspections down neighborhood streets. You know which neighborhoods have old cast-iron pipes, which areas have hard water problems, what the local permitting office requires, and what homeowners in this market actually ask about.
+
+A homeowner from {city_name} just submitted a request for {service_label}. Write the content for the web page they'll land on while their quote is being prepared. Write it like a detailed, concrete email reply from a master plumber — specific, useful, no marketing fluff. Assume the reader has already seen three competitor sites and is deciding who to call.
+
+Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY. If you return empty or missing fields the response will be rejected.
+
+{
+    "h1_title": "H1 heading (max 80 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
+    "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
+    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day service / transparent pricing / no hidden fees / licensed and insured) and a CTA. Do NOT pad to hit length.",
+    "content": "Markdown. Start with ## heading. Length is whatever actually answers the reader's questions — do not pad. Include at least 3 local details that a stranger to {city_name} wouldn't know (common pipe materials used locally, water quality issues, typical permitting process, seasonal considerations, neighborhood-specific quirks). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
+    "faqs": [{"question": "...", "answer": "..."}, ...],
+    "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
+}
+
+CONTENT RULES
+
+Voice: matter-of-fact, concrete, no superlatives. Use second person ("you") sparingly. Avoid "nestled", "hassle-free", "look no further", "rest assured", "state-of-the-art" — these are the words AI detectors flag.
+
+Structure (content field):
+- ## intro heading — what this page covers, grounded in {city_name}
+- ## Common {service_label} issues in {city_name} — specific problems seen locally (e.g. "basement sewer backups during heavy spring rains in the Elmwood neighborhood")
+- ## What a {service_label} {service_verb} includes — step-by-step description of the actual work: diagnosis, approach, materials, timeline
+- ## {delivery_heading} in {city_name} — typical response times, service area coverage, any local access considerations
+- ## Pricing — use soft language ("flat-rate pricing", "free estimates", "quotes depend on scope of work") but acknowledge the reader wants a number; direct them to call or include a price range only if you are explicitly given one
+- ## Call to action — one concrete reason to call right now (24/7 emergency service / same-day availability / seasonal preparation)
+
+Local anchoring (MANDATORY — at least 3 of these):
+- Name a real {city_name} highway, district, or neighborhood
+- Reference {state_name}'s regulatory context (state plumbing codes, licensing requirements, seasonal freeze-thaw cycles)
+- Name actual housing styles or construction eras common in {city_name}
+- Nearby cities we serve: {nearby_cities_text}
+- Generic "in {city_name}" repetition is NOT local anchoring. You need facts a local would recognize.
+
+FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
+
+Testimonials (2-3 max): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. If you don't have a real scenario to draw on, omit rather than fabricate.
+
+Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
+
+Internal links: use {service_types_for_links} — pick 2-3 that relate to the reader's intent.
 
 Do NOT use the words "hassle-free", "look no further", "rest assured", "state-of-the-art", "nestled", "cutting-edge", "your go-to". Avoid "we understand that..." openings. Avoid listing generic benefits ("professionalism, reliability, commitment to excellence").
 

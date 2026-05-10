@@ -15,6 +15,5 @@ return [
     'hours_close' => env('CONTACT_HOURS_CLOSE', '20:00'),
     'timezone' => env('BUSINESS_TIMEZONE', 'America/Chicago'),
 
-    'email' => env('CONTACT_EMAIL', 'info@pottydirect.com'),
     'website' => env('APP_URL', 'https://pottydirect.com'),
 ];
