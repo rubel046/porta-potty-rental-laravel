@@ -8,7 +8,7 @@
         'primary' => $domain?->primary_color ?? '#2563eb',
         'secondary' => $domain?->secondary_color ?? '#ea580c',
     ];
-    $domainEmail = $domain?->email ?? 'info@plumbingpro.com';
+    $domainEmail = $domain?->email ?? 'info@callaplumberusa.com';
     $domainUrl = $domain?->website_url ?? url('/');
 @endphp
 
@@ -38,10 +38,39 @@
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "{{ url('/') }}#organization",
+        "name": "{{ $businessName }}",
+        "url": "{{ url('/') }}",
+        "logo": "{{ url('/') }}/og-image.jpg",
+        "description": "{{ $businessName }} offers professional {{ $primaryService }} across the United States.",
+        "sameAs": [
+            "https://www.facebook.com/callaplumberusa",
+            "https://www.twitter.com/callaplumberusa",
+            "https://www.yelp.com/biz/callaplumberusa"
+        ],
+        "contactPoint": [
+            {
+                "@type": "ContactPoint",
+                "telephone": "{{ $phoneRaw }}",
+                "contactType": "customer service",
+                "areaServed": "US",
+                "availableLanguage": ["English", "Spanish"],
+                "@id": "{{ url('/') }}#contact"
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
         "@type": "WebSite",
+        "@id": "{{ url('/') }}#website",
         "name": "{{ $businessName }}",
         "url": "{{ url('/') }}",
         "description": "{{ $businessName }} offers professional {{ $primaryService }} across the United States.",
+        "publisher": {"@id": "{{ url('/') }}#organization"},
         "potentialAction": {
             "@type": "SearchAction",
             "target": "{{ url('/') }}?s={search_term_string}",
@@ -50,8 +79,34 @@
     }
     </script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "{{ url()->current() }}#webpage",
+        "url": "{{ url()->current() }}",
+        "inLanguage": "en-US",
+        "isPartOf": {"@id": "{{ url('/') }}#website"},
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", ".faq-section"]
+        }
+    }
+    </script>
+
+    <link rel="dns-prefetch" href="//www.google-analytics.com">
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+
+    {{-- Google Analytics 4 --}}
+    @if(config('services.ga4.measurement_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.ga4.measurement_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', '{{ config('services.ga4.measurement_id') }}');
+        </script>
+    @endif
 
     @env('local')
         <meta name="robots" content="noindex">
@@ -59,10 +114,12 @@
         <meta name="robots" content="@yield('robots', 'index, follow')">
     @endenv
 
-    {{-- Alpine.js --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
+    @stack('head')
 </head>
 <body class="font-sans antialiased bg-white text-slate-900 {{ auth()->check() ? 'pt-16' : '' }}"
+      data-domain="callaplumberusa"
       x-data="{ mobileMenu: false, servicesOpen: false }"
       x-effect="document.body.style.overflow = mobileMenu ? 'hidden' : ''"
       @keydown.escape.window="mobileMenu = false; servicesOpen = false">
@@ -73,13 +130,16 @@
     </a>
 
     {{-- Top Bar: Emergency Banner --}}
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm py-1.5 px-4 text-center font-medium">
-        <span class="inline-flex items-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
+    <div class="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium">
+        <span class="inline-flex items-center gap-1.5 sm:gap-2">
+            <span class="relative flex w-2 h-2">
+                <span class="absolute inline-flex w-full h-full bg-white rounded-full opacity-75 animate-ping"></span>
+                <span class="relative inline-flex w-2 h-2 bg-white rounded-full"></span>
+            </span>
             <strong class="hidden sm:inline">24/7 Emergency Plumbing:</strong>
+            <span class="sm:hidden font-bold">Emergency:</span>
             <a href="tel:{{ $phoneRaw }}" class="font-bold hover:underline whitespace-nowrap" data-tracking-label="emergency-banner">{{ $phone }}</a>
+            <span class="hidden xs:inline text-red-100">· Free Estimates</span>
         </span>
     </div>
 
@@ -583,16 +643,20 @@
     </footer>
 
     {{-- Mobile Sticky CTA --}}
-    <div class="fixed bottom-4 left-4 right-4 md:hidden z-50">
+    <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 safe-area-bottom">
         <a href="tel:{{ $phoneRaw }}" data-tracking-label="mobile-sticky-cta"
-           class="flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-2xl shadow-orange-500/40 ring-4 ring-orange-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           class="flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-base sm:text-lg py-4 px-6 shadow-2xl shadow-orange-500/40 border-t border-orange-400 transition-all active:scale-[0.98]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
             </svg>
-            <span>Call Now — Free Estimate</span>
+            <span class="font-extrabold">Call Now — Free Estimate</span>
+            <span class="inline-flex items-center gap-1 text-orange-200 text-xs">
+                <span class="w-1.5 h-1.5 bg-orange-200 rounded-full animate-pulse"></span>
+                24/7
+            </span>
         </a>
     </div>
-    <div class="h-20 md:hidden"></div>
+    <div class="h-16 md:hidden"></div>
 
     {{-- Smooth scroll for anchor links --}}
     <script>
@@ -608,6 +672,10 @@
             }
         });
     </script>
+
+    {{-- Components --}}
+    @include('components.phone-tracker')
+    @include('components.exit-intent-popup')
 
     @stack('scripts')
 

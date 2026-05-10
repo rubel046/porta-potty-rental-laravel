@@ -265,7 +265,7 @@ $faqSchema = [
             "name" => "What plumbing services do you offer?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "We offer a complete range of professional plumbing services including " . implode(', ', array_map(fn($st) => $st['short_name'], array_slice($serviceTypes, 0, 20))) . ", and more. From emergency repairs to new construction, we handle all your plumbing needs."
+                "text" => "We offer a complete range of professional plumbing services including " . implode(', ', array_map(fn($st) => $st['short_name'], array_slice($serviceTypes, 0, 20))) . ", and more. From emergency repairs to new construction installations, we handle all your plumbing needs."
             ]
         ],
         [
@@ -273,7 +273,7 @@ $faqSchema = [
             "name" => "How quickly can you respond to a plumbing emergency?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "We provide 24/7 emergency plumbing services with fast response times, typically under one hour. Our team is on call 365 days a year, including nights, weekends, and holidays."
+                "text" => "We provide 24/7 emergency plumbing services with fast response times, typically under one hour. Our team is on call 365 days a year, including nights, weekends, and holidays for burst pipes, sewer backups, and gas leaks."
             ]
         ],
         [
@@ -281,7 +281,7 @@ $faqSchema = [
             "name" => "Are your plumbers licensed and insured?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "Yes, all of our plumbers are fully licensed, bonded, and insured. We prioritize safety and quality workmanship on every job."
+                "text" => "Yes, all of our plumbers are fully licensed, bonded, and insured with $2 million in liability coverage. We background-check every technician and prioritize safety and quality workmanship on every job."
             ]
         ],
         [
@@ -289,14 +289,39 @@ $faqSchema = [
             "name" => "Do you offer upfront pricing before starting work?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "Yes, we provide upfront, transparent pricing before any work begins. There are no hidden fees or surprise charges. You will know the cost before we start."
+                "text" => "Yes, we provide upfront, transparent pricing before any work begins. There are no hidden fees or surprise charges. You will know the exact cost before we start, and the price we quote is the price you pay."
+            ]
+        ],
+        [
+            "@type" => "Question",
+            "name" => "Do you offer same-day plumbing service?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "Yes! We offer same-day service for most plumbing repairs and installations. Call before noon and we'll have a plumber at your door today. Emergency services are available 24/7 with immediate dispatch."
+            ]
+        ],
+        [
+            "@type" => "Question",
+            "name" => "What areas do you serve?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "We provide plumbing services across the United States, serving hundreds of cities in all 50 states. Check our locations page to find a plumber in your city, or call us and we'll connect you with a local professional."
             ]
         ]
     ]
 ];
+$serviceListGraph = array_map(fn($st) => [
+    "@type" => "Service",
+    "name" => $st['name'],
+    "description" => $st['description'],
+    "provider" => ["@id" => $url . "#business"],
+    "areaServed" => ["@type" => "Country", "name" => "United States"],
+], $serviceTypes);
+$serviceListSchema = ["@context" => "https://schema.org", "@graph" => $serviceListGraph];
 @endphp
 <script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($serviceListSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
@@ -325,10 +350,10 @@ $faqSchema = [
 
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight text-balance">
-                {{ $domain?->business_name ?? 'Plumbing Pro' }} Services
+                Plumbing Services — Emergency, Drain Cleaning, Water Heater & More
             </h1>
             <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-8">
-                From <strong class="text-white">emergency plumbing repairs</strong> to <strong class="text-white">full pipe replacement and water heater installation</strong> — professional plumbing solutions for every need.
+                From <strong class="text-white">emergency plumbing repairs</strong> and <strong class="text-white">drain cleaning</strong> to <strong class="text-white">water heater installation, leak detection, and sewer line repair</strong> — professional plumbing solutions for every need, 24/7.
             </p>
             <div class="flex flex-wrap justify-center gap-3 text-sm text-slate-300">
                 <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-4 py-2 rounded-full"><x-icon name="clock" class="w-4 h-4 text-blue-400" />24/7 Emergency Service</span>
@@ -531,9 +556,9 @@ $faqSchema = [
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-800 mb-2">Dealing with slow drains or recurring clogs?</h3>
-                        <p class="text-slate-500 text-sm leading-relaxed">
-                            <strong>Drain cleaning services</strong> use video inspection and hydro-jetting to彻底 clear blockages caused by grease, hair, soap scum, and tree roots. Perfect for kitchen, bathroom, and main line drains.
-                        </p>
+                            <p class="text-slate-500 text-sm leading-relaxed">
+                                <strong>Drain cleaning services</strong> use video inspection and hydro-jetting to thoroughly clear blockages caused by grease, hair, soap scum, and tree roots. Perfect for kitchen, bathroom, and main line drains.
+                            </p>
                     </div>
                 </div>
 
@@ -656,12 +681,12 @@ $faqSchema = [
     {{-- CTA --}}
     <section class="py-16 md:py-20 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Ready to fix your plumbing?</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Burst pipe? Clogged drain? No hot water? Call Us</h2>
             <p class="text-lg text-slate-400 mb-3 max-w-xl mx-auto">
-                Call for a <strong class="text-white">free quote</strong> and we will help you get your plumbing back in working order.
+                Call for a <strong class="text-white">free quote</strong> — we'll help you get your plumbing back in working order today. Same-day service available.
             </p>
             <p class="text-slate-400 mb-8 text-sm">
-                Serving homes, businesses, and construction sites across the USA.
+                Serving homes, businesses, and properties across the USA. 24/7 emergency service.
             </p>
             <a href="tel:{{ domain_phone_raw() }}"
                data-tracking-label="services-final"
@@ -672,7 +697,7 @@ $faqSchema = [
                 <x-icon name="phone" class="w-7 h-7 md:w-8 md:h-8" />
                 {{ domain_phone_display() }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">No obligation · Upfront pricing · 24/7 emergency service</p>
+            <p class="mt-6 text-slate-400 text-sm">No obligation · Upfront pricing · 24/7 emergency service · Free estimates</p>
         </div>
     </section>
 

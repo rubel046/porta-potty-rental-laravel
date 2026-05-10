@@ -89,11 +89,11 @@ $reviewSchema = null;
     @php
         // Get domain prefix from URL directly (no DB query)
         $host = request()->getHost();
-        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host); // "plumbingpro.com" → "plumbingpro"
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
 
         // Fallback for local development
         if ($prefix === 'localhost' || !Storage::disk('public')->exists($prefix . '/hero-banner-images')) {
-            $prefix = 'plumbingpro';
+            $prefix = 'callaplumberusa';
         }
 
         $heroImages = Cache::remember("hero_images_{$prefix}", 3600, function () use ($prefix) {
@@ -105,6 +105,10 @@ $reviewSchema = null;
         $randomHero = !empty($heroImages) ? $heroImages[array_rand($heroImages)] : $prefix . '/hero-banner-images/default.webp';
         $heroUrl = asset('storage/' . $randomHero);
     @endphp
+
+    @push('head')
+    <link rel="preload" as="image" href="{{ $heroUrl }}" fetchpriority="high">
+    @endpush
 
     <section class="relative min-h-[450px] sm:min-h-[500px] md:min-h-[580px] flex items-center overflow-hidden">
         {{-- Hero Background Image --}}
@@ -140,7 +144,7 @@ $reviewSchema = null;
                 </h1>
 
                 <p class="text-base sm:text-lg md:text-xl text-slate-300 mb-3 sm:mb-4 max-w-xl">
-                    Professional plumbing services in {{ $city->name }}. 24/7 emergency service available.
+                    Professional {{ $serviceLabel ? lcfirst($serviceLabel) : 'plumbing' }} in {{ $city->name }}, {{ $city->state->code }}. 24/7 emergency service available — call now for same-day help.
                 </p>
 
                 <p class="text-xs text-slate-400 mb-5 sm:mb-7">
@@ -215,10 +219,10 @@ $reviewSchema = null;
             {{-- Mid-Content CTA --}}
             <div class="my-10 sm:my-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-center">
                 <h3 class="text-xl sm:text-2xl font-bold text-white mb-3">
-                    Ready to Get a Quote?
+                    Need {{ $serviceLabel ? 'A ' . $serviceLabel : 'Plumbing Help' }} in {{ $city->name }}?
                 </h3>
                 <p class="text-slate-400 mb-5 sm:mb-6">
-                    Call now for instant pricing on plumbing services in {{ $city->name }}
+                    Call now for <strong class="text-white">instant pricing</strong> — same-day service available, 24/7 for emergencies
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
                    data-tracking-label="service-midpage"
@@ -232,6 +236,7 @@ $reviewSchema = null;
                     <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-blue-400" />Licensed &amp; Insured</span>
                     <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-blue-400" />Same-Day Service</span>
                     <span class="inline-flex items-center gap-1.5"><x-icon name="check" class="w-4 h-4 text-blue-400" />No Hidden Fees</span>
+                    <span class="inline-flex items-center gap-1.5"><x-icon name="clock" class="w-4 h-4 text-orange-400" />24/7 Emergency</span>
                 </div>
             </div>
         </div>
@@ -403,10 +408,10 @@ $reviewSchema = null;
     <section class="py-16 md:py-24 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-balance">
-                Get professional plumbing in {{ $city->name }} today
+                Need {{ lcfirst($serviceLabel ?? 'plumbing help') }} in {{ $city->name }}? Call Us Now
             </h2>
             <p class="text-lg text-slate-400 mb-8 max-w-xl mx-auto">
-                Free quote &middot; No hidden fees &middot; 24/7 emergency service
+                Free quote &middot; No hidden fees &middot; 24/7 emergency service &middot; Same-day available
             </p>
             <a href="tel:{{ $servicePage->phone_raw }}"
                data-tracking-label="service-final"
@@ -417,7 +422,7 @@ $reviewSchema = null;
                 <x-icon name="phone" class="w-7 h-7 md:w-8 md:h-8" />
                 {{ $servicePage->phone_display }}
             </a>
-            <p class="mt-6 text-slate-400 text-sm">Answered in under 30 seconds by a real person.</p>
+            <p class="mt-6 text-slate-400 text-sm">Answered in under 30 seconds by a real person — no robocalls, no menus.</p>
         </div>
     </section>
 @endsection

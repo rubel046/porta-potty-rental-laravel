@@ -41,9 +41,32 @@ $breadcrumbSchema = [
         ["@type" => "ListItem", "position" => 3, "name" => $state->name, "item" => url()->current()]
     ]
 ];
+@php
+$faqEntities = [];
+if (isset($faqs) && $faqs->isNotEmpty()) {
+    foreach ($faqs as $faq) {
+        $question = $faq['question'] ?? $faq->question ?? null;
+        $answer = $faq['answer'] ?? $faq->answer ?? null;
+        if ($question && $answer) {
+            $faqEntities[] = [
+                "@type" => "Question",
+                "name" => $question,
+                "acceptedAnswer" => ["@type" => "Answer", "text" => strip_tags($answer)],
+            ];
+        }
+    }
+}
+$faqPageSchema = !empty($faqEntities) ? [
+    "@context" => "https://schema.org",
+    "@type" => "FAQPage",
+    "mainEntity" => $faqEntities,
+] : null;
 @endphp
 <script type="application/ld+json">{!! json_encode($plumberSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@if($faqPageSchema)
+<script type="application/ld+json">{!! json_encode($faqPageSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endpush
 
 @section('content')
@@ -145,7 +168,7 @@ $breadcrumbSchema = [
                                     @endphp
                                     <div class="aspect-w-1 aspect-h-1">
                                         <img src="{{ $imageUrl }}" alt="{{ $image['alt'] ?? 'Plumbing service image for ' . $state->name }}" 
-                                             class="object-cover rounded-lg shadow-md" loading="lazy">
+                                             class="object-cover rounded-lg shadow-md" loading="lazy" fetchpriority="low">
                                     </div>
                                 @endforeach
                             </div>

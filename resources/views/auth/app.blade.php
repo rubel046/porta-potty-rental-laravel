@@ -56,13 +56,16 @@ $phoneDisplay = $domain ? format_phone_display($domain->cta_phone) : phone_displ
     <link rel="dns-prefetch" href="//www.google-analytics.com">
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
-    </script>
+    {{-- Google Analytics 4 --}}
+    @if(config('services.ga4.measurement_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.ga4.measurement_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config('services.ga4.measurement_id') }}');
+        </script>
+    @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')

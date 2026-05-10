@@ -1,7 +1,7 @@
 @extends(\App\Models\Domain::getLayoutPathStatic())
 
-@section('title', 'Plumbing Service Pricing | Transparent Rates | Plumbing Pro')
-@section('meta_description', 'Plumbing service pricing information. Get competitive rates on drain cleaning, pipe repair, water heater installation, sewer line repair, and emergency plumbing. Call for a free estimate — no hidden fees!')
+@section('title', 'Plumbing Service Pricing | Transparent Rates & Free Estimates | Plumbing Pro')
+@section('meta_description', 'See plumbing service pricing for drain cleaning, water heater repair, sewer line service & emergency plumbing. Upfront rates, no hidden fees. Call '.domain_phone_display().' for a free estimate!')
 @section('canonical', route('pricing'))
 
 @push('schema')
@@ -40,33 +40,61 @@ $faqSchema = [
     "mainEntity" => [
         [
             "@type" => "Question",
-            "name" => "How are plumbing service prices calculated?",
+            "name" => "How much does it cost to hire a plumber?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "Pricing is based on several factors: the type of service needed, job complexity, materials required, your location, and whether it is an emergency or scheduled visit. Call us for a free estimate."
+                "text" => "Plumbing costs vary by service type and job complexity. Drain cleaning typically ranges from $150-$500, water heater installation from $500-$2,500, and sewer line repair from $300-$6,000. We provide free upfront estimates with no hidden fees."
             ]
         ],
         [
             "@type" => "Question",
-            "name" => "Do you offer free estimates?",
+            "name" => "Do you offer free estimates for plumbing work?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "Yes! We offer free, no-obligation estimates for all plumbing services including repairs, installations, and replacements. Call us to discuss your project."
+                "text" => "Yes! We offer free, no-obligation estimates for all plumbing services including repairs, installations, and replacements. Call us to discuss your project and get a transparent quote."
             ]
         ],
         [
             "@type" => "Question",
-            "name" => "What is included in the service price?",
+            "name" => "What is included in your plumbing service price?",
             "acceptedAnswer" => [
                 "@type" => "Answer",
-                "text" => "Our service prices include the consultation, diagnosis, labor, and standard parts. We provide upfront pricing before any work begins — no hidden fees."
+                "text" => "Our service prices include the consultation, diagnosis, labor, and standard parts. We provide upfront pricing before any work begins — the price we quote is the price you pay, with no hidden fees or surprise charges."
+            ]
+        ],
+        [
+            "@type" => "Question",
+            "name" => "Do you charge extra for emergency plumbing calls at night or on weekends?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "Emergency services may include a premium for immediate dispatch during nights, weekends, and holidays. We always disclose pricing upfront before dispatching. Scheduled visits during regular business hours offer the most cost-effective rates."
+            ]
+        ],
+        [
+            "@type" => "Question",
+            "name" => "Do you offer discounts for seniors, veterans, or first-time customers?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "Yes! We offer special discounts for seniors, veterans, military personnel, and first-time customers. We also run seasonal promotions. Contact us to ask about current discounts available in your area."
             ]
         ]
     ]
 ];
+$serviceDefs = array_map(function($card) use ($url) {
+    return [
+        "@type" => "Service",
+        "@id" => $url . "#service-" . \Illuminate\Support\Str::slug($card['title']),
+        "name" => $card['title'],
+        "description" => $card['description'],
+        "provider" => ["@id" => $url . "#business"],
+        "areaServed" => ["@type" => "Country", "name" => "United States"]
+    ];
+}, $pricingCards);
+$serviceListSchema = ["@context" => "https://schema.org", "@graph" => $serviceDefs];
 @endphp
 <script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($serviceListSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')

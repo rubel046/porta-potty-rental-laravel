@@ -2,6 +2,7 @@
 
 // bootstrap/app.php
 
+use App\Http\Middleware\CacheControl;
 use App\Http\Middleware\DomainMiddleware;
 use App\Http\Middleware\RedirectToCity;
 use App\Http\Middleware\SecurityHeaders;
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             TrackTrafficSource::class,
             RedirectToCity::class,
             SecurityHeaders::class,
+            CacheControl::class,
         ]);
 
         $middleware->trustProxies(at: '*');

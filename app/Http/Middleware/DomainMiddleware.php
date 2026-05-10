@@ -11,20 +11,20 @@ class DomainMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $currentDomainId = session('current_domain_id');
+        $host = $request->getHost();
 
-        if ($currentDomainId) {
-            $domain = Domain::find($currentDomainId);
+        if (app()->isLocal() && str_ends_with($host, '.test')) {
+            $host = str_replace('.test', '.com', $host);
         }
 
-        if (! isset($domain) || ! $domain) {
-            $host = $request->getHost();
+        $domain = Domain::where('domain', $host)->first();
 
-            if (app()->isLocal() && str_ends_with($host, '.test')) {
-                $host = str_replace('.test', '.com', $host);
+        if (! $domain) {
+            $currentDomainId = session('current_domain_id');
+
+            if ($currentDomainId) {
+                $domain = Domain::find($currentDomainId);
             }
-
-            $domain = Domain::where('domain', $host)->first();
         }
 
         if (! $domain) {
@@ -36,6 +36,8 @@ class DomainMiddleware
         }
 
         view()->share('currentDomain', $domain ?? null);
+
+        config(['app.url' => $request->getScheme().'://'.$request->host()]);
 
         return $next($request);
     }

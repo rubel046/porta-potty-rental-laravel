@@ -116,8 +116,13 @@ $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== ''
             <div class="max-w-5xl mx-auto">
                 {{-- Article Image --}}
                 @if($post->featured_image)
+                    @push('head')
+                    <link rel="preload" as="image" href="{{ asset('storage/' . $post->featured_image) }}" fetchpriority="high">
+                    @endpush
                     <img src="{{ asset('storage/' . $post->featured_image) }}"
                          alt="{{ $post->title }}"
+                         width="1200"
+                         height="630"
                          loading="eager"
                          fetchpriority="high"
                          decoding="async"

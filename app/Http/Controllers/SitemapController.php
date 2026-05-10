@@ -17,16 +17,29 @@ class SitemapController extends Controller
 {
     protected const CACHE_TTL_HOURS = 6;
 
+    protected function getDomain(): Domain
+    {
+        return Domain::current() ?? Domain::first();
+    }
+
+    protected function cacheKey(string $key): string
+    {
+        $domain = $this->getDomain();
+
+        return "sitemap_{$key}_{$domain->id}";
+    }
+
     public function index(): Response
     {
-        $xml = Cache::remember('sitemap_main', now()->addHours(self::CACHE_TTL_HOURS), function () {
+        $domain = $this->getDomain();
+        $xml = Cache::remember($this->cacheKey('main'), now()->addHours(self::CACHE_TTL_HOURS), function () use ($domain) {
             $sitemap = Sitemap::create();
 
             $this->addStaticPages($sitemap);
-            $this->addStates($sitemap);
-            $this->addServicePages($sitemap);
-            $this->addBlogPosts($sitemap);
-            $this->addBlogCategories($sitemap);
+            $this->addStates($sitemap, $domain);
+            $this->addServicePages($sitemap, $domain);
+            $this->addBlogPosts($sitemap, $domain);
+            $this->addBlogCategories($sitemap, $domain);
 
             return $sitemap->render();
         });
@@ -36,7 +49,8 @@ class SitemapController extends Controller
 
     public function indexSitemaps(): Response
     {
-        $xml = Cache::remember('sitemap_index', now()->addHours(self::CACHE_TTL_HOURS), function () {
+        $domain = $this->getDomain();
+        $xml = Cache::remember($this->cacheKey('index'), now()->addHours(self::CACHE_TTL_HOURS), function () {
             return SitemapIndex::create()
                 ->add(url('/sitemap-full.xml'))
                 ->add(url('/sitemap-cities.xml'))
@@ -50,13 +64,15 @@ class SitemapController extends Controller
 
     public function cities(): Response
     {
-        $xml = Cache::remember('sitemap_cities', now()->addHours(self::CACHE_TTL_HOURS), function () {
+        $domain = $this->getDomain();
+        $xml = Cache::remember($this->cacheKey('cities'), now()->addHours(self::CACHE_TTL_HOURS), function () use ($domain) {
             $sitemap = Sitemap::create();
 
             ServicePage::published()
-                ->chunk(500, function ($pages) use ($sitemap) {
+                ->where('domain_id', $domain->id)
+                ->chunk(500, function ($pages) use ($sitemap, $domain) {
                     foreach ($pages as $page) {
-                        $priority = $this->calculatePagePriority($page);
+                        $priority = $this->calculatePagePriority($page, $domain);
                         $sitemap->add(
                             Url::create(url("/{$page->slug}"))
                                 ->setLastModificationDate($page->updated_at)
@@ -74,20 +90,21 @@ class SitemapController extends Controller
 
     public function states(): Response
     {
-        $xml = Cache::remember('sitemap_states', now()->addHours(self::CACHE_TTL_HOURS), function () {
+        $domain = $this->getDomain();
+        $xml = Cache::remember($this->cacheKey('states'), now()->addHours(self::CACHE_TTL_HOURS), function () use ($domain) {
             $sitemap = Sitemap::create();
+            $slugPrefix = $domain->getServiceSlugPrefix();
 
-            State::active()->chunk(100, function ($states) use ($sitemap) {
-                foreach ($states as $state) {
-                    $domain = Domain::current() ?? Domain::first();
-                    $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
-                    $sitemap->add(
-                        Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
-                            ->setPriority(0.7)
-                            ->setChangeFrequency('weekly')
-                    );
-                }
-            });
+            State::whereHas('domainStates', fn ($q) => $q->where('domain_id', $domain->id)->where('status', true))
+                ->chunk(100, function ($states) use ($sitemap, $slugPrefix) {
+                    foreach ($states as $state) {
+                        $sitemap->add(
+                            Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
+                                ->setPriority(0.7)
+                                ->setChangeFrequency('weekly')
+                        );
+                    }
+                });
 
             return $sitemap->render();
         });
@@ -97,19 +114,22 @@ class SitemapController extends Controller
 
     public function blog(): Response
     {
-        $xml = Cache::remember('sitemap_blog', now()->addHours(self::CACHE_TTL_HOURS), function () {
+        $domain = $this->getDomain();
+        $xml = Cache::remember($this->cacheKey('blog'), now()->addHours(self::CACHE_TTL_HOURS), function () use ($domain) {
             $sitemap = Sitemap::create();
 
-            BlogPost::published()->chunk(500, function ($posts) use ($sitemap) {
-                foreach ($posts as $post) {
-                    $sitemap->add(
-                        Url::create(url("/blog/{$post->slug}"))
-                            ->setLastModificationDate($post->updated_at)
-                            ->setChangeFrequency('monthly')
-                            ->setPriority(0.6)
-                    );
-                }
-            });
+            BlogPost::published()
+                ->where('domain_id', $domain->id)
+                ->chunk(500, function ($posts) use ($sitemap) {
+                    foreach ($posts as $post) {
+                        $sitemap->add(
+                            Url::create(url("/blog/{$post->slug}"))
+                                ->setLastModificationDate($post->updated_at)
+                                ->setChangeFrequency('monthly')
+                                ->setPriority(0.6)
+                        );
+                    }
+                });
 
             return $sitemap->render();
         });
@@ -119,11 +139,15 @@ class SitemapController extends Controller
 
     public static function invalidateCache(): void
     {
-        Cache::forget('sitemap_main');
-        Cache::forget('sitemap_cities');
-        Cache::forget('sitemap_states');
-        Cache::forget('sitemap_blog');
-        Cache::forget('sitemap_index');
+        $domains = Domain::all();
+        foreach ($domains as $domain) {
+            $prefix = "sitemap_main_{$domain->id}";
+            Cache::forget($prefix);
+            Cache::forget("sitemap_cities_{$domain->id}");
+            Cache::forget("sitemap_states_{$domain->id}");
+            Cache::forget("sitemap_blog_{$domain->id}");
+            Cache::forget("sitemap_index_{$domain->id}");
+        }
     }
 
     protected function addStaticPages(Sitemap $sitemap): void
@@ -148,72 +172,76 @@ class SitemapController extends Controller
         }
     }
 
-    protected function addStates(Sitemap $sitemap): void
+    protected function addStates(Sitemap $sitemap, Domain $domain): void
     {
-        $domain = Domain::current() ?? Domain::first();
-        $slugPrefix = $domain?->getServiceSlugPrefix() ?? 'service';
+        $slugPrefix = $domain->getServiceSlugPrefix();
 
-        State::active()->chunk(100, function ($states) use ($sitemap, $slugPrefix) {
-            foreach ($states as $state) {
-                $sitemap->add(
-                    Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
-                        ->setPriority(0.7)
-                        ->setChangeFrequency('weekly')
-                );
-            }
-        });
+        State::whereHas('domainStates', fn ($q) => $q->where('domain_id', $domain->id)->where('status', true))
+            ->chunk(100, function ($states) use ($sitemap, $slugPrefix) {
+                foreach ($states as $state) {
+                    $sitemap->add(
+                        Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
+                            ->setPriority(0.7)
+                            ->setChangeFrequency('weekly')
+                    );
+                }
+            });
     }
 
-    protected function addServicePages(Sitemap $sitemap): void
+    protected function addServicePages(Sitemap $sitemap, Domain $domain): void
     {
-        ServicePage::published()->chunk(500, function ($pages) use ($sitemap) {
-            foreach ($pages as $page) {
-                $priority = $this->calculatePagePriority($page);
+        ServicePage::published()
+            ->where('domain_id', $domain->id)
+            ->chunk(500, function ($pages) use ($sitemap, $domain) {
+                foreach ($pages as $page) {
+                    $priority = $this->calculatePagePriority($page, $domain);
 
-                $sitemap->add(
-                    Url::create(url("/{$page->slug}"))
-                        ->setLastModificationDate($page->updated_at)
-                        ->setChangeFrequency('weekly')
-                        ->setPriority($priority)
-                );
-            }
-        });
+                    $sitemap->add(
+                        Url::create(url("/{$page->slug}"))
+                            ->setLastModificationDate($page->updated_at)
+                            ->setChangeFrequency('weekly')
+                            ->setPriority($priority)
+                    );
+                }
+            });
     }
 
-    protected function addBlogPosts(Sitemap $sitemap): void
+    protected function addBlogPosts(Sitemap $sitemap, Domain $domain): void
     {
-        BlogPost::published()->chunk(500, function ($posts) use ($sitemap) {
-            foreach ($posts as $post) {
-                $sitemap->add(
-                    Url::create(url("/blog/{$post->slug}"))
-                        ->setLastModificationDate($post->updated_at)
-                        ->setChangeFrequency('monthly')
-                        ->setPriority(0.6)
-                );
-            }
-        });
+        BlogPost::published()
+            ->where('domain_id', $domain->id)
+            ->chunk(500, function ($posts) use ($sitemap) {
+                foreach ($posts as $post) {
+                    $sitemap->add(
+                        Url::create(url("/blog/{$post->slug}"))
+                            ->setLastModificationDate($post->updated_at)
+                            ->setChangeFrequency('monthly')
+                            ->setPriority(0.6)
+                    );
+                }
+            });
     }
 
-    protected function addBlogCategories(Sitemap $sitemap): void
+    protected function addBlogCategories(Sitemap $sitemap, Domain $domain): void
     {
-        BlogCategory::where('is_active', true)->chunk(100, function ($categories) use ($sitemap) {
-            foreach ($categories as $category) {
-                $sitemap->add(
-                    Url::create(url("/blog/category/{$category->slug}"))
-                        ->setPriority(0.5)
-                        ->setChangeFrequency('weekly')
-                );
-            }
-        });
+        BlogCategory::where('domain_id', $domain->id)
+            ->where('is_active', true)
+            ->chunk(100, function ($categories) use ($sitemap) {
+                foreach ($categories as $category) {
+                    $sitemap->add(
+                        Url::create(url("/blog/category/{$category->slug}"))
+                            ->setPriority(0.5)
+                            ->setChangeFrequency('weekly')
+                    );
+                }
+            });
     }
 
-    protected function calculatePagePriority(ServicePage $page): float
+    protected function calculatePagePriority(ServicePage $page, ?Domain $domain = null): float
     {
         $basePriority = 0.8;
-
-        // Use domain-aware priority: 'general' or first service type gets higher priority
-        $domain = $page->domain ?? Domain::current() ?? Domain::first();
-        $serviceTypes = $domain?->getServiceTypes() ?? [];
+        $domain ??= $this->getDomain();
+        $serviceTypes = $domain->getServiceTypes();
 
         if (! empty($serviceTypes) && $page->service_type === $serviceTypes[0]) {
             $basePriority = 0.9;

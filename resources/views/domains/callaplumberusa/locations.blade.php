@@ -1,7 +1,7 @@
 @extends(\App\Models\Domain::getLayoutPathStatic())
 
-@section('title', 'Plumber Locations | All Cities We Serve')
-@section('meta_description', 'Find a plumber in your city. We serve hundreds of cities across the USA with emergency plumbing services. Browse all locations or call for a free quote.')
+@section('title', 'Plumber Near You | Find Local Plumbing Services in Your City')
+@section('meta_description', 'Find a plumber near you. We serve hundreds of cities across the USA with 24/7 emergency plumbing, drain cleaning, water heater repair & more. Call '.domain_phone_display().' for a free quote.')
 @section('canonical', route('locations'))
 
 @push('schema')
@@ -61,10 +61,10 @@ $websiteSchema = [
 
         <div class="relative max-w-4xl mx-auto px-3 sm:px-6 text-center">
             <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 sm:mb-5">
-                All Locations
+                Plumber Locations — Find a Plumber Near You
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-slate-300 max-w-xl mx-auto mb-5 sm:mb-6">
-                Find a plumber in your city across the United States
+                Find a trusted plumber in your city. Emergency plumbing services available 24/7 across the United States.
             </p>
             <div class="mt-5 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-300">
                 <span class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"><x-icon name="clock" class="w-3.5 h-3.5 text-blue-400" />24/7 Emergency</span>
