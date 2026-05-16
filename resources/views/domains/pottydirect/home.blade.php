@@ -1016,13 +1016,13 @@
       {{-- ================================================================
            BLOG PREVIEW (SEO Boost)
            ================================================================ --}}
-     @php
-         $recentPosts = \App\Models\BlogPost::where('is_published', true)
-             ->where('domain_id', $domain?->id)
-             ->orderBy('published_at', 'desc')
-             ->limit(3)
-             ->get();
-     @endphp
+      @php
+          $recentPosts = \App\Models\BlogPost::where('is_published', true)
+              ->where('domain_id', $domain?->id)
+              ->orderBy('published_at', 'desc')
+              ->limit(6)
+              ->get();
+      @endphp
 
      @if($recentPosts && count($recentPosts) > 0)
          <section class="py-16 px-4 bg-gray-50">
