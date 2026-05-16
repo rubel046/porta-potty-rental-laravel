@@ -903,6 +903,12 @@ class PageController extends Controller
             ->take(3)
             ->get();
 
+        $neighborhoods = Neighborhood::where('city_id', $city->id)
+            ->whereHas('servicePages', fn ($q) => $q->where('is_published', true)->where('domain_id', $domainId))
+            ->orderBy('priority', 'desc')
+            ->orderBy('name')
+            ->get();
+
         $schemaMarkup = $servicePage->generateSchemaMarkup();
 
         $faqSchema = null;
@@ -936,6 +942,7 @@ class PageController extends Controller
         return view(DomainViewHelper::resolveForController('service'), compact(
             'servicePage', 'city', 'faqs', 'testimonials',
             'nearbyCityPages', 'otherServices', 'relatedPosts',
+            'neighborhoods',
             'schemaMarkup', 'faqSchema', 'domain',
             'latitude', 'longitude', 'cityAddress', 'stateCodeLocal', 'postalCode'
         ));

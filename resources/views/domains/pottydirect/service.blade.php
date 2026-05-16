@@ -408,6 +408,31 @@ $reviewSchema = null;
         </section>
     @endif
 
+    {{-- Neighborhoods We Serve --}}
+    @if($neighborhoods->isNotEmpty())
+        <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
+                    Neighborhoods We Serve in {{ $city->name }}
+                </h2>
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
+                    @foreach($neighborhoods as $neighborhood)
+                        @php $nbPage = $neighborhood->servicePages->first(); @endphp
+                        @if($nbPage)
+                            <a href="{{ url('neighborhoods/' . $nbPage->slug) }}"
+                               class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300
+                                      px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-slate-700
+                                      hover:text-emerald-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2 min-h-[44px]">
+                                <x-icon name="map-pin" class="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                                {{ $neighborhood->name }}
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- Related Blog Posts --}}
     @if($relatedPosts->isNotEmpty())
         <section class="py-12 md:py-16 px-4 bg-slate-50">
