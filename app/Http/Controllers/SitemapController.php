@@ -74,26 +74,27 @@ class SitemapController extends Controller
             $heroImageUrl = $this->getHeroImageUrl();
 
             ServicePage::published()
+                ->with('city.state')
                 ->where('domain_id', $domain->id)
-                ->chunk(500, function ($pages) use ($sitemap, $domain, $heroImageUrl) {
-                    foreach ($pages as $page) {
-                        $priority = $this->calculatePagePriority($page, $domain);
-                        $url = Url::create(url("/{$page->slug}"))
-                            ->setLastModificationDate($page->updated_at)
-                            ->setChangeFrequency('weekly')
-                            ->setPriority($priority);
+                ->lazy()
+                ->take(50000)
+                ->each(function ($page) use ($sitemap, $domain, $heroImageUrl) {
+                    $priority = $this->calculatePagePriority($page, $domain);
+                    $url = Url::create(url("/{$page->slug}"))
+                        ->setLastModificationDate($page->updated_at)
+                        ->setChangeFrequency('weekly')
+                        ->setPriority($priority);
 
-                        if ($heroImageUrl) {
-                            $url->addImage(
-                                $heroImageUrl,
-                                "{$page->service_type_label} porta potty rental - Potty Direct",
-                                '',
-                                "Porta potty rental in {$page->city->name}, {$page->city->state->code}"
-                            );
-                        }
-
-                        $sitemap->add($url);
+                    if ($heroImageUrl) {
+                        $url->addImage(
+                            $heroImageUrl,
+                            "{$page->service_type_label} porta potty rental - Potty Direct",
+                            '',
+                            "Porta potty rental in {$page->city->name}, {$page->city->state->code}"
+                        );
                     }
+
+                    $sitemap->add($url);
                 });
 
             return $sitemap->render();
