@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Domain;
 use App\Services\PageQualityService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class QualityScoreAll extends Command
 {
@@ -61,6 +62,8 @@ class QualityScoreAll extends Command
             $bar->finish();
             $this->newLine();
             $this->info("  Done scoring {$domain->domain}");
+
+            Cache::forget('quality:score-all:domain:' . $domain->id);
         }
 
         $this->newLine();

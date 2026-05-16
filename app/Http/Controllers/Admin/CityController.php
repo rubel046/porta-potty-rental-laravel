@@ -13,7 +13,6 @@ use App\Services\ImageService;
 use App\Services\MultiAiService;
 use App\Services\PageQualityService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -445,17 +444,33 @@ class CityController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
         }
 
+        $lockKey = 'quality:score-all:domain:'.$domain->id;
+
+        if (Cache::has($lockKey)) {
+            return redirect()->route('admin.cities.quality-scores')
+                ->with('error', 'Scoring is already running. Please wait for it to finish.');
+        }
+
+        Cache::put($lockKey, true, 600);
+
         try {
-            Artisan::call('quality:score-all', [
-                '--domain' => $domain->id,
-                '--force' => true,
-            ]);
+            $artisanPath = base_path('artisan');
+            $logPath = storage_path('logs/quality-scoring.log');
+            $cmd = sprintf(
+                'php %s quality:score-all --domain=%d --force >> %s 2>&1 &',
+                escapeshellarg($artisanPath),
+                $domain->id,
+                escapeshellarg($logPath)
+            );
+            exec($cmd);
 
             return redirect()->route('admin.cities.quality-scores')
-                ->with('success', 'All quality scores re-computed successfully.');
+                ->with('success', 'Re-computing quality scores in background. This may take a while for 690k+ pages. Refresh the page periodically to see results.');
         } catch (\Throwable $e) {
+            Cache::forget($lockKey);
+
             return redirect()->route('admin.cities.quality-scores')
-                ->with('error', 'Scoring failed: '.$e->getMessage());
+                ->with('error', 'Failed to start scoring: '.$e->getMessage());
         }
     }
 
