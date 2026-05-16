@@ -14,9 +14,9 @@
                 @php($post = $featuredPosts->first())
                 <article class="group relative bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow h-full">
                     <a href="{{ route('blog.show', $post->slug) }}" class="block h-full">
-                        @if($post->featured_image)
+                        @if($post->featured_image_url)
                             <div class="relative aspect-[21/9] overflow-hidden">
-                                <img src="{{ asset('storage/' . $post->featured_image) }}"
+                                <img src="{{ $post->featured_image_url }}"
                                      alt="{{ $post->title }}"
                                      loading="lazy"
                                      decoding="async"
@@ -65,8 +65,8 @@
                 <article class="group bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
                     <a href="{{ route('blog.show', $post->slug) }}" class="flex gap-4 p-4">
                         <div class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
-                            @if($post->featured_image)
-                                <img src="{{ asset('storage/' . $post->featured_image) }}"
+                            @if($post->featured_image_url)
+                                <img src="{{ $post->featured_image_url }}"
                                      alt="{{ $post->title }}"
                                      loading="lazy"
                                      decoding="async"

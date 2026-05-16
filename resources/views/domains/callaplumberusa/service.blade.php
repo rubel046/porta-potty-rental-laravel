@@ -378,8 +378,8 @@ $reviewSchema = null;
                         <a href="{{ $post->url }}"
                            class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group border border-slate-200">
                             <div class="h-32 overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                                @if($post->featured_image)
-                                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                                 @if($post->featured_image_url)
+                                     <img src="{{ $post->featured_image_url }}"
                                          alt="{{ $post->title }}"
                                          loading="lazy"
                                          decoding="async"

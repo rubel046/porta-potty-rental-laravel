@@ -1029,9 +1029,8 @@
                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                      @foreach($recentPosts as $post)
                          <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                              @php $hasImage = $post->featured_image && \Illuminate\Support\Facades\Storage::disk('public')->exists(ltrim($post->featured_image, '/')); @endphp
-                              @if($hasImage)
-                                 <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover">
+                              @if($post->featured_image_url)
+                                  <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover">
                              @else
                                  <div class="w-full h-48 bg-blue-100 flex items-center justify-center">
                                      <svg class="w-12 h-12 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 8V5a2 2 0 00-2-2h-2M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1"/></svg>

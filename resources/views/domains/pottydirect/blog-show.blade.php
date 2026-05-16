@@ -11,7 +11,7 @@ $articleSchema = [
     "@type" => "BlogPosting",
     "headline" => $post->title,
     "description" => $post->seo_description ?? strip_tags($post->excerpt),
-    "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
+    "image" => $post->featured_image_url ?? url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),
     "wordCount" => str_word_count(strip_tags($post->content ?? '')),
@@ -37,7 +37,7 @@ $videoSchema = [
     "@id" => url('/') . '#video',
     "name" => $post->title,
     "description" => $post->seo_description ?? strip_tags($post->excerpt),
-    "thumbnailUrl" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
+    "thumbnailUrl" => $post->featured_image_url ?? url('/og-image.jpg'),
     "uploadDate" => $post->published_at?->toIso8601String() ?? '2025-01-01',
     "publisher" => [
         "@type" => "Organization",
@@ -134,8 +134,8 @@ $videoSchema = array_filter($videoSchema, fn($v) => $v !== null && $v !== '');
         <div class="py-12 md:py-16 px-4">
             <div class="max-w-5xl mx-auto">
                 {{-- Article Image --}}
-                @if($post->featured_image)
-                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                 @if($post->featured_image_url)
+                     <img src="{{ $post->featured_image_url }}"
                          alt="{{ $post->title }}"
                          loading="eager"
                          fetchpriority="high"
@@ -189,8 +189,8 @@ $videoSchema = array_filter($videoSchema, fn($v) => $v !== null && $v !== '');
                         @foreach($relatedPosts as $rp)
                         <a href="{{ $rp->url }}"
                            class="bg-white hover:bg-slate-50 p-5 rounded-xl transition border border-slate-200 hover:border-emerald-300 hover:shadow-md">
-                            @if($rp->featured_image)
-                                <img src="{{ asset('storage/' . $rp->featured_image) }}" alt="{{ $rp->title }}"
+                             @if($rp->featured_image_url)
+                                 <img src="{{ $rp->featured_image_url }}" alt="{{ $rp->title }}"
                                      loading="lazy" width="400" height="128" class="w-full h-32 object-cover rounded-lg mb-3">
                             @endif
                             <h4 class="font-bold text-slate-800 text-sm line-clamp-2">{{ $rp->title }}</h4>

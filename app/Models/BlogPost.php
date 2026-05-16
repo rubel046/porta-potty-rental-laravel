@@ -63,6 +63,18 @@ class BlogPost extends Model
         return url("blog/{$this->slug}");
     }
 
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        if (! $this->featured_image) {
+            return null;
+        }
+        $path = ltrim($this->featured_image, '/');
+        if (! \Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return null;
+        }
+        return asset('storage/' . $path);
+    }
+
     public function getReadingTimeTextAttribute(): string
     {
         return "{$this->reading_time} min read";

@@ -13,9 +13,9 @@
                 @php($post = $featuredPosts->first())
                 <article class="group relative bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-colors h-full">
                     <a href="{{ route('blog.show', $post->slug) }}" class="block h-full">
-                        @if($post->featured_image)
+                        @if($post->featured_image_url)
                             <div class="relative aspect-[21/9] overflow-hidden">
-                                <img src="{{ asset('storage/' . $post->featured_image) }}"
+                                <img src="{{ $post->featured_image_url }}"
                                      alt="{{ $post->title }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -53,8 +53,8 @@
                 <article class="group bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-colors">
                     <a href="{{ route('blog.show', $post->slug) }}" class="flex gap-4 p-4">
                         <div class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
-                            @if($post->featured_image)
-                                <img src="{{ asset('storage/' . $post->featured_image) }}"
+                            @if($post->featured_image_url)
+                                <img src="{{ $post->featured_image_url }}"
                                      alt="{{ $post->title }}"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             @else

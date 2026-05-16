@@ -281,8 +281,8 @@ $breadcrumbSchema = [
                         <a href="{{ $post->url }}"
                            class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group border border-slate-200">
                             <div class="h-32 overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-50">
-                                @if($post->featured_image && Storage::disk('public')->exists($post->featured_image))
-                                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                                 @if($post->featured_image_url)
+                                     <img src="{{ $post->featured_image_url }}"
                                          alt="{{ $post->title }}"
                                          class="w-full h-full object-cover">
                                 @else

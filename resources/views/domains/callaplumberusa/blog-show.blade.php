@@ -11,7 +11,7 @@ $articleSchema = [
     "@type" => "BlogPosting",
     "headline" => $post->title,
     "description" => $post->seo_description ?? strip_tags($post->excerpt),
-    "image" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
+    "image" => $post->featured_image_url ?? url('/og-image.jpg'),
     "datePublished" => $post->published_at?->toIso8601String(),
     "dateModified" => $post->updated_at->toIso8601String(),
     "wordCount" => str_word_count(strip_tags($post->content ?? '')),
@@ -115,11 +115,9 @@ $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== ''
         <div class="py-12 md:py-16 px-4">
             <div class="max-w-5xl mx-auto">
                 {{-- Article Image --}}
-                @if($post->featured_image)
-                    @push('head')
-                    <link rel="preload" as="image" href="{{ asset('storage/' . $post->featured_image) }}" fetchpriority="high">
-                    @endpush
-                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                 @if($post->featured_image_url)
+                     <link rel="preload" as="image" href="{{ $post->featured_image_url }}" fetchpriority="high">
+                     <img src="{{ $post->featured_image_url }}"
                          alt="{{ $post->title }}"
                          width="1200"
                          height="630"

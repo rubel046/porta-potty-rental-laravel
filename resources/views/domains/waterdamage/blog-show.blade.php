@@ -9,7 +9,7 @@
 $url = url('/');
 $phone = domain_phone_raw();
 $domain = \App\Models\Domain::current();
-$imageUrl = $post->featured_image ? asset('storage/' . $post->featured_image) : $url . '/og-image.jpg';
+$imageUrl = $post->featured_image_url ?? ($url . '/og-image.jpg');
 $bizName = $domain?->business_name ?? "Water Damage Pro";
 $seoDescription = $post->seo_description ?? strip_tags($post->excerpt);
 @endphp
@@ -120,8 +120,8 @@ $seoDescription = $post->seo_description ?? strip_tags($post->excerpt);
         <div class="py-12 md:py-16 px-4">
             <div class="max-w-5xl mx-auto">
                 {{-- Article Image --}}
-                @if($post->featured_image)
-                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                 @if($post->featured_image_url)
+                     <img src="{{ $post->featured_image_url }}"
                          alt="{{ $post->title }}"
                          class="w-full h-64 md:h-80 object-cover rounded-2xl mb-10 shadow-lg">
                 @else

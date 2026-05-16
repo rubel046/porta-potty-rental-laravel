@@ -119,7 +119,7 @@ return new class extends Migration
 <li>Document your servicing schedule and inspection records</li>
 </ul>
 <p>PottyDirect helps contractors stay compliant with flexible construction site rental plans. We deliver directly to your job site, handle all servicing, and ensure your site meets OSHA standards from day one. Contact us for a free quote tailored to your project size and duration.</p>',
-                'featured_image' => '/images/blog/osha-construction-requirements.jpg',
+                'featured_image' => 'pottydirect/blog-images/osha-construction-requirements.jpg',
                 'meta_title' => 'OSHA Porta Potty Rules for Construction Sites 2026 Guide',
                 'meta_description' => 'Complete guide to OSHA 1926.51 construction site sanitation requirements. Learn toilet ratios, placement rules, handwashing requirements, and compliance tips.',
                 'focus_keyword' => 'OSHA porta potty requirements construction sites',
@@ -194,7 +194,7 @@ return new class extends Migration
 
 <h2>PottyDirect Construction Calculator</h2>
 <p>Need help calculating the right number for your specific site? PottyDirect offers free on-site consultations for construction projects of all sizes. Our team will assess your crew count, project timeline, and site logistics to recommend the perfect sanitation setup. We deliver across the United States with flexible rental terms designed for construction schedules.</p>',
-                'featured_image' => '/images/blog/construction-calculator.jpg',
+                'featured_image' => 'pottydirect/blog-images/construction-calculator.jpg',
                 'meta_title' => 'How Many Porta Potties for a Construction Site? Calculator & Guide',
                 'meta_description' => 'Use our formula to calculate exact porta potty counts for construction sites. Based on OSHA ratios, worker counts, shift length, and project duration.',
                 'focus_keyword' => 'how many porta potties construction site',
@@ -276,7 +276,7 @@ return new class extends Migration
 <li>Keeping the facilities clean for the next user</li>
 </ul>
 <p>PottyDirect provides educational materials and signage with every construction site rental to help promote a culture of cleanliness on your job site.</p>',
-                'featured_image' => '/images/blog/construction-sanitation.jpg',
+                'featured_image' => 'pottydirect/blog-images/construction-sanitation.jpg',
                 'meta_title' => 'Construction Site Sanitation Best Practices Guide | PottyDirect',
                 'meta_description' => 'Learn construction site sanitation best practices: toilet placement, servicing schedules, hand hygiene, waste management, and weather preparation for job sites.',
                 'focus_keyword' => 'construction site sanitation best practices',
@@ -349,7 +349,7 @@ return new class extends Migration
 <li><strong>Truck access</strong> — ensure your contract includes site access provisions for service vehicles</li>
 </ul>
 <p>PottyDirect offers transparent, no-hidden-fee contracts for long-term construction clients. Our team works with your project managers to create a customized sanitation plan that adapts to every phase of construction.</p>',
-                'featured_image' => '/images/blog/long-term-construction.jpg',
+                'featured_image' => 'pottydirect/blog-images/long-term-construction.jpg',
                 'meta_title' => 'Porta Potty Rental for Long-Term Construction Projects | Guide',
                 'meta_description' => 'Learn about porta potty rental for long-term construction projects. Monthly pricing, servicing schedules, winterization tips, and contract advice for multi-month sites.',
                 'focus_keyword' => 'long term porta potty rental construction',
@@ -423,7 +423,7 @@ return new class extends Migration
 <li><strong>Worker communication</strong> — Inform crews which units are operational and report issues immediately</li>
 </ul>
 <p>PottyDirect supports construction sites throughout winter with dedicated cold-weather equipment and priority emergency servicing. Our winterized units keep your project compliant and your workers comfortable, no matter how cold it gets.</p>',
-                'featured_image' => '/images/blog/winter-construction.jpg',
+                'featured_image' => 'pottydirect/blog-images/winter-construction.jpg',
                 'meta_title' => 'Winter Porta Potty Solutions for Construction Sites | PottyDirect',
                 'meta_description' => 'Keep construction site restrooms functional through winter with winterized porta potties. Cold-weather maintenance, placement tips, and freeze prevention strategies.',
                 'focus_keyword' => 'winter porta potty construction site',
@@ -503,7 +503,7 @@ return new class extends Migration
 <li>Changing stations for outfit adjustments</li>
 </ul>
 <p>Contact PottyDirect to discuss your wedding restroom needs. Our event specialists will help you select the perfect combination of units for your special day.</p>',
-                'featured_image' => '/images/blog/wedding-guide.jpg',
+                'featured_image' => 'pottydirect/blog-images/wedding-guide.jpg',
                 'meta_title' => 'Ultimate Guide to Porta Potty Rental for Weddings in 2026',
                 'meta_description' => 'Complete wedding porta potty rental guide for 2026. Guest count formulas, luxury trailer options, pricing, and planning timeline for your big day.',
                 'focus_keyword' => 'porta potty rental weddings',
@@ -577,7 +577,7 @@ return new class extends Migration
 <li><strong>Overnight servicing</strong> — For multi-day festivals, complete all-unit servicing between midnight and 6 AM</li>
 </ul>
 <p>PottyDirect provides on-site service teams for large festivals to ensure facilities remain clean and functional throughout your event.</p>',
-                'featured_image' => '/images/blog/festival-planning.jpg',
+                'featured_image' => 'pottydirect/blog-images/festival-planning.jpg',
                 'meta_title' => 'Festival Porta Potty Planning: How to Avoid Long Lines',
                 'meta_description' => 'Prevent long restroom lines at your festival with proper porta potty planning. Learn crowd ratios, placement strategies, high-capacity solutions, and traffic flow tips.',
                 'focus_keyword' => 'festival porta potty planning',
@@ -653,7 +653,7 @@ return new class extends Migration
 <li>Confirm pickup time (units typically picked up within 24 hours post-event)</li>
 </ul>
 <p>PottyDirect partners with corporate event planners across the country to deliver professional-grade restroom solutions. Contact our corporate events team for a customized quote and site consultation.</p>',
-                'featured_image' => '/images/blog/corporate-events.jpg',
+                'featured_image' => 'pottydirect/blog-images/corporate-events.jpg',
                 'meta_title' => 'Corporate Event Restroom Planning: Making an Impression',
                 'meta_description' => 'Make the right impression with corporate event restroom planning. Upscale options, branding opportunities, guest ratios, and professional presentation tips for your event.',
                 'focus_keyword' => 'corporate event restroom planning',
@@ -733,7 +733,7 @@ return new class extends Migration
 <li>Special requirements (ADA, luxury, branding, etc.)</li>
 </ul>
 <p>Contact PottyDirect for a free, no-obligation quote. Our event specialists will help you design the perfect sanitation plan for your event at a price that fits your budget.</p>',
-                'featured_image' => '/images/blog/budget-guide.jpg',
+                'featured_image' => 'pottydirect/blog-images/budget-guide.jpg',
                 'meta_title' => 'How to Budget for Porta Potty Rentals at Your Event',
                 'meta_description' => 'Learn how to budget for porta potty rentals at your event. Full cost breakdown, money-saving tips, hidden fees to avoid, and sample budgets for every event type.',
                 'focus_keyword' => 'budget porta potty rental event',
@@ -837,7 +837,7 @@ return new class extends Migration
 <li>Leave feedback for your rental provider to help future event planning</li>
 </ul>
 <p>PottyDirect makes outdoor party restroom rental easy with transparent pricing, reliable delivery, and responsive customer support. Contact us to start planning your next outdoor event.</p>',
-                'featured_image' => '/images/blog/party-planning.jpg',
+                'featured_image' => 'pottydirect/blog-images/party-planning.jpg',
                 'meta_title' => 'Outdoor Party Porta Potty Rental Planning Timeline',
                 'meta_description' => 'Complete planning timeline for porta potty rentals at outdoor parties. From 8 weeks out to event day, know exactly when to book and set up for success.',
                 'focus_keyword' => 'outdoor party porta potty rental',

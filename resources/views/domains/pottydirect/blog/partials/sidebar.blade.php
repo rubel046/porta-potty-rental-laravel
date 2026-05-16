@@ -66,8 +66,8 @@
                 @foreach($featuredPosts->take(3) as $post)
                     <a href="{{ route('blog.show', $post->slug) }}" class="flex gap-3 group">
                         <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
-                            @if($post->featured_image)
-                                <img src="{{ asset('storage/' . $post->featured_image) }}"
+                            @if($post->featured_image_url)
+                                <img src="{{ $post->featured_image_url }}"
                                      alt="{{ $post->title }}"
                                      loading="lazy"
                                      decoding="async"
