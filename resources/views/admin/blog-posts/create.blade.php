@@ -36,7 +36,7 @@
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
-                <input type="text" name="featured_image" value="{{ old('featured_image') }}" placeholder="e.g., pottydirect/images/porta-potty-blog-1.jpg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">
+                <input type="text" name="featured_image" value="{{ old('featured_image') }}" placeholder="e.g., pottydirect/blog-images/photo.jpg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Content (Markdown) *</label>

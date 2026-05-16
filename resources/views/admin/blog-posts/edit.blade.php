@@ -13,6 +13,14 @@
             <div><label class="block text-sm font-medium text-gray-700 mb-1">City</label><select name="city_id" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"><option value="">None</option>@foreach($cities as $city)<option value="{{ $city->id }}" {{ $blogPost->city_id == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>@endforeach</select></div>
             <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Slug</label><input type="text" name="slug" value="{{ old('slug', $blogPost->slug) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono"></div>
             <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Excerpt</label><textarea name="excerpt" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">{{ old('excerpt', $blogPost->excerpt) }}</textarea></div>
+            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+                <div class="flex gap-3 items-start">
+                    @if($blogPost->featured_image_url)
+                        <img src="{{ $blogPost->featured_image_url }}" alt="Preview" class="w-24 h-16 object-cover rounded border">
+                    @endif
+                    <input type="text" name="featured_image" value="{{ old('featured_image', $blogPost->featured_image) }}" placeholder="e.g., pottydirect/blog-images/photo.jpg" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">
+                </div>
+            </div>
             <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Content (Markdown) *</label><textarea name="content" rows="12" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">{{ old('content', $blogPost->content) }}</textarea></div>
             <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label><input type="text" name="meta_title" value="{{ old('meta_title', $blogPost->meta_title) }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>
             <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label><textarea name="meta_description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">{{ old('meta_description', $blogPost->meta_description) }}</textarea></div>

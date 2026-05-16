@@ -138,6 +138,17 @@
                 {{-- Stats (edit only) --}}
                 @if(isset($post))
                     <div class="card p-6">
+                        <h3 class="font-bold text-gray-700 mb-4">🖼️ Featured Image</h3>
+                        @if($post->featured_image_url)
+                            <img src="{{ $post->featured_image_url }}" alt="Preview" class="w-full h-32 object-cover rounded border mb-2">
+                        @endif
+                        <input type="text" name="featured_image" value="{{ old('featured_image', $post->featured_image) }}"
+                               placeholder="pottydirect/blog-images/photo.jpg"
+                               class="form-input text-sm font-mono">
+                        <p class="text-xs text-gray-400 mt-1">Relative path from storage/</p>
+                    </div>
+
+                    <div class="card p-6">
                         <h3 class="font-bold text-gray-700 mb-4">📊 Stats</h3>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">

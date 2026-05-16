@@ -202,7 +202,7 @@ body: JSON.stringify({
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
-                    <input type="text" name="featured_image" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="pottydirect/service-images/...">
+                    <input type="text" name="featured_image" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="pottydirect/blog-images/photo.jpg">
                 </div>
 
                 <div class="md:col-span-2 flex items-center gap-6">
