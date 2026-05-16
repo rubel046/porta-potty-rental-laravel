@@ -402,21 +402,34 @@ class CityController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
         }
 
-        $results = $qualityService->scoreAllForDomain($domainId);
+        $allResults = $qualityService->scoreAllForDomain($domainId);
 
-        $averageScore = count($results) > 0
-            ? round(array_sum(array_column(array_column($results, 'score'), 'score')) / count($results), 1)
+        $perPage = 25;
+        $page = (int) request('page', 1);
+        $offset = ($page - 1) * $perPage;
+        $results = array_slice($allResults, $offset, $perPage);
+
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $results,
+            count($allResults),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $averageScore = count($allResults) > 0
+            ? round(array_sum(array_column(array_column($allResults, 'score'), 'score')) / count($allResults), 1)
             : 0;
 
         $gradeDistribution = [
-            'A' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'A')),
-            'B' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'B')),
-            'C' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'C')),
-            'D' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'D')),
-            'F' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'F')),
+            'A' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'A')),
+            'B' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'B')),
+            'C' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'C')),
+            'D' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'D')),
+            'F' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'F')),
         ];
 
-        return view('admin.cities.quality-scores', compact('results', 'averageScore', 'gradeDistribution'));
+        return view('admin.cities.quality-scores', compact('paginator', 'averageScore', 'gradeDistribution'));
     }
 
     public function generateServiceImages(string $type, string $cityName): array

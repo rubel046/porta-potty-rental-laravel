@@ -16,14 +16,14 @@ $gradeColors = [
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
         <h2 class="text-lg font-semibold text-gray-800">Quality Scores</h2>
-        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (worst scores first — up to 200 pages shown)</p>
+        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (worst scores first — <strong>{{ $paginator->total() }}</strong> scored, showing {{ $paginator->perPage() }} per page)</p>
     </div>
 </div>
 
 {{-- Summary Stats --}}
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div class="text-2xl font-bold text-gray-900">{{ count($results) }}</div>
+        <div class="text-2xl font-bold text-gray-900">{{ $paginator->total() }}</div>
         <div class="text-xs text-gray-500 mt-1">Total Pages</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -40,19 +40,6 @@ $gradeColors = [
             <div class="text-xs text-gray-500 mt-1">Grade {{ $grade }}</div>
         </div>
     @endforeach
-</div>
-
-{{-- Search / Filter --}}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6" x-data="{ search: '' }">
-    <div class="flex flex-wrap gap-4 items-end">
-        <div class="flex-1 min-w-[200px]">
-            <label class="block text-xs font-medium text-gray-500 mb-1">Filter by City Name</label>
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" x-model="search" placeholder="Search cities..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-            </div>
-        </div>
-    </div>
 </div>
 
 {{-- Table --}}
@@ -73,7 +60,7 @@ $gradeColors = [
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-                @forelse($results as $index => $result)
+                @forelse($paginator->items() as $index => $result)
                     @php
                         $page = $result['page'];
                         $s = $result['score'];
@@ -160,5 +147,10 @@ $gradeColors = [
             </tbody>
         </table>
     </div>
+</div>
+
+{{-- Pagination --}}
+<div class="mt-6">
+    {{ $paginator->onEachSide(1)->links('vendor.pagination.tailwind') }}
 </div>
 @endsection

@@ -74,11 +74,11 @@ class PageQualityService
         ];
     }
 
-    public function scoreAllForDomain($domainId, int $limit = 200): array
+    public function scoreAllForDomain($domainId): array
     {
         $pages = ServicePage::where('domain_id', $domainId)
             ->with('city.state')
-            ->limit($limit)
+            ->limit(500)
             ->get();
 
         $results = [];
