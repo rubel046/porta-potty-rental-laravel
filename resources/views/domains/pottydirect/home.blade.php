@@ -125,17 +125,18 @@
                 ['@type' => 'Question', 'name' => 'Do you service emergency porta potty rentals?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Yes, we offer 24/7 emergency response for pipe bursts, disaster relief, and urgent job site needs in '.$stateName.'. Call '.$phoneDisplay.' for immediate dispatch.']]
             ]
         ];
+        $videoId = 'qnmJ31rg118';
         $videoSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'VideoObject',
             '@id' => $url . '#video',
             'name' => 'Potty Direct - Porta Potty Rental Service Overview',
             'description' => 'See how Potty Direct delivers clean, reliable porta potty rentals for construction sites, events, and weddings.',
-            'thumbnailUrl' => $url . '/og-image.jpg',
+            'thumbnailUrl' => 'https://img.youtube.com/vi/' . $videoId . '/maxresdefault.jpg',
             'uploadDate' => '2025-01-01',
             'duration' => 'PT2M',
-            'contentUrl' => 'https://www.youtube.com/watch?v=pottydirect',
-            'embedUrl' => 'https://www.youtube.com/embed/pottydirect',
+            'contentUrl' => 'https://www.youtube.com/watch?v=' . $videoId,
+            'embedUrl' => 'https://www.youtube.com/embed/' . $videoId,
             'publisher' => ['@type' => 'Organization', '@id' => $url . '#organization'],
         ];
     @endphp

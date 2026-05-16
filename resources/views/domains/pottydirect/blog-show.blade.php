@@ -46,12 +46,8 @@ $videoSchema = [
 ];
 // Drop any null values cleanly
 $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== '');
-$videoSchema = array_filter($videoSchema, fn($v) => $v !== null && $v !== '');
 @endphp
 <script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-@if(!empty($videoSchema))
-<script type="application/ld+json">{!! json_encode($videoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-@endif
 @endpush
 
 @section('content')

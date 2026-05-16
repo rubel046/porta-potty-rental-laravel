@@ -58,8 +58,20 @@ $breadcrumbSchema = [
 <script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @if($faqs->isNotEmpty())
-@php $faqPageSchema = ["@context" => "https://schema.org", "@type" => "FAQPage", "mainEntity" => $faqs->map(fn($f) => ["@type" => "Question", "name" => $f['question'] ?? $f->question, "acceptedAnswer" => ["@type" => "Answer", "text" => $f['answer'] ?? $f->answer]])->toArray()]; @endphp
+@php
+$faqItems = [];
+foreach ($faqs as $f) {
+    $question = strip_tags($f['question'] ?? $f->question ?? '');
+    $answer = strip_tags($f['answer'] ?? $f->answer ?? '');
+    if ($question && $answer) {
+        $faqItems[] = ['@type' => 'Question', 'name' => $question, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $answer]];
+    }
+}
+if (!empty($faqItems)):
+$faqPageSchema = ["@context" => "https://schema.org", "@type" => "FAQPage", "mainEntity" => $faqItems];
+@endphp
 <script type="application/ld+json">{!! json_encode($faqPageSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endif
 @endpush
 

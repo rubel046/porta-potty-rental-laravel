@@ -947,18 +947,24 @@ class PageController extends Controller
 
         $faqSchema = null;
         if ($faqs->isNotEmpty()) {
-            $faqSchema = [
-                '@context' => 'https://schema.org',
-                '@type' => 'FAQPage',
-                'mainEntity' => $faqs->map(fn ($faq) => [
+            $mainEntity = $faqs
+                ->filter(fn ($faq) => !empty($faq->question) && !empty($faq->answer))
+                ->map(fn ($faq) => [
                     '@type' => 'Question',
-                    'name' => $faq->question,
+                    'name' => strip_tags($faq->question),
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $faq->answer,
+                        'text' => strip_tags($faq->answer),
                     ],
-                ])->toArray(),
-            ];
+                ])->values()->toArray();
+
+            if (!empty($mainEntity)) {
+                $faqSchema = [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'FAQPage',
+                    'mainEntity' => $mainEntity,
+                ];
+            }
         }
 
         // NOTE: we intentionally do NOT inject Review/AggregateRating schema here
