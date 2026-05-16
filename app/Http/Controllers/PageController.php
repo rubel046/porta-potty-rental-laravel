@@ -27,10 +27,21 @@ class PageController extends Controller
         $domain = Domain::current();
         $domainId = $domain?->id ?? 'default';
 
-        // Homepage is USA-wide - no city-specific data
-        // City pages (/city-slug) handle city-specific content
-        $topCities = [];
-        $featuredCities = [];
+        // Homepage is USA-wide — show top cities with published service pages
+        $topCities = Cache::remember("home_top_cities_{$domainId}", 3600, function () use ($domain) {
+            return City::whereHas('domainCities', function ($q) use ($domain) {
+                    $q->where('domain_id', $domain->id);
+                })
+                ->whereHas('servicePages', function ($q) use ($domain) {
+                    $q->where('domain_id', $domain->id)->where('is_published', true);
+                })
+                ->with('state')
+                ->orderBy('priority', 'desc')
+                ->orderBy('name')
+                ->take(12)
+                ->get()
+                ->toArray();
+        });
 
         $states = Cache::remember("home_active_states_{$domainId}", 3600, function () {
             return State::whereHas('domainStates', function ($q) {
@@ -109,7 +120,7 @@ class PageController extends Controller
         $postalCode = $primaryCity['zip_code'] ?? null;
 
         return view(DomainViewHelper::resolveForController('home'), compact(
-            'featuredCities', 'states', 'recentPosts', 'testimonials', 'topCities', 'stats',
+            'states', 'recentPosts', 'testimonials', 'topCities', 'stats',
             'latitude', 'longitude', 'cityAddress', 'stateCodeLocal', 'postalCode'
         ));
     }
