@@ -4,6 +4,23 @@
 $phoneRaw = domain_phone_raw();
 $phoneDisplay = domain_phone_display();
 $priceRanges = config('service_pricing.ranges', []);
+$unitLabels = [
+    'standard' => 'Standard Porta Potty',
+    'deluxe' => 'Deluxe Flushable Unit',
+    'ada' => 'ADA Accessible Unit',
+    'luxury' => 'Luxury Restroom Trailer',
+    'construction' => 'Construction Site Package',
+    'shower' => 'Shower Trailer',
+    'mobile' => 'Mobile Restroom Trailer',
+    'vip' => 'VIP Restroom Trailer',
+    'holding' => 'Holding Tank',
+    'sanitizer' => 'Hand Sanitizer Station',
+    'dumpster' => 'Dumpster Rental',
+    'portable-urinal' => 'Portable Urinal Station',
+    'handwash-trailer' => 'Hand Wash Trailer',
+    'temporary-fencing' => 'Temporary Fencing',
+    'highrise' => 'High-Rise Construction Toilet',
+];
 @endphp
 
 <script>window.INSTANT_PRICE_RANGES = {!! json_encode($priceRanges) !!};</script>
@@ -40,11 +57,11 @@ class="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-2xl p-6 sm:p-8 borde
             <label class="block text-sm font-medium text-slate-700 mb-1">Unit Type</label>
             <select x-model="unitType"
                     class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                <option value="standard">Standard Porta Potty</option>
-                <option value="deluxe">Deluxe Flushable Unit</option>
-                <option value="ada">ADA Accessible Unit</option>
-                <option value="luxury">Luxury Restroom Trailer</option>
-                <option value="construction">Construction Site Package</option>
+                @foreach($unitLabels as $key => $label)
+                    @if(isset($priceRanges[$key]))
+                        <option value="{{ $key }}">{{ $label }}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
