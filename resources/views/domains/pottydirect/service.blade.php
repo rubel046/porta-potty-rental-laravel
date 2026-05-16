@@ -258,13 +258,44 @@ $reviewSchema = null;
         </div>
     </article>
 
-    {{-- Lead form — placed above fold for visitors who prefer forms over calls --}}
+    {{-- Phone-only CTA — no forms, just a call button --}}
     <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-50">
-        <div class="max-w-2xl mx-auto">
-            <x-lead-form source="city-{{ $city->slug }}"
-                         :serviceType="$servicePage->service_type"
-                         :zipDefault="$city->zip_codes[0] ?? null"
-                         cityName="{{ $city->name }}" />
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">
+                    Call for a Free Quote
+                </h2>
+                <p class="text-slate-500 mb-6">
+                    Real person answers in under 30 seconds. No forms, no waiting.
+                </p>
+                <div x-data="{
+                    units: 0,
+                    init() {
+                        let base = 2 + Math.floor(Math.random() * 6);
+                        let hour = new Date().getHours();
+                        if (hour >= 6 && hour <= 14) base += 3;
+                        if (hour >= 17 || hour <= 5) base = Math.max(1, base - 2);
+                        this.units = base;
+                    }
+                }" class="flex items-center justify-center gap-2 mb-6 text-sm">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-emerald-700 font-semibold">
+                        <span x-text="units"></span> units available for delivery in <strong>{{ $city->name }}</strong>
+                    </span>
+                </div>
+                <a href="tel:{{ $servicePage->phone_raw }}"
+                   data-tracking-label="service-phone-cta"
+                   class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xl py-4 px-8 rounded-full shadow-lg shadow-amber-500/30 transition-all hover:scale-[1.02] min-h-[44px]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    {{ $servicePage->phone_display }}
+                </a>
+                <p class="text-xs text-slate-400 mt-4">No spam, no forms — just a real person ready to help.</p>
+            </div>
         </div>
     </section>
 
