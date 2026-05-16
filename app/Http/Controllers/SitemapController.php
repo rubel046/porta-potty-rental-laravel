@@ -247,17 +247,17 @@ class SitemapController extends Controller
     {
         ServicePage::published()
             ->where('domain_id', $domain->id)
-            ->chunk(500, function ($pages) use ($sitemap, $domain) {
-                foreach ($pages as $page) {
-                    $priority = $this->calculatePagePriority($page, $domain);
+            ->lazy()
+            ->take(30000)
+            ->each(function ($page) use ($sitemap, $domain) {
+                $priority = $this->calculatePagePriority($page, $domain);
 
-                    $sitemap->add(
-                        Url::create(url("/{$page->slug}"))
-                            ->setLastModificationDate($page->updated_at)
-                            ->setChangeFrequency('weekly')
-                            ->setPriority($priority)
-                    );
-                }
+                $sitemap->add(
+                    Url::create(url("/{$page->slug}"))
+                        ->setLastModificationDate($page->updated_at)
+                        ->setChangeFrequency('weekly')
+                        ->setPriority($priority)
+                );
             });
     }
 
