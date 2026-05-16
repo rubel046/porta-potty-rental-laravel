@@ -41,8 +41,7 @@ class BlogPost extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('is_published', true)
-            ->where('published_at', '<=', now());
+        return $query->where('is_published', true);
     }
 
     public function scopeFeatured(Builder $query): Builder
