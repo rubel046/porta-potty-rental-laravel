@@ -445,13 +445,18 @@ class CityController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
         }
 
-        Artisan::queue('quality:score-all', [
-            '--domain' => $domain->id,
-            '--force' => true,
-        ]);
+        try {
+            Artisan::call('quality:score-all', [
+                '--domain' => $domain->id,
+                '--force' => true,
+            ]);
 
-        return redirect()->route('admin.cities.quality-scores')
-            ->with('success', 'Re-computing quality scores in the background. Results will appear shortly.');
+            return redirect()->route('admin.cities.quality-scores')
+                ->with('success', 'All quality scores re-computed successfully.');
+        } catch (\Throwable $e) {
+            return redirect()->route('admin.cities.quality-scores')
+                ->with('error', 'Scoring failed: '.$e->getMessage());
+        }
     }
 
     public function generateServiceImages(string $type, string $cityName): array
