@@ -102,12 +102,12 @@ $breadcrumbSchema = [
                         <article class="group bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                             <a href="{{ route('blog.show', $post->slug) }}" class="block">
                                  @if($post->featured_image_url)
-
+                                     <div class="relative aspect-[16/9] overflow-hidden">
                                          <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" width="640" height="360" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                        @if($post->category)
-                                            <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-white bg-emerald-600 rounded-full">{{ $post->category->name }}</span>
-                                        @endif
-                                    </div>
+                                         @if($post->category)
+                                             <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-white bg-emerald-600 rounded-full">{{ $post->category->name }}</span>
+                                         @endif
+                                     </div>
                                 @else
                                     <div class="relative aspect-[16/9] bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
                                         <span class="text-6xl opacity-50">&#x1FABD;</span>
