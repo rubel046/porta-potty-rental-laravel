@@ -100,8 +100,6 @@ class GenerateDailyBlogPost extends Command
             $counter++;
         }
 
-        $autoPublish = filter_var(env('BLOG_AUTO_PUBLISH', false), FILTER_VALIDATE_BOOLEAN);
-
         $post = BlogPost::create([
             'title' => $result['title'] ?? '',
             'slug' => $slug,
@@ -116,13 +114,14 @@ class GenerateDailyBlogPost extends Command
             'city_id' => null,
             'domain_id' => $domain->id,
             'is_pillar' => true,
-            'is_published' => $autoPublish,
-            'published_at' => $autoPublish ? now() : null,
+            'is_published' => true,
+            'published_at' => now(),
         ]);
 
-        $this->info("  Created PILLAR post #{$post->id}: {$post->title}");
+        $this->info("  Generated PILLAR post #{$post->id}: {$post->title}");
 
         Cache::increment("pillar_counter_{$domain->id}");
+        \App\Http\Controllers\SitemapController::invalidateCache();
         sleep(30);
     }
 
@@ -174,8 +173,6 @@ class GenerateDailyBlogPost extends Command
             $counter++;
         }
 
-        $autoPublish = filter_var(env('BLOG_AUTO_PUBLISH', false), FILTER_VALIDATE_BOOLEAN);
-
         $post = BlogPost::create([
             'title' => $result['title'] ?? '',
             'slug' => $slug,
@@ -190,17 +187,18 @@ class GenerateDailyBlogPost extends Command
             'city_id' => $city->id,
             'domain_id' => $domain->id,
             'pillar_id' => $pillar?->id,
-            'is_published' => $autoPublish,
-            'published_at' => $autoPublish ? now() : null,
+            'is_published' => true,
+            'published_at' => now(),
         ]);
 
         Cache::increment("cluster_counter_{$domain->id}_{$category->id}");
 
         $this->info(sprintf(
-            '  Created CLUSTER post #%d: %s (pillar: %s)',
+            '  Generated CLUSTER post #%d: %s (pillar: %s)',
             $post->id, $post->title, $pillar ? "#{$pillar->id}" : 'none'
         ));
 
+        \App\Http\Controllers\SitemapController::invalidateCache();
         sleep(30);
 
         Log::info('Daily cluster blog post generated', [
