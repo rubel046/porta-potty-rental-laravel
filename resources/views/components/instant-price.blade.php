@@ -4,7 +4,6 @@
 $phoneRaw = domain_phone_raw();
 $phoneDisplay = domain_phone_display();
 $priceRanges = config('service_pricing.ranges', []);
-$pricingEnabled = (bool) config('service_pricing.enabled', false);
 @endphp
 
 <div x-data="{
@@ -15,7 +14,6 @@ $pricingEnabled = (bool) config('service_pricing.enabled', false);
     priceLow: 0,
     priceHigh: 0,
     calculate() {
-        @if($pricingEnabled)
         const ranges = @json($priceRanges);
         const range = ranges[this.unitType] || ranges['standard'] || {low: 89, high: 175};
         const qty = parseInt(this.quantity) || 1;
@@ -23,7 +21,6 @@ $pricingEnabled = (bool) config('service_pricing.enabled', false);
         this.priceLow = Math.round(range.low * qty * (1 - discount));
         this.priceHigh = Math.round(range.high * qty * (1 - discount));
         this.showEstimate = true;
-        @endif
     }
 }"
 class="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-2xl p-6 sm:p-8 border border-emerald-100 shadow-lg">
