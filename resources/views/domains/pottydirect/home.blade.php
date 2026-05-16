@@ -1029,7 +1029,8 @@
                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                      @foreach($recentPosts as $post)
                          <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                             @if($post->featured_image)
+                              @php $hasImage = $post->featured_image && \Illuminate\Support\Facades\Storage::disk('public')->exists(ltrim($post->featured_image, '/')); @endphp
+                              @if($hasImage)
                                  <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover">
                              @else
                                  <div class="w-full h-48 bg-blue-100 flex items-center justify-center">
