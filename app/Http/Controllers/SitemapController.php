@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\SitemapIndex;
-use Spatie\Sitemap\Tags\Image;
 use Spatie\Sitemap\Tags\Url;
 
 class SitemapController extends Controller
@@ -85,9 +84,12 @@ class SitemapController extends Controller
                             ->setPriority($priority);
 
                         if ($heroImageUrl) {
-                            $url->addImage(Image::create($heroImageUrl)
-                                ->setTitle("Porta potty rental in {$page->city->name}, {$page->city->state->code}")
-                                ->setCaption("{$page->service_type_label} porta potty rental - Potty Direct"));
+                            $url->addImage(
+                                $heroImageUrl,
+                                "{$page->service_type_label} porta potty rental - Potty Direct",
+                                '',
+                                "Porta potty rental in {$page->city->name}, {$page->city->state->code}"
+                            );
                         }
 
                         $sitemap->add($url);
