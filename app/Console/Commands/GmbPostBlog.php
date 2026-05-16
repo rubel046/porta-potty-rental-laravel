@@ -17,9 +17,9 @@ class GmbPostBlog extends Command
     public function handle(GoogleBusinessProfileService $gmb): int
     {
         if (!$gmb->isConfigured()) {
-            $this->error('GMB API is not configured. Set GMB_CLIENT_ID and GMB_CLIENT_SECRET env vars.');
+            $this->warn('GMB API is not configured. Skipping.');
 
-            return self::FAILURE;
+            return self::SUCCESS;
         }
 
         $query = GmbAccount::where('is_active', true)
