@@ -400,14 +400,8 @@
              </div>
 
              <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
-                 @forelse($topCities ?? [] as $city)
-                     @php
-                         $citySlug = \Illuminate\Support\Str::slug($city['name']);
-                         $cityPage = \App\Models\ServicePage::where('slug', 'like', "%-{$citySlug}-{$city['state']['slug']}")
-                             ->orWhere('slug', 'like', "porta-potty-rental-{$citySlug}-{$city['state']['slug']}")
-                             ->first();
-                     @endphp
-                     <a href="{{ $cityPage ? url($cityPage->slug) : route('locations') }}"
+                  @forelse($topCities ?? [] as $city)
+                      <a href="{{ $city['service_page'] ? url($city['service_page']) : route('locations') }}"
                         class="flex-shrink-0 w-44 sm:w-48 bg-slate-50 border border-slate-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all snap-start group">
                          <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mb-3">
                              <x-icon name="map-pin" class="w-5 h-5 text-emerald-600" />

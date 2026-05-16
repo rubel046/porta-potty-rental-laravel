@@ -29,18 +29,41 @@ class PageController extends Controller
 
         // Homepage is USA-wide — show top cities with published service pages
         $topCities = Cache::remember("home_top_cities_{$domainId}", 3600, function () use ($domain) {
-            return City::whereHas('domainCities', function ($q) use ($domain) {
+            $cities = City::whereHas('domainCities', function ($q) use ($domain) {
                     $q->where('domain_id', $domain->id);
                 })
                 ->whereHas('servicePages', function ($q) use ($domain) {
                     $q->where('domain_id', $domain->id)->where('is_published', true);
                 })
                 ->with('state')
-                ->orderBy('priority', 'desc')
-                ->orderBy('name')
+                ->inRandomOrder()
                 ->take(12)
+                ->get();
+
+            // Fallback: random domain cities if no published pages exist yet
+            if ($cities->isEmpty()) {
+                $cities = City::whereHas('domainCities', function ($q) use ($domain) {
+                        $q->where('domain_id', $domain->id);
+                    })
+                    ->with('state')
+                    ->inRandomOrder()
+                    ->take(12)
+                    ->get();
+            }
+
+            // Eager-load service pages to avoid N+1 in the view
+            $cityIds = $cities->pluck('id');
+            $pages = ServicePage::whereIn('city_id', $cityIds)
+                ->where('domain_id', $domain->id)
+                ->where('is_published', true)
                 ->get()
-                ->toArray();
+                ->keyBy('city_id');
+
+            return $cities->map(function ($city) use ($pages) {
+                $data = $city->toArray();
+                $data['service_page'] = optional($pages->get($city->id))->slug;
+                return $data;
+            })->toArray();
         });
 
         $states = Cache::remember("home_active_states_{$domainId}", 3600, function () {
