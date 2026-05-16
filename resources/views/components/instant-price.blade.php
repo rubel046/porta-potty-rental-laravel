@@ -6,6 +6,8 @@ $phoneDisplay = domain_phone_display();
 $priceRanges = config('service_pricing.ranges', []);
 @endphp
 
+<script>window.INSTANT_PRICE_RANGES = {!! json_encode($priceRanges) !!};</script>
+
 <div x-data="{
     zip: '',
     unitType: 'standard',
@@ -14,7 +16,7 @@ $priceRanges = config('service_pricing.ranges', []);
     priceLow: 0,
     priceHigh: 0,
     calculate() {
-        const ranges = @json($priceRanges);
+        const ranges = window.INSTANT_PRICE_RANGES;
         const range = ranges[this.unitType] || ranges['standard'] || {low: 89, high: 175};
         const qty = parseInt(this.quantity) || 1;
         const discount = qty >= 20 ? 0.35 : (qty >= 11 ? 0.25 : (qty >= 5 ? 0.15 : 0));
