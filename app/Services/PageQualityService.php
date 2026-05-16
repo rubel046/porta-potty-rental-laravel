@@ -74,11 +74,11 @@ class PageQualityService
         ];
     }
 
-    public function scoreAllForDomain($domainId): array
+    public function scoreAllForDomain($domainId, int $limit = 200): array
     {
         $pages = ServicePage::where('domain_id', $domainId)
             ->with('city.state')
-            ->get();
+            ->lazy();
 
         $results = [];
         foreach ($pages as $page) {
@@ -86,6 +86,10 @@ class PageQualityService
                 'page' => $page,
                 'score' => $this->score($page),
             ];
+
+            if (count($results) >= $limit) {
+                break;
+            }
         }
 
         usort($results, fn($a, $b) => $a['score']['score'] - $b['score']['score']);

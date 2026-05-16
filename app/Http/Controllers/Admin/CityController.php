@@ -402,7 +402,15 @@ class CityController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
         }
 
-        $results = $qualityService->scoreAllForDomain($domainId);
+        $cacheKey = "quality_scores_{$domainId}";
+
+        if (request('refresh')) {
+            Cache::forget($cacheKey);
+        }
+
+        $results = Cache::remember($cacheKey, 3600, function () use ($qualityService, $domainId) {
+            return $qualityService->scoreAllForDomain($domainId);
+        });
 
         $averageScore = count($results) > 0
             ? round(array_sum(array_column(array_column($results, 'score'), 'score')) / count($results), 1)
