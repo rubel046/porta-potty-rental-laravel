@@ -13,6 +13,7 @@ use App\Services\ImageService;
 use App\Services\MultiAiService;
 use App\Services\PageQualityService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -393,7 +394,7 @@ class CityController extends Controller
         return response()->json($samplePages);
     }
 
-    public function qualityScores(PageQualityService $qualityService)
+    public function qualityScores()
     {
         $domain = \App\Models\Domain::current();
         $domainId = $domain?->id;
@@ -402,34 +403,55 @@ class CityController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
         }
 
-        $allResults = $qualityService->scoreAllForDomain($domainId);
+        $grade = request('grade');
+        $activeGrade = in_array($grade, ['A', 'B', 'C', 'D', 'F']) ? $grade : null;
+
+        $baseQuery = \App\Models\PageQualityScore::with('servicePage.city.state')
+            ->where('domain_id', $domainId);
+
+        $query = clone $baseQuery;
+
+        if ($activeGrade) {
+            $query->where('grade', $activeGrade);
+        }
+
+        $totalScored = (clone $baseQuery)->count();
 
         $perPage = 25;
-        $page = (int) request('page', 1);
-        $offset = ($page - 1) * $perPage;
-        $results = array_slice($allResults, $offset, $perPage);
+        $results = (clone $query)
+            ->orderBy('score')
+            ->paginate($perPage);
 
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $results,
-            count($allResults),
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
-
-        $averageScore = count($allResults) > 0
-            ? round(array_sum(array_column(array_column($allResults, 'score'), 'score')) / count($allResults), 1)
+        $averageScore = $totalScored > 0
+            ? round((clone $query)->avg('score'), 1)
             : 0;
 
         $gradeDistribution = [
-            'A' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'A')),
-            'B' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'B')),
-            'C' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'C')),
-            'D' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'D')),
-            'F' => count(array_filter($allResults, fn($r) => $r['score']['grade'] === 'F')),
+            'A' => (clone $baseQuery)->where('grade', 'A')->count(),
+            'B' => (clone $baseQuery)->where('grade', 'B')->count(),
+            'C' => (clone $baseQuery)->where('grade', 'C')->count(),
+            'D' => (clone $baseQuery)->where('grade', 'D')->count(),
+            'F' => (clone $baseQuery)->where('grade', 'F')->count(),
         ];
 
-        return view('admin.cities.quality-scores', compact('paginator', 'averageScore', 'gradeDistribution'));
+        return view('admin.cities.quality-scores', compact('results', 'totalScored', 'averageScore', 'gradeDistribution', 'activeGrade'));
+    }
+
+    public function recomputeQualityScores()
+    {
+        $domain = Domain::current();
+
+        if (!$domain) {
+            return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
+        }
+
+        Artisan::queue('quality:score-all', [
+            '--domain' => $domain->id,
+            '--force' => true,
+        ]);
+
+        return redirect()->route('admin.cities.quality-scores')
+            ->with('success', 'Re-computing quality scores in the background. Results will appear shortly.');
     }
 
     public function generateServiceImages(string $type, string $cityName): array

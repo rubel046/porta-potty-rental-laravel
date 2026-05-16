@@ -48,6 +48,18 @@ class ServicePage extends Model
         return $this->hasMany(CallLog::class);
     }
 
+    public function qualityScore(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PageQualityScore::class, 'service_page_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (ServicePage $page) {
+            \App\Jobs\ScoreServicePageJob::dispatch($page);
+        });
+    }
+
     public function getServiceTypeLabelAttribute(): string
     {
         $domain = $this->domain ?? Domain::current() ?? Domain::first();

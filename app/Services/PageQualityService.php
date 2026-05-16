@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\PageQualityScore;
 use App\Models\ServicePage;
+use Illuminate\Support\Facades\DB;
 
 class PageQualityService
 {
@@ -22,7 +24,7 @@ class PageQualityService
         if ($titleLen >= 30 && $titleLen <= 60) { $score += 10; $details[] = ['Meta title length', 10, "{$titleLen} chars (target: 30-60)"]; }
         else { $details[] = ['Meta title length', 0, "{$titleLen} chars (target: 30-60)"]; }
 
-        $descLen = strlen($page->seo_description ?? '');
+        $descLen = strlen($page->meta_description ?? '');
         if ($descLen >= 120 && $descLen <= 160) { $score += 10; $details[] = ['Meta description', 10, "{$descLen} chars (target: 120-160)"]; }
         else { $details[] = ['Meta description', 0, "{$descLen} chars (target: 120-160)"]; }
 
@@ -74,23 +76,40 @@ class PageQualityService
         ];
     }
 
-    public function scoreAllForDomain($domainId): array
+    public function scoreAndPersist(ServicePage $page): PageQualityScore
     {
-        $pages = ServicePage::where('domain_id', $domainId)
+        $result = $this->score($page);
+
+        return PageQualityScore::updateOrCreate(
+            ['service_page_id' => $page->id],
+            [
+                'domain_id' => $page->domain_id,
+                'score' => $result['score'],
+                'grade' => $result['grade'],
+                'word_count' => $result['word_count'],
+                'faq_count' => $result['faq_count'],
+                'testimonial_count' => $result['testimonial_count'],
+                'details' => $result['details'],
+                'scored_at' => now(),
+            ]
+        );
+    }
+
+    public function scoreAllForDomain(int $domainId): void
+    {
+        ServicePage::where('domain_id', $domainId)
             ->with('city.state')
-            ->limit(500)
-            ->get();
-
-        $results = [];
-        foreach ($pages as $page) {
-            $results[] = [
-                'page' => $page,
-                'score' => $this->score($page),
-            ];
-        }
-
-        usort($results, fn($a, $b) => $a['score']['score'] - $b['score']['score']);
-
-        return $results;
+            ->chunk(100, function ($pages) {
+                foreach ($pages as $page) {
+                    try {
+                        $this->scoreAndPersist($page);
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning('Page scoring failed', [
+                            'page_id' => $page->id,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+            });
     }
 }

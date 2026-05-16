@@ -4,11 +4,11 @@
 
 @php
 $gradeColors = [
-    'A' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'badge' => 'bg-green-500', 'row' => 'bg-green-50/50'],
-    'B' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'badge' => 'bg-blue-500', 'row' => 'bg-blue-50/30'],
-    'C' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'badge' => 'bg-amber-500', 'row' => 'bg-amber-50/30'],
-    'D' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'badge' => 'bg-orange-500', 'row' => 'bg-orange-50/30'],
-    'F' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'badge' => 'bg-red-500', 'row' => 'bg-red-50/30'],
+    'A' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'badge' => 'bg-green-500', 'row' => 'bg-green-50/50', 'border' => 'border-green-300', 'hover' => 'hover:border-green-400'],
+    'B' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'badge' => 'bg-blue-500', 'row' => 'bg-blue-50/30', 'border' => 'border-blue-300', 'hover' => 'hover:border-blue-400'],
+    'C' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'badge' => 'bg-amber-500', 'row' => 'bg-amber-50/30', 'border' => 'border-amber-300', 'hover' => 'hover:border-amber-400'],
+    'D' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'badge' => 'bg-orange-500', 'row' => 'bg-orange-50/30', 'border' => 'border-orange-300', 'hover' => 'hover:border-orange-400'],
+    'F' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'badge' => 'bg-red-500', 'row' => 'bg-red-50/30', 'border' => 'border-red-300', 'hover' => 'hover:border-red-400'],
 ];
 @endphp
 
@@ -16,29 +16,38 @@ $gradeColors = [
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
         <h2 class="text-lg font-semibold text-gray-800">Quality Scores</h2>
-        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (worst scores first — <strong>{{ $paginator->total() }}</strong> scored, showing {{ $paginator->perPage() }} per page)</p>
+        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (<strong>{{ number_format($totalScored) }}</strong> scored, worst first — {{ $results->perPage() }} per page)</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <form method="POST" action="{{ route('admin.cities.quality-scores.recompute') }}" onsubmit="return confirm('Re-compute quality scores for all pages? This runs in the background.');">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                Re-compute All Scores
+            </button>
+        </form>
     </div>
 </div>
 
 {{-- Summary Stats --}}
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div class="text-2xl font-bold text-gray-900">{{ $paginator->total() }}</div>
+    <a href="{{ route('admin.cities.quality-scores') }}" class="block bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-gray-300 transition {{ !$activeGrade ? 'ring-2 ring-blue-500' : '' }}">
+        <div class="text-2xl font-bold text-gray-900">{{ number_format($totalScored) }}</div>
         <div class="text-xs text-gray-500 mt-1">Total Pages</div>
-    </div>
+    </a>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="text-2xl font-bold text-gray-900">{{ $averageScore }}</div>
-        <div class="text-xs text-gray-500 mt-1">Average Score</div>
+        <div class="text-xs text-gray-500 mt-1">{{ $activeGrade ? "Avg Score (Grade {$activeGrade})" : 'Average Score' }}</div>
     </div>
     @foreach(['A', 'B', 'C', 'D', 'F'] as $grade)
-        @php $colors = $gradeColors[$grade]; @endphp
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        @php $colors = $gradeColors[$grade]; $isActive = $activeGrade === $grade; @endphp
+        <a href="{{ $isActive ? route('admin.cities.quality-scores') : route('admin.cities.quality-scores', ['grade' => $grade]) }}"
+           class="block bg-white rounded-xl shadow-sm border p-4 transition {{ $isActive ? 'ring-2 ring-offset-1 border-transparent ' . $colors['text'] : $colors['hover'] . ' border-gray-100' }}">
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold {{ $colors['bg'] }} {{ $colors['text'] }}">{{ $grade }}</span>
                 <span class="text-2xl font-bold text-gray-900">{{ $gradeDistribution[$grade] }}</span>
             </div>
             <div class="text-xs text-gray-500 mt-1">Grade {{ $grade }}</div>
-        </div>
+        </a>
     @endforeach
 </div>
 
@@ -60,11 +69,11 @@ $gradeColors = [
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-                @forelse($paginator->items() as $index => $result)
+                @forelse($results as $result)
                     @php
-                        $page = $result['page'];
-                        $s = $result['score'];
-                        $colors = $gradeColors[$s['grade']] ?? $gradeColors['F'];
+                        $page = $result->servicePage;
+                        $s = $result;
+                        $colors = $gradeColors[$s->grade] ?? $gradeColors['F'];
                         $cityName = $page->city?->name ?? 'Unknown';
                         $stateCode = $page->city?->state?->code ?? '--';
                     @endphp
@@ -83,20 +92,20 @@ $gradeColors = [
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-20 bg-gray-200 rounded-full h-2">
-                                    <div class="h-2 rounded-full transition-all duration-500" style="width: {{ $s['score'] }}%; background-color: {{ $s['score'] >= 80 ? '#22C55E' : ($s['score'] >= 60 ? '#3B82F6' : ($s['score'] >= 40 ? '#F59E0B' : ($s['score'] >= 20 ? '#F97316' : '#EF4444'))) }};"></div>
+                                    <div class="h-2 rounded-full transition-all duration-500" style="width: {{ $s->score }}%; background-color: {{ $s->score >= 80 ? '#22C55E' : ($s->score >= 60 ? '#3B82F6' : ($s->score >= 40 ? '#F59E0B' : ($s->score >= 20 ? '#F97316' : '#EF4444'))) }};"></div>
                                 </div>
-                                <span class="text-sm font-medium text-gray-900">{{ $s['score'] }}/{{ $s['max_score'] }}</span>
+                                <span class="text-sm font-medium text-gray-900">{{ $s->score }}/100</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold {{ $colors['bg'] }} {{ $colors['text'] }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $colors['badge'] }}"></span>
-                                {{ $s['grade'] }}
+                                {{ $s->grade }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-gray-900">{{ $s['word_count'] }}</td>
-                        <td class="px-6 py-4 text-gray-900">{{ $s['faq_count'] }}</td>
-                        <td class="px-6 py-4 text-gray-900">{{ $s['testimonial_count'] }}</td>
+                        <td class="px-6 py-4 text-gray-900">{{ $s->word_count }}</td>
+                        <td class="px-6 py-4 text-gray-900">{{ $s->faq_count }}</td>
+                        <td class="px-6 py-4 text-gray-900">{{ $s->testimonial_count }}</td>
                         <td class="px-6 py-4 text-gray-500 text-xs">
                             {{ $page->updated_at ? $page->updated_at->format('M j, Y') : '—' }}
                         </td>
@@ -117,7 +126,7 @@ $gradeColors = [
                     <tr x-show="open" x-cloak>
                         <td colspan="9" class="px-6 py-4 bg-gray-50/80 border-b border-gray-100">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-                                @foreach($s['details'] as $detail)
+                                @foreach($s->details as $detail)
                                     <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100">
                                         <span class="text-xs text-gray-600">{{ $detail[0] }}</span>
                                         <div class="flex items-center gap-2">
@@ -151,6 +160,6 @@ $gradeColors = [
 
 {{-- Pagination --}}
 <div class="mt-6">
-    {{ $paginator->onEachSide(1)->links('vendor.pagination.tailwind') }}
+    {{ $results->appends(request()->only('grade'))->onEachSide(1)->links('vendor.pagination.tailwind') }}
 </div>
 @endsection

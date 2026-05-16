@@ -76,3 +76,10 @@ Schedule::command('neighborhoods:generate-content --limit=20')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/neighborhoods-content.log')
     ->onOneServer();
+
+// Score all service pages for quality — runs after city enrichment completes
+Schedule::command('quality:score-all')
+    ->dailyAt('02:30')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/quality-scoring.log')
+    ->onOneServer();

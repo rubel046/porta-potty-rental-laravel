@@ -313,6 +313,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/cities/quality-scores', [CityController::class, 'qualityScores'])
         ->name('cities.quality-scores');
 
+    Route::post('/cities/quality-scores/recompute', [CityController::class, 'recomputeQualityScores'])
+        ->name('cities.quality-scores.recompute');
+
     Route::resource('cities', CityController::class);
 
     // Toggle city status for current domain

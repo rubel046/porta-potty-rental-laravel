@@ -22,33 +22,38 @@
 - **GBP management dashboard** built: CRUD, OAuth, toggle, sync, admin views, encrypted token storage
 - **10 blog posts** seeded (5 construction, 5 event planning) staggered over 28 days
 - **City Page Quality Scoring** admin tool built: 10-metric A-F grading with search and expandable details
-- **GBP API Integration** completed: `GoogleBusinessProfileService` with OAuth token refresh, post creation, review fetch/reply — `GoogleBusinessProfileService.php`, `GmbPost.php` model, `gmb_posts` migration, `gmb:post-blog` and `gmb:sync-reviews` commands, OAuth connect/callback/exchange-token flow, 3 OAuth routes, daily schedules at 9 AM and 10 AM, admin views with stats and post history. All 11 GMB routes registered
-- **Top 10 city pages enhanced**: `config/city_context.php` with hand-curated local data (neighborhoods, highways, venues, industries, weather, permits, construction) for Houston, Dallas, LA, NYC, Miami, Chicago, Phoenix, Atlanta, Denver, Seattle. `ContentGeneratorService::getCityContext()` injects `{city_context}` into AI prompts. `city:regenerate-top` command created. Both rental + service prompt variants updated to require 4+ specific local references
-- **Wikipedia city context enrichment** for 30,000+ cities: `WikipediaService.php` fetches summaries + Economy/Climate/Geography/Transportation sections (free, no API key). `city:enrich-context --limit=100` command batch-populates City model fields. `getCityContext()` falls back to DB fields (`city_description`, `climate_info`, `local_events`, `construction_info`) when config has no data. Daily schedule at 2 AM. 31,875 cities detected missing context
-- **Neighborhood pages migration** created and ran: `neighborhoods` + `neighborhood_service_pages` tables
-- **Neighborhood models** created: `Neighborhood.php`, `NeighborhoodServicePage.php`
-- **Neighborhood seed command** created: `neighborhoods:seed` — fetches real neighborhood lists from Wikipedia for top cities
-- **Neighborhood route** registered: `GET /neighborhoods/{slug}` before state/catch-all routes
-- **Neighborhood controller method** added: `PageController::neighborhoodPage()` with view, schema, breadcrumbs, related pages
-- **Neighborhood Blade view** created: `resources/views/domains/pottydirect/neighborhood.blade.php` with breadcrumbs, hero CTA, content, sidebar, related services
-- **Neighborhood admin CRUD** built: `NeighborhoodController` (index, show, generate, bulkGenerate, toggle); `admin/neighborhoods/` routes registered; admin nav link added
-- **Sitemap update**: `addNeighborhoodPages()` method integrated into `SitemapController::index()`; cache invalidation includes neighborhood key
-- **Neighborhood content generation job** created: `GenerateNeighborhoodContentJob` — generates per-type service pages for each neighborhood (400-800 words of AI content per type)
-- **Neighborhood generate command** created: `neighborhoods:generate-content --limit=20 --force` — sync command that dispatches jobs and busts sitemap cache
-- **Schedules registered**: `neighborhoods:seed --limit=50` at 3 AM, `neighborhoods:generate-content --limit=20` at 4 AM daily
+- **GBP API Integration** completed: `GoogleBusinessProfileService` with OAuth token refresh, post creation, review fetch/reply — `GoogleBusinessProfileService.php`, `GmbPost.php` model, `gmb_posts` migration, `gmb:post-blog` and `gmb:sync-reviews` commands, OAuth connect/callback/exchange-token flow, 3 OAuth routes, daily schedules at 9 AM and 10 AM, admin views with stats and post history. All 11 GMB routes registered.
+- **Top 10 city pages enhanced**: `config/city_context.php` with hand-curated local data (neighborhoods, highways, venues, industries, weather, permits, construction) for Houston, Dallas, LA, NYC, Miami, Chicago, Phoenix, Atlanta, Denver, Seattle. `ContentGeneratorService::getCityContext()` injects `{city_context}` into AI prompts. `city:regenerate-top` command created. Both rental + service prompt variants updated to require 4+ specific local references.
+- **Wikipedia city context enrichment** for 30,000+ cities: `WikipediaService.php` fetches summaries + Economy/Climate/Geography/Transportation sections (free, no API key). `city:enrich-context --limit=100` command batch-populates City model fields. `getCityContext()` falls back to DB fields (`city_description`, `climate_info`, `local_events`, `construction_info`) when config has no data. Daily schedule at 2 AM. 31,875 cities detected missing context.
+- **Neighborhood pages** created: full system with migrations, models, seed command (`neighborhoods:seed`), content generation (`neighborhoods:generate-content`), route (`/neighborhoods/{slug}`), Blade view, sitemap integration, admin CRUD, daily schedules at 3 AM (seed) and 4 AM (content gen). 60 neighborhoods seeded across Chicago, NYC, LA.
 - **Header text fixed**: "We open at 8AM — call for emergency service" (removed "leave a message or")
-- **Services page expanded**: 16 main service types (was 12) + 13 add-ons (was 8), added via competitor gap analysis (Portable Urinal Stations, Hand Wash Trailers, Temporary Fencing & Barriers, High-Rise Construction Toilets, Baby Changing Stations, Generator Rentals, Restroom Signage, Privacy Screens, Deodorizing Service)
-- **Keyword seeder overhauled**: removed 6 low-volume keywords, fixed duplicate geo-template, added 15+ high-value keywords (cost-based, service-specific, geo-templates for new services)
-- **Blog cluster migration fixed**: added domain fallback insert so `migrate:fresh --seed` succeeds regardless of seeding order
-- **56 migrations all ran clean** via `php artisan migrate:fresh --seed`
-- **Neighborhood seed fixes**: removed `is_active` filter (0 active cities), added `redirects=1` to Wikipedia API calls (neighborhood list pages are redirects), added `LENGTH(zip_codes)` ordering proxy for population (all 31,875 cities seeded with population=0), added 1.1s rate-limit delay between Wikipedia API calls to avoid 429s
-- **Neighborhood seed data**: 60 neighborhoods seeded across Chicago, NYC, and Los Angeles (20 each, limited to 20 per city)
-- **Neighborhood content generated**: `neighborhoods:generate-content --limit=20` completed — 20 neighborhood service pages generated with AI content, sitemap cache busted
+- **Services page expanded**: 16 main service types (was 12) + 13 add-ons (was 8), added via competitor gap analysis.
+- **Keyword seeder overhauled**: removed 6 low-volume keywords, fixed duplicate geo-template, added 15+ high-value keywords.
+- **Blog cluster migration fixed**: added domain fallback insert so `migrate:fresh --seed` succeeds regardless of seeding order.
+- **Blog featured images fixed**: double slash in URL, added `featuredImageUrl` accessor with file-existence check, generated 10 placeholder JPGs, updated 16 Blade templates.
+- **Blog published_at filter removed**: `published()` scope no longer filters by `published_at <= now()` — `is_published = true` is the sole gate. Fixed 404s on all 10 seed posts.
+- **Blog auto-publish enabled**: removed `BLOG_AUTO_PUBLISH` env var. Both pillar and cluster posts now publish immediately (`is_published = true`, `published_at = now()`).
+- **Blog-index layout fixed**: restored missing `<div>` wrapper that broke entire page rendering.
+- **Admin blog edit form**: added featured_image input with image preview.
+- **Sitemap-cities.xml 500 error fixed**: `addImage()` in v8.1.0 expects `string $url`, not `Image` object. Fixed argument order, removed unused `Image` import.
+- **Sitemap timeouts (cities + full) fixed**: added eager loading (`->with('city.state')`) to eliminate N+1 queries. Changed from `chunk()` to `lazy()->take(50000/30000)` with URL cap to stream results.
+- **GMB scheduler errors fixed**: `gmb:sync-reviews` and `gmb:post-blog` return `SUCCESS` (not `FAILURE`) when GMB not configured.
+- **Instant Price Calculator fixed**: moved `@json($priceRanges)` from `x-data` attribute into separate `<script>` tag (embedded `"` broke HTML boundaries). Expanded dropdown from 5 to 15 unit types.
+- **Page quality scores — persistent DB storage**: `page_quality_scores` migration + model + `scoreAndPersist()` method on `PageQualityService`. `scoreAllForDomain()` now writes batch upserts instead of returning in-memory array.
+- **`quality:score-all` command**: batch-scoring Artisan command with `--domain`, `--force` flags. Progress bar, error handling, skips already-scored unless forced.
+- **`ServicePage::qualityScore()` relationship**: HasOne to `PageQualityScore` for `whereDoesntHave('qualityScore')` query.
+- **Quality scores controller + view**: rewritten to query `page_quality_scores` DB table (instant load) instead of live-scoring. Uses `with('servicePage.city.state')` eager loading. Paginated 25 per page.
+- **Daily schedule added**: `quality:score-all` at 2:30 AM (after city enrichment).
+- **Bug fix**: `PageQualityService::score()` referenced non-existent `$page->seo_description` — changed to `$page->meta_description`.
 
 ### In Progress
 - Neighborhood content quality needs manual review (some parsed entries are not real neighborhoods, e.g. "Community areas in Chicago", "Interactive Chicago Neighborhood Map")
 - Seed remaining top cities (Houston, Phoenix, Philadelphia, San Antonio, San Diego, Dallas, San Jose) for richer neighborhood coverage
 - Run `neighborhoods:generate-content` again after more neighborhoods are seeded
+
+### Next
+- Run `php artisan quality:score-all` on production (post-`git pull` + `php artisan migrate`)
+- Verify `/admin/cities/quality-scores` loads instantly from DB with 690k+ records
 
 ## Key Decisions
 - **Phone-only conversion**: All CTAs remain phone-call focused with `tel:` links and `data-tracking-label` attributes
@@ -60,27 +65,35 @@
 - **Neighborhood URL structure**: `/neighborhoods/{slug}` prefix — clean, SEO-friendly, no routing conflicts with city catch-all
 - **Neighborhood route placed before city catch-all**: Prevents `/neighborhoods/...` from being caught by `/{slug}` wildcard
 - **Neighborhood content generation uses sync dispatch**: `GenerateNeighborhoodContentJob` dispatched via `dispatchSync()` in CLI command for predictable batch processing; uses `ShouldQueue` for future async support
+- **Quality scores in separate table**: `page_quality_scores` avoids ALTER on 690k-row `service_pages`; keeps bulky `details` JSON out of normal queries; scoring refreshed independently via `updateOrCreate`
 
 ## Relevant Files
 - `config/city_context.php`: Hand-curated local data for top 10 cities (neighborhoods, highways, venues, industries, weather, permits, construction)
 - `config/services.php`: Added `gmb` config block (client_id, client_secret, scopes, redirect_uri)
 - `routes/web.php`: 3 GMB OAuth routes + `/neighborhoods/{slug}` route (before state/catch-all) + admin neighborhood routes
-- `routes/console.php`: Daily schedules for GMB post (9 AM), GMB review sync (10 AM), city enrichment (2 AM, 100/day), neighborhood seed (3 AM), neighborhood content gen (4 AM)
+- `routes/console.php`: Daily schedules for GMB post (9 AM), GMB review sync (10 AM), city enrichment (2 AM, 100/day), neighborhood seed (3 AM), neighborhood content gen (4 AM), quality scoring (2:30 AM)
 - `app/Services/GoogleBusinessProfileService.php`: Full GBP API client — OAuth, post creation, review fetch/reply, auto-reply, blog posting
 - `app/Services/WikipediaService.php`: Fetches city summaries + sections (Economy, Climate, Geography, Transportation, Sports, Tourism) from free Wikipedia API
 - `app/Services/ContentGeneratorService.php`: `getCityContext()` added — checks curated config first, falls back to DB fields; prompts require 4+ local references; both rental and service variants updated
+- `app/Services/PageQualityService.php`: `score()` core metric + `scoreAndPersist()` batch upsert into `page_quality_scores` table
 - `app/Http/Controllers/Admin/GmbAccountController.php`: OAuth connect/callback/exchange-token, real `sync()` using `GoogleBusinessProfileService`
 - `app/Http/Controllers/Admin/NeighborhoodController.php`: Full CRUD (index, show, generate, bulkGenerate, toggle)
+- `app/Http/Controllers/Admin/CityController.php`: `qualityScores()` reads from `page_quality_scores` DB table with eager loading
 - `app/Http/Controllers/PageController.php`: Added `neighborhoodPage()` method + Neighborhood/NeighborhoodServicePage imports
-- `app/Http/Controllers/SitemapController.php`: Added `addNeighborhoodPages()` method; neighborhood cache invalidation
+- `app/Http/Controllers/SitemapController.php`: `cities()` — eager load + lazy/take(50000); `addServicePages()` — lazy/take(30000); `addImage()` fixed for v8.1.0 API
 - `app/Models/GmbAccount.php`: Model with `is_active`, `auto_post`, `auto_reply_reviews`, encrypted token accessors, `total_posts_count`, `unread_reviews_count`
 - `app/Models/GmbPost.php`: Tracks each GBP post (type, external_id, blog_post_id, status, response_data)
 - `app/Models/Neighborhood.php`: `belongsTo` City, `hasMany` NeighborhoodServicePage, `getFullNameAttribute()`, `getUrlAttribute()`
 - `app/Models/NeighborhoodServicePage.php`: `belongsTo` Neighborhood + Domain, published/type scopes, slug-based URL
+- `app/Models/ServicePage.php`: `qualityScore()` HasOne relationship to `PageQualityScore`
+- `app/Models/PageQualityScore.php`: score, grade, word_count, faq_count, testimonial_count, details (JSON), scored_at
 - `app/Jobs/GenerateNeighborhoodContentJob.php`: Generates per-type AI service pages for each neighborhood (400-800 words, meta tags, proper slug)
 - `app/Console/Commands/SeedNeighborhoods.php`: `neighborhoods:seed --state= --city= --limit=50 --dry-run` — fetches real neighborhood names from Wikipedia via parse API
 - `app/Console/Commands/GenerateNeighborhoodContent.php`: `neighborhoods:generate-content --limit=20 --force --type= --domain=` — sync dispatching with progress bar and sitemap cache busting
+- `app/Console/Commands/QualityScoreAll.php`: `quality:score-all --domain= --force` — batch scoring with progress bar
+- `database/migrations/2026_05_16_193645_create_page_quality_scores_table.php`: quality scores table with unique `service_page_id`
 - `database/migrations/2026_05_18_000001_create_neighborhoods_table.php`: neighborhoods + neighborhood_service_pages tables
+- `resources/views/admin/cities/quality-scores.blade.php`: Paginated QS view, reads from DB with expandable detail rows
 - `resources/views/admin/neighborhoods/index.blade.php`: Paginated table with status badges, generate buttons, bulk generate action
 - `resources/views/admin/neighborhoods/show.blade.php`: Detail view with info sidebar, service pages table, generate/activate actions
 - `resources/views/domains/pottydirect/neighborhood.blade.php`: Full neighborhood page with breadcrumbs, hero CTA, content, related services sidebar, schema.org Neighborhood markup
@@ -101,3 +114,5 @@
 - Neighborhood content generation uses AI job that accepts `$types` array for batch per-type page creation
 - `getServiceTypes()` may return empty array — fallback to `['general']` in controllers/commands
 - Neighborhood routes use `name('admin.neighborhoods.*')` prefix (resolves to `admin.neighborhoods.index`, etc.)
+- Quality scores stored in `page_quality_scores` table with unique `service_page_id` constraint — `updateOrCreate` ensures one score per page
+- `quality:score-all` uses `chunk(100)` + `whereDoesntHave('qualityScore')` to skip already-scored pages; use `--force` to re-score
