@@ -78,7 +78,8 @@ class PageQualityService
     {
         $pages = ServicePage::where('domain_id', $domainId)
             ->with('city.state')
-            ->lazy();
+            ->limit($limit)
+            ->get();
 
         $results = [];
         foreach ($pages as $page) {
@@ -86,10 +87,6 @@ class PageQualityService
                 'page' => $page,
                 'score' => $this->score($page),
             ];
-
-            if (count($results) >= $limit) {
-                break;
-            }
         }
 
         usort($results, fn($a, $b) => $a['score']['score'] - $b['score']['score']);

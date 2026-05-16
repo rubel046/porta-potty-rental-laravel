@@ -16,12 +16,7 @@ $gradeColors = [
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
         <h2 class="text-lg font-semibold text-gray-800">Quality Scores</h2>
-        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (scoring up to 200 pages — worst scores first for prioritization)</p>
-    </div>
-    <div class="flex gap-2">
-        <a href="{{ route('admin.cities.quality-scores', ['refresh' => 1]) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">
-            &#x21BB; Refresh Scores
-        </a>
+        <p class="text-sm text-gray-500">SEO quality scoring for city service pages (worst scores first — up to 200 pages shown)</p>
     </div>
 </div>
 
