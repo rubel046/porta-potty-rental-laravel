@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AiApiKeyController;
 // Public Controllers
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\CallLogController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -36,6 +37,9 @@ use Illuminate\Support\Facades\Route;
 // Homepage
 Route::get('/', [PageController::class, 'home'])
     ->name('home');
+
+Route::get('/apple-touch-icon.png', fn () => redirect('/favicon.svg', 301));
+Route::get('/og-image.jpg', fn () => redirect('/favicon.svg', 301));
 
 // Dynamic robots.txt — sitemap URL adapts to current host (multi-tenant safe)
 Route::get('/robots.txt', function () {
@@ -85,11 +89,58 @@ Route::get('/services', [PageController::class, 'services'])
 Route::get('/pricing', [PageController::class, 'pricing'])
     ->name('pricing');
 
+// Units Calculator
+Route::get('/units-calculator', [PageController::class, 'calculator'])
+    ->name('calculator');
+
+// Pillar Page (must be before state/catch-all routes)
+Route::get('/complete-guide-to-porta-potty-rental', [PageController::class, 'pillarPage'])
+    ->name('pillar.page');
+
+// Landing Pages (must be before state/catch-all routes)
+Route::get('/wedding-porta-potty-rental', [PageController::class, 'wedding'])
+    ->name('wedding');
+Route::get('/festival-portable-toilets', [PageController::class, 'festival'])
+    ->name('festival');
+Route::get('/construction-site-porta-potty-rental', [PageController::class, 'constructionLanding'])
+    ->name('construction.landing');
+Route::get('/faq', [PageController::class, 'faq'])
+    ->name('faq');
+Route::get('/osha-porta-potty-requirements', [PageController::class, 'oshaGuide'])
+    ->name('osha.guide');
+Route::get('/standard-vs-deluxe-vs-luxury-porta-potty', [PageController::class, 'comparison'])
+    ->name('comparison');
+
+// New Landing Pages for SEO Content Gaps (before state/catch-all routes)
+Route::get('/porta-potty-types-guide', [PageController::class, 'typesGuide'])
+    ->name('types-guide.page');
+Route::get('/porta-potty-cleaning-process', [PageController::class, 'cleaningProcess'])
+    ->name('cleaning-process.page');
+Route::get('/sports-event-porta-potty-rental', [PageController::class, 'sportsEvent'])
+    ->name('sports-event.page');
+Route::get('/municipal-porta-potty-rental', [PageController::class, 'municipal'])
+    ->name('municipal.page');
+Route::get('/porta-potty-rental-cost', [PageController::class, 'costPage'])
+    ->name('cost.page');
+Route::get('/porta-potty-rental-for-parties', [PageController::class, 'partyPage'])
+    ->name('party.page');
+Route::get('/emergency-porta-potty-rental', [PageController::class, 'emergencyPage'])
+    ->name('emergency.page');
+Route::get('/restroom-trailer-rental', [PageController::class, 'restroomTrailerPage'])
+    ->name('restroom-trailer.page');
+Route::get('/how-many-porta-potties-do-i-need', [PageController::class, 'howManyPage'])
+    ->name('how-many.page');
+
 // State Page (works for any domain: /porta-potty-rental-texas, /plumbing-texas, etc.)
 Route::get('/{slug}-{stateSlug}', [PageController::class, 'statePage'])
     ->name('state.page')
     ->where('slug', '[a-z0-9][a-z0-9\-]*')
     ->where('stateSlug', 'alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|montana|nebraska|nevada|new-hampshire|new-jersey|new-mexico|new-york|north-carolina|north-dakota|ohio|oklahoma|oregon|pennsylvania|rhode-island|south-carolina|south-dakota|tennessee|texas|utah|vermont|virginia|washington|west-virginia|wisconsin|wyoming');
+
+// Neighborhood Pages (must come before state/catch-all routes)
+Route::get('/neighborhoods/{slug}', [PageController::class, 'neighborhoodPage'])
+    ->name('neighborhood.page')
+    ->where('slug', '[a-z0-9][a-z0-9\-]*');
 
 // Blog (must come before catch-all)
 Route::get('/blog', [BlogController::class, 'index'])
@@ -181,6 +232,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     /*
     |----------------------------------------------------------------------
+    | GMB Accounts
+    |----------------------------------------------------------------------
+    */
+    Route::resource('gmb-accounts', \App\Http\Controllers\Admin\GmbAccountController::class)->except(['show']);
+    Route::post('/gmb-accounts/{gmbAccount}/toggle', [\App\Http\Controllers\Admin\GmbAccountController::class, 'toggle'])->name('gmb-accounts.toggle');
+    Route::post('/gmb-accounts/{gmbAccount}/sync', [\App\Http\Controllers\Admin\GmbAccountController::class, 'sync'])->name('gmb-accounts.sync');
+    Route::get('/gmb-accounts/oauth/connect', [\App\Http\Controllers\Admin\GmbAccountController::class, 'connect'])->name('gmb-accounts.oauth.connect');
+    Route::get('/gmb-accounts/oauth/callback', [\App\Http\Controllers\Admin\GmbAccountController::class, 'callback'])->name('gmb-accounts.oauth.callback');
+    Route::post('/gmb-accounts/exchange-token', [\App\Http\Controllers\Admin\GmbAccountController::class, 'exchangeToken'])->name('gmb-accounts.exchange-token');
+
+    /*
+    |----------------------------------------------------------------------
     | Domains Management
     |----------------------------------------------------------------------
     */
@@ -219,14 +282,37 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     | Call Logs
     |----------------------------------------------------------------------
     */
-    Route::get('/calls', [DashboardController::class, 'calls'])
+    Route::get('/calls', [CallLogController::class, 'index'])
         ->name('calls.index');
+    Route::get('/calls/{callLog}/edit', [CallLogController::class, 'edit'])
+        ->name('calls.edit');
+    Route::put('/calls/{callLog}', [CallLogController::class, 'update'])
+        ->name('calls.update');
+
+    /*
+    |----------------------------------------------------------------------
+    | Neighborhoods Management
+    |----------------------------------------------------------------------
+    */
+    Route::get('/neighborhoods', [\App\Http\Controllers\Admin\NeighborhoodController::class, 'index'])
+        ->name('neighborhoods.index');
+    Route::get('/neighborhoods/{neighborhood}', [\App\Http\Controllers\Admin\NeighborhoodController::class, 'show'])
+        ->name('neighborhoods.show');
+    Route::post('/neighborhoods/{neighborhood}/generate', [\App\Http\Controllers\Admin\NeighborhoodController::class, 'generate'])
+        ->name('neighborhoods.generate');
+    Route::post('/neighborhoods/bulk-generate', [\App\Http\Controllers\Admin\NeighborhoodController::class, 'bulkGenerate'])
+        ->name('neighborhoods.bulk-generate');
+    Route::post('/neighborhoods/{neighborhood}/toggle', [\App\Http\Controllers\Admin\NeighborhoodController::class, 'toggle'])
+        ->name('neighborhoods.toggle');
 
     /*
     |----------------------------------------------------------------------
     | Cities Management
     |----------------------------------------------------------------------
     */
+    Route::get('/cities/quality-scores', [CityController::class, 'qualityScores'])
+        ->name('cities.quality-scores');
+
     Route::resource('cities', CityController::class);
 
     // Toggle city status for current domain

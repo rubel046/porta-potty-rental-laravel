@@ -30,10 +30,28 @@ $articleSchema = [
     "mainEntityOfPage" => ["@type" => "WebPage", "@id" => $post->url],
     "inLanguage" => "en-US",
 ];
+
+$videoSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "VideoObject",
+    "@id" => url('/') . '#video',
+    "name" => $post->title,
+    "description" => $post->seo_description ?? strip_tags($post->excerpt),
+    "thumbnailUrl" => $post->featured_image ? asset('storage/' . $post->featured_image) : url('/og-image.jpg'),
+    "uploadDate" => $post->published_at?->toIso8601String() ?? '2025-01-01',
+    "publisher" => [
+        "@type" => "Organization",
+        "name" => ($domain?->business_name ?? 'Potty Direct'),
+    ],
+];
 // Drop any null values cleanly
 $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== '');
+$videoSchema = array_filter($videoSchema, fn($v) => $v !== null && $v !== '');
 @endphp
 <script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@if(!empty($videoSchema))
+<script type="application/ld+json">{!! json_encode($videoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endpush
 
 @section('content')
@@ -122,6 +140,8 @@ $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== ''
                          loading="eager"
                          fetchpriority="high"
                          decoding="async"
+                         width="1200"
+                         height="480"
                          class="w-full h-64 md:h-80 object-cover rounded-2xl mb-10 shadow-lg">
                 @else
                     <div class="h-64 md:h-80 bg-gradient-to-br from-emerald-50 to-emerald-100
@@ -159,6 +179,52 @@ $articleSchema = array_filter($articleSchema, fn($v) => $v !== null && $v !== ''
                         <x-icon name="phone" class="w-5 h-5" />
                         {{ domain_phone_display() }}
                     </a>
+                </div>
+
+                {{-- Related Posts --}}
+                @if(isset($relatedPosts) && $relatedPosts->isNotEmpty())
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6">Related Articles</h3>
+                    <div class="grid sm:grid-cols-3 gap-4">
+                        @foreach($relatedPosts as $rp)
+                        <a href="{{ $rp->url }}"
+                           class="bg-white hover:bg-slate-50 p-5 rounded-xl transition border border-slate-200 hover:border-emerald-300 hover:shadow-md">
+                            @if($rp->featured_image)
+                                <img src="{{ asset('storage/' . $rp->featured_image) }}" alt="{{ $rp->title }}"
+                                     loading="lazy" width="400" height="128" class="w-full h-32 object-cover rounded-lg mb-3">
+                            @endif
+                            <h4 class="font-bold text-slate-800 text-sm line-clamp-2">{{ $rp->title }}</h4>
+                            <p class="text-xs text-slate-500 mt-2">{{ $rp->reading_time_text }}</p>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- Related Landing Pages --}}
+                @php
+                    $landingGuides = [
+                        ['route' => 'cost.page', 'icon' => 'currency-dollar', 'label' => 'Rental Cost Guide', 'desc' => 'Pricing factors explained'],
+                        ['route' => 'party.page', 'icon' => 'sparkles', 'label' => 'Party Rentals', 'desc' => 'Events & celebrations'],
+                        ['route' => 'how-many.page', 'icon' => 'calculator', 'label' => 'How Many Units?', 'desc' => 'Quantity estimator'],
+                    ];
+                @endphp
+                <div class="mt-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Helpful Guides</h3>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        @foreach($landingGuides as $guide)
+                        <a href="{{ route($guide['route']) }}"
+                           class="flex items-center gap-3 bg-white hover:bg-slate-50 p-4 rounded-xl transition border border-slate-200 hover:border-emerald-300 hover:shadow-md min-h-[44px]">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <x-icon name="{{ $guide['icon'] }}" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="font-bold text-slate-800 text-sm">{{ $guide['label'] }}</div>
+                                <div class="text-xs text-slate-500">{{ $guide['desc'] }}</div>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Related Services --}}

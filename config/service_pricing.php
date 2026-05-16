@@ -41,6 +41,10 @@ return [
         'sanitizer' => ['low' => 45,  'high' => 125],
         'dumpster' => ['low' => 250, 'high' => 650],
         'septic' => ['low' => 200, 'high' => 500],
+        'portable-urinal' => ['low' => 59,  'high' => 150],
+        'handwash-trailer' => ['low' => 200, 'high' => 600],
+        'temporary-fencing' => ['low' => 75,  'high' => 250],
+        'highrise' => ['low' => 120, 'high' => 250],
         'general' => ['low' => 89,  'high' => 300],
 
         // Plumbing

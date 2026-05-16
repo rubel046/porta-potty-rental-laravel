@@ -14,7 +14,7 @@ php artisan down 2>/dev/null || true
 # Clear caches BEFORE modifying packages
 php artisan optimize:clear
 
-git pull origin dev
+#git pull origin dev
 composer install --optimize-autoloader --no-dev
 rm -rf public/build
 npm ci

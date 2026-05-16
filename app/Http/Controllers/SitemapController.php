@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Domain;
+use App\Models\NeighborhoodServicePage;
 use App\Models\ServicePage;
 use App\Models\State;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\SitemapIndex;
+use Spatie\Sitemap\Tags\Image;
 use Spatie\Sitemap\Tags\Url;
 
 class SitemapController extends Controller
@@ -38,6 +41,7 @@ class SitemapController extends Controller
             $this->addStaticPages($sitemap);
             $this->addStates($sitemap, $domain);
             $this->addServicePages($sitemap, $domain);
+            $this->addNeighborhoodPages($sitemap, $domain);
             $this->addBlogPosts($sitemap, $domain);
             $this->addBlogCategories($sitemap, $domain);
 
@@ -68,17 +72,25 @@ class SitemapController extends Controller
         $xml = Cache::remember($this->cacheKey('cities'), now()->addHours(self::CACHE_TTL_HOURS), function () use ($domain) {
             $sitemap = Sitemap::create();
 
+            $heroImageUrl = $this->getHeroImageUrl();
+
             ServicePage::published()
                 ->where('domain_id', $domain->id)
-                ->chunk(500, function ($pages) use ($sitemap, $domain) {
+                ->chunk(500, function ($pages) use ($sitemap, $domain, $heroImageUrl) {
                     foreach ($pages as $page) {
                         $priority = $this->calculatePagePriority($page, $domain);
-                        $sitemap->add(
-                            Url::create(url("/{$page->slug}"))
-                                ->setLastModificationDate($page->updated_at)
-                                ->setChangeFrequency('weekly')
-                                ->setPriority($priority)
-                        );
+                        $url = Url::create(url("/{$page->slug}"))
+                            ->setLastModificationDate($page->updated_at)
+                            ->setChangeFrequency('weekly')
+                            ->setPriority($priority);
+
+                        if ($heroImageUrl) {
+                            $url->addImage(Image::create($heroImageUrl)
+                                ->setTitle("Porta potty rental in {$page->city->name}, {$page->city->state->code}")
+                                ->setCaption("{$page->service_type_label} porta potty rental - Potty Direct"));
+                        }
+
+                        $sitemap->add($url);
                     }
                 });
 
@@ -86,6 +98,28 @@ class SitemapController extends Controller
         });
 
         return $this->xmlResponse($xml);
+    }
+
+    protected function getHeroImageUrl(): ?string
+    {
+        $domain = $this->getDomain();
+        $host = request()->getHost();
+        $prefix = preg_replace('/\.[a-z]{2,}$/i', '', $host);
+
+        if ($prefix === 'localhost' || !Storage::disk('public')->exists($prefix . '/hero-banner-images')) {
+            $prefix = 'pottydirect';
+        }
+
+        $images = Cache::remember("sitemap_hero_image_{$prefix}", 3600, function () use ($prefix) {
+            return collect(Storage::disk('public')->files($prefix . '/hero-banner-images'))
+                ->filter(fn($f) => in_array(pathinfo($f, PATHINFO_EXTENSION), ['webp', 'jpg', 'jpeg', 'png']))
+                ->values()
+                ->all();
+        });
+
+        $image = $images[0] ?? null;
+
+        return $image ? url('storage/' . $image) : null;
     }
 
     public function states(): Response
@@ -100,6 +134,7 @@ class SitemapController extends Controller
                     foreach ($states as $state) {
                         $sitemap->add(
                             Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
+                                ->setLastModificationDate(now())
                                 ->setPriority(0.7)
                                 ->setChangeFrequency('weekly')
                         );
@@ -147,6 +182,7 @@ class SitemapController extends Controller
             Cache::forget("sitemap_states_{$domain->id}");
             Cache::forget("sitemap_blog_{$domain->id}");
             Cache::forget("sitemap_index_{$domain->id}");
+            Cache::forget("sitemap_neighborhoods_{$domain->id}");
         }
     }
 
@@ -161,14 +197,29 @@ class SitemapController extends Controller
             '/blog' => ['priority' => 0.8, 'changefreq' => 'daily'],
             '/privacy-policy' => ['priority' => 0.3, 'changefreq' => 'yearly'],
             '/terms-of-service' => ['priority' => 0.3, 'changefreq' => 'yearly'],
+            '/complete-guide-to-porta-potty-rental' => ['priority' => 0.8, 'changefreq' => 'monthly'],
+            '/units-calculator' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/wedding-porta-potty-rental' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/festival-portable-toilets' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/construction-site-porta-potty-rental' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/faq' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/osha-porta-potty-requirements' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/standard-vs-deluxe-vs-luxury-porta-potty' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/porta-potty-rental-cost' => ['priority' => 0.8, 'changefreq' => 'monthly'],
+            '/porta-potty-rental-for-parties' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/emergency-porta-potty-rental' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/restroom-trailer-rental' => ['priority' => 0.7, 'changefreq' => 'monthly'],
+            '/how-many-porta-potties-do-i-need' => ['priority' => 0.8, 'changefreq' => 'monthly'],
         ];
 
         foreach ($staticPages as $path => $config) {
-            $sitemap->add(
-                Url::create(url($path))
-                    ->setPriority($config['priority'])
-                    ->setChangeFrequency($config['changefreq'])
-            );
+            $url = Url::create(url($path))
+                ->setPriority($config['priority'])
+                ->setChangeFrequency($config['changefreq']);
+
+            $url->setLastModificationDate(now());
+
+            $sitemap->add($url);
         }
     }
 
@@ -181,6 +232,7 @@ class SitemapController extends Controller
                 foreach ($states as $state) {
                     $sitemap->add(
                         Url::create(url("/{$slugPrefix}-rental-{$state->slug}"))
+                            ->setLastModificationDate(now())
                             ->setPriority(0.7)
                             ->setChangeFrequency('weekly')
                     );
@@ -230,8 +282,25 @@ class SitemapController extends Controller
                 foreach ($categories as $category) {
                     $sitemap->add(
                         Url::create(url("/blog/category/{$category->slug}"))
+                            ->setLastModificationDate(now())
                             ->setPriority(0.5)
                             ->setChangeFrequency('weekly')
+                    );
+                }
+            });
+    }
+
+    protected function addNeighborhoodPages(Sitemap $sitemap, Domain $domain): void
+    {
+        NeighborhoodServicePage::published()
+            ->where('domain_id', $domain->id)
+            ->chunk(500, function ($pages) use ($sitemap) {
+                foreach ($pages as $page) {
+                    $sitemap->add(
+                        Url::create($page->url)
+                            ->setLastModificationDate($page->updated_at)
+                            ->setChangeFrequency('weekly')
+                            ->setPriority(0.8)
                     );
                 }
             });

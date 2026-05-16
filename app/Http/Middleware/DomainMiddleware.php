@@ -17,7 +17,19 @@ class DomainMiddleware
             $host = str_replace('.test', '.com', $host);
         }
 
-        $domain = Domain::where('domain', $host)->first();
+        $domain = null;
+
+        if ($request->is('admin*')) {
+            $currentDomainId = session('current_domain_id');
+
+            if ($currentDomainId) {
+                $domain = Domain::find($currentDomainId);
+            }
+        }
+
+        if (! $domain) {
+            $domain = Domain::where('domain', $host)->first();
+        }
 
         if (! $domain) {
             $currentDomainId = session('current_domain_id');

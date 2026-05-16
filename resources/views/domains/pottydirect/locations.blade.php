@@ -50,6 +50,15 @@ $websiteSchema = [
 @endpush
 
 @section('content')
+    {{-- Breadcrumb --}}
+    <nav class="bg-slate-100 border-b border-slate-200 py-2.5 px-3 sm:px-4">
+        <div class="max-w-6xl mx-auto flex items-center gap-1.5 text-xs sm:text-sm text-slate-500">
+            <a href="{{ route('home') }}" class="hover:text-emerald-600 transition">Home</a>
+            <x-icon name="chevron-right" class="w-3 h-3" />
+            <span class="text-slate-800 font-medium">Locations</span>
+        </div>
+    </nav>
+
     {{-- Hero --}}
     <section class="relative py-12 sm:py-16 md:py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
@@ -93,7 +102,7 @@ $websiteSchema = [
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Top Requested Locations</h2>
                     <p class="text-sm text-slate-500">These cities have the highest demand for porta potty rentals</p>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2 sm:gap-3">
                     @foreach($featuredCities as $city)
                         @php $cityPage = $city->servicePages->first(); @endphp
                         @if($cityPage)
@@ -101,7 +110,7 @@ $websiteSchema = [
                                class="bg-white hover:bg-amber-50 border border-slate-200 hover:border-amber-300
                                       rounded-xl p-3 sm:p-4 text-center transition-all hover:shadow-lg group">
                                 
-                                <div class="font-semibold text-slate-800 text-sm sm:text-base group-hover:text-amber-700">{{ $city->name }}</div>
+                                <div class="font-semibold text-slate-800 text-xs sm:text-sm group-hover:text-amber-700">{{ $city->name }}</div>
                                 <div class="text-xs text-slate-400">{{ $city->state->code ?? '' }}</div>
                             </a>
                         @endif
@@ -278,8 +287,8 @@ $websiteSchema = [
                                        data-city="{{ strtolower($city->name) }}"
                                        data-zip="{{ $city->zip_codes ?? '' }}">
                                         <span class="flex items-center gap-1.5 sm:gap-2">
-                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 group-hover:bg-amber-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs">
-
+                                            <span class="w-5 h-5 sm:w-6 sm:h-6 bg-slate-100 group-hover:bg-amber-100 rounded-full flex items-center justify-center">
+                                                <svg class="w-3 h-3 text-slate-500 group-hover:text-amber-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
                                             </span>
                                             <span>{{ $city->name }}</span>
                                         </span>
@@ -400,27 +409,53 @@ $websiteSchema = [
     </div>
     <div class="h-20 md:hidden"></div>
 
-    {{-- SERVICE COVERAGE MAP --}}
+    {{-- SERVICE COVERAGE --}}
+    @php
+        $totalStates = $states->count();
+        $usRegions = [
+            'Northeast' => ['CT', 'ME', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'MD', 'DE', 'DC'],
+            'Southeast' => ['AL', 'AR', 'FL', 'GA', 'KY', 'LA', 'MS', 'NC', 'SC', 'TN', 'VA', 'WV'],
+            'Midwest' => ['IL', 'IN', 'IA', 'KS', 'MI', 'MN', 'MO', 'NE', 'ND', 'OH', 'SD', 'WI'],
+            'Southwest' => ['AZ', 'NM', 'OK', 'TX'],
+            'West' => ['AK', 'CA', 'CO', 'HI', 'ID', 'MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
+        ];
+    @endphp
     <section class="py-10 sm:py-12 px-3 sm:px-4 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-4xl mx-auto text-center">
-            <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-4 sm:mb-6 flex items-center justify-center gap-2">
-                Our Service Coverage
-            </h3>
-            <div class="relative bg-white rounded-2xl shadow-lg border border-slate-200 p-4 sm:p-6">
-                <svg viewBox="0 0 960 600" class="w-full h-auto max-h-[300px]" preserveAspectRatio="xMidYMid meet">
-                    {{-- Simplified USA outline --}}
-                    <path d="M833 295 L815 290 L795 295 L770 290 L750 285 L730 280 L710 275 L685 270 L665 265 L645 260 L625 255 L605 250 L585 245 L565 240 L545 235 L525 230 L505 225 L485 220 L465 215 L445 210 L425 205 L405 200 L385 195 L365 190 L345 185 L325 180 L305 175 L285 170 L265 165 L245 160 L225 155 L205 150 L185 145 L165 140 L145 135 L125 130 L105 125 L85 120"
-                          fill="none" stroke="#e2e8f0" stroke-width="3"/>
-                    {{-- Service coverage regions (amber color) --}}
-                    <ellipse cx="200" cy="280" rx="80" ry="60" fill="#f59e0b" opacity="0.3"/>
-                    <ellipse cx="450" cy="200" rx="120" ry="70" fill="#f59e0b" opacity="0.3"/>
-                    <ellipse cx="700" cy="250" rx="100" ry="60" fill="#f59e0b" opacity="0.3"/>
-                    <ellipse cx="500" cy="400" rx="150" ry="80" fill="#f59e0b" opacity="0.3"/>
-                    <ellipse cx="800" cy="350" rx="80" ry="50" fill="#f59e0b" opacity="0.3"/>
-                </svg>
-                <p class="text-sm text-slate-500 mt-4">
-                    Serving <strong class="text-slate-700">500+ cities</strong> across the United States
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8 sm:mb-10">
+                <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">Our Service Coverage</h3>
+                <p class="text-sm text-slate-500">
+                    Serving <strong class="text-slate-700">500+ cities</strong> across <strong class="text-slate-700">50 states</strong>
                 </p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
+                @foreach($usRegions as $regionName => $regionCodes)
+                    @php
+                        $regionStates = $states->filter(fn($s) => in_array($s->code, $regionCodes));
+                    @endphp
+                    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+                        <h4 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+                            <x-icon name="map-pin" class="w-4 h-4 text-emerald-500" />
+                            {{ $regionName }}
+                        </h4>
+                        <ul class="space-y-1.5">
+                            @forelse($regionStates as $state)
+                                <li>
+                                    <a href="{{ state_page_url($state->slug) }}"
+                                       class="flex items-center justify-between text-sm text-slate-600 hover:text-emerald-600 transition px-2 py-1 rounded-lg hover:bg-emerald-50 -mx-2">
+                                        <span class="flex items-center gap-1.5">
+                                            <span class="font-semibold text-xs text-slate-400 w-6">{{ $state->code }}</span>
+                                            <span>{{ $state->name }}</span>
+                                        </span>
+                                        <span class="text-xs text-slate-400">{{ $state->cities->count() }} cities</span>
+                                    </a>
+                                </li>
+                            @empty
+                                <li class="text-xs text-slate-400 italic px-2 py-1">Coming soon</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>

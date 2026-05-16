@@ -41,6 +41,7 @@ return [
         'space_url' => env('SIGNALWIRE_SPACE_URL'),
         'min_duration' => (int) env('CALL_MIN_DURATION', 90),
         'duplicate_hours' => (int) env('CALL_DUPLICATE_HOURS', 72),
+        'cost_per_minute' => (float) env('SIGNALWIRE_COST_PER_MINUTE', 0.02),
     ],
 
     'google' => [
@@ -51,6 +52,15 @@ return [
 
     'ga4' => [
         'measurement_id' => env('GA4_MEASUREMENT_ID', ''),
+    ],
+
+    'gmb' => [
+        'client_id' => env('GMB_CLIENT_ID'),
+        'client_secret' => env('GMB_CLIENT_SECRET'),
+        'redirect_uri' => env('GMB_REDIRECT_URI', '/admin/gmb-accounts/oauth/callback'),
+        'scopes' => [
+            'https://www.googleapis.com/auth/business.manage',
+        ],
     ],
 
 ];

@@ -637,9 +637,36 @@
     backface-visibility: hidden;
 }
 
+/* INP optimization: promote animated elements to own compositor layer */
+.will-animate {
+    will-change: transform, opacity;
+}
+
+/* Ensure hover transitions use compositor-only properties */
+.card-hover {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Prevent layout shift on image load */
+img[width][height] {
+    aspect-ratio: attr(width) / attr(height);
+}
+
 /* Prevent content shift during load */
 .content-stable {
     contain: content;
+}
+
+/* Defer off-screen rendering — improves LCP and INP */
+.section-below {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
+}
+
+/* Ensure hero content renders immediately */
+.section-hero {
+    content-visibility: visible;
+    contain: none;
 }
 
 /* Safe area for notched phones */

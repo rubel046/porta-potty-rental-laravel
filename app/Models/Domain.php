@@ -23,6 +23,7 @@ class Domain extends Model
         'primary_color',
         'secondary_color',
         'twitter_handle',
+        'google_business_url',
         'is_active',
     ];
 

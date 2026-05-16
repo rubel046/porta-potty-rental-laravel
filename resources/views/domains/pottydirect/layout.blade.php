@@ -23,28 +23,30 @@
 
     {{-- Custom Open Graph Image (can be overridden per page) --}}
     @section('og_image')
-        <meta property="og:image" content="{{ url('/og-image.jpg') }}">
+        <meta property="og:image" content="{{ url('/favicon.svg') }}">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
         <meta property="og:image:alt" content="{{ $domain?->business_name ?? 'Potty Direct' }} - {{ $domain?->primary_service ?? 'Portable Restroom Rental' }}">
-        <meta name="twitter:image" content="{{ url('/og-image.jpg') }}">
+        <meta name="twitter:image" content="{{ url('/favicon.svg') }}">
         <meta name="twitter:image:alt" content="{{ $domain?->business_name ?? 'Potty Direct' }} - {{ $domain?->primary_service ?? 'Portable Restroom Rental' }}">
     @show
 
-    {{-- OpenGraph Location Tags for Local SEO --}}
-    <meta property="og:latitude" content="{{ $latitude ?? 32.7767 }}">
-    <meta property="og:longitude" content="{{ $longitude ?? -96.7970 }}">
-    <meta property="og:locality" content="{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}">
-    <meta property="og:region" content="{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}">
-    <meta property="og:postal-code" content="{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}">
+    {{-- OpenGraph Location Tags for Local SEO (only on location-specific pages) --}}
+    @if(isset($latitude) && isset($longitude))
+    <meta property="og:latitude" content="{{ $latitude }}">
+    <meta property="og:longitude" content="{{ $longitude }}">
+    <meta property="og:locality" content="{{ $cityAddress ?? 'United States' }}">
+    <meta property="og:region" content="{{ $stateCodeLocal ?? 'US' }}">
+    <meta property="og:postal-code" content="{{ $postalCode ?? '' }}">
+    @endif
     <meta property="og:country-name" content="USA">
 
     {{-- Schema.org JSON-LD --}}
     {{-- Site-wide Organization + WebSite schema (per-page schemas push to the stack below) --}}
     <script type="application/ld+json">
         {!! json_encode([
-            '@context' => 'https://schema.org',
-            '@graph' => [
+            '@@context' => 'https://schema.org',
+            '@@graph' => [
                 [
                     '@type' => ['Organization', 'HomeAndConstructionBusiness'],
                     '@id' => url('/') . '#organization',
@@ -129,6 +131,8 @@
          and add @font-face + <link rel="preload"> here. --}}
     <link rel="dns-prefetch" href="//www.google-analytics.com">
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
 
     {{-- Google Analytics 4 --}}
     @if(config('services.ga4.measurement_id'))
@@ -154,6 +158,8 @@
       x-effect="document.body.style.overflow = mobileMenu ? 'hidden' : ''"
       @keydown.escape.window="mobileMenu = false; services = false">
 
+<x-svg-sprite/>
+
 {{-- Skip link for keyboard users — visually hidden until focused --}}
 <a href="#main"
    class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:rounded-lg focus:shadow-lg">
@@ -174,7 +180,7 @@
             <span class="hidden md:inline text-amber-100">• Limited availability</span>
         @else
             <x-icon name="moon" class="hidden sm:inline-block w-4 h-4 text-white/90"/>
-            <span class="font-semibold text-center sm:text-left">We open at {{ $opensAtLabel }} — leave a message or call for emergency service</span>
+            <span class="font-semibold text-center sm:text-left">We open at {{ $opensAtLabel }} — call for emergency service</span>
         @endif
         <a href="tel:{{ $phoneRaw }}" data-tracking-label="banner"
            class="hidden sm:inline-flex sm:ml-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 px-3 sm:px-3 py-1.5 sm:py-1 rounded-full font-bold transition text-sm sm:text-sm whitespace-nowrap shadow-sm items-center gap-1.5 min-h-[44px]">
@@ -538,20 +544,7 @@
 </header>
 
 {{-- Page Content --}}
-<main id="main" tabindex="-1" class="pt-0" itemscope itemtype="https://schema.org/LocalBusiness">
-    <meta itemprop="name" content="{{ $domain?->business_name ?? 'Potty Direct' }}">
-    <meta itemprop="telephone" content="{{ $phoneRaw }}">
-    <meta itemprop="priceRange" content="$$-$$$">
-    <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-        <meta itemprop="addressLocality" content="{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}">
-        <meta itemprop="addressRegion" content="{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}">
-        <meta itemprop="postalCode" content="{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}">
-        <meta itemprop="addressCountry" content="US">
-    </div>
-    <div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">
-        <meta itemprop="latitude" content="{{ $latitude ?? 32.7767 }}">
-        <meta itemprop="longitude" content="{{ $longitude ?? -96.7970 }}">
-    </div>
+<main id="main" tabindex="-1" class="pt-0">
     @yield('content')
 </main>
 
@@ -580,14 +573,14 @@
                     Your trusted partner for clean, affordable portable restroom rentals. Serving cities nationwide with
                     same-day delivery available.
                 </p>
-                <div class="text-sm text-slate-400" itemscope itemtype="https://schema.org/PostalAddress">
-                    <div itemprop="name">{{ $domain?->business_name ?? 'Potty Direct' }}</div>
-                    <div itemprop="addressLocality">{{ $cityAddress ?? ($topCities[0]['name'] ?? 'Dallas') }}</div>
-                    <div><span
-                            itemprop="addressRegion">{{ $stateCodeLocal ?? ($topCities[0]['state']['code'] ?? 'TX') }}</span>
-                        <span itemprop="postalCode">{{ $postalCode ?? ($topCities[0]['zip_code'] ?? '75201') }}</span>
-                    </div>
-                    <div itemprop="addressCountry">USA</div>
+                <div class="text-sm text-slate-400">
+                    <div>{{ $domain?->business_name ?? 'Potty Direct' }}</div>
+                    @if(!empty($cityAddress))
+                    <div>{{ $cityAddress }}, {{ $stateCodeLocal ?? '' }} {{ $postalCode ?? '' }}</div>
+                    @else
+                    <div>Serving the United States</div>
+                    @endif
+                    <div>USA</div>
                 </div>
                 <div class="flex items-center gap-3">
                     @if($domain?->google_business_url)

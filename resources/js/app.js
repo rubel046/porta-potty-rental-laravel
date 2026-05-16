@@ -69,6 +69,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     });
 
+    // Track all telephone clicks via GA4
+    document.querySelectorAll('a[href^="tel:"]').forEach(el => {
+        el.addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                const label = this.dataset.trackingLabel || 'phone-click';
+                gtag('event', 'phone_click', {
+                    'event_category': 'conversion',
+                    'event_label': label,
+                    'value': 1,
+                });
+            }
+        });
+    });
+
+    // Track all data-tracking-label clicks via GA4
+    document.querySelectorAll('[data-tracking-label]').forEach(el => {
+        const label = el.dataset.trackingLabel;
+        if (!label.startsWith('header') && !label.startsWith('footer') && !label.startsWith('sticky')) {
+            el.addEventListener('click', function() {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'engagement_click', {
+                        'event_category': 'engagement',
+                        'event_label': this.dataset.trackingLabel,
+                    });
+                }
+            });
+        }
+    });
+
     document.querySelectorAll('[data-confirm]').forEach(el => {
         el.addEventListener('click', function(e) {
             if (!confirm(this.dataset.confirm || 'Are you sure?')) {

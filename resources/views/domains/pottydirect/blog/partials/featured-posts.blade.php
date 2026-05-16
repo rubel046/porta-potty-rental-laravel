@@ -20,6 +20,8 @@
                                      alt="{{ $post->title }}"
                                      loading="lazy"
                                      decoding="async"
+                                     width="840"
+                                     height="360"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                                 <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-amber-800 bg-amber-400 rounded-full shadow-sm">
@@ -68,6 +70,8 @@
                                      alt="{{ $post->title }}"
                                      loading="lazy"
                                      decoding="async"
+                                     width="80"
+                                     height="80"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-2xl opacity-50">

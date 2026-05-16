@@ -30,6 +30,7 @@ $serviceSchema = [
     "serviceType" => $serviceLabel,
     "name" => "{$serviceLabel} in {$city->name}, {$city->state->code}",
     "description" => $servicePage->seo_description,
+    "datePublished" => optional($servicePage->created_at)->toIso8601String(),
     "dateModified" => optional($servicePage->updated_at)->toIso8601String(),
     "provider" => [
         "@type" => "LocalBusiness",
@@ -107,11 +108,16 @@ $reviewSchema = null;
     @endphp
 
     <section class="relative min-h-[450px] sm:min-h-[500px] md:min-h-[580px] flex items-center overflow-hidden">
-        {{-- Hero Background Image --}}
+        {{-- Hero Background Image with responsive picture element and WebP support --}}
         <div class="absolute inset-0">
-            <img src="{{ $heroUrl }}" alt="Porta potty rental in {{ $city->name }}"
-                 class="w-full h-full object-cover"
-                 width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async">
+            <picture>
+                <source srcset="{{ $heroUrl }}" type="image/webp" media="(min-width: 1200px)">
+                <source srcset="{{ $heroUrl }}-768w" type="image/webp" media="(min-width: 768px)">
+                <source srcset="{{ $heroUrl }}-480w" type="image/webp" media="(max-width: 767px)">
+                <img src="{{ $heroUrl }}" alt="Porta potty rental in {{ $city->name }}"
+                     class="w-full h-full object-cover"
+                     width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async">
+            </picture>
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60"></div>
         </div>
 
@@ -167,11 +173,25 @@ $reviewSchema = null;
                     </a>
                 </div>
 
-                {{-- Trust microcopy directly under the phone CTA --}}
-                <p class="text-sm sm:text-base text-emerald-300 font-semibold mb-5 sm:mb-7 flex items-center gap-2">
-                    <x-icon name="check-circle" class="w-4 h-4 flex-shrink-0" />
-                    Answered in under 30 seconds by a real person &mdash; no robocalls, no call menu.
-                </p>
+                {{-- Price Badge --}}
+                @if($pricingEnabled && isset($priceRange['low']))
+                <div class="inline-flex items-center gap-2 bg-emerald-500/15 text-emerald-300 text-sm font-bold px-4 py-2 rounded-full mb-5 sm:mb-7">
+                    <x-icon name="currency-dollar" class="w-4 h-4" />
+                    From ${{ number_format($priceRange['low']) }}/day
+                </div>
+                @endif
+
+                {{-- Trust microcopy + social proof --}}
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4 sm:mb-5">
+                    <p class="text-sm sm:text-base text-emerald-300 font-semibold flex items-center gap-2">
+                        <x-icon name="check-circle" class="w-4 h-4 flex-shrink-0" />
+                        Answered in under 30 seconds by a real person
+                    </p>
+                    <p class="text-sm text-amber-300 flex items-center gap-1.5">
+                        <x-icon name="lightning" class="w-4 h-4" />
+                        Only a few units left for this week
+                    </p>
+                </div>
 
                 {{-- Trust Badges - Simplified on mobile --}}
                 <div class="flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-300">
@@ -216,10 +236,10 @@ $reviewSchema = null;
             {{-- Mid-Content CTA --}}
             <div class="my-10 sm:my-12 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-center">
                 <h3 class="text-xl sm:text-2xl font-bold text-white mb-3">
-                    Ready to Get a Quote?
+                    Order by 2PM for Same-Day Delivery in {{ $city->name }}
                 </h3>
                 <p class="text-slate-400 mb-5 sm:mb-6">
-                    Call now for instant pricing on porta potty rental in {{ $city->name }}
+                    Call for instant pricing — only a 5-minute call to get your porta potty delivered.
                 </p>
                 <a href="tel:{{ $servicePage->phone_raw }}"
                    data-tracking-label="service-midpage"
@@ -237,6 +257,16 @@ $reviewSchema = null;
             </div>
         </div>
     </article>
+
+    {{-- Lead form — placed above fold for visitors who prefer forms over calls --}}
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-50">
+        <div class="max-w-2xl mx-auto">
+            <x-lead-form source="city-{{ $city->slug }}"
+                         :serviceType="$servicePage->service_type"
+                         :zipDefault="$city->zip_codes[0] ?? null"
+                         cityName="{{ $city->name }}" />
+        </div>
+    </section>
 
     {{-- Testimonials --}}
     @if($testimonials->isNotEmpty())
@@ -274,10 +304,27 @@ $reviewSchema = null;
         </section>
     @endif
 
-    {{-- Lead form — fallback for visitors who won't call cold --}}
-    <x-lead-form source="city-{{ $city->slug }}"
-                 :serviceType="$servicePage->service_type"
-                 :zipDefault="$city->zip_codes[0] ?? null" />
+    {{-- Review Generation CTA --}}
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-white">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <x-icon name="star" class="w-8 h-8 text-amber-500" />
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-3">
+                Love our service in {{ $city->name }}?
+            </h2>
+            <p class="text-slate-600 mb-6 max-w-md mx-auto">
+                Help others find reliable porta potty rentals. Share your experience and help us grow.
+            </p>
+            <a href="https://search.google.com/local/reviews?q={{ urlencode($domain?->business_name ?? 'Potty Direct') }}"
+               target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-bold py-3 px-6 rounded-full transition hover:scale-[1.02] min-h-[44px] shadow-lg">
+                <x-icon name="star" class="w-5 h-5" />
+                Write a Review
+            </a>
+            <p class="text-xs text-slate-400 mt-3">Takes less than 2 minutes</p>
+        </div>
+    </section>
 
     {{-- FAQs --}}
     @if($faqs->isNotEmpty())
@@ -378,6 +425,8 @@ $reviewSchema = null;
                                          alt="{{ $post->title }}"
                                          loading="lazy"
                                          decoding="async"
+                                         width="400"
+                                         height="128"
                                          class="w-full h-full object-cover">
                                 @else
                                     <x-icon name="home" class="w-10 h-10 text-emerald-400" />
@@ -399,6 +448,65 @@ $reviewSchema = null;
         </section>
     @endif
 
+    {{-- Helpful Guides Section --}}
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">
+                Helpful Guides for {{ $city->name }} Residents
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <a href="{{ route('cost.page') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="currency-dollar" class="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">Porta Potty Rental Cost</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">See pricing factors and get an estimate</p>
+                </a>
+                <a href="{{ route('party.page') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="sparkles" class="w-5 h-5 text-pink-500" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">Rental for Parties</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Perfect solutions for your celebration</p>
+                </a>
+                <a href="{{ route('emergency.page') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="lightning" class="w-5 h-5 text-red-500" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">Emergency Rentals</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">24/7 rapid response when you need it most</p>
+                </a>
+                <a href="{{ route('restroom-trailer.page') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="sparkles" class="w-5 h-5 text-purple-500" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">Restroom Trailers</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Premium trailers for upscale events</p>
+                </a>
+                <a href="{{ route('how-many.page') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="calculator" class="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">How Many Do I Need?</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Quick reference for events & job sites</p>
+                </a>
+                <a href="{{ route('calculator') }}"
+                   class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mb-3">
+                        <x-icon name="calculator" class="w-5 h-5 text-amber-600" />
+                    </div>
+                    <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition mb-1">Units Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500">Estimate how many units you need</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- Final CTA --}}
     <section class="py-16 md:py-24 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
@@ -418,6 +526,13 @@ $reviewSchema = null;
                 {{ $servicePage->phone_display }}
             </a>
             <p class="mt-6 text-slate-400 text-sm">Answered in under 30 seconds by a real person.</p>
+        </div>
+    </section>
+
+    {{-- Instant Price Calculator --}}
+    <section class="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-white">
+        <div class="max-w-2xl mx-auto">
+            <x-instant-price cityName="{{ $city->name }}" />
         </div>
     </section>
 @endsection

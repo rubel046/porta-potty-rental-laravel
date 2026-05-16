@@ -1,8 +1,22 @@
 @extends(\App\Models\Domain::getLayoutPathStatic())
 
 @section('title', $state->seo_title)
-@section('meta_description', $state->seo_description)
+@php
+    $stateMetaDesc = $state->seo_description 
+        ?? 'Find ' . ($domain?->primary_service ?? 'porta potty rental') . ' in ' . $state->name . '. Same-day delivery, competitive pricing, and professional service across all cities.';
+    if (strlen($stateMetaDesc) < 120) {
+        $stateMetaDesc = 'Professional ' . ($domain?->primary_service ?? 'porta potty rental') . ' in ' . $state->name . '. Serving all cities with same-day delivery, competitive pricing, and a wide selection of units from standard to luxury.';
+    }
+@endphp
+@section('meta_description', $stateMetaDesc)
 @section('canonical', url()->current())
+
+@section('pagination_headers')
+    @if($cities instanceof \Illuminate\Contracts\Pagination\Paginator)
+        @if($cities->previousPageUrl())<link rel="prev" href="{{ $cities->previousPageUrl() }}">@endif
+        @if($cities->nextPageUrl())<link rel="next" href="{{ $cities->nextPageUrl() }}">@endif
+    @endif
+@endsection
 
 @push('schema')
 @php
@@ -12,7 +26,6 @@ $phone = domain_phone_raw();
 $localBusinessSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
-    "@id" => $url . "#business",
     "name" => $domain?->business_name ?? "Potty Direct",
     "description" => ($domain?->primary_service ?? "Porta potty rental") . " in " . $state->name . ". " . ($domain?->tagline ?? "Same-day delivery available."),
     "url" => $url,
@@ -44,6 +57,10 @@ $breadcrumbSchema = [
 @endphp
 <script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@if($faqs->isNotEmpty())
+@php $faqPageSchema = ["@context" => "https://schema.org", "@type" => "FAQPage", "mainEntity" => $faqs->map(fn($f) => ["@type" => "Question", "name" => $f['question'] ?? $f->question, "acceptedAnswer" => ["@type" => "Answer", "text" => $f['answer'] ?? $f->answer]])->toArray()]; @endphp
+<script type="application/ld+json">{!! json_encode($faqPageSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endpush
 
 @section('content')
@@ -54,6 +71,14 @@ $breadcrumbSchema = [
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDI5NDIiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
         </div>
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+            {{-- Visible Breadcrumb --}}
+            <nav class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-400 mb-6 justify-center">
+                <a href="{{ route('home') }}" class="hover:text-white transition">Home</a>
+                <x-icon name="chevron-right" class="w-3 h-3 sm:w-4 sm:h-4" />
+                <a href="{{ route('locations') }}" class="hover:text-white transition">Locations</a>
+                <x-icon name="chevron-right" class="w-3 h-3 sm:w-4 sm:h-4" />
+                <span class="text-white">{{ $state->name }}</span>
+            </nav>
             <div class="text-center">
                 <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                     <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,11 +89,11 @@ $breadcrumbSchema = [
                 </div>
                 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                    {{ $state->h1_title ?? ($domain?->primary_service ?? 'Porta Potty Rental') }}
+                    {{ $state->name }} {{ $domain?->primary_service ?? 'Porta Potty Rental' }}
                 </h1>
                 
                 <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-8">
-                    Professional {{ $domain?->primary_service ?? 'porta potty rental' }} solutions for {{ $state->name }}. {{ $domain?->tagline ?? 'Same-day delivery available.' }}
+                    Professional {{ $domain?->primary_service ?? 'porta potty rental' }} solutions for construction sites, events, and more. Reliable same-day delivery with transparent, competitive pricing.
                 </p>
                 
                 <div class="flex flex-wrap justify-center gap-4 mb-10">
@@ -158,7 +183,7 @@ $breadcrumbSchema = [
                                     @endphp
                                     <div class="aspect-w-1 aspect-h-1">
                                         <img src="{{ $imageUrl }}" alt="{{ $image['alt'] ?? 'Service image for ' . $state->name }}" 
-                                             class="object-cover rounded-lg shadow-md" loading="lazy">
+                                             width="400" height="400" class="object-cover rounded-lg shadow-md" loading="lazy">
                                     </div>
                                 @endforeach
                             </div>
@@ -183,6 +208,63 @@ $breadcrumbSchema = [
     </section>
     @endif
 
+    @if(!$state->hasContent())
+    {{-- Fallback Content Section --}}
+    <section class="py-16 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-5 gap-12 items-start">
+                <div class="lg:col-span-2">
+                    <div class="sticky top-8">
+                        <span class="inline-block text-emerald-600 font-semibold text-sm tracking-wider uppercase mb-4">About Our Service</span>
+                        <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-6">
+                            Professional {{ $domain?->primary_service ? ucfirst($domain->primary_service) : 'Porta Potty' }} Solutions in {{ $state->name }}
+                        </h2>
+                        <p class="text-lg text-slate-600 mb-8">
+                            We provide reliable, clean, and affordable {{ $domain?->primary_service ?? 'portable restroom' }} solutions for projects and events throughout {{ $state->name }}. Whether you need standard units for a construction site or luxury trailers for a wedding, our team delivers.
+                        </p>
+                        <a href="tel:{{ domain_phone_raw() }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            Get Free Quote
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 prose prose-slate prose-lg max-w-none
+                            prose-headings:text-slate-800 prose-headings:font-bold
+                            prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-3
+                            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
+                            prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4
+                            prose-li:text-slate-600 prose-li:leading-relaxed prose-li:mb-2
+                            prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline
+                            prose-strong:text-slate-800 prose-strong:font-semibold
+                            prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-50 prose-blockquote:rounded-r-xl
+                            prose-ul:list-disc prose-ul:pl-6">
+                    <h2>{{ $state->name }} Porta Potty Rental Services</h2>
+                    <p>Whether you are planning a large event, managing a construction project, or organizing a festival in {{ $state->name }}, having clean and reliable portable restroom facilities is essential. We offer a full range of {{ $domain?->primary_service ?? 'porta potty rental' }} solutions across all cities in {{ $state->name }} with same-day delivery and competitive pricing.</p>
+
+                    <h3>Standard Porta Potties</h3>
+                    <p>Our standard units are perfect for construction sites, outdoor events, and budget-conscious projects. Each unit includes a toilet, urinal, hand sanitizer dispenser, and ventilation. Starting at just $89/day, these are our most popular rental option for {{ $state->name }} customers.</p>
+
+                    <h3>Deluxe Flushable Units</h3>
+                    <p>For a step up in comfort, our deluxe units feature a flushing toilet, sink with running water, mirror, and interior lighting. These are ideal for events where guests expect a more upscale experience. Priced from $150/day with weekly servicing included.</p>
+
+                    <h3>ADA Accessible Units</h3>
+                    <p>All our rental fleets include ADA-compliant portable restrooms with spacious interiors, grab bars, and ground-level entry. We ensure your {{ $state->name }} event or job site meets accessibility requirements. Starting at $125/day.</p>
+
+                    <h3>Luxury Restroom Trailers</h3>
+                    <p>For weddings, corporate functions, and VIP events in {{ $state->name }}, our luxury restroom trailers offer climate-controlled comfort, flushing toilets, running water, mirrors, and ambient lighting. Starting at $500/day with complimentary delivery.</p>
+
+                    <h3>Construction Site Packages</h3>
+                    <p>We offer volume discounts for construction projects across {{ $state->name }}. Our OSHA-compliant packages include regular servicing, restocking, and 24/7 emergency support. Whether you need 2 units or 200, we deliver and maintain them for the duration of your project.</p>
+
+                    <p>Contact us today to discuss your {{ $state->name }} porta potty rental needs. Same-day delivery is available across all cities. No hidden fees, transparent pricing, and professional service guaranteed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     {{-- Cities Section --}}
     <section class="py-16 lg:py-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -196,16 +278,47 @@ $breadcrumbSchema = [
                 </p>
             </div>
 
+            {{-- Service Type Filter Tabs --}}
+            <div x-data="{ activeFilter: 'general' }">
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    @foreach($serviceTypes as $st)
+                        <button @click="activeFilter = '{{ $st['key'] }}'"
+                                :class="activeFilter === '{{ $st['key'] }}' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+                                class="px-4 py-2 rounded-full text-sm font-medium transition-all min-h-[44px] flex items-center gap-1.5">
+                            @if($st['key'] !== 'general')
+                            <x-icon name="{{ $st['icon'] }}" class="w-4 h-4" />
+@endif
+                            {{ $st['name'] }}
+                        </button>
+                    @endforeach
+                </div>
+
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                 @foreach($cities as $city)
-                    @php $cityPage = $city->getServicePage('general'); @endphp
+                    @php
+                        $cityPage = $city->getServicePage('general');
+                        $availableServices = [];
+                        foreach (['standard', 'deluxe', 'ada', 'luxury', 'construction'] as $svcKey) {
+                            if ($city->getServicePage($svcKey)) $availableServices[] = $svcKey;
+                        }
+                        $availableStr = implode(' ', $availableServices);
+                    @endphp
                     <a href="{{ $cityPage ? url($cityPage->slug) : '#' }}"
+                       x-show="activeFilter === 'general' || '{{ $availableStr }}'.includes(activeFilter)"
                        class="group relative bg-white rounded-xl p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 text-center">
                         <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <h3 class="font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
                             {{ $city->name }}
                         </h3>
                         <p class="text-xs text-slate-400 mt-1">{{ $state->code }}</p>
+                        @if(!empty($availableServices))
+                        <div class="flex flex-wrap justify-center gap-1 mt-2">
+                            @foreach($availableServices as $svcKey)
+                                @php $svcLabels = ['standard' => 'Std', 'deluxe' => 'Del', 'ada' => 'ADA', 'luxury' => 'Lux', 'construction' => 'Const']; @endphp
+                                <span class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{{ $svcLabels[$svcKey] ?? $svcKey }}</span>
+                            @endforeach
+                        </div>
+                        @endif
                         @if($city->population && $city->population > 50000)
                             <span class="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
                                 Major City
@@ -237,63 +350,7 @@ $breadcrumbSchema = [
             </div>
             @endif
         </div>
-    </section>
-
-    {{-- Services Grid --}}
-    <section class="py-16 lg:py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <span class="inline-block text-emerald-600 font-semibold text-sm tracking-wider uppercase mb-4">What We Offer</span>
-                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-                    {{ $domain?->business_name ?? 'Portable Restroom' }} Solutions
-                </h2>
-                <p class="text-lg text-slate-600 max-w-2xl mx-auto">
-                    We have the perfect solution for your needs
-                </p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <a href="{{ route('services') }}#standard" class="group bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300">
-                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-amber-500 transition-colors">
-                        <svg class="w-7 h-7 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">Standard Units</h3>
-                    <p class="text-slate-600 text-sm">Perfect for construction sites and basic needs</p>
-                </a>
-
-                <a href="{{ route('services') }}#deluxe" class="group bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300">
-                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors">
-                        <svg class="w-7 h-7 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">Deluxe Flushable</h3>
-                    <p class="text-slate-600 text-sm">Enhanced comfort for events and weddings</p>
-                </a>
-
-                <a href="{{ route('services') }}#ada" class="group bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300">
-                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-purple-500 transition-colors">
-                        <svg class="w-7 h-7 text-purple-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">ADA Accessible</h3>
-                    <p class="text-slate-600 text-sm"> wheelchair-accessible units</p>
-                </a>
-
-                <a href="{{ route('services') }}#luxury" class="group bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300">
-                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-amber-500 transition-colors">
-                        <svg class="w-7 h-7 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">Luxury Trailers</h3>
-                    <p class="text-slate-600 text-sm">Premium restroom trailers for VIP events</p>
-                </a>
-            </div>
-        </div>
+    </div>
     </section>
 
     {{-- Trust Badges --}}

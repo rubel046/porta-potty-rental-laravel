@@ -15,7 +15,7 @@
     
     @if($showLicensed)
         <div class="flex items-center gap-2">
-            <img src="{{ asset('badges/licensed-insured.svg') }}" alt="Licensed & Insured" class="h-10">
+            <img src="{{ asset('badges/licensed-insured.svg') }}" alt="Licensed & Insured" width="160" height="40" class="h-10">
         </div>
     @endif
     

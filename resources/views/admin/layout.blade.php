@@ -74,6 +74,14 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                     <span>Cities</span>
                 </a>
+                <a href="{{ route('admin.cities.quality-scores') }}" @click="$dispatch('close-mobile-menu')" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.cities.quality-scores') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                    <span>Quality Scores</span>
+                </a>
+                <a href="{{ route('admin.neighborhoods.index') }}" @click="$dispatch('close-mobile-menu')" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.neighborhoods.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <span>Neighborhoods</span>
+                </a>
 
                 <a href="{{ route('admin.service-pages.index') }}" @click="$dispatch('close-mobile-menu')" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.service-pages.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -141,6 +149,11 @@
                 <span>Domains</span>
             </a>
 
+            <a href="{{ route('admin.gmb-accounts.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.gmb-accounts.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span>GMB Accounts</span>
+            </a>
+
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Master Data</div>
 
             <a href="{{ route('admin.global.states.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.global.states.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
@@ -154,13 +167,13 @@
             </a>
         </nav>
 
-            <div style="flex-shrink: 0; padding: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.5);">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    <span>Back to Site</span>
-                </a>
-            </div>
-        </aside>
+        <div class="p-4 border-t border-slate-700/50">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                <span>Back to Site</span>
+            </a>
+        </div>
+    </aside>
     </div>
 
     {{-- Desktop Sidebar --}}
@@ -192,6 +205,10 @@
             <a href="{{ route('admin.cities.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.cities.index') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 <span>Cities</span>
+            </a>
+            <a href="{{ route('admin.cities.quality-scores') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.cities.quality-scores') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                <span>Quality Scores</span>
             </a>
 
             <a href="{{ route('admin.service-pages.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.service-pages.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
@@ -246,6 +263,11 @@
             <a href="{{ route('admin.domains.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.domains.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                 <span>Domains</span>
+            </a>
+
+            <a href="{{ route('admin.gmb-accounts.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm mx-2 rounded-lg {{ request()->routeIs('admin.gmb-accounts.*') ? 'bg-green-600/20 text-green-400' : 'text-slate-300 hover:bg-slate-800/50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span>GMB Accounts</span>
             </a>
 
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Master Data</div>

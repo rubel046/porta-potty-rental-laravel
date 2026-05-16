@@ -208,16 +208,21 @@ class ServicePage extends Model
             'name' => $city->name,
         ];
 
-        return [
+        $domainUrl = $domain?->domain ? "https://{$domain->domain}" : url('/');
+
+        $schema = [
             '@context' => 'https://schema.org',
             '@type' => ['LocalBusiness', 'HomeAndConstructionBusiness'],
+            '@id' => $domainUrl . '#service-' . $this->id,
             'name' => "{$serviceLabel} {$city->name}",
             'description' => $description,
             'telephone' => $this->phone_raw,
             'address' => [
                 '@type' => 'PostalAddress',
+                'streetAddress' => $city->street_address ?? '',
                 'addressLocality' => $city->name,
                 'addressRegion' => $state->code,
+                'postalCode' => $city->postal_code ?? '',
                 'addressCountry' => 'US',
             ],
             'areaServed' => $areaServed,
@@ -247,6 +252,16 @@ class ServicePage extends Model
                 'itemListElement' => $this->getServiceOfferings(),
             ],
         ];
+
+        $sameAs = [];
+        if ($domain?->google_business_url) {
+            $sameAs[] = $domain->google_business_url;
+        }
+        if (! empty($sameAs)) {
+            $schema['sameAs'] = $sameAs;
+        }
+
+        return $schema;
     }
 
     protected function getServiceOfferings(): array

@@ -1,7 +1,35 @@
 @extends(\App\Providers\DomainViewHelper::resolve('layout'))
 
-@section('title', 'Porta Potty Rental Blog | Guides, Tips & Pricing Info')
-@section('meta_description', 'Expert guides on porta potty rental pricing, event planning, construction site requirements, and more.')
+@section('title', $selectedCategory ? ($selectedCategory->name . ' — Porta Potty Rental Blog') : 'Porta Potty Rental Blog | Guides, Tips & Pricing Info')
+@section('meta_description', $selectedCategory ? ($selectedCategory->description ?? 'Read our ' . strtolower($selectedCategory->name) . ' guides for porta potty rentals. Expert tips, pricing, and advice.') : 'Expert guides on porta potty rental pricing, event planning, and construction site requirements. Everything you need to know about renting portable toilets.')
+
+@push('schema')
+@php
+$blogSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "Blog",
+    "@id" => url('/') . "#blog",
+    "name" => "Porta Potty Rental Blog | Potty Direct",
+    "description" => "Expert guides on porta potty rental pricing, event planning, construction site requirements, and more.",
+    "url" => route('blog.index'),
+    "publisher" => ["@id" => url('/') . "#organization"],
+];
+$breadcrumbItems = [
+    ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => route('home')],
+    ["@type" => "ListItem", "position" => 2, "name" => "Blog", "item" => route('blog.index')],
+];
+if ($selectedCategory) {
+    $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $selectedCategory->name, "item" => route('blog.category', ['slug' => $selectedCategory->slug])];
+}
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => $breadcrumbItems,
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($blogSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
 
 @section('pagination_headers')
 @if($posts->currentPage() > 1)
@@ -18,9 +46,9 @@
 @section('content')
 <section class="bg-white border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Portable Toilet Rental Blog</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">{{ $selectedCategory ? $selectedCategory->name . ' Guides & Tips' : 'Portable Toilet Rental Blog' }}</h1>
         <p class="text-slate-500 text-lg max-w-2xl">
-            Expert guides on porta potty rental, event planning, construction site requirements, and more.
+            {{ $selectedCategory ? ($selectedCategory->description ?? 'Expert guides, tips, and advice for ' . strtolower($selectedCategory->name) . '.') : 'Expert guides on porta potty rental, event planning, construction site requirements, and more.' }}
         </p>
     </div>
 </section>
@@ -37,7 +65,7 @@
                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium {{ !$selectedCategory ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
                             All ({{ $totalPostsCount ?? $posts->total() }})
                         </a>
-                        @foreach($categories as $cat)
+                        @foreach($categories->take(15) as $cat)
                             <a href="{{ route('blog.category', ['slug' => $cat->slug]) }}"
                                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium {{ $selectedCategory?->id === $cat->id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
                                 @if($cat->icon)<span class="mr-1">{{ $cat->icon }}</span>@endif
@@ -75,7 +103,7 @@
                             <a href="{{ route('blog.show', $post->slug) }}" class="block">
                                 @if($post->featured_image)
                                     <div class="relative aspect-[16/9] overflow-hidden">
-                                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" width="640" height="360" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                         @if($post->category)
                                             <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-white bg-emerald-600 rounded-full">{{ $post->category->name }}</span>
                                         @endif
@@ -124,7 +152,7 @@
                                 <span class="text-xs {{ !$selectedCategory ? 'text-white/70' : 'text-slate-400' }}">{{ $totalPostsCount ?? $posts->total() }}</span>
                             </a>
                         </li>
-                        @foreach($categories->take(30) as $cat)
+                        @foreach($categories->take(15) as $cat)
                             <li>
                                 <a href="{{ route('blog.category', ['slug' => $cat->slug]) }}"
                                    class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {{ $selectedCategory?->id === $cat->id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -136,13 +164,13 @@
                                 </a>
                             </li>
                         @endforeach
-                        @if($categories->count() > 30)
+                        @if($categories->count() > 15)
                             <button id="loadMoreCategories" onclick="toggleCategories()"
                                     class="w-full text-xs text-slate-500 hover:text-slate-700 mt-2 text-left px-3 py-1">
-                                Show All ({{ $categories->count() - 30 }} more)
+                                Show All ({{ $categories->count() - 15 }} more)
                             </button>
                             <div id="moreCategories" class="hidden space-y-1 mt-1">
-                                @foreach($categories->skip(30) as $cat)
+                                @foreach($categories->skip(15) as $cat)
                                     <li>
                                         <a href="{{ route('blog.category', ['slug' => $cat->slug]) }}"
                                            class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {{ $selectedCategory?->id === $cat->id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -184,7 +212,7 @@ function toggleCategories() {
         btn.textContent = 'Show Less';
     } else {
         moreCats.classList.add('hidden');
-        btn.textContent = 'Show All ({{ $categories->count() - 30 }} more)';
+        btn.textContent = 'Show All ({{ $categories->count() - 15 }} more)';
     }
 }
 </script>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="mb-6">
     <h2 class="text-lg font-semibold text-gray-800">All Call Logs</h2>
-    <p class="text-sm text-gray-500">Track and analyze incoming calls</p>
+    <p class="text-sm text-gray-500">Track, analyze, and add buyer disposition to incoming calls</p>
 </div>
 
 {{-- Filters --}}
@@ -38,11 +38,30 @@
                 <input type="hidden" name="status" :value="selected">
             </div>
         </div>
+        <div class="w-44" x-data="{ open: false, selected: '{{ request('disposition') }}' }">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Disposition</label>
+            <div class="relative">
+                <button type="button" @click="open = !open" @click.outside="open = false" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-left flex justify-between items-center bg-white hover:bg-gray-50">
+                    <span x-text="selected === 'booked' ? 'Booked' : (selected === 'callback' ? 'Callback' : (selected === 'price_shopper' ? 'Price Shopper' : (selected === 'wrong_area' ? 'Wrong Area' : (selected === 'not_interested' ? 'Not Interested' : (selected === 'voicemail' ? 'Voicemail' : 'All Dispositions')))))" class="truncate"></span>
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition.opacity style="display: none;" class="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <button type="button" @click="selected = ''; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50" :class="selected === '' ? 'bg-green-50 text-green-700 font-medium' : ''">All Dispositions</button>
+                    <button type="button" @click="selected = 'booked'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50" :class="selected === 'booked' ? 'bg-green-50 text-green-700 font-medium' : ''">Booked</button>
+                    <button type="button" @click="selected = 'callback'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Callback</button>
+                    <button type="button" @click="selected = 'price_shopper'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Price Shopper</button>
+                    <button type="button" @click="selected = 'wrong_area'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Wrong Area</button>
+                    <button type="button" @click="selected = 'not_interested'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Not Interested</button>
+                    <button type="button" @click="selected = 'voicemail'; open = false" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Voicemail</button>
+                </div>
+                <input type="hidden" name="disposition" :value="selected">
+            </div>
+        </div>
         <div class="flex gap-2">
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
                 Filter
             </button>
-            @if(request()->anyFilled(['from', 'to', 'status']))
+            @if(request()->anyFilled(['from', 'to', 'status', 'disposition']))
                 <a href="{{ route('admin.calls.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                     Clear
                 </a>
@@ -61,9 +80,11 @@
                     <th class="px-6 py-4 font-medium">Caller</th>
                     <th class="px-6 py-4 font-medium">City</th>
                     <th class="px-6 py-4 font-medium">Buyer</th>
+                    <th class="px-6 py-4 font-medium">Disposition</th>
                     <th class="px-6 py-4 font-medium">Status</th>
                     <th class="px-6 py-4 font-medium">Duration</th>
                     <th class="px-6 py-4 font-medium">Payout</th>
+                    <th class="px-6 py-4 font-medium"></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
@@ -82,6 +103,23 @@
                             <span class="text-gray-500">{{ $call->buyer?->company_name ?? '—' }}</span>
                         </td>
                         <td class="px-6 py-4">
+                            @if($call->buyer_disposition)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                                    @switch($call->buyer_disposition)
+                                        @case('booked') bg-green-100 text-green-800 @break
+                                        @case('callback') bg-blue-100 text-blue-800 @break
+                                        @case('price_shopper') bg-yellow-100 text-yellow-800 @break
+                                        @case('wrong_area') bg-red-100 text-red-800 @break
+                                        @case('not_interested') bg-gray-100 text-gray-800 @break
+                                        @case('voicemail') bg-purple-100 text-purple-800 @break
+                                        @default bg-gray-100 text-gray-600
+                                    @endswitch
+                                ">{{ str_replace('_', ' ', ucfirst($call->buyer_disposition)) }}</span>
+                            @else
+                                <span class="text-gray-400">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
                             {!! $call->status_badge !!}
                         </td>
                         <td class="px-6 py-4">
@@ -90,10 +128,13 @@
                         <td class="px-6 py-4">
                             <span class="font-bold text-green-600">${{ number_format($call->payout, 2) }}</span>
                         </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ route('admin.calls.edit', $call) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Edit</a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                        <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                 <p class="text-gray-500 font-medium">No calls found</p>

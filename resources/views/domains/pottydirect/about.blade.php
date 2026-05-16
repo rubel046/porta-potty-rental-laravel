@@ -1,6 +1,6 @@
 @extends(\App\Models\Domain::getLayoutPathStatic())
-@section('title', 'About Potty Direct | Leading Porta Potty Rental Company in the USA')
-@section('meta_description', 'Learn about Potty Direct — your trusted partner for affordable, clean portable toilet rentals across the United States. Same-day delivery, competitive pricing, and 25+ years of experience serving construction sites, events, and weddings.')
+@section('title', 'About Potty Direct | US Porta Potty Rental')
+@section('meta_description', 'Learn about Potty Direct — your trusted partner for affordable, clean porta potty rentals nationwide. Same-day delivery, no hidden fees, professional service.')
 @section('canonical', route('about'))
 
 @push('schema')
@@ -38,31 +38,44 @@ $localBusinessSchema = [
 ];
 $localBusinessSchema = array_filter($localBusinessSchema);
 
-$organizationSchema = [
+$aboutPageSchema = [
     "@context" => "https://schema.org",
-    "@type" => "Organization",
-    "@id" => $url . "#organization",
-    "name" => "Potty Direct",
-    "url" => $url,
+    "@type" => "AboutPage",
+    "name" => "About Potty Direct",
     "description" => "Leading porta potty rental company serving construction sites, events, and weddings across the USA.",
+    "url" => route('about'),
+    "mainEntity" => ["@id" => url('/') . "#organization"],
     "sameAs" => [
         "https://www.facebook.com/pottydirect",
         "https://www.twitter.com/pottydirect"
     ],
-    "contactPoint" => [
-        "@type" => "ContactPoint",
-        "telephone" => $phone,
-        "contactType" => "customer service",
-        "areaServed" => "US",
-        "availableLanguage" => "English"
-    ]
 ];
 @endphp
 <script type="application/ld+json">{!! json_encode($localBusinessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
-<script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($aboutPageSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@php
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => [
+        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => route('home')],
+        ["@type" => "ListItem", "position" => 2, "name" => "About", "item" => route('about')]
+    ]
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
+
+    {{-- Breadcrumb --}}
+    <nav class="bg-slate-100 border-b border-slate-200 py-2.5 px-4">
+        <div class="max-w-4xl mx-auto flex items-center gap-1.5 text-xs sm:text-sm text-slate-500">
+            <a href="{{ route('home') }}" class="hover:text-emerald-600 transition">Home</a>
+            <x-icon name="chevron-right" class="w-3 h-3" />
+            <span class="text-slate-800 font-medium">About</span>
+        </div>
+    </nav>
 
     {{-- Hero --}}
     <section class="relative py-16 md:py-20 overflow-hidden">
@@ -74,7 +87,7 @@ $organizationSchema = [
 
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5">
-                About Us
+                About Potty Direct — Nationwide Porta Potty Rental
             </h1>
             <p class="text-xl text-slate-300 max-w-2xl mx-auto">
                 Your trusted portable sanitation partner across the United States
@@ -137,6 +150,56 @@ $organizationSchema = [
                             <div>
                                 <h3 class="font-bold text-slate-800">{{ $feature['title'] }}</h3>
                                 <p class="text-slate-600 text-sm">{{ $feature['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Our Story --}}
+            <div class="mb-12">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                        <x-icon name="clock" class="w-5 h-5" />
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Our story</h2>
+                </div>
+                <p class="text-slate-600 leading-relaxed text-lg mb-4">
+                    Potty Direct was founded to solve a simple problem: renting a porta potty shouldn't be complicated or expensive. We saw an industry where pricing was opaque, service was inconsistent, and customers were often left guessing what they'd actually pay.
+                </p>
+                <p class="text-slate-600 leading-relaxed text-lg mb-4">
+                    Since our founding, we've grown from a small local operation into a nationwide portable sanitation provider serving over 500 cities. Our team brings decades of combined experience in construction, event management, and waste management — giving us the expertise to handle projects of any scale.
+                </p>
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    Every day, we focus on three things: <strong class="text-slate-800">transparent pricing</strong>, <strong class="text-slate-800">reliable delivery</strong>, and <strong class="text-slate-800">exceptional cleanliness</strong>. It's that simple.
+                </p>
+            </div>
+
+            {{-- Our Values --}}
+            <div class="mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                        <x-icon name="star" class="w-5 h-5" />
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Our values</h2>
+                </div>
+                <div class="grid gap-4">
+                    @php
+                        $values = [
+                            ['title' => 'Transparency First', 'desc' => 'Every price is published upfront. No hidden fees, no surprise charges, no fine print. What we quote is what you pay.'],
+                            ['title' => 'Reliability Matters', 'desc' => 'We deliver on time, every time. Our fleet and logistics network ensure your units arrive when promised. If we say same-day, we mean same-day.'],
+                            ['title' => 'Cleanliness Is Non-Negotiable', 'desc' => 'Every unit is pressure-washed, sanitized, and inspected before delivery. We maintain rigorous cleaning standards that exceed industry norms.'],
+                            ['title' => 'Customer First', 'desc' => 'Real humans answer your call — not automated systems. We work around your schedule, not ours.'],
+                        ];
+                    @endphp
+                    @foreach($values as $value)
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 flex items-start gap-4 hover:shadow-md transition">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <x-icon name="shield-check" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800">{{ $value['title'] }}</h3>
+                                <p class="text-slate-600 text-sm">{{ $value['desc'] }}</p>
                             </div>
                         </div>
                     @endforeach

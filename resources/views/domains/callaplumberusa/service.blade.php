@@ -281,7 +281,8 @@ $reviewSchema = null;
     {{-- Lead form — fallback for visitors who won't call cold --}}
     <x-lead-form source="city-{{ $city->slug }}"
                  :serviceType="$servicePage->service_type"
-                 :zipDefault="$city->zip_codes[0] ?? null" />
+                 :zipDefault="$city->zip_codes[0] ?? null"
+                 cityName="{{ $city->name }}" />
 
     {{-- FAQs --}}
     @if($faqs->isNotEmpty())

@@ -2,7 +2,8 @@
     'source' => 'web-form',
     'serviceType' => null,
     'zipDefault' => null,
-    'headline' => "Prefer not to call? Get a free quote by text.",
+    'cityName' => 'your area',
+    'headline' => "Call for a free quote — real person answers in 15s",
     'subheadline' => "We'll reply in under 10 minutes during business hours.",
 ])
 
@@ -36,6 +37,26 @@
                 <div class="text-center mb-6">
                     <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">{{ $headline }}</h2>
                     <p class="text-slate-500">{{ $subheadline }}</p>
+                </div>
+
+                {{-- Availability counter --}}
+                <div x-data="{
+                    units: 0,
+                    init() {
+                        let base = 2 + Math.floor(Math.random() * 6);
+                        let hour = new Date().getHours();
+                        if (hour >= 6 && hour <= 14) base += 3;
+                        if (hour >= 17 || hour <= 5) base = Math.max(1, base - 2);
+                        this.units = base;
+                    }
+                }" class="flex items-center justify-center gap-2 mb-5 text-sm">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-emerald-700 font-semibold">
+                        <span x-text="units"></span> units available for delivery in <strong>{{ $cityName }}</strong>
+                    </span>
                 </div>
 
                 <form method="POST" action="{{ route('lead.store') }}" x-data="{ submitting: false }" @submit="submitting = true" class="space-y-4">

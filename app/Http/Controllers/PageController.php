@@ -6,6 +6,8 @@ use App\Models\BlogPost;
 use App\Models\City;
 use App\Models\Domain;
 use App\Models\Faq;
+use App\Models\Neighborhood;
+use App\Models\NeighborhoodServicePage;
 use App\Models\ServicePage;
 use App\Models\State;
 use App\Models\Testimonial;
@@ -298,6 +300,66 @@ class PageController extends Controller
                 ],
                 'best_for' => ['Residential', 'Commercial', 'Restaurants', 'Farm Properties'],
             ],
+            'portable-urinal' => [
+                'key' => 'portable-urinal',
+                'name' => 'Portable Urinal Stations',
+                'short_name' => 'Urinals',
+                'icon' => 'water-drop',
+                'description' => 'Standalone portable urinal stations for festivals, concerts, sporting events, and high-traffic areas. Reduces wait times and complements restroom trailers.',
+                'features' => [
+                    'Standalone male/female urinal units',
+                    'High-capacity waste tank',
+                    'Privacy screening',
+                    'Easy setup and teardown',
+                    'Odor control system',
+                ],
+                'best_for' => ['Festivals', 'Concerts', 'Sporting Events', 'Fairs'],
+            ],
+            'handwash-trailer' => [
+                'key' => 'handwash-trailer',
+                'name' => 'Hand Wash Trailers',
+                'short_name' => 'Hand Wash',
+                'icon' => 'wash',
+                'description' => 'Trailer-mounted hand washing stations with multiple sinks, hot/cold running water, and soap dispensers. Ideal for events, food service, and construction sites.',
+                'features' => [
+                    '4-6 hand wash stations per trailer',
+                    'Hot and cold running water',
+                    'Soap and paper towel dispensers',
+                    'Waste water holding tank',
+                    'ADA compliant options',
+                ],
+                'best_for' => ['Food Festivals', 'Construction Sites', 'Corporate Events', 'Fairs'],
+            ],
+            'temporary-fencing' => [
+                'key' => 'temporary-fencing',
+                'name' => 'Temporary Fencing & Barriers',
+                'short_name' => 'Fencing',
+                'icon' => 'shield-check',
+                'description' => 'Portable fencing, crowd control barriers, and privacy screens for construction sites, events, and restricted areas.',
+                'features' => [
+                    'Chain link and panel fencing',
+                    'Crowd control barriers',
+                    'Privacy screens and mesh',
+                    'Gate and lock options',
+                    'Same-day setup available',
+                ],
+                'best_for' => ['Construction Sites', 'Outdoor Events', 'Festivals', 'Road Work'],
+            ],
+            'highrise' => [
+                'key' => 'highrise',
+                'name' => 'High-Rise Construction Toilets',
+                'short_name' => 'High-Rise',
+                'icon' => 'building',
+                'description' => 'Compact porta potties engineered for multi-story construction projects. Designed to fit in service elevators or be crane-lifted to upper floors.',
+                'features' => [
+                    'Compact footprint fits service elevators',
+                    'Crane-liftable with reinforced lifting points',
+                    'Lightweight composite construction',
+                    'OSHA compliant for vertical builds',
+                    'Easy to move floor-to-floor',
+                ],
+                'best_for' => ['High-Rise Construction', 'Urban Job Sites', 'Multi-Story Projects', 'Rooftop Work'],
+            ],
         ];
 
         $addOns = [
@@ -342,9 +404,36 @@ class PageController extends Controller
                 'description' => 'Discounted rates for monthly and long-term rental agreements.',
                 'price' => 'Up to 40% off',
             ],
+            [
+                'icon' => 'bolt',
+                'name' => 'Generator Rentals',
+                'description' => 'Portable generators to power luxury restroom trailers, lighting, and event equipment.',
+            ],
+            [
+                'icon' => 'document',
+                'name' => 'Restroom Signage',
+                'description' => 'ADA-compliant restroom signs, directional markers, and wayfinding signage for events.',
+            ],
+            [
+                'icon' => 'building',
+                'name' => 'Privacy Screens',
+                'description' => 'Portable privacy enclosures and screening walls for restroom areas and event spaces.',
+            ],
+            [
+                'icon' => 'sparkles',
+                'name' => 'Deodorizing Service',
+                'description' => 'Professional odor control treatment and fragrance maintenance for all rental units.',
+            ],
+            [
+                'icon' => 'home',
+                'name' => 'Baby Changing Stations',
+                'description' => 'Portable baby changing tables available as add-ons for family-friendly events and venues.',
+            ],
         ];
 
-        return view(DomainViewHelper::resolveForController('services'), compact('serviceTypes', 'addOns'));
+        $pricingEnabled = config('service_pricing.enabled', false);
+
+        return view(DomainViewHelper::resolveForController('services'), compact('serviceTypes', 'addOns', 'pricingEnabled'));
     }
 
     /**
@@ -352,111 +441,310 @@ class PageController extends Controller
      */
     public function pricing()
     {
+        $pricingEnabled = config('service_pricing.enabled', false);
+        $priceRanges = config('service_pricing.ranges', []);
+
         $pricingInfo = [
             [
+                'key' => 'standard',
                 'icon' => 'building',
-                'title' => 'Standard Rental',
-                'description' => 'Basic, functional units perfect for construction sites and work areas. OSHA compliant and budget-friendly.',
+                'title' => 'Standard Porta Potty',
+                'short_title' => 'Standard',
+                'daily_label' => '$89 – $175',
+                'weekly_label' => '$445 – $875',
+                'monthly_label' => '$1,335 – $2,625',
+                'description' => 'Basic, OSHA-compliant units perfect for construction sites and work zones. Includes sanitizer dispenser and weekly servicing.',
                 'best_for' => 'Construction Sites, Work Zones, Outdoor Projects',
+                'popular' => true,
                 'includes' => [
                     'Weekly servicing and cleaning',
-                    'Delivery and setup',
-                    'OSHA compliant',
-                    'Hand sanitizer included',
+                    'Delivery and setup within 50 miles',
+                    'OSHA compliant design',
+                    'Hand sanitizer dispenser',
+                    'Toilet paper and deodorizer',
+                    'Pickup at end of rental',
                 ],
-                'cta' => 'Get Quote for Standard Units',
             ],
             [
+                'key' => 'deluxe',
                 'icon' => 'water-drop',
                 'title' => 'Deluxe Flushable Unit',
-                'description' => 'Premium units with flushing toilet and hand sink. Ideal for events where guests expect more comfort.',
+                'short_title' => 'Deluxe',
+                'daily_label' => '$150 – $275',
+                'weekly_label' => '$750 – $1,375',
+                'monthly_label' => '$2,250 – $4,125',
+                'description' => 'Premium units with flushing toilet and hand sink. Ideal for weddings and upscale events where guest comfort matters.',
                 'best_for' => 'Weddings, Private Events, Corporate Functions',
+                'popular' => false,
                 'includes' => [
-                    'Flushing toilet',
+                    'Flushing toilet with foot pump',
                     'Hand sink with running water',
                     'Interior mirror and lighting',
+                    'Improved ventilation system',
                     'Weekly servicing included',
+                    'Delivery and setup',
                 ],
-                'cta' => 'Get Quote for Deluxe Units',
             ],
             [
+                'key' => 'ada',
                 'icon' => 'accessibility',
                 'title' => 'ADA Accessible Unit',
-                'description' => 'Wheelchair-accessible units that meet all federal accessibility requirements.',
+                'short_title' => 'ADA',
+                'daily_label' => '$125 – $250',
+                'weekly_label' => '$625 – $1,250',
+                'monthly_label' => '$1,875 – $3,750',
+                'description' => 'Wheelchair-accessible units meeting all federal ADA requirements. Required for many public events and job sites.',
                 'best_for' => 'Public Events, ADA Compliance, Venues',
+                'popular' => false,
                 'includes' => [
-                    'Extra-wide door for wheelchair access',
+                    'Extra-wide 60" door for wheelchair access',
                     'Interior grab bars',
                     'Non-slip flooring',
-                    'Spacious interior',
+                    'Spacious interior with 90" ceiling',
+                    'Lowered seat height',
+                    'Weekly servicing included',
                 ],
-                'cta' => 'Get Quote for ADA Units',
             ],
             [
+                'key' => 'luxury',
                 'icon' => 'sparkles',
                 'title' => 'Luxury Restroom Trailer',
-                'description' => 'High-end trailers with climate control, porcelain fixtures, and elegant interiors.',
+                'short_title' => 'Luxury',
+                'daily_label' => '$500 – $2,500',
+                'weekly_label' => '$2,500 – $12,500',
+                'monthly_label' => '$7,500 – $37,500',
+                'description' => 'High-end trailers with climate control, porcelain fixtures, and elegant interiors. Perfect for VIP events and weddings.',
                 'best_for' => 'VIP Events, Weddings, Film Productions',
+                'popular' => false,
                 'includes' => [
                     'Climate controlled (A/C & heat)',
                     'Porcelain flush toilets',
-                    'Vanity with mirror',
-                    'Men\'s and women\'s sides',
+                    'Vanity with mirror and sink',
+                    'LED interior lighting',
+                    'Men\'s and women\'s separate sides',
+                    'Fresh water system',
                 ],
-                'cta' => 'Get Quote for Luxury Trailers',
             ],
             [
+                'key' => 'shower',
                 'icon' => 'water-drop',
                 'title' => 'Portable Shower Unit',
-                'description' => 'Private shower stalls for construction sites, events, and remote locations.',
-                'best_for' => 'Construction Sites, Camping, Events',
+                'short_title' => 'Shower',
+                'daily_label' => '$150 – $400',
+                'weekly_label' => '$750 – $2,000',
+                'monthly_label' => '$2,250 – $6,000',
+                'description' => 'Private shower stalls for construction sites, camping events, and disaster relief. Hot and cold water included.',
+                'best_for' => 'Construction Sites, Camping, Disaster Relief',
+                'popular' => false,
                 'includes' => [
-                    'Hot and cold water',
-                    'Privacy curtains',
+                    'Hot and cold running water',
+                    'Privacy curtains and changing area',
                     'Drainage system',
-                    'Changing area',
+                    'Soap and towel dispensers',
+                    'Weekly servicing',
+                    'Delivery and setup',
                 ],
-                'cta' => 'Get Quote for Shower Units',
             ],
             [
-                'icon' => 'cube',
-                'title' => 'Holding Tank',
-                'description' => 'Large capacity tanks for remote job sites without sewage access.',
-                'best_for' => 'Remote Sites, Mining, Oil Fields',
+                'key' => 'construction',
+                'icon' => 'building',
+                'title' => 'Construction Site Package',
+                'short_title' => 'Construction',
+                'daily_label' => 'From $89/unit',
+                'weekly_label' => 'Volume pricing',
+                'monthly_label' => 'Up to 40% off',
+                'description' => 'Complete sanitation packages for construction sites. Includes multiple units, OSHA documentation, and volume discounts.',
+                'best_for' => 'Large Construction, High-Rise Projects, Road Work',
+                'popular' => false,
                 'includes' => [
-                    '500-1000 gallon capacity',
-                    'Remote location ready',
-                    'Regular pumping service',
-                    'Weather resistant',
+                    'Multiple standard units (quantity-based pricing)',
+                    'Weekly servicing for all units',
+                    'OSHA compliance documentation',
+                    'On-site supervisor for large projects',
+                    'Volume discounts for 5+ units',
+                    'Flexible pickup scheduling',
                 ],
-                'cta' => 'Get Quote for Holding Tanks',
             ],
         ];
 
         $factors = [
             [
                 'title' => 'Number of Units',
-                'description' => 'The more units you rent, the better value you get. We offer volume discounts for large orders.',
+                'description' => 'The more units you rent, the better value you get. We offer volume discounts for orders of 5+ units.',
             ],
             [
                 'title' => 'Rental Duration',
-                'description' => 'Daily, weekly, and monthly rentals available. Long-term rentals come with significant savings.',
+                'description' => 'Daily, weekly, and monthly rentals available. Long-term rentals (30+ days) come with significant savings.',
             ],
             [
                 'title' => 'Unit Type',
-                'description' => 'Standard, deluxe, ADA, and luxury units have different pricing based on features and amenities.',
+                'description' => 'Standard, deluxe, ADA, luxury, and specialty units have different pricing based on features and amenities.',
             ],
             [
                 'title' => 'Location',
-                'description' => 'Delivery distance and local regulations can affect pricing. Call us for location-specific quotes.',
+                'description' => 'Delivery distance and local regulations can affect pricing. Most locations within 50 miles of our service centers include free delivery.',
             ],
             [
                 'title' => 'Servicing Frequency',
-                'description' => 'Weekly servicing is included. Extra servicing or event-only rentals may have different pricing.',
+                'description' => 'Weekly servicing is included in all standard rentals. Events may require more frequent servicing at additional cost.',
             ],
         ];
 
-        return view(DomainViewHelper::resolveForController('pricing'), compact('pricingInfo', 'factors'));
+        return view(DomainViewHelper::resolveForController('pricing'), compact('pricingInfo', 'factors', 'pricingEnabled', 'priceRanges'));
+    }
+
+    /**
+     * Units Calculator Page
+     */
+    public function calculator()
+    {
+        return view(DomainViewHelper::resolveForController('calculator'));
+    }
+
+    /**
+     * Pillar Page: Complete Guide to Porta Potty Rental
+     */
+    public function pillarPage()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('complete-guide-to-porta-potty-rental'), compact('testimonials'));
+    }
+
+    /**
+     * Wedding Porta Potty Rental Page
+     */
+    public function wedding()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('wedding'), compact('testimonials'));
+    }
+
+    /**
+     * Festival Portable Toilets Page
+     */
+    public function festival()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('festival'), compact('testimonials'));
+    }
+
+    /**
+     * Construction Site Porta Potty Rental Page
+     */
+    public function constructionLanding()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('construction-landing'), compact('testimonials'));
+    }
+
+    /**
+     * Central FAQ Page
+     */
+    public function faq()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('faq'), compact('testimonials'));
+    }
+
+    /**
+     * OSHA Porta Potty Requirements Guide
+     */
+    public function oshaGuide()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('osha-guide'), compact('testimonials'));
+    }
+
+    /**
+     * Standard vs Deluxe vs Luxury Comparison Page
+     */
+    public function comparison()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('comparison'), compact('testimonials'));
+    }
+
+    /**
+     * Porta Potty Types Guide Page
+     */
+    public function typesGuide()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('porta-potty-types-guide'), compact('testimonials'));
+    }
+
+    /**
+     * Porta Potty Cleaning Process Page
+     */
+    public function cleaningProcess()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('porta-potty-cleaning-process'), compact('testimonials'));
+    }
+
+    /**
+     * Sports Event Porta Potty Rental Page
+     */
+    public function sportsEvent()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('sports-event-porta-potty-rental'), compact('testimonials'));
+    }
+
+    /**
+     * Municipal Porta Potty Rental Page
+     */
+    public function municipal()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('municipal-porta-potty-rental'), compact('testimonials'));
+    }
+
+    /**
+     * Porta Potty Rental Cost Landing Page
+     */
+    public function costPage()
+    {
+        $pricingEnabled = config('service_pricing.enabled', false);
+        $priceRanges = config('service_pricing.ranges', []);
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('porta-potty-rental-cost'), compact('pricingEnabled', 'priceRanges', 'testimonials'));
+    }
+
+    /**
+     * Porta Potty Rental for Parties Landing Page
+     */
+    public function partyPage()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('porta-potty-rental-for-parties'), compact('testimonials'));
+    }
+
+    /**
+     * Emergency Porta Potty Rental Landing Page
+     */
+    public function emergencyPage()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('emergency-porta-potty-rental'), compact('testimonials'));
+    }
+
+    /**
+     * Restroom Trailer Rental Landing Page
+     */
+    public function restroomTrailerPage()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('restroom-trailer-rental'), compact('testimonials'));
+    }
+
+    /**
+     * How Many Porta Potties Do I Need? Landing Page
+     */
+    public function howManyPage()
+    {
+        $testimonials = $this->getGlobalTestimonials();
+        return view(DomainViewHelper::resolveForController('how-many-porta-potties-do-i-need'), compact('testimonials'));
     }
 
     /**
@@ -483,6 +771,42 @@ class PageController extends Controller
     public function terms()
     {
         return view(DomainViewHelper::resolveForController('terms'));
+    }
+
+    /**
+     * Neighborhood Service Page
+     */
+    public function neighborhoodPage(string $slug)
+    {
+        $domain = Domain::current();
+        $domainId = $domain?->id ?? 'default';
+
+        $page = NeighborhoodServicePage::where('slug', $slug)
+            ->where('is_published', true)
+            ->with(['neighborhood.city.state', 'domain'])
+            ->first();
+
+        if (! $page || ! $page->neighborhood || ! $page->neighborhood->city) {
+            abort(404);
+        }
+
+        $neighborhood = $page->neighborhood;
+        $city = $neighborhood->city;
+        $serviceType = $page->service_type;
+        $domainLabel = $domain?->getServiceTypeLabel($serviceType) ?? ucfirst($serviceType).' Rental';
+
+        $page->increment('views');
+
+        $relatedPages = NeighborhoodServicePage::where('neighborhood_id', $neighborhood->id)
+            ->where('id', '!=', $page->id)
+            ->where('is_published', true)
+            ->limit(3)
+            ->get();
+
+        return view(DomainViewHelper::resolveForController('neighborhood'), compact(
+            'page', 'neighborhood', 'city', 'domain',
+            'serviceType', 'domainLabel', 'relatedPages'
+        ));
     }
 
     /**
@@ -603,10 +927,17 @@ class PageController extends Controller
         // wire a real-reviews source (Google Business Profile sync) and gate on
         // config('reviews.count') being set.
 
+        $latitude = $city->latitude;
+        $longitude = $city->longitude;
+        $cityAddress = $city->name . ', ' . $city->state->code;
+        $stateCodeLocal = $city->state->code;
+        $postalCode = ! empty($city->zip_codes) ? $city->zip_codes[0] : null;
+
         return view(DomainViewHelper::resolveForController('service'), compact(
             'servicePage', 'city', 'faqs', 'testimonials',
             'nearbyCityPages', 'otherServices', 'relatedPosts',
-            'schemaMarkup', 'faqSchema', 'domain'
+            'schemaMarkup', 'faqSchema', 'domain',
+            'latitude', 'longitude', 'cityAddress', 'stateCodeLocal', 'postalCode'
         ));
     }
 
@@ -629,13 +960,26 @@ class PageController extends Controller
             ->byPriority()
             ->paginate(30);
 
+        // Abort 404 if requested page exceeds last page
+        if ($cities->lastPage() > 0 && $cities->currentPage() > $cities->lastPage()) {
+            abort(404);
+        }
+
         // getStatePageContent runs AI calls in the worst case — cache hard
         $stateContent = Cache::remember("state_content_{$state->id}", 3600, fn () => $contentService->getStatePageContent($state)
         );
         $faqs = collect($stateContent['faqs'] ?? []);
         $images = $state->images ?? [];
+        $serviceTypes = [
+            ['key' => 'general', 'name' => 'All', 'icon' => 'map-pin'],
+            ['key' => 'standard', 'name' => 'Standard', 'icon' => 'building'],
+            ['key' => 'deluxe', 'name' => 'Deluxe', 'icon' => 'water-drop'],
+            ['key' => 'ada', 'name' => 'ADA', 'icon' => 'accessibility'],
+            ['key' => 'luxury', 'name' => 'Luxury', 'icon' => 'sparkles'],
+            ['key' => 'construction', 'name' => 'Construction', 'icon' => 'building'],
+        ];
 
-        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images', 'domain'));
+        return view(DomainViewHelper::resolveForController('state'), compact('state', 'cities', 'stateContent', 'faqs', 'images', 'domain', 'serviceTypes'));
     }
 
     /**
@@ -703,5 +1047,19 @@ class PageController extends Controller
             '@type' => 'FAQPage',
             'mainEntity' => $faqItems,
         ];
+    }
+
+    protected function getGlobalTestimonials(int $limit = 3): \Illuminate\Support\Collection
+    {
+        $domain = Domain::current();
+        $domainId = $domain?->id ?? 'default';
+        $pool = Cache::remember("landing_testimonial_pool_{$domainId}", 3600, function () {
+            return Testimonial::where('is_featured', true)
+                ->where('is_active', true)
+                ->take(30)
+                ->get()
+                ->toArray();
+        });
+        return collect($pool)->shuffle()->take($limit);
     }
 }

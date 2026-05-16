@@ -63,6 +63,8 @@ class ContentGeneratorService
             ->map(fn ($t) => "{{SERVICE_LINK:{$t}}}")
             ->implode(', ');
 
+        $cityContext = $this->getCityContext($city);
+
         $replacements = [
             '{service_label}' => $serviceLabel,
             '{city_name}' => $city->name,
@@ -79,6 +81,7 @@ class ContentGeneratorService
             '{service_activity}' => $serviceActivity,
             '{service_noun}' => $serviceNoun,
             '{delivery_heading}' => $deliveryHeading,
+            '{city_context}' => $cityContext,
         ];
 
         $prompt = $this->getDomainServicePagePrompt($domain, $replacements);
@@ -207,12 +210,16 @@ Structure (content field):
 - ## Pricing — use soft language ("starting rates", "quotes depend on quantity and duration") but acknowledge the reader wants a number; direct them to call or include a price range only if you are explicitly given one
 - ## Call to action — one concrete reason to call right now (same-day availability / seasonal booking / limited inventory)
 
-Local anchoring (MANDATORY — at least 3 of these):
-- Name a real {city_name} highway, district, or neighborhood
-- Reference {state_name}'s regulatory context (state permit rules, OSHA enforcement, seasonal weather)
-- Name actual industries or venue types present in {city_name}
+Use the following LOCAL INTEL to anchor your content. Reference specific neighborhoods, highways, venues, and industries from this data — do not make up local details:
+
+{city_context}
+
+Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL data above):
+- Reference real neighborhoods, highways, or districts from the LOCAL INTEL
+- Reference local industries, venues, or construction activity from data
+- Reference permit/weather considerations that actually apply
 - Nearby cities we serve: {nearby_cities_text}
-- Generic "in {city_name}" repetition is NOT local anchoring. You need facts a local would recognize.
+- Generic "in {city_name}" repetition is NOT local anchoring. Use the LOCAL INTEL provided.
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
@@ -221,6 +228,7 @@ Testimonials (2-3 max): write as illustrative scenarios, not claimed real custom
 Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
 Internal links: use {service_types_for_links} — pick 2-3 that relate to the reader's intent.
+Landing page links available: {{SERVICE_LINK:pillar}} for the complete rental guide, {{SERVICE_LINK:pricing}} for pricing, {{SERVICE_LINK:osha_guide}} for OSHA/compliance, {{SERVICE_LINK:wedding}} for weddings, {{SERVICE_LINK:festival}} for festivals/events, {{SERVICE_LINK:comparison}} for unit type comparisons, {{SERVICE_LINK:calculator}} for unit quantity calculator.
 
 Do NOT use the words "hassle-free", "look no further", "rest assured", "state-of-the-art", "nestled", "cutting-edge", "your go-to". Avoid "we understand that..." openings. Avoid listing generic benefits ("professionalism, reliability, commitment to excellence").
 
@@ -260,12 +268,16 @@ Structure (content field):
 - ## Pricing — use soft language ("flat-rate pricing", "free estimates", "quotes depend on scope of work") but acknowledge the reader wants a number; direct them to call or include a price range only if you are explicitly given one
 - ## Call to action — one concrete reason to call right now (24/7 emergency service / same-day availability / seasonal preparation)
 
-Local anchoring (MANDATORY — at least 3 of these):
-- Name a real {city_name} highway, district, or neighborhood
-- Reference {state_name}'s regulatory context (state plumbing codes, licensing requirements, seasonal freeze-thaw cycles)
-- Name actual housing styles or construction eras common in {city_name}
+Use the following LOCAL INTEL to anchor your content. Reference specific neighborhoods, highways, venues, and industries from this data — do not make up local details:
+
+{city_context}
+
+Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL data above):
+- Reference real neighborhoods, highways, or districts from the LOCAL INTEL
+- Reference local industries, venues, or housing styles from data
+- Reference permit/weather considerations that actually apply
 - Nearby cities we serve: {nearby_cities_text}
-- Generic "in {city_name}" repetition is NOT local anchoring. You need facts a local would recognize.
+- Generic "in {city_name}" repetition is NOT local anchoring. Use the LOCAL INTEL provided.
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
@@ -274,6 +286,7 @@ Testimonials (2-3 max): write as illustrative scenarios, not claimed real custom
 Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
 Internal links: use {service_types_for_links} — pick 2-3 that relate to the reader's intent.
+Landing page links available: {{SERVICE_LINK:pillar}} for the complete rental guide, {{SERVICE_LINK:pricing}} for pricing, {{SERVICE_LINK:osha_guide}} for OSHA/compliance, {{SERVICE_LINK:wedding}} for weddings, {{SERVICE_LINK:festival}} for festivals/events, {{SERVICE_LINK:comparison}} for unit type comparisons, {{SERVICE_LINK:calculator}} for unit quantity calculator.
 
 Do NOT use the words "hassle-free", "look no further", "rest assured", "state-of-the-art", "nestled", "cutting-edge", "your go-to". Avoid "we understand that..." openings. Avoid listing generic benefits ("professionalism, reliability, commitment to excellence").
 
@@ -467,6 +480,7 @@ No testimonials on state pages.
 Pricing: soft language only. No hard numbers unless explicitly provided.
 
 Phone: {{PHONE_LINK}} only. Service links: {{SERVICE_LINK:type}}.
+Landing page links available: {{SERVICE_LINK:pillar}} for complete rental guide, {{SERVICE_LINK:pricing}} for pricing, {{SERVICE_LINK:osha_guide}} for OSHA/compliance, {{SERVICE_LINK:calculator}} for unit calculator.
 
 Output: valid JSON only.
 PROMPT;
@@ -560,6 +574,25 @@ PROMPT;
             $content = str_replace('{{SERVICE_LINK:contact}}', '<a href="/about" class="text-blue-600 font-semibold hover:underline">Contact Us</a>', $content);
         }
 
+        // Handle landing page links
+        $landingLinks = [
+            'pillar'     => ['/complete-guide-to-porta-potty-rental', 'complete guide to porta potty rental'],
+            'pricing'    => ['/pricing', 'our pricing guide'],
+            'wedding'    => ['/wedding-porta-potty-rental', 'wedding porta potty rentals'],
+            'osha_guide' => ['/osha-porta-potty-requirements', 'OSHA porta potty requirements guide'],
+            'festival'   => ['/festival-portable-toilets', 'festival porta potty rentals'],
+            'comparison' => ['/standard-vs-deluxe-vs-luxury-porta-potty', 'porta potty comparison guide'],
+            'calculator' => ['/units-calculator', 'porta potty units calculator'],
+        ];
+
+        foreach ($landingLinks as $key => [$path, $label]) {
+            $pattern = '/\{\{SERVICE_LINK:'.$key.'\}\}/i';
+            if (preg_match($pattern, $content)) {
+                $url = "{$domainUrl}{$path}";
+                $content = preg_replace($pattern, "<a href=\"{$url}\" class=\"text-blue-600 font-semibold hover:underline\">{$label}</a>", $content);
+            }
+        }
+
         return $content;
     }
 
@@ -622,7 +655,7 @@ PROMPT;
         });
     }
 
-    public function generateBlogPostContent(BlogCategory $category, ?City $city = null, int $iteration = 1): array
+    public function generateBlogPostContent(BlogCategory $category, ?City $city = null, int $iteration = 1, bool $isPillar = false, ?int $pillarId = null): array
     {
         if (! $this->aiService) {
             return [
@@ -654,13 +687,71 @@ PROMPT;
         $serviceTypesText = implode(', ', array_map(fn ($t) => ucfirst($t), $serviceTypes));
         $imagePath = @$this->imageService->getRandomImagesForContent(1)[0]['path'] ?? '';
 
-        // Add variation based on iteration
-        $variationAngle = match ($iteration) {
-            1 => 'Focus on cost-effective solutions and budget-friendly options',
-            2 => 'Focus on convenience, speed of delivery, and emergency services',
-            3 => 'Focus on luxury options, events, and premium customer experience',
-            default => 'Provide a comprehensive overview with practical tips and real-world examples'
-        };
+        // When generating a pillar post, use a broader prompt without city-specific focus
+        if ($isPillar) {
+            $pillarCategory = $category->name;
+            $pillarDescription = $category->description;
+
+            $prompt = <<<PROMPT
+You're writing a pillar blog post for {$businessName}, a {$primaryService} company. This is a TOPIC HUB page — not a city-specific post. It should serve as the definitive guide to "{$pillarCategory}" that all other posts in this category link back to.
+
+CONTEXT:
+- Category: {$pillarCategory}
+- Category Description: {$pillarDescription}
+- Business: {$businessName}
+- Website: {$websiteUrl}
+- Primary Keyword: {$primaryKeyword}
+- Secondary Keywords: {$secondaryKeywords}
+- Service Types: {$serviceTypesText}
+
+CONTENT RULES
+
+Voice: factual, comprehensive, encyclopedia-like. This is the go-to reference for this topic. Sound like you've been in the industry for 20 years.
+
+Length: 1500-2500 words. This is a pillar — it needs to be thorough enough to earn links from cluster posts.
+
+Structure:
+- H1 title: "{$pillarCategory}: The Complete Guide" or similar authoritative title
+- Opening: summary of everything the reader will learn (think Wikipedia intro)
+- 5-8 H2 sections covering all major aspects of the topic
+- Use H3 for sub-topics within each H2
+- Tables where data comparisons help
+- End with a CTA using {{PHONE_LINK}}
+
+Specificity (required):
+- At least 5 concrete facts, numbers, or industry rules
+- Cover national/industry context — NOT city-specific
+- Link to 3-4 of our service pages using {{SERVICE_LINK:type}}
+- Link to {{SERVICE_LINK:pricing}} when discussing costs
+- Link to {{SERVICE_LINK:comparison}} when comparing types
+- Link to {{SERVICE_LINK:calculator}} when discussing quantities
+- Link to {{SERVICE_LINK:osha_guide}} when discussing compliance
+
+Do NOT:
+- Reference any specific city
+- Use city names
+- Write like a local service page
+- Use "nestled", "hassle-free", "state-of-the-art", "look no further"
+
+OUTPUT (valid JSON only, no code fences):
+{
+    "title": "Title (max 80 chars) — authoritative and comprehensive",
+    "slug": "url-friendly-slug",
+    "excerpt": "2-3 sentences, 200-300 chars. Summarize what this guide covers.",
+    "content": "Markdown. 1500-2500 words. Includes one {{PHONE_LINK}} and 3-4 {{SERVICE_LINK:type}} links.",
+    "meta_title": "50-60 chars",
+    "meta_description": "140-160 chars, comprehensive overview",
+    "focus_keyword": "primary focus keyword",
+    "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
+}
+PROMPT;
+        } else {
+            $variationAngle = match ($iteration) {
+                1 => 'Focus on cost-effective solutions and budget-friendly options',
+                2 => 'Focus on convenience, speed of delivery, and emergency services',
+                3 => 'Focus on luxury options, events, and premium customer experience',
+                default => 'Provide a comprehensive overview with practical tips and real-world examples'
+            };
 
         $prompt = <<<PROMPT
 You're writing a blog post for {$businessName}, a {$primaryService} company serving {$cityName}, {$stateName} and nearby cities. The audience: people actually Googling a question about {$primaryService} — homeowners planning a backyard wedding, construction PMs staffing up, event coordinators working a festival. They want practical, specific answers — not a generic "Ultimate Guide" that reads like every other blog.
@@ -696,6 +787,13 @@ Specificity (required):
 - At least 3 concrete facts, numbers, or rules a reader can't guess (OSHA ratios, typical lead times, permit processes, common mistakes)
 - Reference {$cityName} only when the content genuinely requires local context — do not sprinkle it unnaturally
 - Link to 2-3 of our service pages using {{SERVICE_LINK:type}} where relevant
+- When topic relates to costs, link to {{SERVICE_LINK:pricing}}
+- When topic relates to weddings, link to {{SERVICE_LINK:wedding}}
+- When topic relates to construction/OSHA, link to {{SERVICE_LINK:osha_guide}}
+- When topic relates to festivals/events, link to {{SERVICE_LINK:festival}}
+- When topic relates to unit types, link to {{SERVICE_LINK:comparison}}
+- When topic relates to calculating quantity, link to {{SERVICE_LINK:calculator}}
+- When topic is a general overview, link to {{SERVICE_LINK:pillar}} (complete rental guide)
 
 Pricing: if you give a range, only use the one I've provided in context. Otherwise use soft pricing language and redirect to a quote.
 
@@ -713,6 +811,7 @@ OUTPUT (valid JSON only, no code fences):
     "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
 }
 PROMPT;
+        }
 
         try {
             $maxAttempts = 3;
@@ -852,5 +951,81 @@ PROMPT;
     protected function getContentPreview(string $content): string
     {
         return Str::limit(strip_tags($content), 500);
+    }
+
+    protected function getCityContext(City $city): string
+    {
+        if (! $city->state) {
+            return '';
+        }
+
+        $citySlug = Str::slug($city->name);
+        $allContext = config('city_context', []);
+
+        // Match by city name prefix (slugs have state suffixes like "houston-tx")
+        $ctx = null;
+        if (isset($allContext[$citySlug])) {
+            $ctx = $allContext[$citySlug];
+        } else {
+            // Try partial match: find first config key where city slug starts with config key
+            foreach ($allContext as $key => $data) {
+                if (str_starts_with($citySlug, $key) || str_starts_with($key, $citySlug)) {
+                    $ctx = $data;
+                    break;
+                }
+            }
+        }
+
+        $parts = [];
+
+        if ($ctx) {
+            // Use curated config data for top cities
+            if (! empty($ctx['neighborhoods'])) {
+                $parts[] = "KEY NEIGHBORHOODS: {$ctx['neighborhoods']}";
+            }
+            if (! empty($ctx['highways'])) {
+                $parts[] = "MAJOR HIGHWAYS: {$ctx['highways']}";
+            }
+            if (! empty($ctx['venues'])) {
+                $parts[] = "KEY VENUES: {$ctx['venues']}";
+            }
+            if (! empty($ctx['industries'])) {
+                $parts[] = "LOCAL INDUSTRIES: {$ctx['industries']}";
+            }
+            if (! empty($ctx['weather'])) {
+                $parts[] = "WEATHER/CONSIDERATIONS: {$ctx['weather']}";
+            }
+            if (! empty($ctx['permits'])) {
+                $parts[] = "PERMIT/REGULATION NOTES: {$ctx['permits']}";
+            }
+            if (! empty($ctx['construction'])) {
+                $parts[] = "CONSTRUCTION ACTIVITY: {$ctx['construction']}";
+            }
+        } else {
+            // Fallback: use DB-stored context fields (populated by city:enrich-context command)
+            $dbParts = [];
+
+            if (! empty($city->city_description)) {
+                $dbParts[] = "DESCRIPTION: {$city->city_description}";
+            }
+
+            if (! empty($city->climate_info)) {
+                $dbParts[] = "CLIMATE: {$city->climate_info}";
+            }
+
+            if (! empty($city->local_events)) {
+                $dbParts[] = "ECONOMY/EVENTS: {$city->local_events}";
+            }
+
+            if (! empty($city->construction_info)) {
+                $dbParts[] = "INFRASTRUCTURE: {$city->construction_info}";
+            }
+
+            if (! empty($dbParts)) {
+                $parts = $dbParts;
+            }
+        }
+
+        return implode("\n", $parts);
     }
 }

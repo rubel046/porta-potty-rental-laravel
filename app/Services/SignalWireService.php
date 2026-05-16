@@ -331,10 +331,14 @@ XML;
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
+    <Gather numDigits="1" timeout="3" method="POST">
+        <Say voice="Polly.Joanna" language="en-US">
+            New {$serviceLabel} lead. Press any key to accept.
+        </Say>
+    </Gather>
     <Say voice="Polly.Joanna" language="en-US">
-        New {$serviceLabel} lead. Press any key to accept.
+        Connecting you now.
     </Say>
-    <Pause length="3"/>
 </Response>
 XML;
     }
@@ -348,6 +352,8 @@ XML;
         $status = $data['CallStatus'] ?? 'unknown';
         $duration = (int) ($data['CallDuration'] ?? $data['Duration'] ?? 0);
         $recordingUrl = $data['RecordingUrl'] ?? null;
+        $answeredTime = $data['AnsweredTime'] ?? null;
+        $startTime = $data['StartTime'] ?? null;
 
         if (! $callSid) {
             return;
@@ -358,15 +364,25 @@ XML;
             return;
         }
 
-        $callLog->update([
+        $updates = [
             'status' => $status,
             'duration_seconds' => $duration,
             'recording_url' => $recordingUrl,
             'call_ended_at' => now(),
-        ]);
+        ];
 
-        // SignalWire cost estimate
-        $costPerMinute = 0.02; // $0.01 incoming + $0.01 outgoing
+        if ($answeredTime && $startTime) {
+            $answered = strtotime($answeredTime);
+            $started = strtotime($startTime);
+            $ringDuration = max(0, $answered - $started);
+            $updates['call_answered_at'] = date('Y-m-d H:i:s', $answered);
+            $updates['ring_duration'] = $ringDuration;
+        }
+
+        $callLog->update($updates);
+
+        // SignalWire cost estimate (configurable)
+        $costPerMinute = config('services.signalwire.cost_per_minute', 0.02);
         $cost = ceil($duration / 60) * $costPerMinute;
         $callLog->update(['cost' => $cost]);
 

@@ -68,8 +68,13 @@ class BlogController extends Controller
             $paginationHeaders .= '<link rel="next" href="'.$posts->nextPageUrl().'">'."\n";
         }
 
+        $categorySeo = $selectedCategory ? [
+            'description' => $selectedCategory->description ?? '',
+            'name' => $selectedCategory->name ?? '',
+        ] : null;
+
         return view(DomainViewHelper::resolveForController('blog-index'), compact(
-            'posts', 'categories', 'selectedCategory', 'featuredPosts', 'paginationHeaders', 'totalPostsCount'
+            'posts', 'categories', 'selectedCategory', 'featuredPosts', 'paginationHeaders', 'totalPostsCount', 'categorySeo'
         ));
     }
 
@@ -104,6 +109,15 @@ class BlogController extends Controller
             $post->content = $contentService->ensureServiceLinks($post->content);
         }
 
-        return view(DomainViewHelper::resolveForController('blog-show'), compact('post'));
+        $relatedPosts = BlogPost::published()
+            ->where('id', '!=', $post->id)
+            ->where(function ($q) use ($post) {
+                $q->where('blog_category_id', $post->blog_category_id)
+                  ->orWhere('city_id', $post->city_id);
+            })
+            ->take(3)
+            ->get();
+
+        return view(DomainViewHelper::resolveForController('blog-show'), compact('post', 'relatedPosts', 'domain'));
     }
 }

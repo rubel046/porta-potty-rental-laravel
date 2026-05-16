@@ -25,9 +25,8 @@
     $yearsInBusiness = $domain?->founded_year ? date('Y') - $domain->founded_year : 8;
 @endphp
 
-@section('title', 'Porta Potty Rental '.$cityName.', '.$stateName.' | Same-Day Delivery | Call '.$phoneDisplay)
-@section('meta_description', 'Need porta potty rental in '.$cityName.', '.$stateName.'? Same-day delivery, ADA compliant units, flat-rate pricing. 24/7 live phone support. 4.9/5 rated. Call '.$phoneDisplay.' now!')
-@section('meta_keywords', 'porta potty rental near me, portable toilet rental '.$cityName.', construction porta potty, event restroom rentals, ADA compliant porta potty')
+@section('title', 'Starting at $89/day | Same-Day Delivery near you')
+@section('meta_description', 'Need a porta potty rental? Starting at $89/day with same-day delivery, ADA options & luxury trailers. No hidden fees. Call us — real person answers in 15s.')
 @section('canonical', url('/'))
 @section('phone_raw', $phoneRaw)
 @section('phone_display', $phoneDisplay)
@@ -59,7 +58,6 @@
         $businessSchema = [
             '@context' => 'https://schema.org',
             '@type' => ['LocalBusiness', 'HomeAndConstructionBusiness', 'EmergencyService'],
-            '@id' => $url . '#business',
             'name' => $domain?->business_name ?? 'Potty Direct',
             'alternateName' => [$domain?->primary_service ?? 'Portable Restroom Rental', 'Porta Potty Rental ' . $cityAddress, 'Portable Toilet Rental Near Me'],
             'description' => $domain?->tagline ?? 'Portable restroom rental service across ' . $stateAddress . '. Same-day delivery available in ' . $cityAddress . ' and surrounding areas.',
@@ -127,9 +125,23 @@
                 ['@type' => 'Question', 'name' => 'Do you service emergency porta potty rentals?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Yes, we offer 24/7 emergency response for pipe bursts, disaster relief, and urgent job site needs in '.$stateName.'. Call '.$phoneDisplay.' for immediate dispatch.']]
             ]
         ];
+        $videoSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'VideoObject',
+            '@id' => $url . '#video',
+            'name' => 'Potty Direct - Porta Potty Rental Service Overview',
+            'description' => 'See how Potty Direct delivers clean, reliable porta potty rentals for construction sites, events, and weddings.',
+            'thumbnailUrl' => $url . '/og-image.jpg',
+            'uploadDate' => '2025-01-01',
+            'duration' => 'PT2M',
+            'contentUrl' => 'https://www.youtube.com/watch?v=pottydirect',
+            'embedUrl' => 'https://www.youtube.com/embed/pottydirect',
+            'publisher' => ['@type' => 'Organization', '@id' => $url . '#organization'],
+        ];
     @endphp
     <script type="application/ld+json">{!! json_encode($businessSchema, JSON_UNESCAPED_SLASHES) !!}</script>
     <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($videoSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 
@@ -168,10 +180,15 @@
 
     <section class="relative min-h-[420px] sm:min-h-[480px] md:min-h-[560px] flex items-center overflow-hidden bg-slate-900">
         <div class="absolute inset-0">
-            <img src="{{ $heroUrl }}" alt="Portable toilet rental for construction and events"
-                 class="w-full h-full object-cover opacity-40"
-                 width="1920" height="1080"
-                 loading="eager" fetchpriority="high" decoding="async">
+            <picture>
+                <source srcset="{{ $heroUrl }}" type="image/webp" media="(min-width: 1200px)">
+                <source srcset="{{ $heroUrl }}-768w" type="image/webp" media="(min-width: 768px)">
+                <source srcset="{{ $heroUrl }}-480w" type="image/webp" media="(max-width: 767px)">
+                <img src="{{ $heroUrl }}" alt="Portable toilet rental for construction and events"
+                     class="w-full h-full object-cover opacity-40"
+                     width="1920" height="1080"
+                     loading="eager" fetchpriority="high" decoding="async">
+            </picture>
             <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/75 to-slate-900/50"></div>
         </div>
 
@@ -184,12 +201,7 @@
                     </div>
                 </div>
 
-                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 sm:mb-4 leading-[1.1] tracking-tight text-balance">
-                    Porta Potty Rental in {{ $cityName }}, {{ $stateName }}
-                    <span class="block text-emerald-400 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 font-bold">
-                        Fast, Clean, Reliable — Same-Day Delivery
-                    </span>
-                </h1>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 sm:mb-4 leading-[1.1] tracking-tight text-balance">Porta Potty Rental Near You<span class="block text-emerald-400 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 font-bold">Starting at $89/day — Fast, Clean, Reliable</span></h1>
 
                 <p class="text-base sm:text-lg text-slate-300 mb-5 sm:mb-7 max-w-xl leading-relaxed">
                     Portable toilet rental near me just got easier. We deliver sanitized, OSHA-compliant
@@ -343,7 +355,7 @@
                         </div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">{{ $svc['name'] }}</h3>
                         <p class="text-gray-600 mb-4">{{ $svc['blurb'] }}</p>
-                        <a href="tel:{{ $phoneRaw }}" data-tracking-label="home-service-{{ $svc['key'] }}" class="text-emerald-600 font-bold hover:underline flex items-center gap-1">Call To Book →</a>
+                        <a href="tel:{{ $phoneRaw }}" data-tracking-label="home-service-{{ $svc['key'] }}" class="text-emerald-600 font-bold hover:underline flex items-center gap-1">Get Pricing & Availability →</a>
                     </div>
                 @endforeach
              </div>
@@ -357,12 +369,69 @@
                      </svg>
                  </a>
               </div>
+
+             <div class="mt-8 pt-6 border-t border-slate-200">
+                 <p class="text-center text-sm text-slate-500 mb-4 font-medium">Related Services</p>
+                 <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+                     <a href="{{ route('pricing') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Pricing Guide</a>
+                     <a href="{{ route('calculator') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Units Calculator</a>
+                     <a href="{{ route('cost.page') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Cost Guide</a>
+                     <a href="{{ route('comparison') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Comparison Guide</a>
+                     <a href="{{ route('restroom-trailer.page') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Restroom Trailers</a>
+                     <a href="{{ route('pillar.page') }}" class="text-emerald-600 hover:text-emerald-700 font-medium transition">Complete Guide</a>
+                 </div>
+             </div>
          </div>
      </section>
 
      {{-- ================================================================
-          OCCASIONS — Portable Toilet Rental For Every Occasion
+          POPULAR CITIES — Service Area Carousel
           ================================================================ --}}
+     <section class="py-12 sm:py-16 px-4 sm:px-6 bg-white border-t border-slate-100">
+         <div class="max-w-7xl mx-auto">
+             <div class="flex items-center justify-between mb-8">
+                 <div>
+                     <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">Popular Service Cities</h2>
+                     <p class="text-slate-500 mt-1">Browse porta potty rental in your area</p>
+                 </div>
+                 <a href="{{ route('locations') }}" class="hidden sm:inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-700 font-medium text-sm">
+                     View All Locations →
+                 </a>
+             </div>
+
+             <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
+                 @forelse($topCities ?? [] as $city)
+                     @php
+                         $citySlug = \Illuminate\Support\Str::slug($city['name']);
+                         $cityPage = \App\Models\ServicePage::where('slug', 'like', "%-{$citySlug}-{$city['state']['slug']}")
+                             ->orWhere('slug', 'like', "porta-potty-rental-{$citySlug}-{$city['state']['slug']}")
+                             ->first();
+                     @endphp
+                     <a href="{{ $cityPage ? url($cityPage->slug) : route('locations') }}"
+                        class="flex-shrink-0 w-44 sm:w-48 bg-slate-50 border border-slate-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all snap-start group">
+                         <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mb-3">
+                             <x-icon name="map-pin" class="w-5 h-5 text-emerald-600" />
+                         </div>
+                         <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors text-sm">{{ $city['name'] }}</h3>
+                         <p class="text-xs text-slate-400 mt-0.5">{{ $city['state']['name'] ?? '' }}</p>
+                         <span class="inline-block mt-2 text-xs font-medium text-emerald-600 group-hover:translate-x-1 transition-transform">View pricing →</span>
+                     </a>
+                 @empty
+                     <p class="text-slate-400 text-sm">Browse our <a href="{{ route('locations') }}" class="text-emerald-600 hover:underline">locations page</a> to find your city.</p>
+                 @endforelse
+             </div>
+
+             <div class="text-center mt-4 sm:hidden">
+                 <a href="{{ route('locations') }}" class="text-emerald-600 hover:text-emerald-700 font-medium text-sm">
+                     View All Locations →
+                 </a>
+             </div>
+         </div>
+     </section>
+
+      {{-- ================================================================
+           OCCASIONS — Portable Toilet Rental For Every Occasion
+           ================================================================ --}}
      <section class="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50">
          <div class="max-w-7xl mx-auto">
              <div class="text-center mb-10 sm:mb-14">
@@ -371,26 +440,26 @@
              </div>
 
              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                 @php
-                     $occasions = [
-                         ['icon' => 'sparkles', 'name' => 'Weddings & Receptions', 'desc' => 'Elegant luxury trailers and pristine units that match your special day.', 'color' => 'from-pink-500 to-rose-500'],
-                         ['icon' => 'music', 'name' => 'Festivals & Concerts', 'desc' => 'High-capacity solutions for music festivals, concerts, and outdoor events.', 'color' => 'from-purple-500 to-indigo-500'],
-                         ['icon' => 'users', 'name' => 'Corporate Events', 'desc' => 'Professional-grade units for company picnics, conferences, and retreats.', 'color' => 'from-blue-500 to-blue-600'],
-                         ['icon' => 'heart', 'name' => 'Parties & Celebrations', 'desc' => 'Birthday parties, anniversaries, graduations, and family reunions.', 'color' => 'from-rose-500 to-pink-600'],
-                         ['icon' => 'truck', 'name' => 'Sports & Tailgating', 'desc' => 'Tournaments, tailgate parties, and sporting events of all sizes.', 'color' => 'from-green-500 to-emerald-600'],
-                         ['icon' => 'building', 'name' => 'Construction & Job Sites', 'desc' => 'OSHA-compliant units for construction sites, renovations, and industrial projects.', 'color' => 'from-orange-500 to-amber-600'],
-                         ['icon' => 'church', 'name' => 'Religious Gatherings', 'desc' => 'Perfect for church picnics, revivals, and community worship events.', 'color' => 'from-teal-500 to-cyan-600'],
-                         ['icon' => 'academic-cap', 'name' => 'School & University Events', 'desc' => 'Graduation ceremonies, football games, and campus events.', 'color' => 'from-indigo-500 to-blue-600'],
-                         ['icon' => 'cake', 'name' => 'Fair & Carnival', 'desc' => 'State fairs, county fairs, carnivals, and agricultural exhibitions.', 'color' => 'from-amber-500 to-orange-500'],
-                         ['icon' => 'film', 'name' => 'Film & Production Sets', 'desc' => 'Movie sets, photo shoots, and television production locations.', 'color' => 'from-gray-700 to-gray-900'],
-                         ['icon' => 'fire', 'name' => 'Emergency & Disaster Relief', 'desc' => 'Rapid response for hurricanes, floods, fires, and natural disasters.', 'color' => 'from-red-500 to-red-600'],
-                         ['icon' => 'shower', 'name' => 'Agricultural & Farm Events', 'desc' => 'Harvest festivals, farmers markets, and agricultural exhibitions.', 'color' => 'from-lime-500 to-green-600'],
-                     ];
-                 @endphp
+                  @php
+                      $occasions = [
+                          ['icon' => 'sparkles', 'name' => 'Weddings & Receptions', 'desc' => 'Elegant luxury trailers and pristine units that match your special day.', 'color' => 'from-pink-500 to-rose-500', 'link' => '/wedding-porta-potty-rental'],
+                          ['icon' => 'music', 'name' => 'Festivals & Concerts', 'desc' => 'High-capacity solutions for music festivals, concerts, and outdoor events.', 'color' => 'from-purple-500 to-indigo-500', 'link' => '/festival-portable-toilets'],
+                           ['icon' => 'users', 'name' => 'Corporate Events', 'desc' => 'Professional-grade units for company picnics, conferences, and retreats.', 'color' => 'from-blue-500 to-blue-600', 'link' => '/comparison'],
+                           ['icon' => 'heart', 'name' => 'Parties & Celebrations', 'desc' => 'Birthday parties, anniversaries, graduations, and family reunions.', 'color' => 'from-rose-500 to-pink-600', 'link' => '/porta-potty-rental-for-parties'],
+                           ['icon' => 'truck', 'name' => 'Sports & Tailgating', 'desc' => 'Tournaments, tailgate parties, and sporting events of all sizes.', 'color' => 'from-green-500 to-emerald-600', 'link' => '/sports-event-porta-potty-rental'],
+                          ['icon' => 'building', 'name' => 'Construction & Job Sites', 'desc' => 'OSHA-compliant units for construction sites, renovations, and industrial projects.', 'color' => 'from-orange-500 to-amber-600', 'link' => '/construction-site-porta-potty-rental'],
+                           ['icon' => 'church', 'name' => 'Religious Gatherings', 'desc' => 'Perfect for church picnics, revivals, and community worship events.', 'color' => 'from-teal-500 to-cyan-600', 'link' => '/comparison'],
+                           ['icon' => 'academic-cap', 'name' => 'School & University Events', 'desc' => 'Graduation ceremonies, football games, and campus events.', 'color' => 'from-indigo-500 to-blue-600', 'link' => '/festival-portable-toilets'],
+                           ['icon' => 'cake', 'name' => 'Fair & Carnival', 'desc' => 'State fairs, county fairs, carnivals, and agricultural exhibitions.', 'color' => 'from-amber-500 to-orange-500', 'link' => '/festival-portable-toilets'],
+                           ['icon' => 'film', 'name' => 'Film & Production Sets', 'desc' => 'Movie sets, photo shoots, and television production locations.', 'color' => 'from-gray-700 to-gray-900', 'link' => '/restroom-trailer-rental'],
+                           ['icon' => 'fire', 'name' => 'Emergency & Disaster Relief', 'desc' => 'Rapid response for hurricanes, floods, fires, and natural disasters.', 'color' => 'from-red-500 to-red-600', 'link' => '/emergency-porta-potty-rental'],
+                           ['icon' => 'shower', 'name' => 'Agricultural & Farm Events', 'desc' => 'Harvest festivals, farmers markets, and agricultural exhibitions.', 'color' => 'from-lime-500 to-green-600', 'link' => '/porta-potty-rental-for-parties'],
+                      ];
+                  @endphp
 
-                 @foreach($occasions as $occ)
-                     <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100">
-                         <div class="w-12 h-12 bg-gradient-to-br {{ $occ['color'] }} flex items-center justify-center rounded-xl mb-4">
+                  @foreach($occasions as $occ)
+                      <a href="{{ $occ['link'] }}" class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100 block group">
+                          <div class="w-12 h-12 bg-gradient-to-br {{ $occ['color'] }} flex items-center justify-center rounded-xl mb-4">
                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                  @if($occ['icon'] === 'sparkles')
                                      <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
@@ -419,9 +488,10 @@
                                  @endif
                              </svg>
                          </div>
-                         <h3 class="text-lg font-bold text-gray-900 mb-2">{{ $occ['name'] }}</h3>
-                         <p class="text-gray-600 text-sm leading-relaxed">{{ $occ['desc'] }}</p>
-                     </div>
+                          <h3 class="text-lg font-bold text-gray-900 group-hover:text-amber-600 transition-colors mb-2">{{ $occ['name'] }}</h3>
+                          <p class="text-gray-600 text-sm leading-relaxed">{{ $occ['desc'] }}</p>
+                          <span class="mt-3 text-amber-600 text-sm font-semibold inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">Learn more →</span>
+                      </a>
                  @endforeach
              </div>
 
@@ -687,7 +757,7 @@
          <div class="max-w-6xl mx-auto relative">
              <div class="text-center mb-12">
                  <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4">
-                     Trused & <span class="text-blue-600">Certified</span> Across {{ $stateName }}
+                     Trusted & <span class="text-blue-600">Certified</span> Across {{ $stateName }}
                  </h2>
                  <p class="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in the industry. Here's proof:</p>
              </div>
@@ -916,7 +986,7 @@
          ================================================================ --}}
     <section class="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">See Why {{ $cityName }} Calls Us First</h2>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">                    @if($showCitySpecific)See Why {{ $cityName }} Calls Us First @else See Why Customers Nationwide Call Us First @endif</h2>
             <p class="text-gray-600 mb-8 max-w-2xl mx-auto">Watch how we deliver clean, sanitized porta potties across {{ $stateName }} in hours, not days.</p>
 
             <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden max-w-3xl mx-auto mb-8">
@@ -966,7 +1036,7 @@
                      @foreach($recentPosts as $post)
                          <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                              @if($post->featured_image)
-                                 <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                                 <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover">
                              @else
                                  <div class="w-full h-48 bg-blue-100 flex items-center justify-center">
                                      <svg class="w-12 h-12 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 8V5a2 2 0 00-2-2h-2M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1"/></svg>

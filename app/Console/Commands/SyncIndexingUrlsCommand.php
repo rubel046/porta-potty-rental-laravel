@@ -45,6 +45,14 @@ class SyncIndexingUrlsCommand extends Command
             '/blog',
             '/privacy',
             '/terms',
+            '/complete-guide-to-porta-potty-rental',
+            '/units-calculator',
+            '/wedding-porta-potty-rental',
+            '/festival-portable-toilets',
+            '/construction-site-porta-potty-rental',
+            '/faq',
+            '/osha-porta-potty-requirements',
+            '/standard-vs-deluxe-vs-luxury-porta-potty',
         ];
 
         foreach ($sitemapUrls as $url) {
@@ -119,7 +127,8 @@ class SyncIndexingUrlsCommand extends Command
         }
 
         // Static pages
-        if ($path === '/' || in_array($path, ['/services', '/pricing', '/locations', '/about', '/blog', '/privacy', '/privacy-policy', '/terms', '/terms-of-service'])) {
+        $staticPaths = ['/services', '/pricing', '/locations', '/about', '/blog', '/privacy', '/privacy-policy', '/terms', '/terms-of-service', '/complete-guide-to-porta-potty-rental', '/units-calculator', '/wedding-porta-potty-rental', '/festival-portable-toilets', '/construction-site-porta-potty-rental', '/faq', '/osha-porta-potty-requirements', '/standard-vs-deluxe-vs-luxury-porta-potty'];
+        if ($path === '/' || in_array($path, $staticPaths)) {
             return 'static';
         }
 

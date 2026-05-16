@@ -11,6 +11,7 @@ use App\Models\ServicePage;
 use App\Models\State;
 use App\Services\ImageService;
 use App\Services\MultiAiService;
+use App\Services\PageQualityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -390,6 +391,32 @@ class CityController extends Controller
         }
 
         return response()->json($samplePages);
+    }
+
+    public function qualityScores(PageQualityService $qualityService)
+    {
+        $domain = \App\Models\Domain::current();
+        $domainId = $domain?->id;
+
+        if (!$domainId) {
+            return redirect()->route('admin.dashboard')->with('error', 'No active domain selected');
+        }
+
+        $results = $qualityService->scoreAllForDomain($domainId);
+
+        $averageScore = count($results) > 0
+            ? round(array_sum(array_column(array_column($results, 'score'), 'score')) / count($results), 1)
+            : 0;
+
+        $gradeDistribution = [
+            'A' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'A')),
+            'B' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'B')),
+            'C' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'C')),
+            'D' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'D')),
+            'F' => count(array_filter($results, fn($r) => $r['score']['grade'] === 'F')),
+        ];
+
+        return view('admin.cities.quality-scores', compact('results', 'averageScore', 'gradeDistribution'));
     }
 
     public function generateServiceImages(string $type, string $cityName): array

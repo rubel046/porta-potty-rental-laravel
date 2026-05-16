@@ -1,7 +1,7 @@
 @extends(\App\Models\Domain::getLayoutPathStatic())
 
-@section('title', 'Porta Potty Rental Services | Standard, Deluxe & Luxury Units | Potty Direct')
-@section('meta_description', 'Porta potty rental services nationwide. Standard, Deluxe flushable, ADA accessible, Luxury restroom trailers, portable showers & more. Same-day delivery available across the USA. Call for a free quote!')
+@section('title', 'Porta Potty Rental Services | Potty Direct')
+@section('meta_description', 'Nationwide porta potty rental services. Standard, Deluxe, ADA & luxury restroom trailers available. Same-day delivery across the USA. Call now!')
 @section('canonical', route('services'))
 
 @push('schema')
@@ -12,7 +12,6 @@ $phone = domain_phone_raw();
 $serviceSchema = [
     "@context" => "https://schema.org",
     "@type" => "LocalBusiness",
-    "@id" => $url . "#business",
     "name" => "Potty Direct",
     "description" => "Porta potty rental services nationwide. Standard, Deluxe, ADA, Luxury units available.",
     "url" => $url,
@@ -41,7 +40,11 @@ $serviceSchema = [
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Portable Shower Unit"]],
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Mobile Restroom Trailer"]],
             ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "VIP Event Restroom"]],
-            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Construction Site Package"]]
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Construction Site Package"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Portable Urinal Station"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Hand Wash Trailer"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "Temporary Fencing"]],
+            ["@type" => "Offer", "itemOffered" => ["@type" => "Service", "name" => "High-Rise Construction Toilet"]]
         ]
     ],
     "aggregateRating" => ($reviewCount ?? 0) > 0 ? [
@@ -94,6 +97,17 @@ $faqSchema = [
 @endphp
 <script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+@php
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => [
+        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => route('home')],
+        ["@type" => "ListItem", "position" => 2, "name" => "Services", "item" => route('services')]
+    ]
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 @endpush
 
 @section('content')
@@ -115,6 +129,15 @@ $faqSchema = [
             <span class="inline-flex items-center gap-1.5"><x-icon name="currency-dollar" class="w-4 h-4 text-emerald-400" />No Hidden Fees</span>
         </div>
     </div>
+
+    {{-- Breadcrumb --}}
+    <nav class="bg-slate-100 border-b border-slate-200 py-2.5 px-4">
+        <div class="max-w-6xl mx-auto flex items-center gap-1.5 text-xs sm:text-sm text-slate-500">
+            <a href="{{ route('home') }}" class="hover:text-emerald-600 transition">Home</a>
+            <x-icon name="chevron-right" class="w-3 h-3" />
+            <span class="text-slate-800 font-medium">Services</span>
+        </div>
+    </nav>
 
     {{-- Hero --}}
     <section class="relative py-16 md:py-20 overflow-hidden bg-slate-900">
@@ -154,6 +177,14 @@ $faqSchema = [
                 <a href="#vip" class="text-slate-600 hover:text-emerald-600 font-medium transition">VIP Restrooms</a>
                 <span class="text-slate-300" aria-hidden="true">·</span>
                 <a href="#construction" class="text-slate-600 hover:text-emerald-600 font-medium transition">Construction Packages</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#portable-urinal" class="text-slate-600 hover:text-emerald-600 font-medium transition">Urinal Stations</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#handwash-trailer" class="text-slate-600 hover:text-emerald-600 font-medium transition">Hand Wash Trailers</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#temporary-fencing" class="text-slate-600 hover:text-emerald-600 font-medium transition">Fencing</a>
+                <span class="text-slate-300" aria-hidden="true">·</span>
+                <a href="#highrise" class="text-slate-600 hover:text-emerald-600 font-medium transition">High-Rise</a>
             </div>
         </div>
     </section>
@@ -224,14 +255,18 @@ $faqSchema = [
                         <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 text-white">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-4 mb-3">
-                                        <div class="w-14 h-14 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
-                                            <x-icon name="{{ $type['icon'] }}" class="w-7 h-7" />
+                                        <div class="flex items-center gap-4 mb-3">
+                                            <div class="w-14 h-14 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
+                                                <x-icon name="{{ $type['icon'] }}" class="w-7 h-7" />
+                                            </div>
+                                            <div>
+                                                <h2 class="text-xl font-bold">{{ $type['name'] }}</h2>
+                                                @php $svcPrice = $priceRanges[$type['key']] ?? null; @endphp
+                                                @if($pricingEnabled && $svcPrice)
+                                                    <span class="inline-block mt-1 text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full">From ${{ number_format($svcPrice['low']) }}/day</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 class="text-xl font-bold">{{ $type['name'] }}</h2>
-                                        </div>
-                                    </div>
                                     <p class="text-slate-300 text-sm leading-relaxed">
                                         {{ $type['description'] }}
                                     </p>
@@ -464,9 +499,9 @@ $faqSchema = [
     {{-- CTA --}}
     <section class="py-16 md:py-20 px-4 bg-slate-900 text-white text-center relative overflow-hidden">
         <div class="relative max-w-3xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Ready to get started?</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-balance">Book your delivery now — only a 5-minute call</h2>
             <p class="text-lg text-slate-400 mb-3 max-w-xl mx-auto">
-                Call for a <strong class="text-white">free quote</strong> and we'll help you pick the right portable restrooms for your job.
+                Order by 2PM for <strong class="text-white">same-day delivery</strong> starting at just <strong class="text-emerald-400">$89/day</strong>. No hidden fees.
             </p>
             <p class="text-slate-400 mb-8 text-sm">
                 Serving construction sites, events, weddings, and more across the USA.

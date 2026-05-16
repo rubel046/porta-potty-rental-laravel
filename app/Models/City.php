@@ -13,6 +13,7 @@ class City extends Model
 {
     protected $fillable = [
         'state_id', 'name', 'slug', 'county', 'area_codes',
+        'street_address', 'postal_code',
         'population', 'latitude', 'longitude', 'nearby_cities',
         'zip_codes', 'meta_title', 'meta_description',
         'city_description', 'climate_info', 'local_events',

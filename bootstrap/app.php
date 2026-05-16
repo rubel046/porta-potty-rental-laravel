@@ -4,6 +4,7 @@
 
 use App\Http\Middleware\CacheControl;
 use App\Http\Middleware\DomainMiddleware;
+use App\Http\Middleware\MinifyHtml;
 use App\Http\Middleware\RedirectToCity;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TrackTrafficSource;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             RedirectToCity::class,
             SecurityHeaders::class,
             CacheControl::class,
+            MinifyHtml::class,
         ]);
 
         $middleware->trustProxies(at: '*');

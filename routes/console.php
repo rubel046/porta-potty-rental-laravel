@@ -22,6 +22,13 @@ Schedule::command('indexing:sync')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/indexing-sync.log');
 
+// Ping Google/Bing after daily content generation
+Schedule::command('search:ping-sitemap')
+    ->dailyAt('12:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/sitemap-ping.log')
+    ->onOneServer();
+
 // Google Indexing API - submit URLs every 3 days (URLs must be 3+ days old)
 Schedule::command('google:index')
     ->cron('0 3 * * *') // Every 3 days at 3 AM EST
@@ -33,3 +40,39 @@ Schedule::command('google:index --check')
     ->dailyAt('04:00')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/google-indexing-check.log');
+
+// GMB — Post blog content to Google Business Profile daily at 9 AM
+Schedule::command('gmb:post-blog --limit=3')
+    ->dailyAt('09:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/gmb-posts.log')
+    ->onOneServer();
+
+// GMB — Sync reviews and auto-reply daily at 10 AM
+Schedule::command('gmb:sync-reviews')
+    ->dailyAt('10:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/gmb-reviews.log')
+    ->onOneServer();
+
+// Enrich city context from Wikipedia — 100 cities per run, runs at 2 AM
+// Repeats until all 30,000+ cities have context data
+Schedule::command('city:enrich-context --limit=100')
+    ->dailyAt('02:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/city-enrichment.log')
+    ->onOneServer();
+
+// Seed neighborhoods from Wikipedia — 50 cities per run, runs nightly at 3 AM
+Schedule::command('neighborhoods:seed --limit=50')
+    ->dailyAt('03:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/neighborhoods-seed.log')
+    ->onOneServer();
+
+// Generate content for pending neighborhoods — runs after seeding at 4 AM
+Schedule::command('neighborhoods:generate-content --limit=20')
+    ->dailyAt('04:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/neighborhoods-content.log')
+    ->onOneServer();
