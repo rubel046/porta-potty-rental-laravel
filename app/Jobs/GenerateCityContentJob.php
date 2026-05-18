@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\Domain;
 use App\Models\DomainCity;
 use App\Services\ContentGeneratorService;
+use App\Services\PageQualityService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,7 +42,7 @@ class GenerateCityContentJob implements ShouldQueue
         }
     }
 
-    public function handle(ContentGeneratorService $generator): void
+    public function handle(ContentGeneratorService $generator, PageQualityService $qualityService): void
     {
         $total = count($this->types);
         $cacheKey = "city_content_generation_{$this->city->id}";
@@ -72,7 +73,7 @@ class GenerateCityContentJob implements ShouldQueue
                     $stateCode = $this->city->state?->code ?? '';
                     $cityName = $this->city->name;
 
-                    $this->city->servicePages()->updateOrCreate(
+                    $page = $this->city->servicePages()->updateOrCreate(
                         ['slug' => $data['slug'], 'domain_id' => $domainId],
                         [
                             'domain_id' => $domainId,
@@ -89,6 +90,8 @@ class GenerateCityContentJob implements ShouldQueue
                             'generated_at' => now(),
                         ]
                     );
+
+                    $qualityService->scoreAndPersist($page);
 
                     if (! empty($data['faqs'])) {
                         foreach ($data['faqs'] as $i => $faq) {
