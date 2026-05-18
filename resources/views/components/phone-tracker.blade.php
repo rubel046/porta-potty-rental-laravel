@@ -24,7 +24,8 @@
                     timestamp: new Date().toISOString()
                 });
                 if (navigator.sendBeacon) {
-                    navigator.sendBeacon('/api/track-call-click', data);
+                    var blob = new Blob([data], { type: 'application/json' });
+                    navigator.sendBeacon('/api/track-call-click', blob);
                 }
             });
         });

@@ -190,10 +190,10 @@ A prospect from {city_name} just submitted a request for {service_label}. Write 
 Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY. If you return empty or missing fields the response will be rejected.
 
 {
-    "h1_title": "H1 heading (max 80 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
+    "h1_title": "H1 heading (20-70 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
     "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
     "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day delivery / transparent pricing / no hidden fees) and a CTA. Do NOT pad to hit length.",
-    "content": "Markdown. Start with ## heading. Length is whatever actually answers the reader's questions — do not pad. Include at least 3 local details that a stranger to {city_name} wouldn't know (permits, neighborhoods, typical event venues, weather considerations, road/access notes). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
+    "content": "Markdown. Start with ## heading. Write 800-1200 words. Do NOT pad — cover the topic thoroughly with specific details. Include at least 3 local details that a stranger to {city_name} wouldn't know (permits, neighborhoods, typical event venues, weather considerations, road/access notes). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
@@ -223,7 +223,7 @@ Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
-Testimonials (2-3 max): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. If you don't have a real scenario to draw on, omit rather than fabricate.
+Testimonials (4-5): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. Generate at least 4 — quality scoring requires 4+ testimonials for full credit.
 
 Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
@@ -248,10 +248,10 @@ A homeowner from {city_name} just submitted a request for {service_label}. Write
 Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY. If you return empty or missing fields the response will be rejected.
 
 {
-    "h1_title": "H1 heading (max 80 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
+    "h1_title": "H1 heading (20-70 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
     "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
     "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day service / transparent pricing / no hidden fees / licensed and insured) and a CTA. Do NOT pad to hit length.",
-    "content": "Markdown. Start with ## heading. Length is whatever actually answers the reader's questions — do not pad. Include at least 3 local details that a stranger to {city_name} wouldn't know (common pipe materials used locally, water quality issues, typical permitting process, seasonal considerations, neighborhood-specific quirks). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
+    "content": "Markdown. Start with ## heading. Write 800-1200 words. Do NOT pad — cover the topic thoroughly with specific details. Include at least 3 local details that a stranger to {city_name} wouldn't know (common pipe materials used locally, water quality issues, typical permitting process, seasonal considerations, neighborhood-specific quirks). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
 }
@@ -281,7 +281,7 @@ Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
-Testimonials (2-3 max): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. If you don't have a real scenario to draw on, omit rather than fabricate.
+Testimonials (4-5): write as illustrative scenarios, not claimed real customers. Use realistic first names + initial. KEEP THEM BELIEVABLE — specific job type, specific week/month, specific thing that went right. No superlatives. Generate at least 4 — quality scoring requires 4+ testimonials for full credit.
 
 Phone formatting: {{PHONE_LINK}} ONLY. Never output a literal phone number or anchor tag.
 
