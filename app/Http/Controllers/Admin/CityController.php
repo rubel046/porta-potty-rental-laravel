@@ -267,7 +267,7 @@ class CityController extends Controller
         $domain = Domain::current() ?? Domain::first();
         $domainName = $domain?->domain ?? 'example.com';
         $serviceLabel = $domain?->primary_service ?? 'Service';
-        $types = $domain?->getServiceTypes() ?? ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
+        $types = $domain?->getTopServiceTypes() ?? ['general', 'construction', 'wedding', 'event', 'luxury', 'party', 'emergency', 'residential'];
 
         $samplePages = [];
         foreach ($types as $type) {

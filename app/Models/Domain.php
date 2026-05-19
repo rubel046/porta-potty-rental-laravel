@@ -102,6 +102,11 @@ class Domain extends Model
         return $this->service_types ?? [];
     }
 
+    public function getTopServiceTypes(int $limit = 10): array
+    {
+        return array_slice($this->getServiceTypes(), 0, $limit);
+    }
+
     public function getSecondaryKeywords(): array
     {
         return $this->secondary_keywords ?? [];

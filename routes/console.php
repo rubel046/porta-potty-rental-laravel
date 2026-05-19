@@ -83,3 +83,11 @@ Schedule::command('quality:score-all')
     ->timezone('America/New_York')
     ->appendOutputTo('storage/logs/quality-scoring.log')
     ->onOneServer();
+
+// Generate city-specific keyword variants from domain secondary_keywords — runs at 5 AM
+// Processes 500 cities/day so all 31k cities are covered across ~63 days
+Schedule::command('keywords:generate --city-limit=500')
+    ->dailyAt('05:00')
+    ->timezone('America/New_York')
+    ->appendOutputTo('storage/logs/keywords-generation.log')
+    ->onOneServer();

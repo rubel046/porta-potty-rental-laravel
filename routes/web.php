@@ -92,6 +92,8 @@ Route::get('/pricing', [PageController::class, 'pricing'])
 // Units Calculator
 Route::get('/units-calculator', [PageController::class, 'calculator'])
     ->name('calculator');
+Route::get('/calculator/embed', [PageController::class, 'calculatorEmbed'])
+    ->name('calculator.embed');
 
 // Pillar Page (must be before state/catch-all routes)
 Route::get('/complete-guide-to-porta-potty-rental', [PageController::class, 'pillarPage'])

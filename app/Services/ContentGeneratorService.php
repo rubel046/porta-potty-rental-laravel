@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Domain;
 use App\Models\DomainState;
 use App\Models\Faq;
+use App\Models\Keyword;
 use App\Models\State;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
@@ -64,6 +65,7 @@ class ContentGeneratorService
             ->implode(', ');
 
         $cityContext = $this->getCityContext($city);
+        $targetKeywords = $this->getTargetKeywords($city, $serviceType, $domain);
 
         $replacements = [
             '{service_label}' => $serviceLabel,
@@ -82,11 +84,12 @@ class ContentGeneratorService
             '{service_noun}' => $serviceNoun,
             '{delivery_heading}' => $deliveryHeading,
             '{city_context}' => $cityContext,
+            '{target_keywords}' => $targetKeywords,
         ];
 
         $prompt = $this->getDomainServicePagePrompt($domain, $replacements);
 
-        $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Phone numbers: ONLY use {{PHONE_LINK}}. 3) Service links: ONLY use {{SERVICE_LINK:service-type}}. 4) Never output actual phone numbers or URLs. 5) Always return valid JSON. 6) If you fail to provide any required field, the system will reject your response.';
+        $systemPrompt = 'You are an SEO content writer that MUST generate ALL fields. CRITICAL RULES: 1) h1_title, meta_title, meta_description, content MUST ALL be non-empty strings. 2) Phone numbers: ONLY use {{PHONE_LINK}}. 3) Service links: ONLY use {{SERVICE_LINK:service-type}}. 4) Never output actual phone numbers or URLs. 5) Always return valid JSON. 6) If you fail to provide any required field, the system will reject your response. 7) TARGET KEYWORDS: Use the {target_keywords} list to guide keyword placement. Include at least 2 of those keywords naturally in the body content. Include the primary keyword in the first 100 words. Weave city-specific keyword variants naturally into headings and body.';
 
         $maxAttempts = 3;
         $attempt = 0;
@@ -191,8 +194,8 @@ Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY
 
 {
     "h1_title": "H1 heading (20-70 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
-    "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
-    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day delivery / transparent pricing / no hidden fees) and a CTA. Do NOT pad to hit length.",
+    "meta_title": "SEO title tag (50-60 chars). Target one of these keywords: {target_keywords}. Include {city_name} or {state_code}, and a concrete benefit or hook.",
+    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day delivery / transparent pricing / no hidden fees) and a CTA. Include a keyword from {target_keywords} naturally. Do NOT pad to hit length.",
     "content": "Markdown. Start with ## heading. Write 800-1200 words. Do NOT pad — cover the topic thoroughly with specific details. Include at least 3 local details that a stranger to {city_name} wouldn't know (permits, neighborhoods, typical event venues, weather considerations, road/access notes). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
@@ -220,6 +223,14 @@ Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL
 - Reference permit/weather considerations that actually apply
 - Nearby cities we serve: {nearby_cities_text}
 - Generic "in {city_name}" repetition is NOT local anchoring. Use the LOCAL INTEL provided.
+
+KEYWORD TARGETING (MANDATORY):
+- Target these specific low-competition, high-intent keywords in your content: {target_keywords}
+- Use at least 2 of these keywords naturally within the body content (H2s, paragraphs, bullet points)
+- Include the primary keyword, "{primary_keyword}", in the first 100 words of content
+- Include city-adapted keyword variants naturally (e.g. "porta potty rental in {city_name}")
+- Do NOT just repeat keywords — weave them into natural, useful sentences that answer the reader's question
+- Each H2 should read naturally — not be a keyword dump
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
@@ -249,8 +260,8 @@ Return a VALID JSON object with EXACTLY this structure. ALL fields are MANDATORY
 
 {
     "h1_title": "H1 heading (20-70 chars). Must mention {service_label} and {city_name}. Lead with value/specificity, not just keywords. Avoid 'Welcome to' / 'The best'.",
-    "meta_title": "SEO title tag (50-60 chars). Include primary keyword, {city_name} or {state_code}, and a concrete benefit or hook.",
-    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day service / transparent pricing / no hidden fees / licensed and insured) and a CTA. Do NOT pad to hit length.",
+    "meta_title": "SEO title tag (50-60 chars). Target one of these keywords: {target_keywords}. Include {city_name} or {state_code}, and a concrete benefit or hook.",
+    "meta_description": "140-160 characters. Specific, includes a reason-to-call (same-day service / transparent pricing / no hidden fees / licensed and insured) and a CTA. Include a keyword from {target_keywords} naturally. Do NOT pad to hit length.",
     "content": "Markdown. Start with ## heading. Write 800-1200 words. Do NOT pad — cover the topic thoroughly with specific details. Include at least 3 local details that a stranger to {city_name} wouldn't know (common pipe materials used locally, water quality issues, typical permitting process, seasonal considerations, neighborhood-specific quirks). Include 2-3 {{SERVICE_LINK:...}} internal links where relevant, and at least one {{PHONE_LINK}} CTA.",
     "faqs": [{"question": "...", "answer": "..."}, ...],
     "testimonials": [{"customer_name": "...", "content": "...", "rating": 5}, ...]
@@ -278,6 +289,14 @@ Local anchoring (MANDATORY — at least 4 specific references to the LOCAL INTEL
 - Reference permit/weather considerations that actually apply
 - Nearby cities we serve: {nearby_cities_text}
 - Generic "in {city_name}" repetition is NOT local anchoring. Use the LOCAL INTEL provided.
+
+KEYWORD TARGETING (MANDATORY):
+- Target these specific low-competition, high-intent keywords in your content: {target_keywords}
+- Use at least 2 of these keywords naturally within the body content (H2s, paragraphs, bullet points)
+- Include the primary keyword, "{primary_keyword}", in the first 100 words of content
+- Include city-adapted keyword variants naturally (e.g. "{primary_keyword} in {city_name}")
+- Do NOT just repeat keywords — weave them into natural, useful sentences that answer the reader's question
+- Each H2 should read naturally — not be a keyword dump
 
 FAQs (6-10 questions): answer the specific questions someone in {city_name} would Google before calling. Prefer questions that include "{city_name}" or "{state_code}" in the query. Answers: 40-70 words, direct answer first, then detail.
 
@@ -687,22 +706,28 @@ PROMPT;
         $serviceTypesText = implode(', ', array_map(fn ($t) => ucfirst($t), $serviceTypes));
         $imagePath = @$this->imageService->getRandomImagesForContent(1)[0]['path'] ?? '';
 
-        // When generating a pillar post, use a broader prompt without city-specific focus
+        $blogKeywords = $this->getBlogTargetKeywords($category, $city, $domain);
+        $targetBlogKeywordsText = $blogKeywords['keywords'] ?? '';
+        $targetFocusKeyword = $blogKeywords['focus_keyword'] ?? $primaryKeyword;
+
         if ($isPillar) {
             $pillarCategory = $category->name;
             $pillarDescription = $category->description;
 
             $prompt = <<<PROMPT
-You're writing a pillar blog post for {$businessName}, a {$primaryService} company. This is a TOPIC HUB page — not a city-specific post. It should serve as the definitive guide to "{$pillarCategory}" that all other posts in this category link back to.
+You're writing a pillar blog post for {$businessName}, a {$primaryService} company serving {$cityName}, {$stateName} and nearby cities. This is a TOPIC HUB page — the definitive guide to "{$pillarCategory}" that all city-specific posts in this category link back to. Use {$cityName} as the primary local anchor, but keep the scope national/comprehensive enough to serve readers everywhere.
 
 CONTEXT:
 - Category: {$pillarCategory}
 - Category Description: {$pillarDescription}
+- Location: {$locationContext}
+- Nearby Cities: {$nearbyCitiesText}
 - Business: {$businessName}
 - Website: {$websiteUrl}
 - Primary Keyword: {$primaryKeyword}
 - Secondary Keywords: {$secondaryKeywords}
 - Service Types: {$serviceTypesText}
+- Target Keywords (low-competition, high-volume): {$targetBlogKeywordsText}
 
 CONTENT RULES
 
@@ -711,8 +736,8 @@ Voice: factual, comprehensive, encyclopedia-like. This is the go-to reference fo
 Length: 1500-2500 words. This is a pillar — it needs to be thorough enough to earn links from cluster posts.
 
 Structure:
-- H1 title: "{$pillarCategory}: The Complete Guide" or similar authoritative title
-- Opening: summary of everything the reader will learn (think Wikipedia intro)
+- H1 title: "{$pillarCategory}: The Complete Guide" or similar authoritative title — optionally reference {$cityName} if it fits naturally
+- Opening: summary of everything the reader will learn (think Wikipedia intro). Can use {$cityName} as an example.
 - 5-8 H2 sections covering all major aspects of the topic
 - Use H3 for sub-topics within each H2
 - Tables where data comparisons help
@@ -720,28 +745,28 @@ Structure:
 
 Specificity (required):
 - At least 5 concrete facts, numbers, or industry rules
-- Cover national/industry context — NOT city-specific
+- Blend national/industry context with occasional {$cityName} examples (2-3 natural mentions)
 - Link to 3-4 of our service pages using {{SERVICE_LINK:type}}
 - Link to {{SERVICE_LINK:pricing}} when discussing costs
 - Link to {{SERVICE_LINK:comparison}} when comparing types
 - Link to {{SERVICE_LINK:calculator}} when discussing quantities
 - Link to {{SERVICE_LINK:osha_guide}} when discussing compliance
+- Use focus_keyword "{$targetFocusKeyword}" — target this specific keyword throughout the post
 
 Do NOT:
-- Reference any specific city
-- Use city names
+- Overuse the city name — keep it mostly national/industry in scope
 - Write like a local service page
 - Use "nestled", "hassle-free", "state-of-the-art", "look no further"
 
 OUTPUT (valid JSON only, no code fences):
 {
-    "title": "Title (max 80 chars) — authoritative and comprehensive",
+    "title": "Title (max 80 chars) — authoritative and comprehensive. Target keyword: {$targetFocusKeyword}",
     "slug": "url-friendly-slug",
     "excerpt": "2-3 sentences, 200-300 chars. Summarize what this guide covers.",
     "content": "Markdown. 1500-2500 words. Includes one {{PHONE_LINK}} and 3-4 {{SERVICE_LINK:type}} links.",
-    "meta_title": "50-60 chars",
-    "meta_description": "140-160 chars, comprehensive overview",
-    "focus_keyword": "primary focus keyword",
+    "meta_title": "50-60 chars. Include target keyword: {$targetFocusKeyword}",
+    "meta_description": "140-160 chars, comprehensive overview. Include target keyword naturally.",
+    "focus_keyword": "{$targetFocusKeyword}",
     "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
 }
 PROMPT;
@@ -767,6 +792,7 @@ CONTEXT:
 - Nearby Cities: {$nearbyCitiesText}
 - Service Types: {$serviceTypesText}
 - Content Angle: {$variationAngle}
+- Target Keywords (low-competition, high-volume): {$targetBlogKeywordsText}
 
 This is post #{$iteration} for this location. Use a different angle from prior posts — different sub-topic, different reader persona, different structure.
 
@@ -794,6 +820,7 @@ Specificity (required):
 - When topic relates to unit types, link to {{SERVICE_LINK:comparison}}
 - When topic relates to calculating quantity, link to {{SERVICE_LINK:calculator}}
 - When topic is a general overview, link to {{SERVICE_LINK:pillar}} (complete rental guide)
+- Use focus_keyword "{$targetFocusKeyword}" — target this specific keyword throughout the post
 
 Pricing: if you give a range, only use the one I've provided in context. Otherwise use soft pricing language and redirect to a quote.
 
@@ -801,13 +828,13 @@ Do NOT use: "nestled", "hassle-free", "state-of-the-art", "look no further", "cu
 
 OUTPUT (valid JSON only, no code fences):
 {
-    "title": "H1 (max 80 chars) — specific and curiosity-driven",
+    "title": "H1 (max 80 chars) — specific and curiosity-driven. Target keyword: {$targetFocusKeyword}",
     "slug": "url-friendly-slug",
     "excerpt": "2-3 sentences, 200-300 chars. State what the post covers and who it's for. No CTA, no phone placeholder.",
     "content": "Markdown. Length as needed, not padded. Includes one {{PHONE_LINK}} near the end and 2-3 {{SERVICE_LINK:type}} links.",
-    "meta_title": "50-60 chars",
-    "meta_description": "140-160 chars, concrete",
-    "focus_keyword": "primary focus keyword",
+    "meta_title": "50-60 chars. Include target keyword: {$targetFocusKeyword}",
+    "meta_description": "140-160 chars, concrete. Include target keyword naturally.",
+    "focus_keyword": "{$targetFocusKeyword}",
     "secondary_keywords": ["keyword1", "keyword2", "keyword3"]
 }
 PROMPT;
@@ -951,6 +978,123 @@ PROMPT;
     protected function getContentPreview(string $content): string
     {
         return Str::limit(strip_tags($content), 500);
+    }
+
+    protected function getBlogTargetKeywords(BlogCategory $category, ?City $city, ?Domain $domain): array
+    {
+        $serviceType = $this->mapCategoryToServiceType($category->slug);
+        $focusKeyword = null;
+        $keywords = [];
+
+        if ($domain) {
+            $query = Keyword::active()
+                ->lowCompetition()
+                ->where('domain_id', $domain->id)
+                ->byServiceType($serviceType)
+                ->orderBy('tier')
+                ->orderByDesc('volume');
+
+            $top = (clone $query)->limit(1)->first();
+            if ($top) {
+                $focusKeyword = $city
+                    ? $this->resolveGeoPlaceholders($top->keyword, $city)
+                    : $top->keyword;
+            }
+
+            $all = (clone $query)->limit(5)->get();
+            foreach ($all as $kw) {
+                $keywords[] = $city
+                    ? $this->resolveGeoPlaceholders($kw->keyword, $city)
+                    : $kw->keyword;
+            }
+        }
+
+        if (! $focusKeyword) {
+            $focusKeyword = $domain->primary_keyword ?? 'porta potty rental';
+        }
+
+        $keywordsText = ! empty($keywords)
+            ? implode(', ', $keywords)
+            : ($domain?->getSecondaryKeywordsFormatted() ?? $focusKeyword);
+
+        return [
+            'focus_keyword' => $focusKeyword,
+            'keywords' => $keywordsText,
+        ];
+    }
+
+    protected function mapCategoryToServiceType(string $slug): ?string
+    {
+        $map = [
+            'construction' => 'construction',
+            'osha-requirements' => 'construction',
+            'building-construction' => 'construction',
+            'road-construction' => 'construction',
+            'home-building' => 'construction',
+            'commercial-building' => 'construction',
+            'weddings' => 'wedding',
+            'wedding-trailers' => 'wedding',
+            'luxury-restrooms' => 'luxury',
+            'vip-events' => 'luxury',
+            'event-planning' => 'event',
+            'music-festivals' => 'event',
+            'concerts' => 'event',
+            'sporting-events' => 'event',
+            'corporate-events' => 'event',
+            'emergency-services' => 'emergency',
+            'same-day-delivery' => 'emergency',
+            '24-7-availability' => 'emergency',
+            'standard-units' => 'standard',
+            'deluxe-flushable' => 'deluxe',
+            'ada-accessible' => 'ada',
+            'luxury-trailers' => 'luxury',
+            'handwashing-stations' => 'sanitizer',
+            'residential-rentals' => 'residential',
+            'pricing-costs' => null,
+            'budget-friendly-rentals' => 'standard',
+            'cost-comparison' => null,
+        ];
+
+        return $map[$slug] ?? null;
+    }
+
+    protected function getTargetKeywords(City $city, string $serviceType, ?Domain $domain): string
+    {
+        if (! $domain) {
+            return '';
+        }
+
+        $keywords = Keyword::active()
+            ->lowCompetition()
+            ->where('domain_id', $domain->id)
+            ->byServiceType($serviceType)
+            ->orderBy('tier')
+            ->orderByDesc('volume')
+            ->limit(5)
+            ->get();
+
+        if ($keywords->isEmpty()) {
+            return $domain->primary_keyword ?? 'porta potty rental';
+        }
+
+        return $keywords
+            ->map(fn (Keyword $kw) => $this->resolveGeoPlaceholders($kw->keyword, $city))
+            ->implode(', ');
+    }
+
+    protected function resolveGeoPlaceholders(string $keyword, City $city): string
+    {
+        $replacements = [
+            '[city]' => strtolower($city->name),
+            '[CITY]' => $city->name,
+            '[state]' => strtolower($city->state?->code ?? ''),
+            '[STATE]' => $city->state?->code ?? '',
+            '[state_name]' => $city->state?->name ?? '',
+            '[county]' => strtolower($city->county ?? $city->name),
+            '[COUNTY]' => $city->county ?? $city->name,
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $keyword);
     }
 
     protected function getCityContext(City $city): string

@@ -93,12 +93,12 @@ class RegenerateTopCities extends Command
             array_map(fn (City $city) => [
                 $city->name,
                 $city->state?->code ?? '—',
-                count($domain->getServiceTypes()),
+                count($domain->getTopServiceTypes()),
                 $city->servicePages()->where('domain_id', $domain->id)->count(),
             ], $found)
         );
 
-        $serviceTypes = $domain->getServiceTypes();
+        $serviceTypes = $domain->getTopServiceTypes();
         $totalJobs = count($found) * count($serviceTypes);
 
         $this->newLine();

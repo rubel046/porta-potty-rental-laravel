@@ -100,6 +100,46 @@ $breadcrumbSchema = [
     </div>
 </section>
 
+{{-- Embed Section --}}
+<section class="py-12 md:py-16 px-4 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <span class="inline-block text-emerald-600 font-semibold text-sm tracking-wider uppercase mb-3">Share This Tool</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Embed This Calculator on Your Site</h2>
+            <p class="text-lg text-slate-600">Wedding planners, event coordinators, and construction blogs: add this free tool to your site.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                    <span class="font-semibold text-slate-800">Copy and paste this code into your website's HTML:</span>
+                </div>
+                <div class="relative bg-slate-900 rounded-xl p-4 overflow-x-auto" x-data="{ copied: false }">
+                    <pre class="text-sm text-slate-300 whitespace-pre-wrap break-all font-mono" id="embed-code">&lt;iframe src="{{ url('/calculator/embed') }}" width="100%" height="620" frameborder="0" scrolling="no"&gt;&lt;/iframe&gt;</pre>
+                    <button @click="
+                        navigator.clipboard.writeText(document.getElementById('embed-code').innerText);
+                        copied = true;
+                        setTimeout(() => copied = false, 2000);
+                    " class="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition" x-text="copied ? 'Copied!' : 'Copy'"></button>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-4 text-sm text-slate-500">
+                    <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Free to use</span>
+                    <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Automatic updates</span>
+                    <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Mobile responsive</span>
+                    <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>No ads</span>
+                </div>
+            </div>
+            <div class="bg-slate-50 border-t border-slate-200 p-4">
+                <p class="text-sm text-slate-600 flex items-start gap-2">
+                    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                    <span>The embed includes a backlink to PottyDirect. Removing it violates our terms of service.</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {{-- Guide Section --}}
 <section class="py-12 md:py-16 px-4 bg-slate-50">
     <div class="max-w-4xl mx-auto">

@@ -35,10 +35,10 @@ class GenerateCityContentJob implements ShouldQueue
         public array $types = []
     ) {
         if (empty($this->types) && $this->domain) {
-            $this->types = $this->domain->getServiceTypes();
+            $this->types = $this->domain->getTopServiceTypes();
         }
         if (empty($this->types)) {
-            $this->types = $this->domain?->getServiceTypes() ?? ['general'];
+            $this->types = $this->domain?->getTopServiceTypes() ?? ['general'];
         }
     }
 

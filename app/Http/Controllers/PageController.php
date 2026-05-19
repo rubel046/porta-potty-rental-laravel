@@ -635,6 +635,11 @@ class PageController extends Controller
         return view(DomainViewHelper::resolveForController('calculator'));
     }
 
+    public function calculatorEmbed()
+    {
+        return view(DomainViewHelper::resolveForController('calculator-embed'));
+    }
+
     /**
      * Pillar Page: Complete Guide to Porta Potty Rental
      */

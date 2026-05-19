@@ -8,12 +8,19 @@
     generated: false,
     error: null,
     data: null,
-category_id: '',
-    city_id: '',
+    category_id: '',
+    city_id: '{{ $cities->first()?->id ?? '' }}',
 
     async generate() {
         if (!this.category_id) {
             this.error = 'Please select a category';
+            return;
+        }
+
+        // Auto-select first city if none chosen
+        const cityId = this.city_id || '{{ $cities->first()?->id ?? '' }}';
+        if (!cityId) {
+            this.error = 'No cities available. Please add cities first.';
             return;
         }
 
@@ -36,9 +43,9 @@ category_id: '',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken
                 },
-body: JSON.stringify({
+                body: JSON.stringify({
                     blog_category_id: this.category_id,
-                    city_id: this.city_id || null
+                    city_id: cityId
                 })
             });
 
@@ -87,7 +94,7 @@ body: JSON.stringify({
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h2 class="text-lg font-bold text-gray-800">Generate Blog Post with AI</h2>
-                <p class="text-sm text-gray-500 mt-1">Select a category and optionally a city to generate SEO-optimized content</p>
+                <p class="text-sm text-gray-500 mt-1">Select a category and city to generate locally-targeted SEO content</p>
             </div>
             <a href="{{ route('admin.blog-posts.index') }}" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -107,14 +114,14 @@ body: JSON.stringify({
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">City (Optional)</label>
-                <select x-model="city_id" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-                    <option value="">No specific city (general content)</option>
+                <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                <select x-model="city_id" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" required>
+                    <option value="">Auto-select first city</option>
                     @foreach($cities as $city)
                         <option value="{{ $city->id }}">{{ $city->name }}, {{ $city->state->code }}</option>
                     @endforeach
                 </select>
-                <p class="text-xs text-gray-400 mt-1">Select a city for location-specific SEO optimization</p>
+                <p class="text-xs text-gray-400 mt-1">Every blog post targets a city for local SEO. Leave empty to auto-select.</p>
             </div>
 
             <div x-show="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm" x-cloak>

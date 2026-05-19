@@ -39,7 +39,7 @@ class BlogPostController extends Controller
             $query->where('domain_id', $domain->id);
         }
         $categories = $query->get();
-        $cities = City::active()->with('state')->orderBy('name')->get();
+        $cities = $this->getDomainCities($domain);
 
         return view('admin.blog-posts.form', compact('categories', 'cities'));
     }
@@ -70,6 +70,11 @@ class BlogPostController extends Controller
             $validated['domain_id'] = $domain->id;
         }
 
+        // Ensure every blog post targets a city
+        if (empty($validated['city_id'])) {
+            $validated['city_id'] = $this->getDomainCities($domain)->random()?->id;
+        }
+
         if ($request->boolean('is_published')) {
             $validated['published_at'] = now();
         }
@@ -90,6 +95,8 @@ class BlogPostController extends Controller
 
         $domain = Domain::current();
         $savedCount = 0;
+        $domainCities = $this->getDomainCities($domain);
+        $firstCity = $domainCities->first();
 
         foreach ($posts as $postData) {
             if (empty($postData['title']) || empty($postData['content'])) {
@@ -111,7 +118,7 @@ class BlogPostController extends Controller
                 'focus_keyword' => $postData['focus_keyword'] ?? '',
                 'featured_image' => $postData['featured_image'] ?? '',
                 'blog_category_id' => $postData['blog_category_id'] ?? null,
-                'city_id' => $postData['city_id'] ?? null,
+                'city_id' => $postData['city_id'] ?? $firstCity?->id,
                 'domain_id' => $domain?->id,
                 'is_published' => isset($postData['is_published']) && $postData['is_published'] == '1',
             ];
@@ -141,7 +148,7 @@ class BlogPostController extends Controller
             $query->where('domain_id', $domain->id);
         }
         $categories = $query->get();
-        $cities = City::active()->with('state')->orderBy('name')->get();
+        $cities = $this->getDomainCities($domain);
 
         return view('admin.blog-posts.form', [
             'post' => $blogPost,
@@ -168,6 +175,12 @@ class BlogPostController extends Controller
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
         ]);
+
+        // Ensure every blog post targets a city
+        if (empty($validated['city_id'])) {
+            $domain = Domain::current();
+            $validated['city_id'] = $this->getDomainCities($domain)->random()?->id;
+        }
 
         if ($request->boolean('is_published') && ! $blogPost->published_at) {
             $validated['published_at'] = now();
@@ -202,6 +215,18 @@ class BlogPostController extends Controller
         return Domain::current()?->id;
     }
 
+    protected function getDomainCities(?Domain $domain): \Illuminate\Support\Collection
+    {
+        if (! $domain) {
+            return collect();
+        }
+
+        return City::whereHas('domainCities', fn ($q) => $q->where('domain_id', $domain->id)->where('status', true))
+            ->with('state')
+            ->orderBy('name')
+            ->get();
+    }
+
     public function generateForm()
     {
         $domain = Domain::current();
@@ -210,7 +235,7 @@ class BlogPostController extends Controller
             $query->where('domain_id', $domain->id);
         }
         $categories = $query->orderBy('name')->get();
-        $cities = City::active()->with('state')->orderBy('name')->get();
+        $cities = $this->getDomainCities($domain);
 
         return view('admin.blog-posts.generate', compact('categories', 'cities'));
     }
@@ -219,11 +244,11 @@ class BlogPostController extends Controller
     {
         $validated = $request->validate([
             'blog_category_id' => 'required|exists:blog_categories,id',
-            'city_id' => 'nullable|exists:cities,id',
+            'city_id' => 'required|exists:cities,id',
         ]);
 
         $category = BlogCategory::findOrFail($validated['blog_category_id']);
-        $city = isset($validated['city_id']) ? City::findOrFail($validated['city_id']) : null;
+        $city = City::findOrFail($validated['city_id']);
         $domain = Domain::current();
 
         try {

@@ -82,9 +82,16 @@ class GenerateDailyBlogPost extends Command
             return;
         }
 
-        $this->info("  Generating PILLAR post for category: {$category->name}");
+        $city = $this->getRandomCity($domain);
+        if (! $city) {
+            $this->warn("  No active city for domain {$domain->domain}");
 
-        $result = $this->contentService->generateBlogPostContent($category, null, 1, true);
+            return;
+        }
+
+        $this->info("  Generating PILLAR post for category: {$category->name} — targeting {$city->name}, {$city->state->code}");
+
+        $result = $this->contentService->generateBlogPostContent($category, $city, 1, true);
 
         if (! $result || ! ($result['success'] ?? false)) {
             $this->error('  Failed to generate pillar: '.($result['error'] ?? 'Unknown'));
@@ -111,7 +118,7 @@ class GenerateDailyBlogPost extends Command
             'focus_keyword' => $result['focus_keyword'] ?? '',
             'featured_image' => $result['featured_image'] ?? '',
             'blog_category_id' => $category->id,
-            'city_id' => null,
+            'city_id' => $city->id,
             'domain_id' => $domain->id,
             'is_pillar' => true,
             'is_published' => true,
@@ -242,7 +249,6 @@ class GenerateDailyBlogPost extends Command
         return City::whereHas('domainCities', function ($q) use ($domain) {
             $q->where('domain_id', $domain->id)->where('status', true);
         })
-            ->where('is_active', true)
             ->with('state')
             ->inRandomOrder()
             ->first();

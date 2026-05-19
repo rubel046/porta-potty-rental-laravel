@@ -123,16 +123,16 @@
 
                 {{-- City --}}
                 <div class="card p-6">
-                    <h3 class="font-bold text-gray-700 mb-4">🏙️ Related City</h3>
+                    <h3 class="font-bold text-gray-700 mb-4">🏙️ City *</h3>
                     <select name="city_id" class="form-input">
-                        <option value="">None (General)</option>
                         @foreach($cities as $city)
                             <option value="{{ $city->id }}"
-                                {{ old('city_id', $post->city_id ?? '') == $city->id ? 'selected' : '' }}>
+                                {{ old('city_id', $post->city_id ?? $cities->first()?->id) == $city->id ? 'selected' : '' }}>
                                 {{ $city->name }}, {{ $city->state->code }}
                             </option>
                         @endforeach
                     </select>
+                    <p class="text-xs text-gray-400 mt-1">Every blog post targets a city for local SEO.</p>
                 </div>
 
                 {{-- Stats (edit only) --}}
